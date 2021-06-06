@@ -1,0 +1,388 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "properties": {
+    "address": {
+      "description": "",
+      "maxLength": 255,
+      "type": "string"
+    },
+    "city": {
+      "description": "",
+      "maxLength": 255,
+      "type": "string"
+    },
+    "country": {
+      "description": "",
+      "maxLength": 2,
+      "type": "string"
+    },
+    "directions": {
+      "description": "",
+      "type": "string"
+    },
+    "last_updated": {
+      "description": "",
+      "format": "date-time",
+      "type": "string"
+    },
+    "coordinates": {
+      "description": "",
+      "type": "object",
+      "properties": {
+        "lat": {
+          "description": "",
+          "pattern": "^[+-]?\\d+(\\.\\d+)?$",
+          "type": "string"
+        },
+        "lon": {
+          "description": "",
+          "pattern": "^[+-]?\\d+(\\.\\d+)?$",
+          "type": "string"
+        }
+      }
+    },
+    "name": {
+      "description": "",
+      "maxLength": 255,
+      "type": "string"
+    },
+    "parking_type": {
+      "description": "",
+      "enum": [
+        "ALONG_MOTORWAY",
+        "PARKING_GARAGE",
+        "PARKING_LOT",
+        "ON_DRIVEWAY",
+        "ON_STREET",
+        "UNDERGROUND_GARAGE"
+      ],
+      "type": "string"
+    },
+    "postal_code": {
+      "description": "",
+      "maxLength": 255,
+      "type": "string"
+    },
+    "state": {
+      "description": "",
+      "maxLength": 255,
+      "type": "string"
+    },
+    "terms_and_conditions": {
+      "description": "",
+      "maxLength": 255,
+      "type": "string"
+    },
+    "time_zone": {
+      "description": "",
+      "maxLength": 32,
+      "type": "string"
+    },
+    "uid": {
+      "description": "",
+      "maxLength": 255,
+      "type": "string"
+    },
+    "evses": {
+      "description": "",
+      "type": "array",
+      "items": {
+        "description": "",
+        "type": "object",
+        "properties": {
+          "capabilities": {
+            "description": "",
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "CHARGING_PROFILE_CAPABLE",
+                "CHARGING_PREFERENCES_CAPABLE",
+                "CHIP_CARD_SUPPORT",
+                "CONTACTLESS_CARD_SUPPORT",
+                "CREDIT_CARD_PAYABLE",
+                "DEBIT_CARD_PAYABLE",
+                "PED_TERMINAL",
+                "REMOTE_START_STOP_CAPABLE",
+                "RESERVABLE",
+                "RFID_READER",
+                "TOKEN_GROUP_CAPABLE",
+                "UNLOCK_CAPABLE",
+                "PUBLIC",
+                "LOCAL_KEY",
+                "CASH",
+                "IEC15118",
+                "DIRECT_REMOTE"
+              ]
+            }
+          },
+          "directions": {
+            "description": "",
+            "type": "string"
+          },
+          "evse_id": {
+            "description": "",
+            "maxLength": 64,
+            "type": "string"
+          },
+          "floor_level": {
+            "description": "",
+            "maxLength": 16,
+            "type": "string"
+          },
+          "last_updated": {
+            "description": "",
+            "format": "date-time",
+            "type": "string"
+          },
+          "coordinates": {
+            "description": "",
+            "type": "object",
+            "properties": {
+              "lat": {
+                "description": "",
+                "pattern": "^[+-]?\\d+(\\.\\d+)?$",
+                "type": "string"
+              },
+              "lon": {
+                "description": "",
+                "pattern": "^[+-]?\\d+(\\.\\d+)?$",
+                "type": "string"
+              }
+            }
+          },
+          "parking_floor_level": {
+            "description": "",
+            "maxLength": 255,
+            "type": "string"
+          },
+          "parking_restrictions": {
+            "description": "",
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": ["EV_ONLY", "PLUGGED", "DISABLED", "CUSTOMERS", "MOTORCYCLES", "CARSHARING"]
+            }
+          },
+          "parking_spot_number": {
+            "description": "",
+            "maxLength": 255,
+            "type": "string"
+          },
+          "parking_uid": {
+            "description": "",
+            "maxLength": 255,
+            "type": "string"
+          },
+          "phone": {
+            "description": "",
+            "maxLength": 255,
+            "type": "string"
+          },
+          "physical_reference": {
+            "description": "",
+            "maxLength": 255,
+            "type": "string"
+          },
+          "status": {
+            "description": "",
+            "enum": [
+              "AVAILABLE",
+              "BLOCKED",
+              "CHARGING",
+              "INOPERATIVE",
+              "OUTOFORDER",
+              "PLANNED",
+              "REMOVED",
+              "RESERVED",
+              "UNKNOWN"
+            ],
+            "type": "string"
+          },
+          "terms_and_conditions": {
+            "description": "",
+            "maxLength": 255,
+            "type": "string"
+          },
+          "parking_type": {
+            "description": "",
+            "type": "string",
+            "enum": [
+              "ALONG_MOTORWAY",
+              "PARKING_GARAGE",
+              "PARKING_LOT",
+              "ON_DRIVEWAY",
+              "ON_STREET",
+              "UNDERGROUND_GARAGE"
+            ]
+          },
+          "uid": {
+            "description": "",
+            "maxLength": 64,
+            "type": "string"
+          },
+          "opening_times": {
+            "type": "object",
+            "properties": {
+              "twentyfourseven": {
+                "description": "True to represent 24 hours a day and 7 days a week, except the given exceptions.",
+                "type": "boolean"
+              },
+              "regular_hours": {
+                "description": "",
+                "type": "array",
+                "items": {
+                  "description": "",
+                  "type": "object",
+                  "properties": {
+                    "weekday": {
+                      "description": "",
+                      "type": "integer"
+                    },
+                    "period_begin": {
+                      "description": "",
+                      "type": "string"
+                    },
+                    "period_end": {
+                      "description": "",
+                      "type": "string"
+                    }
+                  }
+                }
+              },
+              "exceptional_openings": {
+                "description": "",
+                "type": "array",
+                "items": {
+                  "description": "",
+                  "type": "object",
+                  "properties": {
+                    "period_begin": {
+                      "description": "",
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "period_end": {
+                      "description": "",
+                      "type": "string",
+                      "format": "date-time"
+                    }
+                  }
+                }
+              },
+              "exceptional_closings": {
+                "description": "",
+                "type": "array",
+                "items": {
+                  "description": "",
+                  "type": "object",
+                  "properties": {
+                    "period_begin": {
+                      "description": "",
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "period_end": {
+                      "description": "",
+                      "type": "string",
+                      "format": "date-time"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "connectors": {
+            "description": "",
+            "type": "array",
+            "items": {
+              "description": "",
+              "type": "object",
+              "properties": {
+                "format": {
+                  "description": "",
+                  "enum": [
+                    "SOCKET",
+                    "CABLE"
+                  ],
+                  "type": "string"
+                },
+                "last_updated": {
+                  "description": "",
+                  "format": "date-time",
+                  "type": "string"
+                },
+                "max_amperage": {
+                  "description": "",
+                  "type": "integer"
+                },
+                "max_electric_power": {
+                  "description": "",
+                  "type": "integer"
+                },
+                "max_voltage": {
+                  "description": "",
+                  "type": "integer"
+                },
+                "power_type": {
+                  "description": "",
+                  "enum": [
+                    "AC_1_PHASE",
+                    "AC_3_PHASE",
+                    "DC"
+                  ],
+                  "type": "string"
+                },
+                "standard": {
+                  "description": "",
+                  "enum": [
+                    "CHADEMO",
+                    "DOMESTIC_A",
+                    "DOMESTIC_B",
+                    "DOMESTIC_C",
+                    "DOMESTIC_D",
+                    "DOMESTIC_E",
+                    "DOMESTIC_F",
+                    "DOMESTIC_G",
+                    "DOMESTIC_H",
+                    "DOMESTIC_I",
+                    "DOMESTIC_J",
+                    "DOMESTIC_K",
+                    "DOMESTIC_L",
+                    "IEC_60309_2_single_16",
+                    "IEC_60309_2_three_16",
+                    "IEC_60309_2_three_32",
+                    "IEC_60309_2_three_64",
+                    "IEC_62196_T1",
+                    "IEC_62196_T1_COMBO",
+                    "IEC_62196_T2",
+                    "IEC_62196_T2_COMBO",
+                    "IEC_62196_T3A",
+                    "IEC_62196_T3C",
+                    "PANTOGRAPH_BOTTOM_UP",
+                    "PANTOGRAPH_TOP_DOWN",
+                    "TESLA_R",
+                    "TESLA_S"
+                  ],
+                  "type": "string"
+                },
+                "terms_and_conditions": {
+                  "description": "",
+                  "maxLength": 255,
+                  "type": "string"
+                },
+                "uid": {
+                  "description": "",
+                  "maxLength": 64,
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "title": "Location",
+  "type": "object"
+}

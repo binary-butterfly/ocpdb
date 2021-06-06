@@ -1,0 +1,200 @@
+{
+  "status_code": 1000,
+  "timestamp": "2021-05-20T13:00:00",
+  "data": [
+    {
+      "uid": "DE*EBW*E800282",
+      "name": "Parkplatz Benzstraße Herrenberg",
+      "address": "Benzstraße 10",
+      "postal_code": "71083",
+      "city": "Herrenberg",
+      "country": "DE",
+      "last_updated": "2021-04-28T15:51:49",
+      "coordinates": {
+        "lat": "48.599106",
+        "lon": "8.870451"
+      },
+      "opening_times": {
+        "twentyfourseven": true
+      },
+      "evses": [
+        {
+          "evse_id": "DE*EBW*E800282*1",
+          "status": "AVAILABLE",
+          "phone": "072172586460",
+          "capabilities": [
+            "REMOTE_START_STOP_CAPABLE",
+            "RFID_READER"
+          ],
+          "connectors": [
+            {
+              "uid": "1",
+              "standard": "IEC_62196_T2",
+              "format": "SOCKET",
+              "power_type": "AC_3_PHASE",
+              "max_voltage": 400,
+              "max_amperage": 32,
+              "max_electric_power": 22000
+            },
+            {
+              "uid": "2",
+              "standard": "DOMESTIC_F",
+              "format": "SOCKET",
+              "power_type": "AC_1_PHASE",
+              "max_voltage": 230,
+              "max_amperage": 16,
+              "max_electric_power": 3680
+            }
+          ]
+        },
+        {
+          "evse_id": "DE*EBW*E800282*2",
+          "status": "AVAILABLE",
+          "phone": "072172586460",
+          "capabilities": [
+            "REMOTE_START_STOP_CAPABLE",
+            "RFID_READER"
+          ],
+          "connectors": [
+            {
+              "uid": "1",
+              "standard": "IEC_62196_T2",
+              "format": "SOCKET",
+              "power_type": "AC_3_PHASE",
+              "max_voltage": 400,
+              "max_amperage": 32,
+              "max_electric_power": 22000
+            },
+            {
+              "uid": "2",
+              "standard": "DOMESTIC_F",
+              "format": "SOCKET",
+              "power_type": "AC_1_PHASE",
+              "max_voltage": 230,
+              "max_amperage": 16,
+              "max_electric_power": 3680
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "uid": "AT*HTB*EE100888",
+      "name": "Seeländer Areal Herrenberg",
+      "address": "Hirschgasse 19",
+      "postal_code": "71083",
+      "city": "Herrenberg",
+      "country": "DE",
+      "last_updated": "2021-04-28T15:51:49",
+      "coordinates": {
+        "lat": "48.599106",
+        "lon": "8.870451"
+      },
+      "opening_times": {
+        "twentyfourseven": true
+      },
+      "evses": [
+        {
+          "evse_id": "AT*HTB*EE1008881",
+          "status": "AVAILABLE",
+          "phone": "08312069770",
+          "capabilities": [
+            "REMOTE_START_STOP_CAPABLE",
+            "RFID_READER"
+          ],
+          "connectors": [
+            {
+              "uid": "1",
+              "standard": "IEC_62196_T2",
+              "format": "SOCKET",
+              "power_type": "AC_3_PHASE",
+              "max_voltage": 400,
+              "max_amperage": 32,
+              "max_electric_power": 22000
+            }
+          ]
+        },
+        {
+          "evse_id": "AT*HTB*EE1008882",
+          "status": "AVAILABLE",
+          "phone": "08312069770",
+          "capabilities": [
+            "REMOTE_START_STOP_CAPABLE",
+            "RFID_READER"
+          ],
+          "connectors": [
+            {
+              "uid": "1",
+              "standard": "IEC_62196_T2",
+              "format": "SOCKET",
+              "power_type": "AC_3_PHASE",
+              "max_voltage": 400,
+              "max_amperage": 32,
+              "max_electric_power": 22000
+            }
+          ]
+        },
+        {
+          "evse_id": "AT*HTB*EE1008883",
+          "status": "AVAILABLE",
+          "phone": "08312069770",
+          "capabilities": [
+            "REMOTE_START_STOP_CAPABLE",
+            "RFID_READER"
+          ],
+          "connectors": [
+            {
+              "uid": "1",
+              "standard": "IEC_62196_T2",
+              "format": "SOCKET",
+              "power_type": "AC_3_PHASE",
+              "max_voltage": 400,
+              "max_amperage": 32,
+              "max_electric_power": 22000
+            }
+          ]
+        },
+        {
+          "evse_id": "AT*HTB*EE1008884",
+          "status": "AVAILABLE",
+          "phone": "08312069770",
+          "capabilities": [
+            "REMOTE_START_STOP_CAPABLE",
+            "RFID_READER"
+          ],
+          "connectors": [
+            {
+              "uid": "1",
+              "standard": "IEC_62196_T2",
+              "format": "SOCKET",
+              "power_type": "AC_3_PHASE",
+              "max_voltage": 400,
+              "max_amperage": 32,
+              "max_electric_power": 22000
+            }
+          ]
+        },
+        {
+          "evse_id": "AT*HTB*EE1008885",
+          "status": "AVAILABLE",
+          "phone": "08312069770",
+          "capabilities": [
+            "REMOTE_START_STOP_CAPABLE",
+            "RFID_READER"
+          ],
+          "connectors": [
+            {
+              "uid": "1",
+              "standard": "IEC_62196_T2",
+              "format": "SOCKET",
+              "power_type": "AC_3_PHASE",
+              "max_voltage": 400,
+              "max_amperage": 32,
+              "max_electric_power": 22000
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

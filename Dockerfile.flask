@@ -1,0 +1,9 @@
+FROM registry.git.sectio-aurea.org/common/base-images/flask:ubuntu-20.04
+
+WORKDIR /app
+
+COPY requirements.txt .
+RUN pip install -r requirements.txt
+
+CMD ["python3", "runserver.py"]
+EXPOSE 5000

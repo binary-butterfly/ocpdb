@@ -1,0 +1,35 @@
+stages:
+  - test
+
+variables:
+  # Variables for test environment services
+  MYSQL_ROOT_PASSWORD: root
+  MYSQL_DATABASE: ochp
+
+# Define services for test environment
+.test-services:
+  services: &test_service_stack
+    - name: mariadb:latest
+      alias: mysql
+    - name: redis:latest
+    - name: rabbitmq:latest
+
+
+# Test stage
+test-pytest:
+  stage: test
+  image:
+    name: ${CI_REGISTRY}/common/base-images/flask:ubuntu-20.04
+  services: *test_service_stack
+  artifacts:
+    when: always
+    reports:
+      junit:
+        - reports/pytest_unit.xml
+        - reports/pytest_integration.xml
+  before_script:
+    - pip install -r requirements.txt
+    - cp webapp/config_dist_dev.py webapp/config.py
+  script:
+    - python -m pytest tests/unit --junitxml=reports/pytest_unit.xml
+    - python -m pytest tests/integration --junitxml=reports/pytest_integration.xml

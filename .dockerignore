@@ -1,0 +1,9 @@
+# Exclude the following directories from Docker build context to speed up builds
+.git/
+.idea/
+.vscode/
+
+__pycache__/
+
+/venv
+/logs

@@ -1,0 +1,17 @@
+gunicorn
+Flask<2.0
+Flask-Script
+Flask-Failsafe
+Flask-SQLAlchemy
+Flask-Celery-Helper
+Flask-Migrate
+SQLAlchemy
+requests
+lxml
+redis
+mercantile
+python-dateutil
+python-dotenv
+click
+https://github.com/binary-butterfly/wtfjson/archive/refs/heads/master.tar.gz
+https://github.com/mapbox/vector-tile-base/archive/refs/heads/master.tar.gz

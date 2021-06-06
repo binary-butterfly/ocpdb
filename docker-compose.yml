@@ -1,0 +1,60 @@
+version: '3'
+services:
+  flask:
+    build:
+      context: .
+      dockerfile: Dockerfile.flask
+    ports:
+      - 5000:5000
+    depends_on:
+      - mysql
+    volumes:
+      - .:/app
+    environment:
+      FLASK_ENV: development
+    user: ${CURRENT_UID}
+    entrypoint: ["python3", "runserver.py"]
+
+  worker:
+    build:
+      context: .
+      dockerfile: Dockerfile.flask
+    depends_on:
+      - mysql
+      - rabbitmq
+      - redis
+    volumes:
+      - .:/app
+    init: true
+    command: ["/app/celery_dev.sh"]
+    user: ${CURRENT_UID}
+
+  mysql:
+    image: mariadb
+    volumes:
+      - .:/app
+      - ocpdb_mysql:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: ocpdb
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    ports:
+      - 8081:80
+    environment:
+      PMA_USER: root
+      PMA_PASSWORD: root
+      PMA_HOST: mysql
+    depends_on:
+      - mysql
+
+  redis:
+    image: redis:latest
+
+  rabbitmq:
+    image: rabbitmq:latest
+
+volumes:
+  ocpdb_mysql:
+

@@ -1,0 +1,12 @@
+config.py
+*.py[cod]
+.idea
+
+/venv
+/logs
+/keys
+/static/images/dynamic/*.png
+/static/images/dynamic/*.jpg
+/static/images/dynamic/*.jpeg
+/static/images/dynamic/*.svg
+/reports
