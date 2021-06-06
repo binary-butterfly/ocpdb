@@ -15,11 +15,11 @@ Auf [api.ocpdb.de](https://api.ocpdb.de/documentation) steht eine vollständige 
 
 ## Systemvoraussetzungen & Installation
 
-Der Installationsprozess wird in der [INSTALL.md](https://github.com/openbikebox/backend/blob/master/INSTALL.md) dokumentiert.
+Der Installationsprozess wird in der [INSTALL.md](https://github.com/binary-butterfly/ocpdb/blob/master/INSTALL.md) dokumentiert.
 
 ## Lizenz
 
-Die OCPDB steht unter der AGPL. Details hierzu sind in der [LICENCE.txt](https://github.com/openbikebox/backend/blob/master/README.en.md) zu finden.
+Die OCPDB steht unter der AGPL. Details hierzu sind in der [LICENCE.txt](https://github.com/binary-butterfly/ocpdb/blob/master/LICENCE.txt) zu finden.
 
 ## Mitmachen
 
