@@ -13,5 +13,5 @@ mercantile
 python-dateutil
 python-dotenv
 click
-https://github.com/binary-butterfly/wtfjson/archive/refs/heads/master.tar.gz
+https://github.com/binary-butterfly/wtfjson/archive/refs/tags/0.2.tar.gz
 https://github.com/mapbox/vector-tile-base/archive/refs/heads/master.tar.gz
