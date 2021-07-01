@@ -43,7 +43,6 @@ class BaseConfig:
 
     CELERY_BROKER_URL = 'amqp://rabbitmq'
 
-
     OPENAPI_CONTACT_MAIL = 'ernesto.ruge@binary-butterfly.de'
     OPENAPI_TOS = 'https://binary-butterfly.de/ocpdb'
     OPENAPI_SERVERS = [

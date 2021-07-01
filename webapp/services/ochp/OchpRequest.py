@@ -25,7 +25,6 @@ from urllib3.exceptions import NewConnectionError
 from flask import current_app
 from ...extensions import logger
 from .Helper import get_nsmap
-from .SaveChargepoint import save_chargepoints
 
 
 class OchpRequestException(Exception):
