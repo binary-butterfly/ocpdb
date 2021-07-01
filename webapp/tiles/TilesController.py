@@ -36,7 +36,7 @@ def tile_data(x, y, z):
 
     bbox = mercantile.bounds(x, y, z)
     query = """
-    SELECT location.id, location.lat, location.lon, COUNT(chargepoint.id) as chargepoint_count, 
+    SELECT location.id, location.lat, location.lon, location.name, location.address, COUNT(chargepoint.id) as chargepoint_count, 
         SUM(CASE WHEN chargepoint.status = 'AVAILABLE' THEN 1 ELSE 0 END) as chargepoint_available_count, 
         SUM(CASE WHEN chargepoint.status = 'UNKNOWN' THEN 1 ELSE 0 END) as chargepoint_unknown_count
     FROM location 
@@ -51,7 +51,7 @@ def tile_data(x, y, z):
     )
     chargepoints = db.session.execute(query)
 
-    layer = tile.add_layer('chargepoints', 2)
+    layer = tile.add_layer('chargepoints', 1)
     for item in chargepoints:
         feature = layer.add_point_feature()
         feature.add_points([
@@ -61,8 +61,10 @@ def tile_data(x, y, z):
         feature.id = item.id
         feature.attributes = {
             'id': item.id,
+            'name': item.name or item.address,
             'c': item.chargepoint_count,
             'ca': int(item.chargepoint_available_count),
             'cu': int(item.chargepoint_unknown_count)
         }
+        feature.extend = 4096
     return protobuf_response(tile.serialize())
