@@ -38,7 +38,8 @@ def tile_data(x, y, z):
     query = """
     SELECT location.id, location.lat, location.lon, location.name, location.address, COUNT(chargepoint.id) as chargepoint_count, 
         SUM(CASE WHEN chargepoint.status = 'AVAILABLE' THEN 1 ELSE 0 END) as chargepoint_available_count, 
-        SUM(CASE WHEN chargepoint.status = 'UNKNOWN' THEN 1 ELSE 0 END) as chargepoint_unknown_count
+        SUM(CASE WHEN chargepoint.status = 'UNKNOWN' THEN 1 ELSE 0 END) as chargepoint_unknown_count,
+        SUM(CASE WHEN chargepoint.parking_restrictions & 64 = 64 THEN 1 ELSE 0 END) as chargepoint_bike_count
     FROM location 
     LEFT JOIN chargepoint ON chargepoint.location_id = location.id
     WHERE MBRContains(GeomFromText('LINESTRING(%s %s, %s %s)'), location.geometry)
@@ -64,7 +65,8 @@ def tile_data(x, y, z):
             'name': item.name or item.address,
             'c': item.chargepoint_count,
             'ca': int(item.chargepoint_available_count),
-            'cu': int(item.chargepoint_unknown_count)
+            'cu': int(item.chargepoint_unknown_count),
+            'cb': int(item.chargepoint_bike_count)
         }
         feature.extend = 4096
     return protobuf_response(tile.serialize())
