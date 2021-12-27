@@ -1,0 +1,13 @@
+PROJECT_URL: 'http://localhost:5000'
+SECRET_KEY: 'random-key'
+DEBUG: True
+
+SQLALCHEMY_DATABASE_URI: 'mysql+pymysql://root:root@mysql/ocpdb'
+SQLALCHEMY_ENGINE_OPTIONS:
+  pool_size: 100
+  pool_recycle: 600
+CELERY_BROKER_URL: 'amqp://rabbitmq'
+
+REMOTE_SERVERS:
+  STADTNAVI:
+    url: 'https://api.dev.stadtnavi.eu/herrenberg/charging-stations/charging-stations-ocpi.json'

@@ -21,25 +21,30 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from typing import List, Optional
 from datetime import datetime
 from dataclasses import dataclass, asdict
-from ...models import Chargepoint, Location, RelatedResource
-from ...extensions import logger, db
-from ...enums import ChargepointStatus, ParkingRestriction, Capability
+from webapp.models import Chargepoint, Location, RelatedResource
+from webapp.extensions import logger, db
+from webapp.enums import ChargepointStatus, ParkingRestriction, Capability
+from validataclass.helpers import OptionalUnsetNone, UnsetValue
+from .SaveConnector import ConnectorUpdate
 
 from .SaveRelatedResources import RelatedResourceUpdate, get_related_resource_updates, save_related_resources
 
 
 @dataclass
 class ChargepointUpdate:
-    evse_id: Optional[str] = None
-    phone: Optional[str] = None
-    parking_uid: Optional[str] = None
-    parking_floor_level: Optional[str] = None
-    parking_spot_number: Optional[str] = None
-    capabilities: Optional[List[Capability]] = None
-    parking_restrictions: Optional[List[ParkingRestriction]] = None
-    status: Optional[ChargepointStatus] = None
-    related_resources: Optional[List[RelatedResourceUpdate]] = None
-    last_updated: Optional[datetime] = None
+    source: str  # TODO: this should not be part of an update
+    uid: str  # TODO: this should not be part of an update
+    evse_id: OptionalUnsetNone[str] = UnsetValue
+    phone: OptionalUnsetNone[str] = UnsetValue
+    parking_uid: OptionalUnsetNone[str] = UnsetValue
+    parking_floor_level: OptionalUnsetNone[str] = UnsetValue
+    parking_spot_number: OptionalUnsetNone[str] = UnsetValue
+    capabilities: OptionalUnsetNone[List[Capability]] = UnsetValue
+    parking_restrictions: OptionalUnsetNone[List[ParkingRestriction]] = UnsetValue
+    status: OptionalUnsetNone[ChargepointStatus] = UnsetValue
+    related_resources: OptionalUnsetNone[List[RelatedResourceUpdate]] = UnsetValue
+    last_updated: OptionalUnsetNone[datetime] = UnsetValue
+    connectors: OptionalUnsetNone[List[ConnectorUpdate]] = UnsetValue
 
 
 def upsert_chargepoint(
@@ -49,39 +54,45 @@ def upsert_chargepoint(
         old_related_resources: Optional[List[RelatedResource]] = None,
         commit: bool = True) -> Chargepoint:
     chargepoint = old_chargepoint if old_chargepoint else Chargepoint.query\
-        .filter_by(evse_id=chargepoint_update.evse_id)\
+        .filter_by(uid=chargepoint_update.uid)\
+        .filter_by(source=chargepoint_update.source)\
         .first()
     related_resource_updates = get_related_resource_updates(chargepoint, chargepoint_update, old_related_resources)
     update_required = related_resource_updates.update_required
     if chargepoint and not update_required:
-        for field in asdict(chargepoint_update):
-            if field in ['status', 'related_resources', 'last_updated']:
+        for field, value in asdict(chargepoint_update).items():
+            if field in ['status', 'related_resources', 'last_updated', 'connectors']:
                 continue
-            if getattr(chargepoint, field) != getattr(chargepoint_update, field):
+            if value is not UnsetValue and getattr(chargepoint, field) != value:
                 update_required = True
                 break
         if chargepoint_update.status == ChargepointStatus.AVAILABLE:
             if chargepoint.status in [item for item in list(ChargepointStatus) if item != ChargepointStatus.AVAILABLE]:
                 update_required = True
-        elif chargepoint.status != chargepoint_update.status:
+        elif chargepoint_update.status is not UnsetValue and chargepoint.status != chargepoint_update.status:
             update_required = True
     elif not chargepoint:
         update_required = True
         chargepoint = Chargepoint()
         chargepoint.location_id = location.id
-    for field in asdict(chargepoint_update):
-        if field in ['related_resouces', 'status', 'last_updated']:
+    for field, value in asdict(chargepoint_update).items():
+        if field in ['related_resouces', 'status', 'last_updated', 'connectors']:
             continue
-        setattr(chargepoint, field, getattr(chargepoint_update, field))
-    if not chargepoint_update.last_updated or not chargepoint.last_updated or chargepoint_update.last_updated > chargepoint.last_updated:
+        if value is UnsetValue:
+            continue
+        setattr(chargepoint, field, value)
+    if chargepoint_update.last_updated is not UnsetValue and (
+        not chargepoint_update.last_updated
+        or not chargepoint.last_updated
+        or chargepoint_update.last_updated > chargepoint.last_updated
+    ):
         chargepoint.last_updated = chargepoint_update.last_updated
 
     if chargepoint_update.status == ChargepointStatus.AVAILABLE:
         if chargepoint.status in [item for item in list(ChargepointStatus) if item != ChargepointStatus.AVAILABLE] or chargepoint.status is None:
             chargepoint.status = ChargepointStatus.AVAILABLE
-    elif chargepoint.status != chargepoint_update.status:
+    elif chargepoint.status != chargepoint_update.status and chargepoint_update.status != UnsetValue:
         chargepoint.status = chargepoint_update.status
-
     if not update_required:
         return chargepoint
 

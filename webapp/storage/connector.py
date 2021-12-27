@@ -20,7 +20,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from math import sqrt
 from enum import Enum
+from sqlalchemy import Index
 from typing import Union, Optional
+from sqlalchemy_utc import UtcDateTime
 from datetime import datetime, timezone
 from .base import BaseModel
 from ..extensions import db
@@ -77,18 +79,21 @@ class PowerType(Enum):
 
 class Connector(db.Model, BaseModel):
     __tablename__ = "connector"
+    __table_args__ = (
+        Index('uid_source', 'uid', 'source'),
+    )
 
+    source = db.Column(db.String(64), index=True)
     chargepoint_id = db.Column(db.BigInteger, db.ForeignKey('chargepoint.id'))
 
     uid = db.Column(db.String(64))                          # OCPI: id
-    giroe_id = db.Column(db.BigInteger)
     standard = db.Column(db.Enum(ConnectorType, name='ConnectorType'))
     format = db.Column(db.Enum(ConnectorFormat, name='ConnectorFormat'))
     power_type = db.Column(db.Enum(PowerType, name='PowerType'))              # OCHP: chargePointType             OCPI: power_type
     max_voltage = db.Column(db.Integer)                     # OCHP: nominalVoltage              OCPI: max_voltage
     max_amperage = db.Column(db.Integer)                    #                                   OCPI: max_amperage
     max_electric_power = db.Column(db.Integer)              # OCHP: maximumPower                OCPI: max_electric_power
-    _last_updated = db.Column('last_updated', db.DateTime(timezone=True))
+    _last_updated = db.Column('last_updated', UtcDateTime(timezone=True))
     terms_and_conditions = db.Column(db.String(255))        #                                   OCPI: terms_and_conditions
 
     # tariff_ids TODO

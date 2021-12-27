@@ -1,0 +1,23 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "description": "",
+  "type": "array",
+  "items": {
+    "description": "",
+    "type": "object",
+    "properties": {
+      "weekday": {
+        "description": "",
+        "type": "integer"
+      },
+      "period_begin": {
+        "description": "",
+        "type": "string"
+      },
+      "period_end": {
+        "description": "",
+        "type": "string"
+      }
+    }
+  }
+}

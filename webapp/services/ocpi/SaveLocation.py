@@ -77,7 +77,7 @@ def get_location_update(data_location: dict) -> Union[LocationUpdate, None]:
     if not validator.validate():
         logger.error('ocpi.location', 'invalid location found: %s %s' % (validator.errors, data_location))
         return
-    location_update = LocationUpdate()
+    location_update = LocationUpdate(source='stadtnavi', uid=validator.uid.out)
     validator.populate_obj(location_update)
     return location_update
 

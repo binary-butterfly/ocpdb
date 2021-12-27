@@ -1,0 +1,14 @@
+{
+  "created": "2021-01-01T01:01:01Z",
+  "format": "SOCKET",
+  "id": 100,
+  "meter_public_key": "",
+  "meter_serial_number": "",
+  "modified": "2021-01-01T01:01:01Z",
+  "ocpp_connector_id": 1,
+  "power": 22000,
+  "power_type": "AC_3_PHASE",
+  "standard": "IEC_62196_T2",
+  "status": "AVAILABLE",
+  "uid": "DEGLS1234560"
+}

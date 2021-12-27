@@ -19,6 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 import requests
+from webapp.common.config_helper import RemoteServerType
 from requests.exceptions import ConnectionError
 from urllib3.exceptions import NewConnectionError
 from json.decoder import JSONDecodeError
@@ -33,7 +34,8 @@ from .SaveLocation import save_locations
 def ocpi_get_chargepoint_list(source: str):
     start = get_now()
     try:
-        ocpi_request = requests.get(current_app.config['OCPI_SOURCES'][source]['url'])
+        # TODO: make this generic again
+        ocpi_request = requests.get(current_app.config['REMOTE_SERVERS'][RemoteServerType.STADTNAVI].url)
         ocpi_data = ocpi_request.json()
         assert 'data' in ocpi_data
         assert type(ocpi_data['data']) is list

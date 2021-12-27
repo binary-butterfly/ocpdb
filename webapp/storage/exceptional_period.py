@@ -19,8 +19,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 from enum import Enum
+from sqlalchemy_utc import UtcDateTime
 from .base import BaseModel
-from ..extensions import db
+from webapp.extensions import db
 
 
 class ExceptionalPeriodType(Enum):
@@ -33,5 +34,5 @@ class ExceptionalPeriod(db.Model, BaseModel):
 
     location_id = db.Column(db.BigInteger, db.ForeignKey('location.id'))
     type = db.Column(db.Enum(ExceptionalPeriodType, name='ExceptionalPeriodType'))
-    period_begin = db.Column(db.DateTime(timezone=True))
-    period_end = db.Column(db.DateTime(timezone=True))
+    period_begin = db.Column(UtcDateTime(timezone=True))
+    period_end = db.Column(UtcDateTime(timezone=True))

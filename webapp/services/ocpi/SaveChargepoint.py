@@ -36,7 +36,7 @@ def get_chargepoint_update(data_chargepoint: dict) -> Union[ChargepointUpdate, N
     if not validator.validate():
         logger.error('ocpi.chargepoint', 'invalid chargepoint found: %s - %s' % (data_chargepoint, validator.errors))
         return
-    chargepoint_update = ChargepointUpdate()
+    chargepoint_update = ChargepointUpdate(source='stadtnavi', uid=validator.evse_id.out)
     validator.populate_obj(chargepoint_update)
     return chargepoint_update
 

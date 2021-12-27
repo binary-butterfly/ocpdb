@@ -21,6 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import os
 from enum import Enum
 from typing import Optional, List
+from sqlalchemy_utc import UtcDateTime
 from flask import current_app
 from .base import BaseModel
 from ..extensions import db
@@ -44,7 +45,7 @@ class Image(db.Model, BaseModel):
     category = db.Column(db.Enum(ImageCategory, name='ImageCategory'))
     width = db.Column(db.Integer)
     height = db.Column(db.Integer)
-    last_download = db.Column(db.DateTime(timezone=True))
+    last_download = db.Column(UtcDateTime(timezone=True))
 
     @property
     def url(self):

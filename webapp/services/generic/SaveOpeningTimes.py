@@ -21,35 +21,36 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from datetime import datetime
 from dataclasses import dataclass, asdict
 from typing import List, Optional, Union, TYPE_CHECKING
-from ...models import Location, ExceptionalPeriod, RegularHours
-from ...enums import ExceptionalPeriodType
-from ...extensions import db
+from validataclass.helpers import OptionalUnsetNone, UnsetValue
+from webapp.models import Location, ExceptionalPeriod, RegularHours
+from webapp.enums import ExceptionalPeriodType
+from webapp.extensions import db
 if TYPE_CHECKING:
     from .SaveLocation import LocationUpdate
 
 
 @dataclass
 class RegularHoursUpdate:
-    weekday: Optional[int] = None
-    period_begin: Optional[int] = None
-    period_end: Optional[int] = None
+    weekday: OptionalUnsetNone[int] = UnsetValue
+    period_begin: OptionalUnsetNone[int] = UnsetValue
+    period_end: OptionalUnsetNone[int] = UnsetValue
 
 
 @dataclass
 class ExceptionalPeriodUpdate:
     type: ExceptionalPeriodType
-    period_begin: Optional[datetime] = None
-    period_end: Optional[datetime] = None
+    period_begin: OptionalUnsetNone[datetime] = UnsetValue
+    period_end: OptionalUnsetNone[datetime] = UnsetValue
 
 
 @dataclass
 class OpeningTimeUpdate:
-    regular_hours: List[RegularHours]
-    exceptionals: List[ExceptionalPeriod]
-    new_regular_hours: Optional[List[RegularHours]] = None
-    new_exceptionals: Optional[List[ExceptionalPeriod]] = None
-    deleted_regular_hours: Optional[List[int]] = None
-    deleted_exceptionals: Optional[List[int]] = None
+    regular_hours: OptionalUnsetNone[List[RegularHours]] = UnsetValue
+    exceptionals: OptionalUnsetNone[List[ExceptionalPeriod]] = UnsetValue
+    new_regular_hours: OptionalUnsetNone[List[RegularHours]] = UnsetValue
+    new_exceptionals: OptionalUnsetNone[List[ExceptionalPeriod]] = UnsetValue
+    deleted_regular_hours: OptionalUnsetNone[List[int]] = UnsetValue
+    deleted_exceptionals: OptionalUnsetNone[List[int]] = UnsetValue
     update_required: bool = False
 
 
@@ -62,9 +63,18 @@ def get_opening_time_update(
         regular_hours = RegularHours.query.filter_by(location_id=location.id).all() if location else []
     if exceptionals is None:
         exceptionals = ExceptionalPeriod.query.filter_by(location_id=location.id).all() if location else []
-    opening_time_update = OpeningTimeUpdate(exceptionals=exceptionals, regular_hours=regular_hours)
-    set_regular_hours_update(opening_time_update, location_update.regular_hours)
-    set_exceptional_updates(opening_time_update, location_update.exceptional_openings + location_update.exceptional_closings)
+    opening_time_update = OpeningTimeUpdate(
+        exceptionals=exceptionals,
+        regular_hours=regular_hours,
+        new_regular_hours=[],
+        new_exceptionals=[],
+        deleted_regular_hours=[],
+        deleted_exceptionals=[]
+    )
+    if location_update.regular_hours is not UnsetValue:
+        set_regular_hours_update(opening_time_update, location_update.regular_hours)
+    if location_update.exceptional_openings is not UnsetValue and location_update.exceptional_closings is not UnsetValue:
+        set_exceptional_updates(opening_time_update, location_update.exceptional_openings + location_update.exceptional_closings)
     opening_time_update.update_required = len(opening_time_update.new_regular_hours) > 0\
         or len(opening_time_update.new_exceptionals) > 0 or len(opening_time_update.deleted_regular_hours) > 0\
         or len(opening_time_update.deleted_exceptionals) > 0
@@ -73,37 +83,39 @@ def get_opening_time_update(
 
 def set_regular_hours_update(opening_time_update: OpeningTimeUpdate, regular_hour_updates: List[RegularHoursUpdate]):
     old_ids = [regular_hour.id for regular_hour in opening_time_update.regular_hours]
-    opening_time_update.new_regular_hours = []
     for regular_hour_update in regular_hour_updates:
         old_id = next((regular_hour.id for regular_hour in opening_time_update.regular_hours if compare(regular_hour, regular_hour_update)), None)
         if old_id is not None and old_id in old_ids:
             old_ids.remove(old_id)
         else:
             new_regular_hours = RegularHours()
-            for field in asdict(regular_hour_update):
-                setattr(new_regular_hours, field, getattr(regular_hour_update, field))
+            for field, value in asdict(regular_hour_update).items():
+                if value is UnsetValue:
+                    continue
+                setattr(new_regular_hours, field, value)
             opening_time_update.new_regular_hours.append(new_regular_hours)
     opening_time_update.deleted_regular_hours = old_ids
 
 
 def set_exceptional_updates(opening_time_update: OpeningTimeUpdate, exceptional_updates: List[ExceptionalPeriodUpdate]):
     old_ids = [exceptional.id for exceptional in opening_time_update.exceptionals]
-    opening_time_update.new_exceptionals = []
     for exceptional_update in exceptional_updates:
         old_id = next((exceptional.id for exceptional in opening_time_update.exceptionals if compare(exceptional, exceptional_update)), None)
         if old_id is not None and old_id in old_ids:
             old_ids.remove(old_id)
         else:
             new_exceptional = ExceptionalPeriod()
-            for field in asdict(exceptional_update):
-                setattr(new_exceptional, field, getattr(exceptional_update, field))
+            for field, value in asdict(exceptional_update).items():
+                if value is UnsetValue:
+                    continue
+                setattr(new_exceptional, field, value)
             opening_time_update.new_exceptionals.append(new_exceptional)
     opening_time_update.deleted_exceptionals = old_ids
 
 
 def compare(obj: Union[RegularHours, ExceptionalPeriod], update: Union[RegularHoursUpdate, ExceptionalPeriodUpdate]) -> bool:
-    for field in asdict(update):
-        if getattr(obj, field) != getattr(update, field):
+    for field, value in asdict(update).items():
+        if value is not UnsetValue and getattr(obj, field) != value:
             return False
     return True
 

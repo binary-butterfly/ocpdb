@@ -5,7 +5,7 @@ services:
       context: .
       dockerfile: Dockerfile.flask
     ports:
-      - 5000:5000
+      - "5010:5000"
     depends_on:
       - mysql
     volumes:
@@ -41,7 +41,7 @@ services:
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
     ports:
-      - 8081:80
+      - "8090:80"
     environment:
       PMA_USER: root
       PMA_PASSWORD: root

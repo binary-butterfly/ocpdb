@@ -21,9 +21,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from .common.celery import LogErrorsCelery
 celery = LogErrorsCelery()
 
-from .common.redis_client import RedisClient
-redis = RedisClient()
-
 from flask_sqlalchemy import SQLAlchemy
 db = SQLAlchemy()
 
@@ -32,6 +29,3 @@ migrate = Migrate()
 
 from .common.logger import Logger
 logger = Logger()
-
-from .api_documentation.ApiDocumentation import ApiDocumentation
-api_documentation = ApiDocumentation()

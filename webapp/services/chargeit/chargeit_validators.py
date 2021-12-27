@@ -1,0 +1,151 @@
+# encoding: utf-8
+
+"""
+Open ChargePoint DataBase OCPDB
+Copyright (C) 2021 binary butterfly GmbH
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+"""
+
+from enum import Enum
+from typing import List
+from datetime import time
+from validataclass.helpers import validataclass, OptionalUnsetNone, DefaultUnset, Default
+from validataclass.validators import DataclassValidator, ListValidator, IntegerValidator, StringValidator, \
+    FloatValidator, EnumValidator, BooleanValidator, TimeValidator, TimeFormat, Noneable
+from webapp.common.validation import UnvalidatedDictValidator, NoneableToUnsetValue
+
+
+class Plug(Enum):
+    SCHUKO = 'SCHUKO'
+    TYP2 = 'TYP2'
+    TYP2_11KW = 'TYP2_11KW'
+    TYP2_14KW = 'TYP2_14KW'
+    TYP2_39KW = 'TYP2_39KW'
+    TYP2_CABLE = 'TYP2_CABLE'
+    CCS = 'CCS'
+    CHAdeMO = 'CHAdeMO'
+    GBT_AC = 'GBT_AC'
+    GBT_DC = 'GBT_DC'
+    CEE = 'CEE'
+    UNKNOWN = 'UNKNOWN'
+
+
+class CircuitStatus(Enum):
+    OCPP_AVAILABLE = 'OCPP_AVAILABLE'
+    OCPP_OCCUPIED = 'OCPP_OCCUPIED'
+    OCPP16_FINSISHING = 'OCPP16_FINSISHING'
+    OCPP16_CHARGING = 'OCPP16_CHARGING'
+    IDLE = 'IDLE'
+    CHARGING = 'CHARGING'
+    OCPP_FAULTED = 'OCPP_FAULTED'
+    STATE_CHARGING_PLUG_REMOVE = 'STATE_CHARGING_PLUG_REMOVE'
+    CHARGING_PAUSE = 'CHARGING_PAUSE'
+
+
+class PowerInfo(Enum):
+    AC_022kW_032A = 'AC_022kW_032A'
+    AC_044kW_064A = 'AC_044kW_064A'
+    DC_050kW = 'DC_050kW'
+    OTHER = 'OTHER'
+
+
+class LocationStatus(Enum):
+    OK = 'OK'
+    ATTENTION = 'ATTENTION'
+    WARNING = 'WARNING'
+    CRITICAL = 'CRITICAL'
+
+
+class PowerType(Enum):
+    AC = 'AC'
+    DC = 'DC'
+
+
+class AccessibilityType(Enum):
+    RESTRICTED = 'RESTRICTED'
+    PAYINGPUBLIC = 'PAYINGPUBLIC'
+    FREEPUBLIC = 'FREEPUBLIC'
+
+
+@validataclass
+class CircuitInput:
+    _id: int = IntegerValidator()
+    charging: bool = BooleanValidator()
+    ready: bool = BooleanValidator()
+    powerInfo: PowerInfo = EnumValidator(PowerInfo)
+    plug: Plug = EnumValidator(Plug)
+    evseId: str = StringValidator()
+    status: CircuitStatus = EnumValidator(CircuitStatus)
+    isReady: bool = BooleanValidator()
+    isCharging: bool = BooleanValidator()
+    power_type: PowerType = EnumValidator(PowerType)
+    max_electric_power: int = IntegerValidator()
+
+
+@validataclass
+class RegularHours:
+    weekdayFrom: int = IntegerValidator()
+    weekdayTo: int = IntegerValidator()
+    period_begin: time = TimeValidator(TimeFormat.NO_SECONDS)
+    period_end: time = TimeValidator(TimeFormat.NO_SECONDS)
+
+
+@validataclass
+class Hours:
+    twentyfourseven: bool = BooleanValidator()
+    regular_hours: OptionalUnsetNone[List[RegularHours]] = NoneableToUnsetValue(
+        ListValidator(DataclassValidator(RegularHours))
+    ), DefaultUnset()
+
+
+@validataclass
+class AddressInput:
+    street: str = StringValidator()
+    city: str = StringValidator()
+    zipCode: str = StringValidator()
+
+
+@validataclass
+class LocationInput:
+    name: str = StringValidator()
+    serviceTag: str = StringValidator()
+    circuits: List[CircuitInput] = ListValidator(DataclassValidator(CircuitInput))
+    description: OptionalUnsetNone[str] = Noneable(StringValidator(multiline=True)), Default(None)
+    address: DataclassValidator[AddressInput] = DataclassValidator(AddressInput)
+    shortcode: str = StringValidator()
+    lat: float = FloatValidator()
+    lon: float = FloatValidator()
+    status: LocationStatus = EnumValidator(LocationStatus)
+    published: bool = BooleanValidator()
+    accessibilityType: AccessibilityType = EnumValidator(AccessibilityType)
+    hours: DataclassValidator[Hours] = DataclassValidator(Hours)
+    operatorName: str = StringValidator()
+
+
+@validataclass
+class OperatorInput:
+    placesCount: int = IntegerValidator()
+    operatorId: str = IntegerValidator()
+    operatorName: str = StringValidator()
+    amountStations: int = IntegerValidator()
+    amountIdentifications: int = IntegerValidator()
+    amountUsers: int = IntegerValidator()
+    # just check if it's a dict, validating single locations will be done on dataset level in order to catch exceptions on dataset level
+    operatorPlaces: List[dict] = ListValidator(UnvalidatedDictValidator())
+
+
+@validataclass
+class ChargeitInput:
+    operator: DataclassValidator[OperatorInput] = DataclassValidator(OperatorInput)

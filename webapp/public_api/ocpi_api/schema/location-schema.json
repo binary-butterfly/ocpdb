@@ -1,0 +1,84 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "properties": {
+    "address": {
+      "description": "",
+      "maxLength": 255,
+      "type": "string"
+    },
+    "city": {
+      "description": "",
+      "maxLength": 255,
+      "type": "string"
+    },
+    "country": {
+      "description": "",
+      "maxLength": 2,
+      "type": "string"
+    },
+    "directions": {
+      "description": "",
+      "type": "string"
+    },
+    "last_updated": {
+      "description": "",
+      "format": "date-time",
+      "type": "string"
+    },
+    "coordinates": {
+      "$ref": "#/components/schemas/GeoLocation"
+    },
+    "name": {
+      "description": "",
+      "maxLength": 255,
+      "type": "string"
+    },
+    "parking_type": {
+      "description": "",
+      "enum": [
+        "ALONG_MOTORWAY",
+        "PARKING_GARAGE",
+        "PARKING_LOT",
+        "ON_DRIVEWAY",
+        "ON_STREET",
+        "UNDERGROUND_GARAGE"
+      ],
+      "type": "string"
+    },
+    "postal_code": {
+      "description": "",
+      "maxLength": 255,
+      "type": "string"
+    },
+    "state": {
+      "description": "",
+      "maxLength": 255,
+      "type": "string"
+    },
+    "terms_and_conditions": {
+      "description": "",
+      "maxLength": 255,
+      "type": "string"
+    },
+    "time_zone": {
+      "description": "",
+      "maxLength": 32,
+      "type": "string"
+    },
+    "uid": {
+      "description": "",
+      "maxLength": 255,
+      "type": "string"
+    },
+    "opening_times": {
+      "$ref": "#/components/schemas/Hours"
+    },
+    "evses": {
+      "description": "",
+      "type": "array",
+      "items": {
+        "$ref": "#/components/schemas/Evse"
+      }
+    }
+  }
+}

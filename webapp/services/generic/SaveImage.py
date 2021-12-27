@@ -23,19 +23,20 @@ import requests
 from datetime import datetime
 from typing import List, Optional
 from dataclasses import dataclass, asdict
-from ...models import Image, Chargepoint
-from ...extensions import logger, db
-from ...enums import ImageCategory
-from ...common.helpers import get_now_localized
+from validataclass.helpers import OptionalUnsetNone, UnsetValue
+from webapp.models import Image, Chargepoint
+from webapp.extensions import logger, db
+from webapp.enums import ImageCategory
+from webapp.common.helpers import get_now_localized
 
 
 @dataclass
 class ImageUpdate:
-    external_url: Optional[str] = None
-    type: Optional[str] = None
-    category: Optional[ImageCategory] = None
-    width: Optional[int] = None
-    height: Optional[int] = None
+    external_url: OptionalUnsetNone[str] = UnsetValue
+    type: OptionalUnsetNone[str] = UnsetValue
+    category: OptionalUnsetNone[ImageCategory] = UnsetValue
+    width: OptionalUnsetNone[int] = UnsetValue
+    height: OptionalUnsetNone[int] = UnsetValue
 
 
 def upsert_images(
@@ -63,16 +64,18 @@ def upsert_image(
     image = old_image if old_image else Image.query.filter_by(external_url=image_update.external_url).first()
     if image:
         update_required = False
-        for field in asdict(image_update):
-            if getattr(image, field) != getattr(image_update, field):
+        for field, value in asdict(image_update).items():
+            if value is not UnsetValue and getattr(image, field) != value:
                 update_required = True
                 break
         if not update_required:
             return image
     else:
         image = Image()
-    for field in asdict(image_update):
-        setattr(image, field, getattr(image_update, field))
+    for field, value in asdict(image_update).items():
+        if value is UnsetValue:
+            continue
+        setattr(image, field, value)
     if commit:
         db.session.add(image)
         db.session.commit()

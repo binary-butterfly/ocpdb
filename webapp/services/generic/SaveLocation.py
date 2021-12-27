@@ -22,27 +22,31 @@ from decimal import Decimal
 from datetime import datetime
 from typing import Optional, List
 from dataclasses import dataclass, asdict
-from ...models import Location
-from ...extensions import logger, db
+from validataclass.helpers import OptionalUnsetNone, UnsetValue
+from webapp.models import Location
+from webapp.extensions import logger, db
 from .SaveOpeningTimes import ExceptionalPeriod, ExceptionalPeriodUpdate, RegularHoursUpdate, get_opening_time_update, \
     save_opening_times, RegularHours
+from .SaveChargepoint import ChargepointUpdate
 
 
 @dataclass
 class LocationUpdate:
-    uid: Optional[str] = None
-    name: Optional[str] = None
-    address: Optional[str] = None
-    postal_code: Optional[str] = None
-    city: Optional[str] = None
-    country: Optional[str] = None
-    lat: Optional[Decimal] = None
-    lon: Optional[Decimal] = None
-    last_updated: Optional[datetime] = None
-    exceptional_openings: Optional[List[ExceptionalPeriodUpdate]] = None
-    exceptional_closings: Optional[List[ExceptionalPeriodUpdate]] = None
-    regular_hours: Optional[List[RegularHoursUpdate]] = None
-    twentyfourseven: Optional[bool] = None
+    source: str  # TODO: this should not be part of an update
+    uid: str  # TODO: this should not be part of an update
+    name: OptionalUnsetNone[str] = UnsetValue
+    address: OptionalUnsetNone[str] = UnsetValue
+    postal_code: OptionalUnsetNone[str] = UnsetValue
+    city: OptionalUnsetNone[str] = UnsetValue
+    country: OptionalUnsetNone[str] = UnsetValue
+    lat: OptionalUnsetNone[Decimal] = UnsetValue
+    lon: OptionalUnsetNone[Decimal] = UnsetValue
+    last_updated: OptionalUnsetNone[datetime] = UnsetValue
+    exceptional_openings: OptionalUnsetNone[List[ExceptionalPeriodUpdate]] = UnsetValue
+    exceptional_closings: OptionalUnsetNone[List[ExceptionalPeriodUpdate]] = UnsetValue
+    regular_hours: OptionalUnsetNone[List[RegularHoursUpdate]] = UnsetValue
+    twentyfourseven: OptionalUnsetNone[bool] = UnsetValue
+    chargepoints: OptionalUnsetNone[List[ChargepointUpdate]] = UnsetValue
 
 
 def upsert_location(
@@ -51,13 +55,18 @@ def upsert_location(
         old_regular_hours: Optional[List[RegularHours]] = None,
         old_exceptionals: Optional[List[ExceptionalPeriod]] = None,
         commit: bool = True) -> Location:
-    location = old_location if old_location else Location.query.filter_by(uid=location_update.uid).first()
+    location = old_location if old_location else Location.query\
+        .filter_by(uid=location_update.uid)\
+        .filter_by(source=location_update.source)\
+        .first()
     opening_time_update = get_opening_time_update(location, location_update, old_regular_hours, old_exceptionals)
     update_required = opening_time_update.update_required
     if location:
-        for field in asdict(location_update):
-            if getattr(location, field) != getattr(location_update, field):
-                if field in ['exceptional_openings', 'exceptional_closings', 'regular_hours']:
+        for field, value in asdict(location_update).items():
+            if getattr(location, field) != value:
+                if field in ['exceptional_openings', 'exceptional_closings', 'regular_hours', 'chargepoints']:
+                    continue
+                if value is UnsetValue:
                     continue
                 update_required = True
                 break
@@ -68,10 +77,12 @@ def upsert_location(
         location = Location()
     if not update_required:
         return location
-    for field in asdict(location_update):
-        if field in ['exceptional_openings', 'exceptional_closings', 'regular_hours']:
+    for field, value in asdict(location_update).items():
+        if field in ['exceptional_openings', 'exceptional_closings', 'regular_hours', 'chargepoints']:
             continue
-        setattr(location, field, getattr(location_update, field))
+        if value is UnsetValue:
+            continue
+        setattr(location, field, value)
     if commit:
         db.session.add(location)
         db.session.commit()

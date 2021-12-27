@@ -97,9 +97,9 @@ def get_connector_update(data_connector: etree, **kwargs) -> Union[ConnectorUpda
 
     validator = ConnectorValidator(connector)
     if not validator.validate():
-        logger.error('ochp.chargepoint', 'invalid connector found: %s' % connector)
+        logger.error('ochp.chargepoint', 'invalid connector found: %s - %s' % (connector, validator.errors))
         return
-    chargepoint_update = ConnectorUpdate()
+    chargepoint_update = ConnectorUpdate(source='ochp', uid=validator.uid.out)
     validator.populate_obj(chargepoint_update)
     return chargepoint_update
 

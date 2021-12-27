@@ -1,4 +1,4 @@
-config.py
+/config.yaml
 *.py[cod]
 .idea
 
@@ -10,3 +10,4 @@ config.py
 /static/images/dynamic/*.jpeg
 /static/images/dynamic/*.svg
 /reports
+/temp

@@ -19,6 +19,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 from enum import Enum
+from sqlalchemy import Index
+from sqlalchemy_utc import UtcDateTime
 from datetime import datetime, timezone
 from typing import List, Union, Optional
 from .base import BaseModel
@@ -35,6 +37,7 @@ class ChargepointStatus(Enum):
     REMOVED = 'REMOVED'
     RESERVED = 'RESERVED'
     UNKNOWN = 'UNKNOWN'
+    STATIC = 'STATIC'  # will never have any live data
 
 
 class ParkingRestriction(Enum):
@@ -76,14 +79,17 @@ chargepoint_image = db.Table(
 
 class Chargepoint(db.Model, BaseModel):
     __tablename__ = "chargepoint"
+    __table_args__ = (
+        Index('uid_source', 'uid', 'source'),
+    )
 
+    source = db.Column(db.String(64), index=True)
     connectors = db.relationship('Connector', backref='chargepoint', lazy='dynamic')
     images = db.relationship("Image", secondary=chargepoint_image, backref=db.backref('chargepoint', lazy='dynamic'))
     related_resource = db.relationship('RelatedResource', backref='chargepoint', lazy='dynamic')
     location_id = db.Column(db.BigInteger, db.ForeignKey('location.id'))
     external_id = db.Column(db.BigInteger)
     uid = db.Column(db.String(64))
-    giroe_id = db.Column(db.BigInteger)
 
     evse_id = db.Column(db.String(64))
 
@@ -101,7 +107,7 @@ class Chargepoint(db.Model, BaseModel):
     parking_floor_level = db.Column(db.String(255))         # OCHP: parkingSpot.floorlevel
     parking_spot_number = db.Column(db.String(255))         # OCHP: parkingSpot.parkingSpotNumber
 
-    _last_updated = db.Column('last_updated', db.DateTime(timezone=True))
+    _last_updated = db.Column('last_updated', UtcDateTime(timezone=True))
     max_reservation = db.Column(db.Float)                   # OCHP maxReservation
     _capabilities = db.Column('capabilities', db.Integer)   #                                           OCPI: capability
     _parking_restrictions = db.Column('parking_restrictions', db.Integer)   # OCHP: RestrictionType     OCPI: parking_restrictions

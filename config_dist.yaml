@@ -1,0 +1,14 @@
+PROJECT_URL: 'http://localhost:5000'
+SECRET_KEY: 'random-key'
+
+SQLALCHEMY_DATABASE_URI: 'mysql+pymysql://root:root@mysql/ocpdb'
+CELERY_BROKER_URL: 'amqp://rabbitmq'
+
+ADMINS: ['your-admin-email@binary-butterfly.de']
+MAILS_FROM: 'your-app@binary-butterfly.de'
+MAIL_USERNAME: 'your-login@binary-butterfly.de'
+MAIL_PASSWORD: 'your-password'
+
+REMOTE_SERVERS:
+  STADTNAVI:
+    url: 'https://api.dev.stadtnavi.eu/herrenberg/charging-stations/charging-stations-ocpi.json'

@@ -111,7 +111,8 @@ capability_mapping = {
     'RfidMifareDes': Capability.RFID_READER,
     'Iec15118': Capability.IEC15118,
     'OchpDirectAuth': Capability.REMOTE_START_STOP_CAPABLE,
-    'OperatorAuth': Capability.DIRECT_REMOTE
+    'OperatorAuth': Capability.DIRECT_REMOTE,
+    'RfidCalypso': Capability.RFID_READER
 }
 
 
@@ -127,7 +128,7 @@ def get_chargepoint_update(data_chargepoint: etree) -> Union[ChargepointUpdate, 
         chargepoint['status'] = get_field(data_chargepoint, 'status/ns:ChargePointStatusType', nsmap)
     chargepoint['capabilities'] = get_field(data_chargepoint, 'authMethods/ns:AuthMethodType', nsmap, list=True)
 
-    for data_parking in get_field(data_chargepoint, 'parkingSpot', nsmap, list=True, text=False):
+    for data_parking in get_field(data_chargepoint, 'parkingSpot', nsmap, list=True, text=False, default=[]):
         chargepoint['parking_uid'] = get_field(data_parking, 'parkingId', nsmap)
         if get_field(data_parking, 'parkingSpotNumber', nsmap):
             chargepoint['parking_spot_number'] = get_field(data_parking, 'parkingSpotNumber', nsmap)
@@ -145,7 +146,7 @@ def get_chargepoint_update(data_chargepoint: etree) -> Union[ChargepointUpdate, 
     if not validator.validate():
         logger.error('ochp.chargepoint', 'invalid chargepoint found: %s - %s' % (chargepoint, validator.errors))
         return
-    chargepoint_update = ChargepointUpdate()
+    chargepoint_update = ChargepointUpdate(source='ochp', uid=validator.evse_id.out)
     validator.populate_obj(chargepoint_update)
     return chargepoint_update
 

@@ -19,11 +19,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 from enum import Enum
-from sqlalchemy import event, func
+from sqlalchemy import event, func, Index
+from sqlalchemy_utc import UtcDateTime
 from datetime import datetime, timezone
 from typing import Union, Optional, List
 from .base import BaseModel, Point
-from ..extensions import db
+from webapp.extensions import db
 
 
 class ParkingType(Enum):
@@ -44,10 +45,12 @@ location_image = db.Table(
 
 class Location(db.Model, BaseModel):
     __tablename__ = "location"
+    __table_args__ = (
+        Index('uid_source', 'uid', 'source'),
+    )
 
     uid = db.Column(db.String(255))            # OCHP: locationId                      OCPI: id
-
-    giroe_id = db.Column(db.BigInteger)
+    source = db.Column(db.String(64), index=True)
 
     exceptional_openings = db.relationship(
         'ExceptionalPeriod',
@@ -81,7 +84,7 @@ class Location(db.Model, BaseModel):
     parking_type = db.Column(db.Enum(ParkingType, name='ParkingType'))
     time_zone = db.Column(db.String(32))                    # OCHP: timeZone                        OCPI: time_zone
 
-    _last_updated = db.Column('last_updated', db.DateTime(timezone=True))    # OCHP: timestamp
+    _last_updated = db.Column('last_updated', UtcDateTime(timezone=True))    # OCHP: timestamp
 
     terms_and_conditions = db.Column(db.String(255))        #                                       OCPI: terms_and_conditions
     twentyfourseven = db.Column(db.Boolean)                 # OCHP: openingTimes.twentyfourseven    OCPI: opening_times.twentyfourseven

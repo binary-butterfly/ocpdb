@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="utf-8">
+    <title>Open ChargePoint Database</title>
+    <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css" />
+    <script src='https://unpkg.com/maplibre-gl@1.15.2/dist/maplibre-gl.js'></script>
+    <link href='https://unpkg.com/maplibre-gl@1.15.2/dist/maplibre-gl.css' rel='stylesheet' />
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Open Sans', sans-serif;
+        }
+
+        a, a:visited, a:hover, a:active {
+            color: #000;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        #overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 89px;
+            padding: 10px 50px 10px 20px;
+            background-color: hsla(0, 0%, 100%, .9);
+            z-index: 2;
+        }
+
+        #overlay h1 {
+            margin: 0;
+            font-size: 1.8rem;
+        }
+
+        #overlay h1 a:hover {
+            text-decoration: none;
+        }
+
+        #overlay ul {
+            padding: 0;
+            list-style-type: none;
+        }
+
+        #overlay li {
+            display: inline-block;
+            padding-right: 20px;
+        }
+
+        #overlay li:last-child {
+            padding-right: 0;
+        }
+
+        #map {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+<div id="overlay">
+    <h1><a href="/">Open ChargePoint Database</a></h1>
+    <ul>
+        <li><a href="#">Projekt</a></li>
+        <li><a href="#">Daten</a></li>
+        <li><a href="#">Datenschutz</a></li>
+        <li><a href="#">Impressum</a></li>
+    </ul>
+</div>
+<div id="map"></div>
+<script>
+    var map = new maplibregl.Map({
+        container: 'map',
+        style: 'https://tiles.binary-butterfly.de/osm-bright-gl-style/style.json',
+        zoom: 6,
+        center: [10.4541194, 51.1642292]
+    });
+    map.on('load', function () {
+        map.addSource('chargepoints-static', {
+            'type': 'vector',
+            'tiles': [
+                window.location.href.split('/static')[0] + '/tiles/{z}/{x}/{y}.mvt?static=1'
+            ],
+            'minzoom': 10,
+            'maxzoom': 22
+        });
+        map.addSource('chargepoints', {
+            'type': 'vector',
+            'tiles': [
+                window.location.href.split('/static')[0] + '/tiles/{z}/{x}/{y}.mvt'
+            ],
+            'minzoom': 8,
+            'maxzoom': 22
+        });
+        map.addLayer(
+            {
+                id: 'chargepoints-static',
+                type: 'circle',
+                source: 'chargepoints-static',
+                'source-layer': 'chargepoints',
+                paint: {
+                    'circle-radius': 7,
+                    'circle-color': [
+                        "case",
+                        ["==", ["number", ["get", "c"]], ["number", ["get", "cs"]]], "#b6b6b6",
+                        ["==", ["number", ["get", "ca"]], 0], "#bb0000",
+                        ["!=", ["number", ["get", "c"]], ["number", ["get", "ca"]]], "#adc609",
+                        "#13bb00"
+                    ]
+                }
+            }
+        );
+        map.addLayer(
+            {
+                id: 'chargepoints',
+                type: 'circle',
+                source: 'chargepoints',
+                'source-layer': 'chargepoints',
+                paint: {
+                    'circle-radius': 7,
+                    'circle-color': [
+                        "case",
+                        ["==", ["number", ["get", "c"]], ["number", ["get", "cs"]]], "#b6b6b6",
+                        ["==", ["number", ["get", "ca"]], 0], "#bb0000",
+                        ["!=", ["number", ["get", "c"]], ["number", ["get", "ca"]]], "#adc609",
+                        "#13bb00"
+                    ]
+                }
+            }
+        );
+
+        map.on('mouseenter', 'chargepoints', () => {
+            map.getCanvasContainer().style.cursor = 'pointer';
+        });
+
+        map.on('mouseleave', 'chargepoints', () => {
+            map.getCanvasContainer().style.cursor = '';
+        });
+
+        map.on('click', 'chargepoints', async (e) => {
+            let result = await fetch(window.location.href.split('/static')[0] + '/api/ocpi/2.2/location/' + e.features[0].properties.id)
+            alert(JSON.stringify(await result.json(), null, 2));
+        });
+
+        map.on('mouseenter', 'chargepoints-static', () => {
+            map.getCanvasContainer().style.cursor = 'pointer';
+        });
+
+        map.on('mouseleave', 'chargepoints-static', () => {
+            map.getCanvasContainer().style.cursor = '';
+        });
+
+        map.on('click', 'chargepoints-static', async (e) => {
+            let result = await fetch(window.location.href.split('/static')[0] + '/api/ocpi/2.2/location/' + e.features[0].properties.id)
+            alert(JSON.stringify(await result.json(), null, 2));
+        });
+    });
+
+    map.addControl(new maplibregl.NavigationControl());
+    map.on('click', 'chargepoints', (e) => {
+        console.log(e.features);
+    });
+</script>
+</body>
+</html>

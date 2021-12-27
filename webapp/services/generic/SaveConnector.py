@@ -18,20 +18,22 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from typing import Optional, List
+from typing import Optional
 from dataclasses import dataclass, asdict
-from ...models import Connector, Chargepoint
-from ...extensions import logger, db
-from ...enums import ConnectorType, ConnectorFormat
+from validataclass.helpers import OptionalUnsetNone, UnsetValue
+from webapp.models import Connector, Chargepoint
+from webapp.extensions import logger, db
+from webapp.enums import ConnectorType, ConnectorFormat
 
 
 @dataclass
 class ConnectorUpdate:
-    uid: Optional[str] = None
-    standard: Optional[ConnectorType] = None
-    format: Optional[ConnectorFormat] = None
-    max_electric_power: Optional[int] = None
-    max_voltage: Optional[int] = None
+    source: str  # TODO: this should not be part of an update
+    uid: str  # TODO: this should not be part of an update
+    standard: OptionalUnsetNone[ConnectorType] = UnsetValue
+    format: OptionalUnsetNone[ConnectorFormat] = UnsetValue
+    max_electric_power: OptionalUnsetNone[int] = UnsetValue
+    max_voltage: OptionalUnsetNone[int] = UnsetValue
 
 
 def upsert_connector(
@@ -42,13 +44,14 @@ def upsert_connector(
     connector = old_connector if old_connector else Connector.query\
         .filter_by(chargepoint_id=chargepoint.id)\
         .filter_by(uid=connector_update.uid)\
+        .filter_by(source=connector_update.source)\
         .first()
     if connector:
         update_required = False
-        for field in asdict(connector_update):
+        for field, value in asdict(connector_update).items():
             if field in ['max_voltage']:
                 continue
-            if getattr(connector, field) != getattr(connector_update, field):
+            if value is not UnsetValue and getattr(connector, field) != value:
                 update_required = True
                 break
         if not update_required:
@@ -56,8 +59,10 @@ def upsert_connector(
     else:
         connector = Connector()
         connector.chargepoint_id = chargepoint.id
-    for field in asdict(connector_update):
-        setattr(connector, field, getattr(connector_update, field))
+    for field, value in asdict(connector_update).items():
+        if value is UnsetValue:
+            continue
+        setattr(connector, field, value)
     connector.guess_power_type()
     connector.guess_voltage_amperage()
     if commit:

@@ -20,103 +20,53 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
 import os
-import traceback
-from flask import Flask, jsonify
+from yaml import safe_load
+from flask import Flask
 
-from webapp.config import Config
-from .common.filter import register_global_filters
-from .extensions import db, celery, redis, migrate
+from webapp.extensions import db, celery, migrate, logger
+from webapp.common.misc import DefaultJSONEncoder
+from webapp.common.constants import BaseConfig
+from webapp.common.config_helper import check_and_extend_config
+from webapp.cli import register_cli_to_app
 
-# Blueprints
-from .ocpi import ocpi_controller
-from .ochp import ochp_controller
-from .api_documentation.Controller import api_documentation_blueprint
-from .tiles import tiles_controller
+from webapp.public_api import PublicApi
+from webapp.openapi.openapi import OpenApiDocumentation
+from webapp.frontend import FrontendBlueprint
+from webapp.server_api import ServerApi
+
 
 __all__ = ['launch']
 
-BLUEPRINTS = [
-    ocpi_controller,
-    ochp_controller,
-    api_documentation_blueprint,
-    tiles_controller
-]
-
 
 def launch():
-    app = Flask(
-        Config.PROJECT_NAME,
-        instance_path=Config.INSTANCE_FOLDER_PATH,
-        instance_relative_config=True
-    )
+    app = Flask(BaseConfig.PROJECT_NAME)
     configure_app(app)
-    configure_hook(app)
-    configure_blueprints(app)
     configure_extensions(app)
-    configure_filters(app)
-    configure_error_handlers(app)
+    configure_blueprints(app)
     return app
 
 
 def configure_app(app):
-    app.config.from_object(Config)
+    app.config.from_object(BaseConfig)
+    config_path = os.path.join(app.config['PROJECT_ROOT'], os.pardir, os.getenv('CONFIG_FILE', 'config.yaml'))
+    app.config.from_file(config_path, safe_load)
     app.config['MODE'] = os.getenv('APPLICATION_MODE', 'DEVELOPMENT')
-    print("Running in %s mode" % app.config['MODE'])
+    check_and_extend_config(app)
+    app.json_encoder = DefaultJSONEncoder
 
 
 def configure_extensions(app):
-    celery.init_app(app)
-    redis.init_app(app)
+    logger.init_app(app)
     db.init_app(app)
     migrate.init_app(app, db)
+    celery.init_app(app)
+    celery.conf.update({'task_default_queue': app.config.get('CELERY_TASK_QUEUE', 'celery')})
 
 
 def configure_blueprints(app):
-    for blueprint in BLUEPRINTS:
-        app.register_blueprint(blueprint)
-
-
-def configure_filters(app):
-    register_global_filters(app)
-
-
-def configure_hook(app):
-    @app.before_request
-    def before_request():
-        pass
-
-
-def configure_error_handlers(app):
-    @app.errorhandler(403)
-    def error_403(error):
-        return jsonify({
-            'status': -1,
-            'error': 403
-        }), 403
-
-    @app.errorhandler(404)
-    def error_404(error):
-        return jsonify({
-            'status': -1,
-            'error': 404
-        }), 404
-
-    @app.errorhandler(500)
-    def error_500(error):
-        from .extensions import logger
-        logger.critical('app', str(error), traceback.format_exc())
-        return jsonify({
-            'status': -1,
-            'error': 500
-        }), 500
-
-    if not app.config['DEBUG']:
-        @app.errorhandler(Exception)
-        def internal_server_error(error):
-            from .extensions import logger
-            logger.critical('app', str(error), traceback.format_exc())
-            return jsonify({
-                'status': -1,
-                'error': 500
-            }), 500
+    app.register_blueprint(PublicApi(app))
+    app.register_blueprint(OpenApiDocumentation(app))
+    app.register_blueprint(FrontendBlueprint(app))
+    app.register_blueprint(ServerApi(app))
+    register_cli_to_app(app)
 

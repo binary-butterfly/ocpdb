@@ -34,7 +34,7 @@ def get_connector_update(data_connector: dict) -> Union[ConnectorUpdate, None]:
     if not validator.validate():
         logger.error('ocpi.connector', 'invalid connector found: %s - %s' % (validator.errors, data_connector))
         return
-    chargepoint_update = ConnectorUpdate()
+    chargepoint_update = ConnectorUpdate(source='stadtnavi', uid=validator.uid.out)
     validator.populate_obj(chargepoint_update)
     return chargepoint_update
 

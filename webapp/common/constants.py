@@ -32,6 +32,7 @@ class BaseConfig:
 
     DEBUG = False
     TESTING = False
+    LOGGING_PREFIX = ''
 
     PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir))
     LOG_DIR = os.path.abspath(os.path.join(PROJECT_ROOT, os.pardir, 'logs'))
@@ -43,11 +44,20 @@ class BaseConfig:
 
     CELERY_BROKER_URL = 'amqp://rabbitmq'
 
+    ENFORCE_CONFIG_VALUES = [
+        'PROJECT_URL',
+        'SECRET_KEY',
+        'SQLALCHEMY_DATABASE_URI',
+        'CELERY_BROKER_URL'
+    ]
+
+    OPENAPI_TITLE = 'Open ChargePoint DataBase: Documentation'
+    OPENAPI_DESCRIPTION = 'This service tries to collect and publish as many live data as possible.'
     OPENAPI_CONTACT_MAIL = 'ernesto.ruge@binary-butterfly.de'
     OPENAPI_TOS = 'https://binary-butterfly.de/ocpdb'
     OPENAPI_SERVERS = [
         {
-            'url': 'https://ocpdb.de',
+            'url': 'https://api.ocpdb.de',
             'description': 'production'
         }
     ]

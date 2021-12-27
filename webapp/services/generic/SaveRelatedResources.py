@@ -20,9 +20,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from typing import Optional, List, TYPE_CHECKING
 from dataclasses import dataclass, asdict
-from ...enums import RelatedResourceType
-from ...models import RelatedResource, Chargepoint
-from ...extensions import db
+from validataclass.helpers import OptionalUnsetNone, UnsetValue
+from webapp.enums import RelatedResourceType
+from webapp.models import RelatedResource, Chargepoint
+from webapp.extensions import db
 if TYPE_CHECKING:
     from .SaveChargepoint import ChargepointUpdate
 
@@ -35,10 +36,10 @@ class RelatedResourceUpdate:
 
 @dataclass
 class RelatedResourceUpdates:
-    update_required: Optional[bool] = None
-    related_resources: Optional[List[RelatedResource]] = None
-    new_related_resources: Optional[List[RelatedResource]] = None
-    deleted_related_resources: Optional[List[int]] = None
+    update_required: OptionalUnsetNone[bool] = UnsetValue
+    related_resources: OptionalUnsetNone[List[RelatedResource]] = UnsetValue
+    new_related_resources: OptionalUnsetNone[List[RelatedResource]] = UnsetValue
+    deleted_related_resources: OptionalUnsetNone[List[int]] = UnsetValue
 
 
 related_resource_mapping = {
@@ -56,6 +57,13 @@ def get_related_resource_updates(
         chargepoint: Chargepoint,
         chargepoint_update: 'ChargepointUpdate',
         related_resources: Optional[List[RelatedResource]] = None) -> RelatedResourceUpdates:
+    if chargepoint_update.related_resources is UnsetValue:
+        return RelatedResourceUpdates(
+            update_required=False,
+            related_resources=[],
+            new_related_resources=[],
+            deleted_related_resources=[]
+        )
     if related_resources is None:
         related_resources = RelatedResource.query.filter_by(chargepoint_id=chargepoint.id).all() if chargepoint else []
     old_ids = [related_resource.id for related_resource in related_resources]
@@ -70,8 +78,10 @@ def get_related_resource_updates(
             old_ids.remove(old_id)
         else:
             related_resource = RelatedResource()
-            for field in asdict(related_resource_update):
-                setattr(related_resource, field, getattr(related_resource_update, field))
+            for field, value in asdict(related_resource_update).items():
+                if value is UnsetValue:
+                    continue
+                setattr(related_resource, field, value)
             related_resource_updates.new_related_resources.append(related_resource)
     related_resource_updates.update_required = len(related_resource_updates.new_related_resources) > 0 or \
         len(related_resource_updates.deleted_related_resources) > 0

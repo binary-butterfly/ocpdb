@@ -21,11 +21,11 @@ all: docker-up
 # Configuration
 # -------------
 
-config: webapp/config.py
+config: config.yaml
 
 # Create config file from config_dist_dev.py if it does not exist yet
-webapp/config.py:
-	cp webapp/config_dist_dev.py webapp/config.py
+config.yaml:
+	cp config_dist_dev.yaml config.yaml
 
 
 # Container management
@@ -75,7 +75,7 @@ migrate: config
 # Cleanup
 # -------
 clean: docker-down
-	rm -f webapp/config.py
+	rm -f config.yaml
 
 
 # Test suites

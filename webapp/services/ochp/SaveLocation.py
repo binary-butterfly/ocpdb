@@ -116,7 +116,7 @@ def get_location_update(data_location: etree) -> Union[LocationUpdate, None]:
     if not validator.validate():
         logger.error('ochp.chargepoint', 'invalid location found: %s - %s' % (validator.errors, location))
         return
-    location_update = LocationUpdate()
+    location_update = LocationUpdate(source='ochp', uid=validator.uid.out)
     validator.populate_obj(location_update)
     return location_update
 

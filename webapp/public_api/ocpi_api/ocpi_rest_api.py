@@ -1,0 +1,70 @@
+# encoding: utf-8
+
+"""
+Open ChargePoint DataBase OCPDB
+Copyright (C) 2021 binary butterfly GmbH
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+"""
+
+from flask import Flask, jsonify
+from webapp.openapi.openapi_decorator import document, Response, ResponseData, ErrorResponse, Schema
+from webapp.public_api.base_blueprint import PublicApiBaseBlueprint
+from webapp.public_api.base_method_view import PublicApiBaseMethodView
+from .ocpi_handler import OcpiHandler
+from webapp.dependencies import dependencies
+
+
+class OcpiBlueprint(PublicApiBaseBlueprint):
+    documented = True
+    ocpi_handler: OcpiHandler
+
+    def __init__(self, app: Flask):
+        self.ocpi_handler = OcpiHandler(
+            location_respository=dependencies.get_location_repository()
+        )
+        super().__init__('locations', __name__, url_prefix='/api/ocpi/2.2/location')
+
+    def load_routes(self):
+        self.add_url_rule(
+            '/<int:location_id>',
+            view_func=LocationsMethodView.as_view('location', ocpi_handler=self.ocpi_handler)
+        )
+
+
+class OcpiBaseMethodView(PublicApiBaseMethodView):
+    ocpi_handler: OcpiHandler
+
+    def __init__(self, *args, ocpi_handler: OcpiHandler, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.ocpi_handler = ocpi_handler
+
+
+class LocationsMethodView(OcpiBaseMethodView):
+
+    @document(
+        description='Get location with all details',
+        response=[Response([ResponseData('location-reply', 'location-reply-example')]), ErrorResponse()],
+        components=[
+            Schema('Location', 'location-schema', 'location-example'),
+            Schema('Hours', 'hours-schema', 'hours-example'),
+            Schema('RegularHours', 'regular-hours-schema', 'regular-hours-example'),
+            Schema('ExceptionalPeriod', 'exceptional-period-schema', 'exceptional-period-example'),
+            Schema('Evse', 'evse-schema', 'evse-example'),
+            Schema('Connector', 'connector-schema', 'connector-example')
+        ]
+    )
+    def get(self, location_id: int):
+        return jsonify(self.ocpi_handler.get_location(self.id_validator.validate(location_id)))
+
