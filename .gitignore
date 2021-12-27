@@ -3,11 +3,13 @@
 .idea
 
 /venv
-/logs
+/logs/*
+!/logs/.gitkeep
 /keys
 /static/images/dynamic/*.png
 /static/images/dynamic/*.jpg
 /static/images/dynamic/*.jpeg
 /static/images/dynamic/*.svg
 /reports
-/temp
+/temp/*
+!/temp/.gitkeep
