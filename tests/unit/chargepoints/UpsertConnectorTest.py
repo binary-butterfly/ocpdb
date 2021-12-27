@@ -32,6 +32,7 @@ class UpsertConnectorTest(BaseTestCase):
 
     def test_xml_to_update(self):
         connector_update = ConnectorUpdate(
+            source='unittest',
             uid='1',
             standard=ConnectorType.IEC_62196_T2,
             format=ConnectorFormat.SOCKET,

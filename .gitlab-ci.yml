@@ -29,7 +29,7 @@ test-pytest:
         - reports/pytest_integration.xml
   before_script:
     - pip install -r requirements.txt
-    - cp webapp/config_dist_dev.py webapp/config.py
+    - cp config_dist_dev.yaml config.yaml
   script:
     - python -m pytest tests/unit --junitxml=reports/pytest_unit.xml
     - python -m pytest tests/integration --junitxml=reports/pytest_integration.xml

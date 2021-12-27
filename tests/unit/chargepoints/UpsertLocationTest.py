@@ -20,7 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from decimal import Decimal
 from dataclasses import asdict
-
+from validataclass.helpers import UnsetValue
 from tests.helper import monkey_patch
 from tests.helper import BaseTestCase
 
@@ -32,6 +32,7 @@ class UpsertLocationTest(BaseTestCase):
 
     def test_xml_to_update(self):
         location_update = LocationUpdate(
+            source='unittest',
             uid='UNITTEST',
             name='TEST-LOCATION',
             address='Test-Adresse',
@@ -43,12 +44,17 @@ class UpsertLocationTest(BaseTestCase):
             twentyfourseven=True,
             regular_hours=[],
             exceptional_openings=[],
-            exceptional_closings=[]
+            exceptional_closings=[],
+            chargepoints=[]
         )
         location_to_update = Location()
         location = upsert_location(location_update, location_to_update, [], [], commit=False)
         for field, value in asdict(location_update).items():
-            if value != []:
+            if value == []:
+                continue
+            if value is UnsetValue:
+                assert getattr(location, field) is None
+            else:
                 assert getattr(location, field) == value
 
 

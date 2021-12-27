@@ -28,7 +28,7 @@ from webapp.services.ochp.SaveChargepoint import save_chargepoints
 
 
 class SaveChargepointTest(BaseIntegrationTestCase):
-    run_reset_database = False
+    run_reset_database = True
 
     def test_xml_to_update(self):
         save_chargepoints(etree.fromstring(test_dataset), False)

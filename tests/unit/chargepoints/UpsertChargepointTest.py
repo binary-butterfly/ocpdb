@@ -19,6 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 from dataclasses import asdict
+from validataclass.helpers import UnsetValue
 
 from tests.helper import monkey_patch
 from tests.helper import BaseTestCase
@@ -32,18 +33,26 @@ class UpsertChargepointTest(BaseTestCase):
 
     def test_xml_to_update(self):
         chargepoint_update = ChargepointUpdate(
+            source='unittest',
+            uid='UNITTEST',
             evse_id='UNITTEST',
             phone='+49 1234567890',
             parking_uid='TESTING',
             parking_floor_level='12',
             parking_spot_number='1234',
             capabilities=[Capability.RFID_READER, Capability.PUBLIC],
-            parking_restrictions=[ParkingRestriction.EV_ONLY, ParkingRestriction.CUSTOMERS]
+            parking_restrictions=[ParkingRestriction.EV_ONLY, ParkingRestriction.CUSTOMERS],
+            related_resources=[],
+            connectors=[]
         )
         chargepoint_to_update = Chargepoint()
         chargepoint = upsert_chargepoint(chargepoint_update, Location(), chargepoint_to_update, [], commit=False)
         for field, value in asdict(chargepoint_update).items():
-            if value != []:
+            if value == []:
+                continue
+            if value is UnsetValue:
+                assert getattr(chargepoint, field) is None
+            else:
                 assert getattr(chargepoint, field) == value
 
 

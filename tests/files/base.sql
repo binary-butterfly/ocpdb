@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: mysql
--- Erstellungszeit: 06. Jun 2021 um 15:19
+-- Erstellungszeit: 27. Dez 2021 um 16:51
 -- Server-Version: 10.3.11-MariaDB-1:10.3.11+maria~bionic
 -- PHP-Version: 7.2.14
 
@@ -31,7 +31,7 @@ CREATE TABLE `alembic_version` (
 --
 
 INSERT INTO `alembic_version` (`version_num`) VALUES
-('6fcdaafd45ac');
+('61cd606bbc55');
 
 -- --------------------------------------------------------
 
@@ -61,9 +61,8 @@ CREATE TABLE `chargepoint` (
   `location_id` bigint(20) DEFAULT NULL,
   `external_id` bigint(20) DEFAULT NULL,
   `uid` varchar(64) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `giroe_id` bigint(20) DEFAULT NULL,
   `evse_id` varchar(64) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `status` enum('AVAILABLE','BLOCKED','CHARGING','INOPERATIVE','OUTOFORDER','PLANNED','REMOVED','RESERVED','UNKNOWN') COLLATE utf8_unicode_ci DEFAULT NULL,
+  `status` enum('AVAILABLE','BLOCKED','CHARGING','INOPERATIVE','OUTOFORDER','PLANNED','REMOVED','RESERVED','UNKNOWN','STATIC') CHARACTER SET utf8 DEFAULT NULL,
   `lat` decimal(9,7) DEFAULT NULL,
   `lon` decimal(10,7) DEFAULT NULL,
   `floor_level` varchar(16) COLLATE utf8_unicode_ci DEFAULT NULL,
@@ -77,7 +76,8 @@ CREATE TABLE `chargepoint` (
   `max_reservation` float DEFAULT NULL,
   `capabilities` int(11) DEFAULT NULL,
   `parking_restrictions` int(11) DEFAULT NULL,
-  `terms_and_conditions` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL
+  `terms_and_conditions` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `source` varchar(64) COLLATE utf8_unicode_ci DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- --------------------------------------------------------
@@ -103,7 +103,6 @@ CREATE TABLE `connector` (
   `modified` datetime NOT NULL,
   `chargepoint_id` bigint(20) DEFAULT NULL,
   `uid` varchar(64) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `giroe_id` bigint(20) DEFAULT NULL,
   `standard` enum('CHADEMO','DOMESTIC_A','DOMESTIC_B','DOMESTIC_C','DOMESTIC_D','DOMESTIC_E','DOMESTIC_F','DOMESTIC_G','DOMESTIC_H','DOMESTIC_I','DOMESTIC_J','DOMESTIC_K','DOMESTIC_L','IEC_60309_2_single_16','IEC_60309_2_three_16','IEC_60309_2_three_32','IEC_60309_2_three_64','IEC_62196_T1','IEC_62196_T1_COMBO','IEC_62196_T2','IEC_62196_T2_COMBO','IEC_62196_T3A','IEC_62196_T3C','PANTOGRAPH_BOTTOM_UP','PANTOGRAPH_TOP_DOWN','TESLA_R','TESLA_S') COLLATE utf8_unicode_ci DEFAULT NULL,
   `format` enum('SOCKET','CABLE') COLLATE utf8_unicode_ci DEFAULT NULL,
   `power_type` enum('AC_1_PHASE','AC_3_PHASE','DC') COLLATE utf8_unicode_ci DEFAULT NULL,
@@ -111,7 +110,8 @@ CREATE TABLE `connector` (
   `max_amperage` int(11) DEFAULT NULL,
   `max_electric_power` int(11) DEFAULT NULL,
   `last_updated` datetime DEFAULT NULL,
-  `terms_and_conditions` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL
+  `terms_and_conditions` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `source` varchar(64) COLLATE utf8_unicode_ci DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- --------------------------------------------------------
@@ -159,7 +159,6 @@ CREATE TABLE `location` (
   `created` datetime NOT NULL,
   `modified` datetime NOT NULL,
   `uid` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `giroe_id` bigint(20) DEFAULT NULL,
   `operator_id` bigint(20) DEFAULT NULL,
   `suboperator_id` bigint(20) DEFAULT NULL,
   `owner_id` bigint(20) DEFAULT NULL,
@@ -177,7 +176,8 @@ CREATE TABLE `location` (
   `last_updated` datetime DEFAULT NULL,
   `terms_and_conditions` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `twentyfourseven` tinyint(1) DEFAULT NULL,
-  `geometry` point NOT NULL
+  `geometry` point NOT NULL,
+  `source` varchar(64) COLLATE utf8_unicode_ci DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- --------------------------------------------------------
@@ -259,7 +259,9 @@ ALTER TABLE `business`
 --
 ALTER TABLE `chargepoint`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `location_id` (`location_id`);
+  ADD KEY `location_id` (`location_id`),
+  ADD KEY `ix_chargepoint_source` (`source`),
+  ADD KEY `uid_source` (`uid`,`source`);
 
 --
 -- Indizes für die Tabelle `chargepoint_image`
@@ -273,7 +275,9 @@ ALTER TABLE `chargepoint_image`
 --
 ALTER TABLE `connector`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `chargepoint_id` (`chargepoint_id`);
+  ADD KEY `chargepoint_id` (`chargepoint_id`),
+  ADD KEY `ix_connector_source` (`source`),
+  ADD KEY `uid_source` (`uid`,`source`);
 
 --
 -- Indizes für die Tabelle `exceptional_period`
@@ -296,7 +300,9 @@ ALTER TABLE `location`
   ADD KEY `operator_id` (`operator_id`),
   ADD KEY `owner_id` (`owner_id`),
   ADD KEY `suboperator_id` (`suboperator_id`),
-  ADD SPATIAL KEY `geometry_index` (`geometry`);
+  ADD SPATIAL KEY `geometry_index` (`geometry`),
+  ADD KEY `ix_location_source` (`source`),
+  ADD KEY `uid_source` (`uid`,`source`);
 
 --
 -- Indizes für die Tabelle `location_image`
