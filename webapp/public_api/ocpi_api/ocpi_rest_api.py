@@ -58,6 +58,7 @@ class LocationsMethodView(OcpiBaseMethodView):
         response=[Response([ResponseData('location-reply', 'location-reply-example')]), ErrorResponse()],
         components=[
             Schema('Location', 'location-schema', 'location-example'),
+            Schema('GeoLocation', 'geo-location-schema', 'geo-location-example'),
             Schema('Hours', 'hours-schema', 'hours-example'),
             Schema('RegularHours', 'regular-hours-schema', 'regular-hours-example'),
             Schema('ExceptionalPeriod', 'exceptional-period-schema', 'exceptional-period-example'),
