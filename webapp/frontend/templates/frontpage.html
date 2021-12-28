@@ -70,10 +70,10 @@
 <div id="overlay">
     <h1><a href="/">Open ChargePoint Database</a></h1>
     <ul>
-        <li><a href="#">Projekt</a></li>
-        <li><a href="#">Daten</a></li>
-        <li><a href="#">Datenschutz</a></li>
-        <li><a href="#">Impressum</a></li>
+        <li><a href="https://github.com/binary-butterfly/ocpdb/wiki/Projekt">Projekt</a></li>
+        <li><a href="https://github.com/binary-butterfly/ocpdb/wiki/Daten">Daten</a></li>
+        <li><a href="https://binary-butterfly.de/datenschutz/">Datenschutz</a></li>
+        <li><a href="https://binary-butterfly.de/impressum/">Impressum</a></li>
     </ul>
 </div>
 <div id="map"></div>
@@ -84,6 +84,7 @@
         zoom: 6,
         center: [10.4541194, 51.1642292]
     });
+    map.addControl(new maplibregl.NavigationControl());
     map.on('load', function () {
         map.addSource('chargepoints-static', {
             'type': 'vector',
@@ -165,10 +166,7 @@
         });
     });
 
-    map.addControl(new maplibregl.NavigationControl());
-    map.on('click', 'chargepoints', (e) => {
-        console.log(e.features);
-    });
+
 </script>
 </body>
 </html>
