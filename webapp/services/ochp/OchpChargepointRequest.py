@@ -45,7 +45,7 @@ def ochp_get_chargepoint_list():
         return
     between = get_now()
     logger.info('ochp.get-chargepoint-list', 'got data in %s s' % (between - start).total_seconds())
-    save_chargepoints(result, download=False)
+    save_chargepoints(result)
     logger.info('ochp.get-chargepoint-list', 'stored data in %s s' % (get_now() - between).total_seconds())
     Option.set('ochp-get-chargepoint-list-last-update', start, 'datetime')
 
