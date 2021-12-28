@@ -18,13 +18,17 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from datetime import datetime
+from datetime import datetime, timezone
 from validataclass.helpers import validataclass, OptionalUnset, DefaultUnset
-from validataclass.validators import DateTimeValidator, EnumValidator
+from validataclass.validators import DateTimeValidator, EnumValidator, DateTimeFormat
 from webapp.enums import ChargepointStatus
 
 
 @validataclass
 class ConnectorPatchInput:
-    modified: datetime = DateTimeValidator()
+    modified: datetime = DateTimeValidator(
+        DateTimeFormat.LOCAL_OR_UTC,
+        local_timezone=timezone.utc,
+        target_timezone=timezone.utc
+    )
     status: OptionalUnset[ChargepointStatus] = EnumValidator(ChargepointStatus), DefaultUnset()
