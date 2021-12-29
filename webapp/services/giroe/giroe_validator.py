@@ -21,7 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from datetime import datetime
 from decimal import Decimal
 from typing import List, Optional
-from webapp.common.validation import UnvalidatedDictValidator
+from webapp.common.validation import UnvalidatedDictValidator, NoneableToUnsetValue
 from validataclass.helpers import validataclass, OptionalUnset, DefaultUnset, Default
 from validataclass.validators import IntegerValidator, DateTimeValidator, EnumValidator, StringValidator, \
     ListValidator, DataclassValidator, DecimalValidator
@@ -40,8 +40,8 @@ class ConnectorInput:
     power_type: PowerType = EnumValidator(PowerType)
     standard: ConnectorType = EnumValidator(ConnectorType)
     format: ConnectorFormat = EnumValidator(ConnectorFormat)
-    meter_public_key: str = StringValidator(multiline=True)
-    meter_serial_number: str = StringValidator()
+    meter_public_key: OptionalUnset[str] = NoneableToUnsetValue(StringValidator(multiline=True)), DefaultUnset()
+    meter_serial_number: OptionalUnset[str] = NoneableToUnsetValue(StringValidator()), DefaultUnset()
 
 
 @validataclass
