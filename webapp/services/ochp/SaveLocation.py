@@ -84,7 +84,7 @@ def get_location_update(data_location: etree) -> Union[LocationUpdate, None]:
     if data_address is not None:
         location['address'] = get_field(data_address, 'address', nsmap, default='')
         if get_field(data_address, 'houseNumber', nsmap, default=''):
-           location['address'] += get_field(data_address, 'houseNumber', nsmap, default='')
+           location['address'] += ' ' + get_field(data_address, 'houseNumber', nsmap, default='')
         location['postal_code'] = get_field(data_address, 'zipCode', nsmap)
         location['city'] = get_field(data_address, 'city', nsmap)
         location['country'] = get_field(data_address, 'country', nsmap)
