@@ -18,22 +18,5 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from flask.views import MethodView
-
-from webapp.common.logger import Logger
-from webapp.common.request_helper import RequestHelper
-from webapp.dependencies import dependencies
-
-
-class PublicApiBaseMethodView(MethodView):
-    """
-    Base class derived from Flask MethodView for API views.
-    """
-    logger: Logger
-    request_helper: RequestHelper
-    documentation: list
-
-    def __init__(self, logger: Logger = None, request_helper: RequestHelper = None):
-        self.logger = logger if logger else dependencies.logger
-        self.request_helper = request_helper if request_helper else RequestHelper()
-        self.documentation = []
+from .config_helper import ConfigHelper
+from .config_loader import ConfigLoader

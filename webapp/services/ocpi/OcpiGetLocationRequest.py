@@ -19,7 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 import requests
-from webapp.common.config_helper import RemoteServerType
+from webapp.common.remote_helper import RemoteServerType
 from requests.exceptions import ConnectionError
 from urllib3.exceptions import NewConnectionError
 from json.decoder import JSONDecodeError

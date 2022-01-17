@@ -33,14 +33,19 @@ class TilesBlueprint(PublicApiBaseBlueprint):
 
     def __init__(self, app: Flask):
         self.tiles_handler = TilesHandler(
-            location_respository=dependencies.get_location_repository()
+            **self.get_base_handler_dependencies(),
+            location_respository=dependencies.get_location_repository(),
         )
         super().__init__('tiles', __name__, url_prefix='/tiles')
 
     def load_routes(self):
         self.add_url_rule(
             '/<int:z>/<int:x>/<int:y>.mvt',
-            view_func=TilesMethodView.as_view('tiles', tiles_handler=self.tiles_handler),
+            view_func=TilesMethodView.as_view(
+                'tiles',
+                **self.get_base_method_view_dependencies(),
+                tiles_handler=self.tiles_handler
+            ),
         )
 
 

@@ -23,6 +23,7 @@ from typing import Optional
 from datetime import datetime
 from flask.cli import AppGroup
 from webapp.services.giroe.giroe_service import GiroeService
+from webapp.services.base_service import get_full_service_dependencies
 from .helper import catch_exception
 
 
@@ -56,4 +57,6 @@ def cli_download_and_save(
         created_until: Optional[datetime] = None,
         modified_since: Optional[datetime] = None,
         modified_until: Optional[datetime] = None):
-    GiroeService().download_and_save(created_since, created_until, modified_since, modified_until)
+    GiroeService(
+        **get_full_service_dependencies(),
+    ).download_and_save(created_since, created_until, modified_since, modified_until)

@@ -20,3 +20,4 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from .location_repository import LocationRepository
 from .evse_repository import EvseRepository
+from .connector_repository import ConnectorRepository

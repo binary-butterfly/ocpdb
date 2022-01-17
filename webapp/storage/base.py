@@ -50,5 +50,7 @@ class BaseModel:
 
 
 class Point(UserDefinedType):
+    cache_ok = True
+
     def get_col_spec(self):
         return 'POINT'

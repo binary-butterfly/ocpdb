@@ -20,6 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from flask.cli import AppGroup
 from webapp.services.chargeit.chargeit_service import ChargeitService
+from webapp.services.base_service import get_full_service_dependencies
 from .helper import catch_exception
 
 
@@ -29,4 +30,6 @@ chargeit_cli = AppGroup('chargeit')
 @chargeit_cli.command("download-and-save", help='ChargeIT: downloads and saves chargepoint updates')
 @catch_exception
 def cli_download_and_save():
-    ChargeitService().download_and_save()
+    ChargeitService(
+        **get_full_service_dependencies(),
+    ).download_and_save()

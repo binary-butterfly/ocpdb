@@ -21,6 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import click
 from flask.cli import AppGroup
 from webapp.services.bnetza.bnetza_service import BnetzaService
+from webapp.services.base_service import get_full_service_dependencies
 from .helper import catch_exception
 
 
@@ -31,4 +32,6 @@ bnetza_cli = AppGroup('bnetza')
 @click.argument('import_file_path', type=click.File('rb'))
 @catch_exception
 def cli_load_and_save(import_file_path):
-    BnetzaService().load_and_save(import_file_path)
+    BnetzaService(
+        **get_full_service_dependencies()
+    ).load_and_save(import_file_path)

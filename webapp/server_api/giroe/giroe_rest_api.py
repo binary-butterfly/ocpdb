@@ -34,24 +34,75 @@ class GiroeBlueprint(ServerApiBaseBlueprint):
 
     def __init__(self, app: Flask):
         self.giroe_handler = GiroeHandler(
-            evse_repository=dependencies.get_evse_repository()
+            **self.get_base_handler_dependencies(),
+            location_repository=dependencies.get_location_repository(),
+            evse_repository=dependencies.get_evse_repository(),
+            connector_repository=dependencies.get_connector_repository(),
         )
         super().__init__('giroe', __name__, url_prefix='/giroe')
 
     def load_routes(self):
         self.add_url_rule(
+            '/locations/<int:location_id>',
+            view_func=GiroeLocationMethodView.as_view(
+                'location',
+                **self.get_base_method_view_dependencies(),
+                giroe_handler=self.giroe_handler
+            ),
+            methods=['PUT', 'DELETE']
+        )
+        self.add_url_rule(
             '/connectors/<int:connector_id>',
-            view_func=GiroeMethodView.as_view('connector', giroe_handler=self.giroe_handler),
+            view_func=GiroeConnectorMethodView.as_view(
+                'connector',
+                **self.get_base_method_view_dependencies(),
+                giroe_handler=self.giroe_handler
+            ),
             methods=['PATCH']
         )
 
 
-class GiroeMethodView(ServerApiBaseMethodView):
+class GiroeBaseMethodView(ServerApiBaseMethodView):
     giroe_handler: GiroeHandler
 
     def __init__(self, *args, giroe_handler: GiroeHandler, **kwargs):
         super().__init__(*args, **kwargs)
         self.giroe_handler = giroe_handler
+
+
+class GiroeLocationMethodView(GiroeBaseMethodView):
+
+    @document(
+        description='Puts a location.',
+        path=[Parameter('location_id', schema=int, example=1)],
+        request=Request('location-put-request', 'location-put-request-example'),
+        response=[EmptyResponse(), ErrorResponse()],
+        components=[Schema('Location', 'location-schema', 'location-example')]
+    )
+    @ensure_role('giroe')
+    def put(self, location_id: int):
+        return ServerApiResponse.success(
+            self.giroe_handler.handle_put_location(
+                location_id,
+                self.request_helper.get_parsed_json()
+            )
+        )
+
+    @document(
+        description='Deletes a location.',
+        path=[Parameter('location_id', schema=int, example=1)],
+        response=[EmptyResponse(), ErrorResponse()],
+    )
+    @ensure_role('giroe')
+    def delete(self, location_id: int):
+        return ServerApiResponse.success(
+            self.giroe_handler.handle_delete_location(
+                location_id
+            )
+        )
+
+
+class GiroeConnectorMethodView(GiroeBaseMethodView):
 
     @document(
         description='Patches an connector.',

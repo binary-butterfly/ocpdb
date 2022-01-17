@@ -26,7 +26,7 @@ from flask import Flask
 from webapp.extensions import db, celery, migrate, logger
 from webapp.common.misc import DefaultJSONEncoder
 from webapp.common.constants import BaseConfig
-from webapp.common.config_helper import check_and_extend_config
+from webapp.common.config import ConfigLoader
 from webapp.cli import register_cli_to_app
 
 from webapp.public_api import PublicApi
@@ -40,6 +40,7 @@ __all__ = ['launch']
 
 def launch():
     app = Flask(BaseConfig.PROJECT_NAME)
+    app.json_encoder = DefaultJSONEncoder
     configure_app(app)
     configure_extensions(app)
     configure_blueprints(app)
@@ -47,12 +48,8 @@ def launch():
 
 
 def configure_app(app):
-    app.config.from_object(BaseConfig)
-    config_path = os.path.join(app.config['PROJECT_ROOT'], os.pardir, os.getenv('CONFIG_FILE', 'config.yaml'))
-    app.config.from_file(config_path, safe_load)
-    app.config['MODE'] = os.getenv('APPLICATION_MODE', 'DEVELOPMENT')
-    check_and_extend_config(app)
-    app.json_encoder = DefaultJSONEncoder
+    config_loader = ConfigLoader()
+    config_loader.configure_app(app)
 
 
 def configure_extensions(app):

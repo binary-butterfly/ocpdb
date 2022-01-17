@@ -1,20 +1,32 @@
 # encoding: utf-8
 
 """
-Giro-e Backend
-Copyright (c) 2017 - 2021, binary butterfly GmbH
-All rights reserved.
+Open ChargePoint DataBase OCPDB
+Copyright (C) 2021 binary butterfly GmbH
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 import json
 from typing import Union, Optional
 from requests import request
 from flask import current_app
-from validataclass.validators import DataclassValidator, StringValidator
+from validataclass.validators import StringValidator
 from validataclass.helpers import validataclass
 from webapp.common.misc import DefaultJSONEncoder
 from webapp.extensions import logger
-from webapp.common.config_helper import RemoteServerType, RemoteServer
+from webapp.common.remote_helper import RemoteServerType, RemoteServer
 from requests.exceptions import ConnectionError
 from urllib3.exceptions import NewConnectionError
 from json.decoder import JSONDecodeError

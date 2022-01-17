@@ -18,14 +18,14 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from typing import List
-from webapp.common.config_helper import RemoteServerType
+from webapp.common.remote_helper import RemoteServerType
 from validataclass.exceptions import ValidationError
 from validataclass.validators import DataclassValidator
 
 from webapp.services.external_helper import ExternalHelper
 from webapp.services.base_service import BaseService
 from webapp.services.generic.update_service import UpdateService
+from webapp.repositories import LocationRepository, EvseRepository, ConnectorRepository
 from .chargeit_mapper import ChargeitMapper
 from .chargeit_validators import ChargeitInput, LocationInput
 
@@ -37,9 +37,22 @@ class ChargeitService(BaseService):
     chargeit_validator: DataclassValidator[ChargeitInput] = DataclassValidator(ChargeitInput)
     location_validator: DataclassValidator[LocationInput] = DataclassValidator(LocationInput)
 
-    def __init__(self, *args, **kwargs):
+
+    def __init__(
+            self,
+            *args,
+            location_repository: LocationRepository,
+            evse_repository: EvseRepository,
+            connector_repository: ConnectorRepository,
+            **kwargs):
         super().__init__(*args, **kwargs)
-        self.update_service = UpdateService()
+        self.update_service = UpdateService(
+            logger=self.logger,
+            config_helper=self.config_helper,
+            location_repository=location_repository,
+            evse_repository=evse_repository,
+            connector_repository=connector_repository,
+        )
 
     def download_and_save(self):
         exceptions = self.save(

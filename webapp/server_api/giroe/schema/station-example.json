@@ -1,0 +1,38 @@
+{
+  "chargepoint_operator": "tcc",
+  "connectors": [
+    {
+      "created": "2021-01-01T01:01:01Z",
+      "format": "SOCKET",
+      "id": 100,
+      "meter_public_key": "",
+      "meter_serial_number": "",
+      "modified": "2021-01-01T01:01:01Z",
+      "ocpp_connector_id": 1,
+      "power": 22000,
+      "power_type": "AC_3_PHASE",
+      "standard": "IEC_62196_T2",
+      "status": "AVAILABLE",
+      "uid": "DEGLSH0000000101"
+    },
+    {
+      "created": "2021-01-01T01:01:01Z",
+      "format": "SOCKET",
+      "id": 101,
+      "meter_public_key": "",
+      "meter_serial_number": "",
+      "modified": "2021-01-01T01:01:01Z",
+      "ocpp_connector_id": 2,
+      "power": 22000,
+      "power_type": "AC_3_PHASE",
+      "standard": "IEC_62196_T2",
+      "status": "CHARGING",
+      "uid": "DEGLSH0000000102"
+    }
+  ],
+  "created": "2021-01-01T01:01:01Z",
+  "hardware_id": 1,
+  "id": 200,
+  "modified": "2021-01-01T01:01:01Z",
+  "uid": "DEGLSH00000001"
+}

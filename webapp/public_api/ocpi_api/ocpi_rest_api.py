@@ -32,14 +32,19 @@ class OcpiBlueprint(PublicApiBaseBlueprint):
 
     def __init__(self, app: Flask):
         self.ocpi_handler = OcpiHandler(
-            location_respository=dependencies.get_location_repository()
+            **self.get_base_handler_dependencies(),
+            location_respository=dependencies.get_location_repository(),
         )
         super().__init__('locations', __name__, url_prefix='/api/ocpi/2.2/location')
 
     def load_routes(self):
         self.add_url_rule(
             '/<int:location_id>',
-            view_func=LocationsMethodView.as_view('location', ocpi_handler=self.ocpi_handler)
+            view_func=LocationsMethodView.as_view(
+                'location',
+                **self.get_base_method_view_dependencies(),
+                ocpi_handler=self.ocpi_handler,
+            )
         )
 
 
@@ -67,5 +72,5 @@ class LocationsMethodView(OcpiBaseMethodView):
         ]
     )
     def get(self, location_id: int):
-        return jsonify(self.ocpi_handler.get_location(self.id_validator.validate(location_id)))
+        return jsonify(self.ocpi_handler.get_location(location_id))
 

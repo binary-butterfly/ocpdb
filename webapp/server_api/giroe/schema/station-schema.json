@@ -1,0 +1,45 @@
+{
+  "type": "object",
+  "description": "A station is a hardware having the ocpp connection with one or more connectors.",
+  "properties": {
+    "id": {
+      "type": "connector",
+      "description": "connector id"
+    },
+    "created": {
+      "type": "string",
+      "format": "date-time",
+      "description": "created UTC datetime"
+    },
+    "modified": {
+      "type": "string",
+      "format": "date-time",
+      "description": "last modified UTC datetime"
+    },
+    "uid": {
+      "type": "string"
+    },
+    "chargepoint_operator": {
+      "type": "string",
+      "enum": [
+        "tcc",
+        "compleo",
+        "kormo",
+        "icuconnect",
+        "ladenetz",
+        "siemens",
+        "snh",
+        "unknown"
+      ]
+    },
+    "hardware_id": {
+      "type": "integer"
+    },
+    "connectors": {
+      "type": "array",
+      "items": {
+        "$ref": "#/components/schemas/Connector"
+      }
+    }
+  }
+}

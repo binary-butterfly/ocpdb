@@ -18,6 +18,7 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+from typing import List
 from datetime import datetime
 from dataclasses import dataclass, asdict
 from validataclass.helpers import UnsetValue, OptionalUnset
@@ -49,6 +50,9 @@ class EvseRepository(BaseRepository):
             raise ObjectNotFoundException
         return result
 
+    def fetch_evse_by_location_id(self, location_id: int) -> List[Evse]:
+        return self.session.query(Evse).filter(Evse.location_id == location_id)
+
     def update_evse(self, evse: Evse, evse_update: EvseUpdate):
         for key, value in asdict(evse_update).items():
             if value is UnsetValue:
@@ -58,3 +62,12 @@ class EvseRepository(BaseRepository):
         self.session.add(evse)
         self.session.commit()
 
+    def delete_evse_by_ids(self, evse_ids: List[int]):
+        self.session.query(Evse)\
+            .filter(Evse.id.in_(evse_ids))\
+            .delete(synchronize_session=False)
+
+    def delete_evse_by_id(self, evse_id: int):
+        self.session.query(Evse)\
+            .filter(id=evse_id)\
+            .delete(synchronize_session=False)

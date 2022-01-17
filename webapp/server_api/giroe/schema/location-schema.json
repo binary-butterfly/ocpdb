@@ -1,0 +1,47 @@
+{
+  "type": "object",
+  "description": "A location where some chargestations with connectors are provided.",
+  "properties": {
+    "id": {
+      "type": "integer",
+      "description": "location id"
+    },
+    "created": {
+      "type": "string",
+      "format": "date-time",
+      "description": "created UTC datetime"
+    },
+    "modified": {
+      "type": "string",
+      "format": "date-time",
+      "description": "last modified UTC datetime"
+    },
+    "lat": {
+      "type": "string"
+    },
+    "lon": {
+      "type": "string"
+    },
+    "address": {
+      "type": "string"
+    },
+    "postalcode": {
+      "type": "string"
+    },
+    "locality": {
+      "type": "string"
+    },
+    "country": {
+      "type": "string"
+    },
+    "public_description": {
+      "type": "string"
+    },
+    "stations": {
+      "type": "array",
+      "items": {
+        "$ref": "#/components/schemas/Station"
+      }
+    }
+  }
+}

@@ -20,26 +20,42 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from datetime import datetime
 from typing import Optional, List, Tuple
-from webapp.common.config_helper import RemoteServerType
+from webapp.common.remote_helper import RemoteServerType
 from validataclass.exceptions import ValidationError
 from validataclass.validators import DataclassValidator
 from webapp.services.external_helper import ExternalHelper
 from webapp.services.base_service import BaseService
 from webapp.services.generic.update_service import UpdateService
+from webapp.common.config import ConfigHelper
 from .giroe_mapper import GiroeMapper
 from .giroe_validator import LocationListInput, LocationInput
+from webapp.repositories import LocationRepository, EvseRepository, ConnectorRepository
 
 
 class GiroeService(BaseService):
     update_service: UpdateService
     external_helper: ExternalHelper = ExternalHelper()
-    giroe_mapper: GiroeMapper = GiroeMapper()
+    giroe_mapper: GiroeMapper
     location_list_validator: DataclassValidator[LocationListInput] = DataclassValidator(LocationListInput)
     location_validator: DataclassValidator[LocationInput] = DataclassValidator(LocationInput)
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.update_service = UpdateService()
+    def __init__(
+            self,
+            *args,
+            config_helper: ConfigHelper,
+            location_repository: LocationRepository,
+            evse_repository: EvseRepository,
+            connector_repository: ConnectorRepository,
+            **kwargs):
+        super().__init__(*args, config_helper=config_helper, **kwargs)
+        self.update_service = UpdateService(
+            logger=self.logger,
+            config_helper=config_helper,
+            location_repository=location_repository,
+            evse_repository=evse_repository,
+            connector_repository=connector_repository
+        )
+        self.giroe_mapper = GiroeMapper(config_helper=self.config_helper)
 
     def download_and_save(
             self,
@@ -53,16 +69,16 @@ class GiroeService(BaseService):
         location_list_input = self.location_list_validator.validate(
             self.external_helper.get(
                 remote_server_type=RemoteServerType.GIROE,
-                path='/api/server/v1/locations?chargepoint_operator=tcc'
+                path='/api/server/v1/charge-locations?chargepoint_operator=tcc'
             )
         )
         exceptions += self.handle_pulled_locations(location_list_input)
 
-        while location_list_input.next:
+        while location_list_input.next_path:
             location_list_input = self.location_list_validator.validate(
                 self.external_helper.get(
                     remote_server_type=RemoteServerType.GIROE,
-                    path=location_list_input.next
+                    path=location_list_input.next_path
                 )
             )
             exceptions += self.handle_pulled_locations(location_list_input)
@@ -75,13 +91,19 @@ class GiroeService(BaseService):
 
     def handle_pulled_locations(self, location_list_input: LocationListInput) -> List[Tuple[dict, ValidationError]]:
         exceptions = []
-        for location in location_list_input.items:
+        for location_dict in location_list_input.items:
             try:
-                self.update_service.upsert_location(
-                    self.giroe_mapper.map_location_input_to_update(
-                        self.location_validator.validate(location)
+                location_input = self.location_validator.validate(location_dict)
+                if location_input.publish:
+                    self.update_service.upsert_location(
+                        self.giroe_mapper.map_location_input_to_update(
+                            location_input
+                        )
                     )
+                    continue
+                self.update_service.delete_location(
+                    self.giroe_mapper.hash_object_id('location', location_input.id)
                 )
             except ValidationError as exception:
-                exceptions.append((location, exception))
+                exceptions.append((location_dict, exception))
         return exceptions

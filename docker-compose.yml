@@ -33,7 +33,7 @@ services:
     image: mariadb
     volumes:
       - .:/app
-      - ocpdb_mysql:/var/lib/mysql
+      - mysql:/var/lib/mysql
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: ocpdb
@@ -56,5 +56,5 @@ services:
     image: rabbitmq:latest
 
 volumes:
-  ocpdb_mysql:
+  mysql:
 

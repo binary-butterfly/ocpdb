@@ -84,9 +84,19 @@ class Chargepoint(db.Model, BaseModel):
     )
 
     source = db.Column(db.String(64), index=True)
-    connectors = db.relationship('Connector', backref='chargepoint', lazy='dynamic')
+    connectors = db.relationship(
+        'Connector',
+        backref='chargepoint',
+        lazy='dynamic',
+        cascade="all, delete-orphan",
+    )
     images = db.relationship("Image", secondary=chargepoint_image, backref=db.backref('chargepoint', lazy='dynamic'))
-    related_resource = db.relationship('RelatedResource', backref='chargepoint', lazy='dynamic')
+    related_resource = db.relationship(
+        'RelatedResource',
+        backref='chargepoint',
+        lazy='dynamic',
+        cascade="all, delete-orphan",
+    )
     location_id = db.Column(db.BigInteger, db.ForeignKey('location.id'))
     external_id = db.Column(db.BigInteger)
     uid = db.Column(db.String(64))

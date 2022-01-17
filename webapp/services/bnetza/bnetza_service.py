@@ -27,6 +27,7 @@ from validataclass.exceptions import ValidationError
 from webapp.services.external_helper import ExternalHelper
 from webapp.services.base_service import BaseService
 from webapp.services.generic.update_service import UpdateService
+from webapp.repositories import LocationRepository, EvseRepository, ConnectorRepository
 from .bnetza_validators import BnetzaRowInput
 from .bnetza_mapper import BnetzaMapper
 
@@ -75,9 +76,21 @@ class BnetzaService(BaseService):
         'Public Key4': 'connector_4_public_key',
     }
 
-    def __init__(self, *args, **kwargs):
+    def __init__(
+            self,
+            *args,
+            location_repository: LocationRepository,
+            evse_repository: EvseRepository,
+            connector_repository: ConnectorRepository,
+            **kwargs):
         super().__init__(*args, **kwargs)
-        self.update_service = UpdateService()
+        self.update_service = UpdateService(
+            logger=self.logger,
+            config_helper=self.config_helper,
+            location_repository=location_repository,
+            evse_repository=evse_repository,
+            connector_repository=connector_repository,
+        )
 
     def load_and_save(self, import_file_path: str):
         worksheet = self.load_xlsx(import_file_path)

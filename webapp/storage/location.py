@@ -55,17 +55,29 @@ class Location(db.Model, BaseModel):
     exceptional_openings = db.relationship(
         'ExceptionalPeriod',
         lazy='dynamic',
-        primaryjoin="and_(Location.id==ExceptionalPeriod.location_id, ExceptionalPeriod.type=='opening')"
+        primaryjoin="and_(Location.id==ExceptionalPeriod.location_id, ExceptionalPeriod.type=='opening')",
+        cascade="all, delete-orphan",
     )
     exceptional_closings = db.relationship(
         'ExceptionalPeriod',
         lazy='dynamic',
         primaryjoin="and_(Location.id==ExceptionalPeriod.location_id, ExceptionalPeriod.type=='closing')",
-        overlaps='exceptional_openings'
+        overlaps='exceptional_openings',
+        cascade="all, delete-orphan",
     )
-    regular_hours = db.relationship('RegularHours', backref='chargepoint', lazy='dynamic')
+    regular_hours = db.relationship(
+        'RegularHours',
+        backref='chargepoint',
+        lazy='dynamic',
+        cascade="all, delete-orphan",
+    )
 
-    chargepoints = db.relationship('Chargepoint', backref='location', lazy='dynamic')
+    chargepoints = db.relationship(
+        'Chargepoint',
+        backref='location',
+        lazy='dynamic',
+        cascade="all, delete-orphan",
+    )
     images = db.relationship("Image", secondary=location_image, backref=db.backref('locations', lazy='dynamic'))
     operator_id = db.Column(db.BigInteger, db.ForeignKey('business.id'))
     suboperator_id = db.Column(db.BigInteger, db.ForeignKey('business.id'))

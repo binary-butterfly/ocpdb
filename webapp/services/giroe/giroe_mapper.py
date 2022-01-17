@@ -20,8 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from math import sqrt
 from hashlib import sha256
-from typing import Optional
-from flask import Config, current_app
+from webapp.common.config import ConfigHelper
 from webapp.services.generic.SaveLocation import LocationUpdate
 from webapp.services.generic.SaveChargepoint import ChargepointUpdate
 from webapp.services.generic.SaveConnector import ConnectorUpdate
@@ -36,15 +35,11 @@ class GiroeMapper:
         PowerType.AC_1_PHASE: 230
     }
 
-    def __init__(self, config: Optional[Config] = None):
-        self._config = config
-
-    @property
-    def config(self):
-        return self._config if self._config else current_app.config
+    def __init__(self, config_helper: ConfigHelper):
+        self.config_helper = config_helper
 
     def hash_object_id(self, object_type: str, object_id: int) -> str:
-        return sha256(('%s-%s-%s' % (object_type, object_id, self.config['OBJECT_ID_SECRET'])).encode()).hexdigest()[:32]
+        return sha256(('%s-%s-%s' % (object_type, object_id, self.config_helper.get('OBJECT_ID_SECRET'))).encode()).hexdigest()[:32]
 
     def map_location_input_to_update(self, location_data: LocationInput) -> LocationUpdate:
         location_update = LocationUpdate(

@@ -18,8 +18,7 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from typing import Optional
-from flask import current_app, Config
+from webapp.common.config import ConfigHelper
 from webapp.common.logger import Logger
 from webapp.dependencies import dependencies
 
@@ -27,12 +26,25 @@ from webapp.dependencies import dependencies
 class BaseService:
 
     logger: Logger
-    _config: Config
+    config_helper: ConfigHelper
 
-    def __init__(self, logger: Optional[Logger] = None, config: Optional[Config] = None):
-        self.logger = logger if logger else dependencies.logger
-        self._config = Config('', config)
+    def __init__(self, logger: Logger, config_helper: ConfigHelper):
+        self.logger = logger
+        self.config_helper = config_helper
 
-    @property
-    def config(self):
-        return self._config if self._config else current_app.config
+
+def get_base_service_dependencies() -> dict:
+    return {
+        'logger': dependencies.get_logger(),
+        'config_helper': dependencies.get_config_helper(),
+    }
+
+
+def get_full_service_dependencies() -> dict:
+    return {
+        'logger': dependencies.get_logger(),
+        'config_helper': dependencies.get_config_helper(),
+        'location_repository': dependencies.get_location_repository(),
+        'evse_repository': dependencies.get_evse_repository(),
+        'connector_repository': dependencies.get_connector_repository(),
+    }

@@ -23,14 +23,25 @@ from webapp.services.base_service import BaseService
 from .SaveLocation import upsert_location, LocationUpdate
 from .SaveChargepoint import upsert_chargepoint, ChargepointUpdate
 from .SaveConnector import upsert_connector
-from webapp.repositories import LocationRepository
+from webapp.repositories import LocationRepository, EvseRepository, ConnectorRepository
 
 
 class UpdateService(BaseService):
     location_repository: LocationRepository
+    evse_repository: EvseRepository
+    connector_repository: ConnectorRepository
 
-    def __init__(self, *args, **kwargs):
+    def __init__(
+            self,
+            *args,
+            location_repository: LocationRepository,
+            evse_repository: EvseRepository,
+            connector_repository: ConnectorRepository,
+            **kwargs):
         super().__init__(*args, **kwargs)
+        self.location_repository = location_repository
+        self.evse_repository = evse_repository
+        self.connector_repository = connector_repository
 
     def upsert_location(self, location_update: LocationUpdate):
         location = upsert_location(location_update)
@@ -42,3 +53,8 @@ class UpdateService(BaseService):
                 continue
             for connector_update in chargepoint_update.connectors:
                 upsert_connector(connector_update, chargepoint)
+
+    def delete_location(self, location_uid):
+        self.location_repository.delete_location(
+            location=self.location_repository.fetch_location_by_uid(location_uid)
+        )

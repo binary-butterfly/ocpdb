@@ -22,11 +22,9 @@ from functools import wraps
 from typing import Optional, Union, Any
 from flask import current_app, request as flask_request, Request
 
-from validataclass.validators.dataclass_validator import DataclassValidator
-from validataclass.exceptions import ValidationError
-from .unset_parameter import UnsetParameter, UnsetParameterType
-from .exceptions import AppWrongContentTypeException, AppWrongJsonTypeException, \
-    AppInputValidationException, AppException, AppAccessDeniedException
+
+from .unset_parameter import UnsetParameter
+from .exceptions import AppWrongJsonTypeException, AppAccessDeniedException
 
 
 class RequestHelper:

@@ -18,10 +18,8 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from typing import Optional
-from flask import current_app, Config
+from webapp.common.config import ConfigHelper
 from webapp.common.logger import Logger
-from webapp.dependencies import dependencies
 
 
 class PublicApiBaseHandler:
@@ -29,12 +27,8 @@ class PublicApiBaseHandler:
     Base class for API handler classes (`auth.AuthHandler`, etc.)
     """
     logger: Logger
-    _config: Config
+    config_helper: ConfigHelper
 
-    def __init__(self, logger: Optional[Logger] = None, config: Optional[Config] = None):
-        self.logger = logger if logger else dependencies.logger
-        self._config = config
-
-    @property
-    def config(self):
-        return self._config if self._config else current_app.config
+    def __init__(self, logger: Logger, config_helper: ConfigHelper):
+        self.logger = logger
+        self.config_helper = config_helper

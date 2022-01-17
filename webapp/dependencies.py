@@ -21,9 +21,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import functools
 from typing import Callable, TYPE_CHECKING
 from sqlalchemy.orm import Session
+from webapp.common.config import ConfigHelper
+from webapp.common.request_helper import RequestHelper
 from webapp.repositories import (
     LocationRepository,
     EvseRepository,
+    ConnectorRepository,
 )
 
 if TYPE_CHECKING:
@@ -65,15 +68,23 @@ class Dependencies:
         self._cached_dependencies = {}
 
     # Common
-    @property
-    def logger(self) -> 'Logger':
+    @cache_dependency
+    def get_logger(self) -> 'Logger':
         # Late import (don't initialize all the extensions unless needed)
         from webapp.extensions import logger
         return logger
 
+    @cache_dependency
+    def get_config_helper(self) -> ConfigHelper:
+        return ConfigHelper()
+
+    @cache_dependency
+    def get_request_helper(self) -> RequestHelper:
+        return RequestHelper()
+
     # Database
-    @property
-    def db_session(self) -> Session:
+    @cache_dependency
+    def get_db_session(self) -> Session:
         # Late import (don't initialize all the extensions unless needed)
         from webapp.extensions import db
         return db.session
@@ -82,14 +93,21 @@ class Dependencies:
     @cache_dependency
     def get_location_repository(self) -> LocationRepository:
         return LocationRepository(
-            session=self.db_session
+            session=self.get_db_session()
         )
 
     @cache_dependency
     def get_evse_repository(self) -> EvseRepository:
         return EvseRepository(
-            session=self.db_session
+            session=self.get_db_session()
         )
+
+    @cache_dependency
+    def get_connector_repository(self) -> ConnectorRepository:
+        return ConnectorRepository(
+            session=self.get_db_session()
+        )
+
 
 # Instantiate one global dependencies object so we don't need to clutter the environment with lots of globals
 dependencies = Dependencies()

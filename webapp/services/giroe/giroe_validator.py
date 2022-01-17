@@ -24,7 +24,7 @@ from typing import List, Optional
 from webapp.common.validation import UnvalidatedDictValidator, NoneableToUnsetValue
 from validataclass.helpers import validataclass, OptionalUnset, DefaultUnset, Default
 from validataclass.validators import IntegerValidator, DateTimeValidator, EnumValidator, StringValidator, \
-    ListValidator, DataclassValidator, DecimalValidator
+    ListValidator, DataclassValidator, DecimalValidator, BooleanValidator
 from webapp.enums import ChargepointStatus, ConnectorFormat, ConnectorType, PowerType
 
 
@@ -80,6 +80,7 @@ class LocationInput:
     postalcode: str = StringValidator()
     locality: str = StringValidator()
     country: str = StringValidator()
+    publish: bool = BooleanValidator()
     public_description: str = StringValidator(multiline=True)
     stations: List[StationInput] = ListValidator(DataclassValidator(StationInput))
 
@@ -87,5 +88,5 @@ class LocationInput:
 @validataclass
 class LocationListInput:
     items: List[dict] = ListValidator(UnvalidatedDictValidator())
-    next: Optional[str] = StringValidator(), Default(None)
+    next_path: Optional[str] = StringValidator(), Default(None)
 

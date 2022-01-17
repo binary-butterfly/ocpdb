@@ -31,6 +31,12 @@ class LocationRepository(BaseRepository):
             raise ObjectNotFoundException
         return result
 
+    def fetch_location_by_uid(self, location_uid: str) -> Location:
+        result = self.session.query(Location).filter(Location.uid == location_uid).first()
+        if result is None:
+            raise ObjectNotFoundException
+        return result
+
     def fetch_locations_by_bounds(self, bbox: LngLatBbox, static: bool = False):
         query = """
         SELECT location.id, location.lat, location.lon, location.name, location.address, 
@@ -52,3 +58,13 @@ class LocationRepository(BaseRepository):
             '' if static is None else "AND chargepoint.status %s 'STATIC'" % ('=' if static is True else '!=')
         )
         return self.session.execute(query)
+
+    def delete_location(self, location: Location):
+        self.session.delete(location)
+        self.session.commit()
+
+    def delete_location_by_id(self, location_id: int):
+        """
+        deletes without any child checks
+        """
+        self.session.query(Location).filter(Location.id == location_id).delete(synchronize_session=False)
