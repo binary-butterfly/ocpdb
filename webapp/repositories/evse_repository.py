@@ -29,7 +29,7 @@ from webapp.enums import ChargepointStatus as EvseStatus
 
 @dataclass
 class EvseUpdate:
-    last_modified: OptionalUnset[datetime] = UnsetValue
+    last_updated: OptionalUnset[datetime] = UnsetValue
     status: OptionalUnset[EvseStatus] = UnsetValue
 
 

@@ -77,11 +77,11 @@ class GiroeHandler(ServerApiBaseHandler):
 
         self.evse_repository.update_evse(
             self.evse_repository.fetch_by_uid(
-                'giroe',
-                self.giroe_mapper.hash_object_id('evse', connector_id)
+                source='giroe',
+                chargepoint_uid=self.giroe_mapper.hash_object_id('evse', connector_id)
             ),
             EvseUpdate(
-                last_modified=connector_input.modified,
+                last_updated=connector_input.modified,
                 status=connector_input.status
             )
         )
