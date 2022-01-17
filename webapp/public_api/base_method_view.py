@@ -22,7 +22,7 @@ from flask.views import MethodView
 
 from webapp.common.logger import Logger
 from webapp.common.request_helper import RequestHelper
-from webapp.dependencies import dependencies
+from webapp.common.config import ConfigHelper
 
 
 class PublicApiBaseMethodView(MethodView):
@@ -31,9 +31,11 @@ class PublicApiBaseMethodView(MethodView):
     """
     logger: Logger
     request_helper: RequestHelper
+    config_helper: ConfigHelper
     documentation: list
 
-    def __init__(self, logger: Logger = None, request_helper: RequestHelper = None):
-        self.logger = logger if logger else dependencies.logger
-        self.request_helper = request_helper if request_helper else RequestHelper()
+    def __init__(self, logger: Logger, request_helper: RequestHelper, config_helper: ConfigHelper):
+        self.logger = logger
+        self.config_helper = config_helper
+        self.request_helper = request_helper
         self.documentation = []
