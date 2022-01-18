@@ -29,3 +29,6 @@ migrate = Migrate()
 
 from .common.logger import Logger
 logger = Logger()
+
+from flask_cors import CORS
+cors = CORS()

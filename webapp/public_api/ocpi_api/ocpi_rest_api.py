@@ -19,6 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 from flask import Flask, jsonify
+from flask_cors import cross_origin
 from webapp.openapi.openapi_decorator import document, Response, ResponseData, ErrorResponse, Schema
 from webapp.public_api.base_blueprint import PublicApiBaseBlueprint
 from webapp.public_api.base_method_view import PublicApiBaseMethodView
@@ -71,6 +72,7 @@ class LocationsMethodView(OcpiBaseMethodView):
             Schema('Connector', 'connector-schema', 'connector-example')
         ]
     )
+    @cross_origin()
     def get(self, location_id: int):
         return jsonify(self.ocpi_handler.get_location(location_id))
 

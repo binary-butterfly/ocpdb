@@ -25,14 +25,6 @@ from flask import make_response
 from .misc import DefaultJSONEncoder
 
 
-def json_response(data_dict, cors=False):
-    response = make_response(json.dumps(data_dict, cls=DefaultJSONEncoder))
-    response.mimetype = 'application/json'
-    if cors:
-        response.headers['Access-Control-Allow-Origin'] = '*'
-    return response
-
-
 def xml_response(xml_tree):
     response = make_response(etree.tostring(xml_tree, pretty_print=False))
     response.mimetype = 'text/xml'
@@ -42,5 +34,4 @@ def xml_response(xml_tree):
 def protobuf_response(data: bytes):
     response = make_response(data)
     response.headers['Content-Type'] = 'application/x-protobuf'
-    response.headers['Access-Control-Allow-Origin'] = "*"
     return response

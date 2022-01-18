@@ -19,11 +19,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 
-import os
-from yaml import safe_load
 from flask import Flask
 
-from webapp.extensions import db, celery, migrate, logger
+from webapp.extensions import db, celery, migrate, logger, cors
 from webapp.common.misc import DefaultJSONEncoder
 from webapp.common.constants import BaseConfig
 from webapp.common.config import ConfigLoader
@@ -57,6 +55,7 @@ def configure_extensions(app):
     db.init_app(app)
     migrate.init_app(app, db)
     celery.init_app(app)
+    cors.init_app(app)
     celery.conf.update({'task_default_queue': app.config.get('CELERY_TASK_QUEUE', 'celery')})
 
 

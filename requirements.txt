@@ -5,6 +5,7 @@ Flask-Failsafe~=0.2.0
 Flask-SQLAlchemy~=2.0
 Flask-Celery-Helper~=1.0
 Flask-Migrate~=3.0
+Flask-CORS~=3.0
 requests~=2.0
 lxml~=4.0
 redis~=4.0
