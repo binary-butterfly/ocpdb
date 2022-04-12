@@ -80,7 +80,7 @@ class LocationInput:
     postalcode: str = StringValidator()
     locality: str = StringValidator()
     country: str = StringValidator()
-    publish: bool = BooleanValidator()
+    public: bool = BooleanValidator()
     public_description: str = StringValidator(multiline=True)
     stations: List[StationInput] = ListValidator(DataclassValidator(StationInput))
 

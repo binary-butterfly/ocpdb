@@ -56,7 +56,7 @@ class GiroeHandler(ServerApiBaseHandler):
 
     def handle_put_location(self, location_id: int, location_dict: dict):
         location_input = self.location_validator.validate(location_dict)
-        if not location_input.publish:
+        if not location_input.public:
             self.update_service.delete_location(
                 self.giroe_mapper.hash_object_id('location', location_id)
             )
