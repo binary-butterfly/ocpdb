@@ -64,7 +64,7 @@ class StationInput:
     created: datetime = DateTimeValidator()
     modified: datetime = DateTimeValidator()
     uid: str = StringValidator(max_length=36)
-    chargepoint_operator: str = StringValidator()
+    technical_backend: str = StringValidator()
     hardware_id: int = IntegerValidator()
     connectors: List[ConnectorInput] = ListValidator(DataclassValidator(ConnectorInput))
 
