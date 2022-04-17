@@ -69,7 +69,7 @@ class GiroeService(BaseService):
         location_list_input = self.location_list_validator.validate(
             self.external_helper.get(
                 remote_server_type=RemoteServerType.GIROE,
-                path='/api/server/v1/charge-locations?chargepoint_operator=tcc'
+                path='/api/server/v1/charge-locations?technical_backend=tcc'
             )
         )
         exceptions += self.handle_pulled_locations(location_list_input)

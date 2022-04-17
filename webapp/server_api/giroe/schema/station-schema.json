@@ -19,7 +19,7 @@
     "uid": {
       "type": "string"
     },
-    "chargepoint_operator": {
+    "technical_backend": {
       "type": "string",
       "enum": [
         "tcc",

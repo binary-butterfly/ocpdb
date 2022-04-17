@@ -10,7 +10,7 @@
   "postalcode": "12345",
   "public_description": "Here be electrodragons.",
   "stations": {
-    "chargepoint_operator": "tcc",
+    "technical_backend": "tcc",
     "connectors": [
       {
         "created": "2021-01-01T01:01:01Z",

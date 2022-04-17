@@ -1,5 +1,5 @@
 {
-  "chargepoint_operator": "tcc",
+  "technical_backend": "tcc",
   "connectors": [
     {
       "created": "2021-01-01T01:01:01Z",
