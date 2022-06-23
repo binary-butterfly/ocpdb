@@ -77,13 +77,16 @@ class ChargeitService(BaseService):
         exceptions = []
         for location_dict in chargeit_input.operator.operatorPlaces:
             try:
-                self.save_location(
-                    self.validate_location(
-                        location_dict
-                    )
-                )
+                location_input = self.validate_location(location_dict)
             except ValidationError as exception:
                 exceptions.append(exception)
+                continue
+
+            if not location_input.published:
+                self.update_service.delete_location(location_input.shortcode)
+                continue
+
+            self.save_location(location_input)
         return exceptions
 
     def validate_location(self, location_dict: dict) -> LocationInput:
