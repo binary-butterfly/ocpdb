@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 """
 Open ChargePoint DataBase OCPDB
 Copyright (C) 2021 binary butterfly GmbH
@@ -18,12 +16,13 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from typing import Any, Optional
+from typing import Any
+
 from validataclass.validators import StringValidator
 
 
 class IntegerToStringValidator(StringValidator):
-    def validate(self, input_data: Any) -> str:
+    def validate(self, input_data: Any, **kwargs) -> str:
         self._ensure_type(input_data, [int, str, float])
 
         if type(input_data) in [int, float]:

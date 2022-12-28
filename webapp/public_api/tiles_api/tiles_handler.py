@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 """
 Open ChargePoint DataBase OCPDB
 Copyright (C) 2021 binary butterfly GmbH
@@ -20,6 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import mercantile
 from vector_tile_base import VectorTile
+
 from webapp.public_api.base_handler import PublicApiBaseHandler
 from webapp.repositories import LocationRepository
 
@@ -37,7 +36,7 @@ class TilesHandler(PublicApiBaseHandler):
             tile.serialize()
 
         bbox = mercantile.bounds(x, y, z)
-        chargepoints = self.location_repository.fetch_locations_by_bounds(bbox, static=static)
+        chargepoints = self.location_repository.fetch_locations_summary_by_bounds(bbox, static=static)
 
         layer = tile.add_layer('chargepoints', 1)
         for item in chargepoints:

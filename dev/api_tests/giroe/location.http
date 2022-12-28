@@ -1,0 +1,11 @@
+### put location
+PUT {{api_host}}/api/server/v1/giroe/locations/9
+Authorization: Basic {{server_api_username}} {{server_api_password}}
+Content-Type: application/json
+
+< ./location_put.json
+
+
+### delete location
+DELETE {{api_host}}/api/server/v1/giroe/locations/9
+Authorization: Basic {{server_api_username}} {{server_api_password}}

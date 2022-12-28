@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 """
 Open ChargePoint DataBase OCPDB
 Copyright (C) 2021 binary butterfly GmbH
@@ -41,8 +39,6 @@ class BaseConfig:
 
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SQLALCHEMY_ECHO = False
-
-    CELERY_BROKER_URL = 'amqp://rabbitmq'
 
     ENFORCE_CONFIG_VALUES = [
         'PROJECT_URL',

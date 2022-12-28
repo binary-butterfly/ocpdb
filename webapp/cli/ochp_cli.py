@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 """
 Open ChargePoint DataBase OCPDB
 Copyright (C) 2021 binary butterfly GmbH
@@ -20,29 +18,31 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import click
 from flask.cli import AppGroup
-from webapp.services.ochp.OchpChargepointRequest import ochp_get_chargepoint_list, ochp_get_chargepoint_list_update, \
-    ochp_get_status
-from .helper import catch_exception
+
+from webapp.common.error_handling import catch_exception
+from webapp.dependencies import dependencies
 
 
 ochp_cli = AppGroup('ochp')
 
 
-@ochp_cli.command("get", help='OCHP GetChargePointList: downloads and stores chargepoints')
+@ochp_cli.command('import', help='OCHP GetChargePointList: downloads and stores chargepoints')
 @catch_exception
 def cli_get():
-    ochp_get_chargepoint_list()
+    dependencies.get_import_services().ochp_import_service.base_load_and_save()
 
 
+"""
 @ochp_cli.command("get-update", help='OCHP GetChargePointListUpdates: downloads and stores chargepoint updates')
 @click.option('--full', default=False, is_flag=True)
 @catch_exception
 def cli_get(full: bool = False):
-    ochp_get_chargepoint_list_update(full=full)
+    dependencies.get_ochp_import_service().import_base_data()
+"""
 
 
-@ochp_cli.command("status", help='OCHP GetStatus: downloads and stores chargepoint live status')
-@click.option('--full', default=False, is_flag=True)
+@ochp_cli.command('status', help='OCHP GetStatus: downloads and stores chargepoint live status')
+@click.option('--full', 'full_sync', default=False, is_flag=True)
 @catch_exception
-def cli_get(full: bool = False):
-    ochp_get_status(full=full)
+def cli_get(full_sync: bool = False):
+    dependencies.get_import_services().ochp_import_service.live_load_and_save(full_sync)

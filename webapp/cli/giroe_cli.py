@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 """
 Open ChargePoint DataBase OCPDB
 Copyright (C) 2021 binary butterfly GmbH
@@ -18,19 +16,20 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-import click
-from typing import Optional
 from datetime import datetime
+from typing import Optional
+
+import click
 from flask.cli import AppGroup
-from webapp.services.giroe.giroe_service import GiroeService
-from webapp.services.base_service import get_full_service_dependencies
-from .helper import catch_exception
+
+from webapp.common.error_handling import catch_exception
+from webapp.dependencies import dependencies
 
 
 giroe_cli = AppGroup('giroe')
 
 
-@giroe_cli.command("download-and-save", help='Giro-e: downloads and saves chargepoint updates')
+@giroe_cli.command("import", help='Giro-e: downloads and saves chargepoint updates')
 @click.option(
     '-cf', '--created-since', 'created_since',
     type=click.DateTime(formats=["%Y-%m-%d", "%Y-%m-%dT%H:%M:%S"]),
@@ -56,7 +55,6 @@ def cli_download_and_save(
         created_since: Optional[datetime] = None,
         created_until: Optional[datetime] = None,
         modified_since: Optional[datetime] = None,
-        modified_until: Optional[datetime] = None):
-    GiroeService(
-        **get_full_service_dependencies(),
-    ).download_and_save(created_since, created_until, modified_since, modified_until)
+        modified_until: Optional[datetime] = None,
+):
+    dependencies.get_import_services().giroe_import_service.download_and_save(created_since, created_until, modified_since, modified_until)

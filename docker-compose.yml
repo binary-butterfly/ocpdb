@@ -1,4 +1,8 @@
-version: '3'
+version: '3.8'
+
+# binary butterfly GmbH projects add a project specific modifier to standard ports to prevent port collisions.
+# This project has the modified +10.
+
 services:
   flask:
     build:
@@ -10,8 +14,6 @@ services:
       - mysql
     volumes:
       - .:/app
-    environment:
-      FLASK_ENV: development
     user: ${CURRENT_UID}
     entrypoint: ["python3", "runserver.py"]
 
@@ -34,9 +36,13 @@ services:
     volumes:
       - .:/app
       - mysql:/var/lib/mysql
+    ports:
+      - "3316:3306"
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: ocpdb
+    logging:
+      driver: 'none'
 
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
@@ -48,12 +54,46 @@ services:
       PMA_HOST: mysql
     depends_on:
       - mysql
+    logging:
+      driver: 'none'
 
   redis:
     image: redis:latest
+    logging:
+      driver: 'none'
 
   rabbitmq:
     image: rabbitmq:latest
+    logging:
+      driver: 'none'
+
+  mocked-ochp:
+    image: registry.git.sectio-aurea.org/common/base-images/flask:ubuntu-22.04
+    volumes:
+      - ./dev/test_services/mocked_ochp:/app
+    command: ["python", "/app/app.py"]
+    user: ${CURRENT_UID}
+
+  mocked-chargeit:
+    image: registry.git.sectio-aurea.org/common/base-images/flask:ubuntu-22.04
+    volumes:
+      - ./dev/test_services/mocked_chargeit:/app
+    command: ["python", "/app/app.py"]
+    user: ${CURRENT_UID}
+
+  mocked-stadtnavi:
+    image: registry.git.sectio-aurea.org/common/base-images/flask:ubuntu-22.04
+    volumes:
+      - ./dev/test_services/mocked_stadtnavi:/app
+    command: ["python", "/app/app.py"]
+    user: ${CURRENT_UID}
+
+  mocked-giroe:
+    image: registry.git.sectio-aurea.org/common/base-images/flask:ubuntu-22.04
+    volumes:
+      - ./dev/test_services/mocked_giroe:/app
+    command: ["python", "/app/app.py"]
+    user: ${CURRENT_UID}
 
 volumes:
   mysql:

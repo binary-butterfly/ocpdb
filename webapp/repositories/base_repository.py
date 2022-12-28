@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 """
 Open ChargePoint DataBase OCPDB
 Copyright (C) 2021 binary butterfly GmbH
@@ -18,34 +16,16 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from flask import Config, current_app
 from typing import Optional
+
 from sqlalchemy.orm import Session
+
+from webapp.common.error_handling.exceptions import AppException
 from webapp.extensions import db
-from webapp.common.exceptions import AppException
 
 
-class UnsetValue:
-    def __call__(self):
-        return self
-
-    def __repr__(self):
-        return 'UnsetValue'
-
-    def __str__(self):
-        return '<UnsetValue>'
-
-    def __bool__(self):
-        return False
-
-
-# Create sentinel object and redefine __new__ so that the object cannot be cloned
-unset_value = UnsetValue()
-UnsetValue.__new__ = lambda cls: unset_value
-
-
-class InconsistentDataException(Exception):
-    pass
+class InconsistentDataException(AppException):
+    code = 'inconsistent_data'
 
 
 class ObjectNotFoundException(AppException):
@@ -54,7 +34,6 @@ class ObjectNotFoundException(AppException):
     This exception may be extended (e.g. UserNotFoundException) for specific object types if needed.
     """
     code = 'not_found'
-    message = 'object not found'
     http_status = 404
 
 
@@ -66,4 +45,4 @@ class BaseRepository:
         self.session = db.session if session is None else session
 
     def exists(self, obj, field, value):
-        return self.session(obj).filter(**{field: value}).count() > 0
+        return self.session.query(obj).filter(**{field: value}).count() > 0

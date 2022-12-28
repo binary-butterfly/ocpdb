@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 """
 Open ChargePoint DataBase OCPDB
 Copyright (C) 2021 binary butterfly GmbH
@@ -20,18 +18,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import click
 from flask.cli import AppGroup
-from webapp.services.bnetza.bnetza_service import BnetzaService
-from webapp.services.base_service import get_full_service_dependencies
-from .helper import catch_exception
+
+from webapp.common.error_handling import catch_exception
+from webapp.dependencies import dependencies
 
 
 bnetza_cli = AppGroup('bnetza')
 
 
-@bnetza_cli.command("load-and-save", help='Bundesnetzagentur: loads and saves chargepoints from XLXS file')
+@bnetza_cli.command("import", help='Bundesnetzagentur: loads and saves chargepoints from XLXS file')
 @click.argument('import_file_path', type=click.File('rb'))
 @catch_exception
 def cli_load_and_save(import_file_path):
-    BnetzaService(
-        **get_full_service_dependencies()
-    ).load_and_save(import_file_path)
+    dependencies.get_import_services().bnetza_import_service.load_and_save(import_file_path)

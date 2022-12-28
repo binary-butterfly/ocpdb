@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 """
 Open ChargePoint DataBase OCPDB
 Copyright (C) 2021 binary butterfly GmbH
@@ -19,9 +17,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 import json
-from enum import Enum
-from decimal import Decimal
+from dataclasses import field
 from datetime import datetime
+from decimal import Decimal
+from enum import Enum
 
 
 class DefaultJSONEncoder(json.JSONEncoder):
@@ -33,3 +32,9 @@ class DefaultJSONEncoder(json.JSONEncoder):
         if isinstance(obj, Enum):
             return obj.name
         return obj.__dict__
+
+
+def dataclass_value_required():
+    def raise_():
+        raise KeyError(f'Field is required')
+    return field(default_factory=raise_)

@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 """
 Open ChargePoint DataBase OCPDB
 Copyright (C) 2021 binary butterfly GmbH
@@ -18,20 +16,22 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from typing import List
-from flask import Blueprint, Flask
-from .tiles_api import TilesBlueprint
+from typing import List, Type
+
+from webapp.common.base_blueprint import BaseBlueprint
+from .base_blueprint import PublicApiBaseBlueprint
 from .ocpi_api import OcpiBlueprint
+from .tiles_api import TilesBlueprint
 
 
-class PublicApi(Blueprint):
+class PublicApi(BaseBlueprint):
     documentation_base = True
-    blueprints: List[Blueprint] = [
+    blueprints: List[Type[PublicApiBaseBlueprint]] = [
         TilesBlueprint,
-        OcpiBlueprint
+        OcpiBlueprint,
     ]
 
-    def __init__(self, app: Flask):
+    def __init__(self):
         super().__init__('public', __name__, url_prefix='')
         for blueprint in self.blueprints:
-            self.register_blueprint(blueprint(app))
+            self.register_blueprint(blueprint())

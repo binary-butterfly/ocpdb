@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 """
 Open ChargePoint DataBase OCPDB
 Copyright (C) 2021 binary butterfly GmbH
@@ -23,17 +21,17 @@ from webapp.repositories import LocationRepository
 
 
 class OcpiHandler(PublicApiBaseHandler):
-    location_respository: LocationRepository
+    location_repository: LocationRepository
 
-    def __init__(self, *args, location_respository: LocationRepository, **kwargs):
+    def __init__(self, *args, location_repository: LocationRepository, **kwargs):
         super().__init__(*args, **kwargs)
-        self.location_repository = location_respository
+        self.location_repository = location_repository
 
     def get_location(self, location_id: int):
-        location = self.location_repository.fetch_by_id(location_id)
+        location = self.location_repository.fetch_location_by_id(location_id, include_children=True)
         location_dict = self.filter_none(location.to_dict(
             ignore=['giroe_id', 'owner_id', 'owner_id', 'suboperator_id', 'created', 'modified', 'id', 'geometry'],
-            transform_ocpi=True
+            transform_ocpi=True,
         ))
         location_dict['evses'] = []
         for regular_hours in location.regular_hours:
@@ -42,41 +40,39 @@ class OcpiHandler(PublicApiBaseHandler):
             location_dict['opening_times']['regular_hours'].append(
                 regular_hours.to_dict(
                     ignore=['location_id', 'chargepoint_id', 'created', 'modified', 'id'],
-                    transform_ocpi=True
+                    transform_ocpi=True,
                 )
             )
         for exceptional_opening in location.exceptional_openings:
             if 'exceptional_openings' not in location_dict['opening_times']:
                 location_dict['opening_times']['exceptional_openings'] = []
             location_dict['opening_times']['exceptional_openings'].append(
-                exceptional_opening.to_dict(ignore=['chargepoint_id', 'created', 'modified', 'id'])
+                exceptional_opening.to_dict(ignore=['chargepoint_id', 'created', 'modified', 'id']),
             )
         for exceptional_closing in location.exceptional_closings:
             if 'exceptional_closings' not in location_dict['opening_times']:
                 location_dict['opening_times']['exceptional_closings'] = []
             location_dict['opening_times']['exceptional_closings'].append(
-                exceptional_closing.to_dict(ignore=['chargepoint_id', 'created', 'modified', 'id'])
+                exceptional_closing.to_dict(ignore=['chargepoint_id', 'created', 'modified', 'id']),
             )
-        for chargepoint in location.chargepoints:
-            chargepoint_dict = chargepoint.to_dict(
-                ignore=['external_id', 'giroe_id', 'location_id', 'created', 'modified', 'id'], transform_ocpi=True)
+        for evse in location.evses:
+            chargepoint_dict = evse.to_dict(
+                ignore=['external_id', 'giroe_id', 'location_id', 'created', 'modified', 'id'],
+                transform_ocpi=True,
+            )
             chargepoint_dict['connectors'] = []
-            for connector in chargepoint.connectors:
+            for connector in evse.connectors:
                 connector_dict = self.filter_none(connector.to_dict(
-                    ignore=['external_id', 'giroe_id', 'chargepoint_id', 'created', 'modified', 'id']
+                    ignore=['external_id', 'giroe_id', 'chargepoint_id', 'created', 'modified', 'id'],
                 ))
                 chargepoint_dict['connectors'].append(connector_dict)
-            for image in chargepoint.images:
+
+            for image in evse.images:
                 if 'images' not in chargepoint_dict:
                     chargepoint_dict['images'] = []
                 chargepoint_dict['images'].append(self.filter_none(image.to_dict(
-                    ignore=['chargepoint_id', 'location_id', 'created', 'modified', 'id', 'external_url'])
-                ))
-            for related_resource in chargepoint.related_resource:
-                if 'related_resource' not in chargepoint_dict:
-                    chargepoint_dict['related_resource'] = []
-                chargepoint_dict['related_resource'].append(
-                    related_resource.to_dict(ignore=['chargepoint_id', 'created', 'modified', 'id']))
+                    ignore=['chargepoint_id', 'location_id', 'created', 'modified', 'id', 'external_url']
+                )))
 
             location_dict['evses'].append(self.filter_none(chargepoint_dict))
 

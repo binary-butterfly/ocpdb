@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 """
 Open ChargePoint DataBase OCPDB
 Copyright (C) 2021 binary butterfly GmbH
@@ -18,13 +16,15 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from typing import List
+from dataclasses import dataclass
 from datetime import datetime
-from dataclasses import dataclass, asdict
+from typing import List, Tuple
+
 from validataclass.helpers import UnsetValue, OptionalUnset
-from webapp.models import Chargepoint as Evse
-from .base_repository import BaseRepository, ObjectNotFoundException
-from webapp.enums import ChargepointStatus as EvseStatus
+
+from webapp.models import Evse, Location
+from webapp.models.evse import EvseStatus
+from .base_repository import BaseRepository, ObjectNotFoundException, InconsistentDataException
 
 
 @dataclass
@@ -35,32 +35,46 @@ class EvseUpdate:
 
 class EvseRepository(BaseRepository):
 
-    def fetch_by_id(self, chargepoint_id: int) -> Evse:
-        result = self.session.query(Evse).get(chargepoint_id)
+    def fetch_by_id(self, evse_id: int) -> Evse:
+        result = self.session.query(Evse).get(evse_id)
+
         if result is None:
-            raise ObjectNotFoundException
+            raise ObjectNotFoundException(message=f'evse with id {evse_id} not found')
+
         return result
 
-    def fetch_by_uid(self, source: str, chargepoint_uid: str) -> Evse:
-        result = self.session.query(Evse)\
-            .filter(Evse.uid == chargepoint_uid)\
-            .filter(Evse.source == source)\
-            .first()
-        if result is None:
-            raise ObjectNotFoundException
-        return result
+    def fetch_by_uid(self, source: str, uid: str) -> Evse:
+        items = self.session.query(Evse)\
+            .filter(Evse.uid == uid)\
+            .join(Location, Location.id == Evse.location_id)\
+            .filter(Location.source == source)\
+            .all()
+
+        if len(items) == 0:
+            raise ObjectNotFoundException(message=f'evse with uid {uid} and source {source} not found')
+
+        if len(items) > 1:
+            raise InconsistentDataException(f'more than one evse with uid {uid} and source {source}')
+
+        return items[0]
 
     def fetch_evse_by_location_id(self, location_id: int) -> List[Evse]:
         return self.session.query(Evse).filter(Evse.location_id == location_id)
 
-    def update_evse(self, evse: Evse, evse_update: EvseUpdate):
-        for key, value in asdict(evse_update).items():
-            if value is UnsetValue:
-                continue
-            setattr(evse, key, value)
+    def fetch_evse_uids(self) -> List[str]:
+        items = self.session.query(Evse.uid).all()
 
+        return [item.uid for item in items]
+
+    def fetch_extended_evse_uids(self) -> List[Tuple[str, int]]:
+        items = self.session.query(Evse.uid, Evse.location_id).all()
+
+        return [(item.uid, item.location_id) for item in items]
+
+    def save_evse(self, evse: Evse, *, commit: bool = True):
         self.session.add(evse)
-        self.session.commit()
+        if commit:
+            self.session.commit()
 
     def delete_evse_by_ids(self, evse_ids: List[int]):
         self.session.query(Evse)\

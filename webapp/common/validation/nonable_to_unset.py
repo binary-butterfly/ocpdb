@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 """
 Open ChargePoint DataBase OCPDB
 Copyright (C) 2021 binary butterfly GmbH
@@ -18,8 +16,8 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from validataclass.validators import Noneable, Validator
 from validataclass.helpers import UnsetValue
+from validataclass.validators import Noneable, Validator
 
 
 class NoneableToUnsetValue(Noneable):

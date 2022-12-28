@@ -11,4 +11,4 @@ MAIL_PASSWORD: 'your-password'
 
 REMOTE_SERVERS:
   STADTNAVI:
-    url: 'https://api.dev.stadtnavi.eu/herrenberg/charging-stations/charging-stations-ocpi.json'
+    url: 'https://api.dev.stadtnavi.eu'

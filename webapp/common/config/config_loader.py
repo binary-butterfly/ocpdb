@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 """
 Open ChargePoint DataBase OCPDB
 Copyright (C) 2021 binary butterfly GmbH
@@ -20,12 +18,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
 
-
 from flask import Flask
 from yaml import safe_load
-from webapp.common.remote_helper import RemoteServerType, RemoteServer
 
 from webapp.common.constants import BaseConfig
+from webapp.common.remote_helper import RemoteServerType, RemoteServer
 
 
 class ConfigLoader:

@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 """
 Open ChargePoint DataBase OCPDB
 Copyright (C) 2021 binary butterfly GmbH
@@ -18,15 +16,11 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from webapp.common.blueprint import Blueprint
+from webapp.common.base_blueprint import BaseBlueprint
 
 
-class PublicApiBaseBlueprint(Blueprint):
+class PublicApiBaseBlueprint(BaseBlueprint):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.load_routes()
-
-    def load_routes(self, *args, **kwargs):
-        raise Exception('implementation required')
 
