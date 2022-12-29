@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 """
 Open ChargePoint DataBase OCPDB
 Copyright (C) 2021 binary butterfly GmbH
@@ -18,30 +16,30 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from lxml import etree
 
-from tests.helper import monkey_patch
-from tests.helper import BaseTestCase
-from tests.files.ChargepointData import test_dataset
-
-from webapp.services.ocpi.SaveConnector import get_connector_update
+import json
+from datetime import date, datetime
+from decimal import Decimal
+from enum import Enum
 
 
-class GetConnectorUpdateTest(BaseTestCase):
+class DefaultJSONEncoder(json.JSONEncoder):
+    """
+    Custom JSON encoder for this app.
+    """
 
-    def test_json_to_update(self):
-        data_connector = {
-          "uid": "1",
-          "standard": "IEC_62196_T2",
-          "format": "SOCKET",
-          "power_type": "AC_3_PHASE",
-          "max_voltage": 400,
-          "max_amperage": 32,
-          "max_electric_power": 22000
-        }
-        connector = get_connector_update(data_connector)
-        assert connector is not None
+    def default(self, obj):
+        if isinstance(obj, datetime):
+            return obj.strftime('%Y-%m-%dT%H:%M:%SZ')
+        if isinstance(obj, date):
+            return obj.isoformat()
+        if isinstance(obj, Decimal):
+            return str(obj)
+        if isinstance(obj, Enum):
+            return obj.value
 
+        # Serialize data models using to_dict
+        if hasattr(obj, 'to_dict'):
+            return obj.to_dict()
 
-
-
+        return obj.__dict__

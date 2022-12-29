@@ -20,10 +20,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from flask import Flask, request
 
 from webapp.common.error_handling import ErrorDispatcher
+from webapp.common.json import JSONProvider
 from webapp.common.rest import RestApiErrorHandler
 from webapp.dependencies import dependencies
 from webapp.extensions import db, celery, migrate, logger, cors
-from webapp.common.misc import DefaultJSONEncoder
 from webapp.common.constants import BaseConfig
 from webapp.common.config import ConfigLoader
 from webapp.cli import register_cli_to_app
@@ -37,9 +37,12 @@ from webapp.server_rest_api import ServerRestApi
 __all__ = ['launch']
 
 
+class App(Flask):
+    json_provider_class = JSONProvider
+
+
 def launch():
-    app = Flask(BaseConfig.PROJECT_NAME)
-    app.json_encoder = DefaultJSONEncoder
+    app = App(BaseConfig.PROJECT_NAME)
     configure_app(app)
     configure_extensions(app)
     configure_blueprints(app)

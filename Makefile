@@ -2,6 +2,9 @@ CURRENT_UID = $(shell id -u):$(shell id -g)
 
 DOCKER_COMPOSE_FILE = docker-compose.yml
 DOCKER_COMPOSE = CURRENT_UID=$(CURRENT_UID) docker-compose -f $(DOCKER_COMPOSE_FILE)
+
+TESTING_COMPOSE_PROJECT_NAME = ocpdb_tests
+TESTING_DOCKER_COMPOSE = $(DOCKER_COMPOSE) -p $(TESTING_COMPOSE_PROJECT_NAME)
 FLASK_RUN = $(DOCKER_COMPOSE) run --rm flask
 
 DOCKER_REGISTRY = registry.git.sectio-aurea.org
@@ -80,17 +83,25 @@ clean: docker-down
 
 # Test suites
 # -----------
-# Run all test suites (all 'testpaths' in pytest.ini)
-test:
-	$(FLASK_RUN) python -m pytest
-
 # Run unit tests only
-test-unit:
-	$(FLASK_RUN) python -m pytest tests/unit
+test: test-unit
 
-# Run integration tests only
+# Run all test suites (unit and integration tests)
+test-all: test-unit test-integration
+
+# Run unit tests only and generate coverage report in HTML format
+test-unit:
+	$(FLASK_RUN) python -m pytest tests/unit --cov=webapp --cov-report=html
+
+# Run integration tests in a separate environment
 test-integration:
-	$(FLASK_RUN) python -m pytest tests/integration
+	$(TESTING_DOCKER_COMPOSE) run --rm flask ./wait_for_services.sh python -m pytest tests/integration
+	$(TESTING_DOCKER_COMPOSE) down
+
+# Open coverage report in browser (determined by BROWSER env variable, defaults to firefox)
+open-coverage:
+	@test -f ./reports/coverage_html/index.html || make test-unit
+	$(or $(BROWSER),firefox) ./reports/coverage_html/index.html
 
 
 # Development environments

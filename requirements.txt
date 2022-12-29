@@ -24,4 +24,6 @@ ngram~=4.0
 geopy~=2.3
 celery~=5.2
 kombu~=5.2
+pytest~=7.2
+pytest-cov~=4.0
 https://github.com/mapbox/vector-tile-base/archive/refs/heads/master.tar.gz

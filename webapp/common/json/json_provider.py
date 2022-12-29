@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 """
 Open ChargePoint DataBase OCPDB
 Copyright (C) 2021 binary butterfly GmbH
@@ -18,17 +16,19 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from lxml import etree
 
-from tests.helper import monkey_patch
-from tests.integration.helper.BaseIntegrationTestCase import BaseIntegrationTestCase
-from tests.files.ChargepointData import test_dataset
+import json
+from typing import Any
 
-from webapp.services.ochp.SaveChargepoint import save_chargepoints
+from flask.json.provider import DefaultJSONProvider
+
+from .default_json_encoder import DefaultJSONEncoder
 
 
-class SaveChargepointTest(BaseIntegrationTestCase):
-    run_reset_database = True
+class JSONProvider(DefaultJSONProvider):
+    """
+    Custom JSON provider for this app.
+    """
 
-    def test_xml_to_update(self):
-        save_chargepoints(etree.fromstring(test_dataset), False)
+    def dumps(self, object_: Any, **kwargs: Any) -> str:
+        return json.dumps(object_, cls=DefaultJSONEncoder)

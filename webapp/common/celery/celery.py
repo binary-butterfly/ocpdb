@@ -24,7 +24,7 @@ from flask import Flask
 from flask_celery import Celery
 from kombu.serialization import register
 
-from webapp.common.misc import DefaultJSONEncoder
+from webapp.common.json import DefaultJSONEncoder
 
 
 class LogErrorsCelery(Celery):

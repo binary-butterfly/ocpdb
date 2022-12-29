@@ -16,25 +16,5 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-import json
-from dataclasses import field
-from datetime import datetime
-from decimal import Decimal
-from enum import Enum
-
-
-class DefaultJSONEncoder(json.JSONEncoder):
-    def default(self, obj):
-        if isinstance(obj, datetime):
-            return obj.strftime('%Y-%m-%dT%H:%M:%S')
-        if isinstance(obj, Decimal):
-            return str(obj)
-        if isinstance(obj, Enum):
-            return obj.name
-        return obj.__dict__
-
-
-def dataclass_value_required():
-    def raise_():
-        raise KeyError(f'Field is required')
-    return field(default_factory=raise_)
+from .default_json_encoder import DefaultJSONEncoder
+from .json_provider import JSONProvider

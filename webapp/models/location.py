@@ -179,6 +179,9 @@ def set_geometry(mapper, connection, location):
     lat_history = db.inspect(location).attrs.lat.history
     lon_history = db.inspect(location).attrs.lon.history
     # just update when there are changes in lat or lon
-    if len(lat_history[0]) or len(lat_history[2]) or len(lon_history[0]) or len(lon_history[2]):
+    if (lat_history[0] and len(lat_history[0]))\
+            or (lat_history[2] and len(lat_history[2]))\
+            or (lon_history[0] and len(lon_history[0]))\
+            or (lon_history[2] and len(lon_history[2])):
         location.geometry = func.GeomFromText('POINT(%s %s)' % (float(location.lat), float(location.lon)))
 

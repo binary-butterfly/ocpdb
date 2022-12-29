@@ -102,13 +102,14 @@ class BaseImportService(BaseService):
         self.set_image_list(location, location_update.images, images_by_url)
         self.set_opening_times(location, location_update.regular_hours)
 
-        old_evse_by_uid = {evse.uid: evse for evse in location.evses}
-        new_evses = []
-        for evse_update in location_update.evses:
-            # TODO: check for overlapping UIDs
-            new_evses.append(self.get_evse(evse_update, old_evse_by_uid, images_by_url))
+        if location_update.evses is not UnsetValue:
+            old_evse_by_uid = {evse.uid: evse for evse in location.evses}
+            new_evses = []
+            for evse_update in location_update.evses:
+                # TODO: check for overlapping UIDs
+                new_evses.append(self.get_evse(evse_update, old_evse_by_uid, images_by_url))
 
-        location.evses = new_evses
+            location.evses = new_evses
         self.location_repository.save_location(location)
 
         if old_location_ids is not None and location.id in old_location_ids:

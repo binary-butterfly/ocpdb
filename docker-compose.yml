@@ -12,10 +12,11 @@ services:
       - "5010:5000"
     depends_on:
       - mysql
+      - rabbitmq
     volumes:
       - .:/app
     user: ${CURRENT_UID}
-    entrypoint: ["python3", "runserver.py"]
+    command: ["python3", "runserver.py"]
 
   worker:
     build:
@@ -24,7 +25,6 @@ services:
     depends_on:
       - mysql
       - rabbitmq
-      - redis
     volumes:
       - .:/app
     init: true
@@ -54,11 +54,6 @@ services:
       PMA_HOST: mysql
     depends_on:
       - mysql
-    logging:
-      driver: 'none'
-
-  redis:
-    image: redis:latest
     logging:
       driver: 'none'
 

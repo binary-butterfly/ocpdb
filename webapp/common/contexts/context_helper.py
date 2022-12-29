@@ -18,8 +18,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from typing import Optional
 
-from flask import _app_ctx_stack, _request_ctx_stack  # noqa
-from flask.ctx import AppContext, RequestContext
+from flask.globals import app_ctx, request_ctx
+from flask.ctx import AppContext, RequestContext, has_request_context
 
 
 class ContextHelper:
@@ -32,18 +32,18 @@ class ContextHelper:
         """
         Returns the current application context, or None if no application context exists.
         """
-        return _app_ctx_stack.top
+        return app_ctx
 
     @staticmethod
     def get_request_context() -> Optional[RequestContext]:
         """
         Returns the current request context, or None if no request context exists.
         """
-        return _request_ctx_stack.top
+        return request_ctx
 
     @staticmethod
     def has_request_context() -> bool:
         """
         Returns True if a request context exists on the request context stack, False otherwise.
         """
-        return _request_ctx_stack.top is not None
+        return has_request_context()

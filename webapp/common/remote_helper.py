@@ -29,7 +29,7 @@ from urllib3.exceptions import NewConnectionError
 
 from webapp.common.config import ConfigHelper
 from webapp.common.logger import Logger
-from webapp.common.misc import DefaultJSONEncoder
+from webapp.common.json import DefaultJSONEncoder
 
 
 class RemoteServerType(Enum):
