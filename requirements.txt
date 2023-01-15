@@ -11,7 +11,7 @@ lxml~=4.9
 redis~=4.3
 mercantile~=1.2
 python-dateutil~=2.8
-python-dotenv~=0.20.0
+python-dotenv~=0.21.0
 click~=8.1
 pymysql~=1.0
 pyyaml~=6.0
@@ -27,3 +27,7 @@ kombu~=5.2
 pytest~=7.2
 pytest-cov~=4.0
 https://github.com/mapbox/vector-tile-base/archive/refs/heads/master.tar.gz
+
+# binary butterfly shared libraries (https://git.sectio-aurea.org/public_libraries)
+--extra-index-url https://git.sectio-aurea.org/api/v4/groups/262/-/packages/pypi/simple
+flask-openapi==1.1.0rc0.dev16503

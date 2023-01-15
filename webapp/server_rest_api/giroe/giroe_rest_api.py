@@ -22,7 +22,7 @@ from webapp.common.response import empty_json_response
 from webapp.common.rest import BaseMethodView
 from webapp.common.server_auth import require_role, ServerAuthRole
 from webapp.dependencies import dependencies
-from webapp.openapi.openapi_decorator import document, Parameter, ErrorResponse, EmptyResponse, Schema, Request
+from flask_openapi.decorator import document, Parameter, ErrorResponse, EmptyResponse, Schema, Request
 from webapp.server_rest_api.base_blueprint import ServerApiBaseBlueprint
 from webapp.services.import_services.giroe.giroe_validator import LocationInput
 from .giroe_handler import GiroeHandler

@@ -16,23 +16,13 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from flask import Blueprint, render_template
-from flask.views import MethodView
+from typing import Optional
+
+from validataclass.dataclasses import validataclass, Default
+from validataclass.validators import BooleanValidator
 
 
-class FrontendBlueprint(Blueprint):
-    documentation_base = True
-
-    def __init__(self):
-        super().__init__('frontend', __name__, url_prefix='', template_folder='templates')
-
-        self.add_url_rule(
-            '/',
-            view_func=FrontendFrontpageMethodView.as_view('frontpage'),
-        )
-
-
-class FrontendFrontpageMethodView(MethodView):
-
-    def get(self):
-        return render_template('frontpage.html')
+@validataclass
+class TileFilterInput:
+    static: Optional[bool] = BooleanValidator(allow_strings=True), Default(None)
+    filter_duplicates: bool = BooleanValidator(allow_strings=True), Default(True)

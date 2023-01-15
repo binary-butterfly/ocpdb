@@ -16,7 +16,7 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from typing import List
+from typing import List, Optional
 
 from mercantile import LngLatBbox
 from sqlalchemy import func
@@ -84,38 +84,40 @@ class LocationRepository(BaseRepository):
         if commit:
             self.session.commit()
 
-    def fetch_locations_summary_by_bounds(self, bbox: LngLatBbox, static: bool = False):
-        query = """
-        SELECT location.id, location.lat, location.lon, location.name, location.address, 
-            COUNT(evse.id) as chargepoint_count, 
-            SUM(CASE WHEN evse.status = 'AVAILABLE' THEN 1 ELSE 0 END) as chargepoint_available_count, 
-            SUM(CASE WHEN evse.status = 'UNKNOWN' THEN 1 ELSE 0 END) as chargepoint_unknown_count,
-            SUM(CASE WHEN evse.status = 'STATIC' THEN 1 ELSE 0 END) as chargepoint_static_count,
-            SUM(CASE WHEN evse.parking_restrictions & 64 = 64 THEN 1 ELSE 0 END) as chargepoint_bike_count
-        FROM location 
-        LEFT JOIN evse ON evse.location_id = location.id
-        WHERE MBRContains(GeomFromText('LINESTRING(%s %s, %s %s)'), location.geometry)
-            %s
-        GROUP BY location.id
-        """ % (
-            bbox[1] - (0.5 * (bbox[3] - bbox[1])),
-            bbox[0] - (0.5 * (bbox[2] - bbox[0])),
-            bbox[3] + (0.5 * (bbox[3] - bbox[1])),
-            bbox[2] + (0.5 * (bbox[2] - bbox[0])),
-            '' if static is None else "AND evse.status %s 'STATIC'" % ('=' if static is True else '!=')
-        )
+    def fetch_locations_summary_by_bounds(self, bbox: LngLatBbox, static: Optional[bool] = None, filter_duplicates: bool = True):
+        additional_where = ''
+        if static is not None:
+            additional_where += f'AND evse.status {"=" if static is True else "!="} "STATIC"'
+        if filter_duplicates:
+            additional_where += 'AND location.dynamic_location_id IS NULL'
+
+        query = f'' \
+                f'SELECT location.id, location.lat, location.lon, location.name, location.address, ' \
+                f'  COUNT(evse.id) as chargepoint_count, ' \
+                f'  SUM(CASE WHEN evse.status = "AVAILABLE" THEN 1 ELSE 0 END) as chargepoint_available_count, ' \
+                f'  SUM(CASE WHEN evse.status = "UNKNOWN" THEN 1 ELSE 0 END) as chargepoint_unknown_count, ' \
+                f'  SUM(CASE WHEN evse.status = "STATIC" THEN 1 ELSE 0 END) as chargepoint_static_count, ' \
+                f'  SUM(CASE WHEN evse.parking_restrictions & 64 = 64 THEN 1 ELSE 0 END) as chargepoint_bike_count ' \
+                f'FROM location ' \
+                f'LEFT JOIN evse ON evse.location_id = location.id ' \
+                f'WHERE MBRContains(GeomFromText("{self._get_linestring_bounds(bbox)}"), location.geometry) ' \
+                f'{additional_where} ' \
+                f'GROUP BY location.id'
+
         return self.session.execute(query)
-
+    
     def fetch_locations_by_bounds(self, bbox: LngLatBbox) -> List[Location]:
-        line_string = f'LINESTRING({bbox[1] - (0.5 * (bbox[3] - bbox[1]))} {bbox[0] - (0.5 * (bbox[2] - bbox[0]))}, ' \
-                      f'{bbox[3] + (0.5 * (bbox[3] - bbox[1]))} {bbox[2] + (0.5 * (bbox[2] - bbox[0]))})'
-
         locations = self.session.query(Location)\
-            .filter(func.MBRContains(func.GeomFromText(line_string), Location.geometry))\
+            .filter(func.MBRContains(func.GeomFromText(self._get_linestring_bounds(bbox)), Location.geometry))\
             .filter(Location.source != 'bnetza')\
             .all()
 
         return locations
+
+    @staticmethod
+    def _get_linestring_bounds(bbox: LngLatBbox):
+        return f'LINESTRING({bbox[1] - (0.5 * (bbox[3] - bbox[1]))} {bbox[0] - (0.5 * (bbox[2] - bbox[0]))}, ' \
+               f'{bbox[3] + (0.5 * (bbox[3] - bbox[1]))} {bbox[2] + (0.5 * (bbox[2] - bbox[0]))})'
 
     def delete_location(self, location: Location, *, commit: bool = True):
         self.session.delete(location)

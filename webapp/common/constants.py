@@ -57,3 +57,5 @@ class BaseConfig:
             'description': 'production'
         }
     ]
+
+    MATCHING_FACTOR_THRESHOLD = 0.25

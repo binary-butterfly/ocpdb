@@ -16,12 +16,15 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+from validataclass.validators import DataclassValidator
+
 from webapp.common.base_blueprint import BaseBlueprint
 from webapp.common.response import protobuf_response
 from webapp.common.rest import BaseMethodView
 from webapp.dependencies import dependencies
-from webapp.openapi.openapi_decorator import document, Parameter
+from flask_openapi.decorator import document, Parameter
 from .tiles_handler import TilesHandler
+from .tiles_validators import TileFilterInput
 
 
 class TilesBlueprint(BaseBlueprint):
@@ -47,6 +50,7 @@ class TilesBlueprint(BaseBlueprint):
 
 class TilesMethodView(BaseMethodView):
     tiles_handler: TilesHandler
+    tile_filter_validator = DataclassValidator(TileFilterInput)
 
     def __init__(self, *args, tiles_handler: TilesHandler, **kwargs):
         super().__init__(*args, **kwargs)
@@ -58,10 +62,15 @@ class TilesMethodView(BaseMethodView):
             Parameter('x', schema=int, example=1),
             Parameter('y', schema=int, example=1),
             Parameter('z', schema=int, example=1)
+        ],
+        query=[
+            Parameter('static', schema=bool, description='if set show just static (true) or just dynamic (false) locations'),
+            Parameter('filter_duplicates', schema=bool, default=True, description='filters matched static-dynamic-duplicates'),
         ]
     )
     def get(self, x: int, y: int, z: int):
-        return protobuf_response(
-            self.tiles_handler.generate_tile(x, y, z, static=self.request_helper.get_query_args().get('static') == '1')
-        )
+        tile_filter_input = self.tile_filter_validator.validate(self.request_helper.get_query_args())
 
+        tiles = self.tiles_handler.generate_tile(x, y, z, tile_filter_input)
+
+        return protobuf_response(tiles)

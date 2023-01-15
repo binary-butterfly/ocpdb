@@ -27,7 +27,6 @@ def upgrade():
     op.create_foreign_key(None, 'exceptional_opening_period', 'location', ['location_id'], ['id'], use_alter=True)
     op.create_foreign_key(None, 'location', 'business', ['operator_id'], ['id'], use_alter=True)
     op.create_foreign_key(None, 'location', 'business', ['suboperator_id'], ['id'], use_alter=True)
-    op.create_foreign_key(None, 'location', 'location', ['duplicate_location_id'], ['id'], use_alter=True)
     op.create_foreign_key(None, 'location', 'business', ['owner_id'], ['id'], use_alter=True)
     op.create_foreign_key(None, 'location_image', 'image', ['image_id'], ['id'], use_alter=True)
     op.create_foreign_key(None, 'location_image', 'location', ['location_id'], ['id'], use_alter=True)

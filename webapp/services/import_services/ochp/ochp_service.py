@@ -62,7 +62,9 @@ class OchpImportService(BaseImportService):
 
     def live_load_and_save(self, full_sync: bool = False):
         last_downloaded = self.option_repository.get('ochp_status_last_downloaded') if not full_sync else None
-        last_downloaded = last_downloaded - timedelta(minutes=5)
+        if last_downloaded:
+            last_downloaded = last_downloaded - timedelta(minutes=5)
+
         evse_status_dicts = self.ochp_api_client.download_live_data(last_downloaded)
         evse_updates = []
 

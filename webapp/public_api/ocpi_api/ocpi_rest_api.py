@@ -21,9 +21,9 @@ from flask_cors import cross_origin
 
 from webapp.common.base_blueprint import BaseBlueprint
 from webapp.dependencies import dependencies
-from webapp.openapi.openapi_decorator import document, Response, ResponseData, ErrorResponse, Schema
+from flask_openapi.decorator import document, Response, ResponseData, ErrorResponse, Schema
 from .ocpi_handler import OcpiHandler
-from ...common.rest import BaseMethodView
+from webapp.common.rest import BaseMethodView
 
 
 class OcpiBlueprint(BaseBlueprint):

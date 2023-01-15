@@ -18,21 +18,19 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
 from flask import Flask, request
+from flask_openapi.views import OpenApiDocumentation
 
+from webapp.cli import register_cli_to_app
+from webapp.common.config import ConfigLoader
+from webapp.common.constants import BaseConfig
 from webapp.common.error_handling import ErrorDispatcher
 from webapp.common.json import JSONProvider
 from webapp.common.rest import RestApiErrorHandler
 from webapp.dependencies import dependencies
 from webapp.extensions import db, celery, migrate, logger, cors
-from webapp.common.constants import BaseConfig
-from webapp.common.config import ConfigLoader
-from webapp.cli import register_cli_to_app
-
-from webapp.public_api import PublicApi
-from webapp.openapi.openapi import OpenApiDocumentation
 from webapp.frontend import FrontendBlueprint
+from webapp.public_api import PublicApi
 from webapp.server_rest_api import ServerRestApi
-
 
 __all__ = ['launch']
 
@@ -65,9 +63,9 @@ def configure_extensions(app):
 
 def configure_blueprints(app):
     app.register_blueprint(PublicApi())
-    app.register_blueprint(OpenApiDocumentation())
     app.register_blueprint(FrontendBlueprint())
     app.register_blueprint(ServerRestApi())
+    app.register_blueprint(OpenApiDocumentation(app))
     register_cli_to_app(app)
 
 

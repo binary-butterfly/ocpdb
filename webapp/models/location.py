@@ -130,8 +130,8 @@ class Location(db.Model, BaseModel):
     suboperator: Rel['Business'] = db.relationship('Business', foreign_keys=[suboperator_id])
     owner: Rel['Business'] = db.relationship('Business', foreign_keys=[owner_id])
 
-    duplicate_location_id: Col[int] = db.Column(db.BigInteger, db.ForeignKey('location.id', use_alter=True))
-    duplicate_probability: Col[int] = db.Column(db.Integer)
+    dynamic_location_id: Col[int] = db.Column(db.BigInteger)  # TODO: relation?
+    dynamic_location_probability: Col[int] = db.Column(db.Float)
 
     name: Col[str] = db.Column(db.String(255))                        # OCHP: locationName, OCPI: name
     address: Col[str] = db.Column(db.String(255))                     # OCHP: chargePointAddress.address      OCPI: address

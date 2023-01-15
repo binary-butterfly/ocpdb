@@ -40,7 +40,7 @@ docker-login:
 
 # Builds and starts all docker containers
 docker-up: config
-	$(DOCKER_COMPOSE) up --build
+	$(DOCKER_COMPOSE) up --remove-orphans --build
 
 # Start containers in background (or recreate containers while they are running attached to another terminal)
 docker-up-detached: config

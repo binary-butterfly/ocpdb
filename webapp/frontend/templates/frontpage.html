@@ -86,14 +86,6 @@
     });
     map.addControl(new maplibregl.NavigationControl());
     map.on('load', function () {
-        map.addSource('chargepoints-static', {
-            'type': 'vector',
-            'tiles': [
-                window.location.href.split('/static')[0] + '/tiles/{z}/{x}/{y}.mvt?static=1'
-            ],
-            'minzoom': 10,
-            'maxzoom': 22
-        });
         map.addSource('chargepoints', {
             'type': 'vector',
             'tiles': [

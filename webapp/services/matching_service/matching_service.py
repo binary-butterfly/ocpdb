@@ -16,7 +16,7 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from typing import Tuple
+from typing import Tuple, Dict
 
 from ngram import NGram
 from decimal import Decimal
@@ -50,8 +50,6 @@ class MatchingService(BaseService):
         static_locations = self.location_repository.fetch_locations_by_source('bnetza')
         for counter, static_location in enumerate(static_locations):
             self.match_location(static_location)
-            #if counter == 100:
-            #    return
 
     def match_location(self, static_location: Location):
         locations = self.location_repository.fetch_locations_by_bounds(
@@ -63,20 +61,37 @@ class MatchingService(BaseService):
             ),
         )
         if not len(locations):
+            self._unset_location_relation(static_location)
             return
 
-        location_factors = {}
-        for location in locations:
-            factor, summary = self.match_location_pair(static_location, location)
-            location_factors[factor] = (location, summary)
+        locations_by_factors = {self._match_location_pair(static_location, location): location for location in locations}
 
-        sorted_location_factors = sorted(location_factors.items(), reverse=True)
-        for position, sorted_location_factor in enumerate(sorted_location_factors):
-            print(f'{"X" if position == 0 and sorted_location_factor[0] > 0.25 else ""};'
-                  f'{sorted_location_factor[0]:.05f};{sorted_location_factor[1][1]}')
+        # sort factors
+        sorted_factors = sorted(locations_by_factors.keys(), reverse=True)
+        if not len(sorted_factors):
+            self._unset_location_relation(static_location)
+            return
 
+        if sorted_factors[0] < self.config_helper.get('MATCHING_FACTOR_THRESHOLD'):
+            self._unset_location_relation(static_location)
+            return
 
-    def match_location_pair(self, static_location: Location, dynamic_location: Location) -> Tuple[float, str]:
+        matched_location = locations_by_factors[sorted_factors[0]]
+        if static_location.dynamic_location_id == matched_location.id:
+            return
+
+        static_location.dynamic_location_id = matched_location.id
+        self.location_repository.save_location(static_location)
+
+    def _unset_location_relation(self, location: Location):
+        if location.dynamic_location_id is None:
+            return
+
+        location.dynamic_location_id = None
+        self.location_repository.save_location(location)
+
+    @staticmethod
+    def _match_location_pair(static_location: Location, dynamic_location: Location) -> float:
         # distance factor
         distance = geodesic(
             (float(static_location.lat), float(static_location.lon)),
@@ -102,11 +117,4 @@ class MatchingService(BaseService):
         street_factor = street_factor ** 0.5
         distance_factor = distance_factor ** 0.5
 
-        summarized_factor = distance_factor * street_factor * operator_factor * evse_count_factor
-
-        summary = f'{static_location.id};{dynamic_location.id};{distance:.01f};{distance_factor:.05f};"{static_location.address}";' \
-                  f'"{dynamic_location.address}";{street_factor:.05f};{len(static_location.evses)};{len(dynamic_location.evses)};' \
-                  f'{evse_count_factor:.05f}'
-
-        return summarized_factor, summary
-
+        return distance_factor * street_factor * operator_factor * evse_count_factor
