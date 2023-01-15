@@ -49,5 +49,4 @@ The evse count factor is 1 for an equal amount of evses and gets less and less t
 ```math
 f_{evse\_count} = 1 - 0.4 * {{abs(len(location_a.evses) - len(location_b.evses))} 
     \over {abs(len(location_a.evses) - len(location_b.evses)) + 1}}
-)
 ```
