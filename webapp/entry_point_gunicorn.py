@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 """
 Open ChargePoint DataBase OCPDB
 Copyright (C) 2021 binary butterfly GmbH

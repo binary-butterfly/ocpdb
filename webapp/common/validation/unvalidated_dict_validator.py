@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 """
 Open ChargePoint DataBase OCPDB
 Copyright (C) 2021 binary butterfly GmbH
@@ -20,6 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
 from typing import Any
+
 from validataclass.validators import Validator
 
 __all__ = [
@@ -41,7 +40,7 @@ class UnvalidatedDictValidator(Validator):
     Output: `dict`
     """
 
-    def validate(self, input_data: Any) -> dict:
+    def validate(self, input_data: Any, **kwargs) -> dict:
         """
         Validate type of input data. Returns unmodified dict.
         """

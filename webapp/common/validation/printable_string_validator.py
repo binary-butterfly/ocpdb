@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 """
 Open ChargePoint DataBase OCPDB
 Copyright (C) 2021 binary butterfly GmbH
@@ -19,11 +17,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 from typing import Any, Optional
+
 from validataclass.validators import StringValidator
 
 
 class PrintableStringValidator(StringValidator):
-    def validate(self, input_data: Any) -> Optional[Any]:
+    def validate(self, input_data: Any, **kwargs) -> Optional[Any]:
 
         self._ensure_type(input_data, str)
 

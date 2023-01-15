@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 """
 Open ChargePoint DataBase OCPDB
 Copyright (C) 2021 binary butterfly GmbH
@@ -19,17 +17,20 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 from flask import Flask
+
+from .match_cli import match_cli
 from .ochp_cli import ochp_cli
-from .ocpi_cli import ocpi_cli
+from .stadtnavi_cli import stadtnavi_cli
 from .chargeit_cli import chargeit_cli
 from .giroe_cli import giroe_cli
 from .bnetza_cli import bnetza_cli
 
 
 def register_cli_to_app(app: Flask):
+    app.cli.add_command(bnetza_cli)
     app.cli.add_command(chargeit_cli)
     app.cli.add_command(giroe_cli)
+    app.cli.add_command(match_cli)
     app.cli.add_command(ochp_cli)
-    app.cli.add_command(ocpi_cli)
-    app.cli.add_command(bnetza_cli)
+    app.cli.add_command(stadtnavi_cli)
 

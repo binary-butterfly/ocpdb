@@ -1,0 +1,9 @@
+### patch connector
+PATCH {{api_host}}/api/server/v1/giroe/connectors/DE*101*EPARDEX00031*1
+Authorization: Basic {{server_api_username}} {{server_api_password}}
+Content-Type: application/json
+
+{
+  "status": "CHARGING",
+  "modified": "2022-12-24T12:00:00"
+}

@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 """
 Open ChargePoint DataBase OCPDB
 Copyright (C) 2021 binary butterfly GmbH
@@ -18,13 +16,13 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from flask import Flask, jsonify, render_template
-from webapp.common.blueprint import Blueprint
+from flask import jsonify, render_template
+from webapp.common.base_blueprint import BaseBlueprint
 from .openapi_cli import documentation_generate
 from .openapi_generator import generate_openapi
 
 
-openapi_json_blueprint = Blueprint('openapi_json', 'openapi_json')
+openapi_json_blueprint = BaseBlueprint('openapi_json', 'openapi_json')
 
 
 @openapi_json_blueprint.route('/<base_path>.html')
@@ -37,9 +35,9 @@ def render_documentation_json(base_path: str):
     return jsonify(generate_openapi(base_path))
 
 
-class OpenApiDocumentation(Blueprint):
+class OpenApiDocumentation(BaseBlueprint):
 
-    def __init__(self, app: Flask):
+    def __init__(self):
         super().__init__('openapi', __name__, url_prefix='/documentation', template_folder='templates')
 
         self.cli.add_command(documentation_generate)

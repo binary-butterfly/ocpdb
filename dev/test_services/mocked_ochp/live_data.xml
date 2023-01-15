@@ -1,0 +1,1503 @@
+<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+    <soap:Body>
+        <GetStatusResponse xmlns="http://ochp.eu/1.4">
+            <evse major="available" minor="available" ttl="2022-12-29T12:54:00.880Z">
+                <evseId>DESTAEAUML00002001</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:54:00.880Z">
+                <evseId>DESTAEAUML00002002</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:51:01.368Z">
+                <evseId>DESTAE009402</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:52:01.365Z">
+                <evseId>DESTAE009401</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:55:01.451Z">
+                <evseId>DESTAE006101</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:55:01.457Z">
+                <evseId>DESCHE000802</evseId>
+            </evse>
+            <evse major="unknown" ttl="2022-12-29T12:55:01.456Z">
+                <evseId>DESCHE000102</evseId>
+            </evse>
+            <evse major="unknown" ttl="2022-12-29T12:55:01.456Z">
+                <evseId>DESCHE000101</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:51:01.368Z">
+                <evseId>DERADE001001</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:53:00.978Z">
+                <evseId>DERADE001502</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:51:01.369Z">
+                <evseId>DERADE001002</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:55:01.456Z">
+                <evseId>DERADE001501</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:55:01.455Z">
+                <evseId>DERADE000901</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:52:01.367Z">
+                <evseId>DEBRBE003102</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:55:02.182Z">
+                <evseId>DEAPAE0017017</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:55:02.183Z">
+                <evseId>DEAPAE0017018</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:51:01.370Z">
+                <evseId>DETEAE013705</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:54:00.880Z">
+                <evseId>DETEAE013101</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:52:01.368Z">
+                <evseId>DETEAE015703</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:55:01.456Z">
+                <evseId>DETEAE010702</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:52:01.362Z">
+                <evseId>DETEAE006701</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:54:00.879Z">
+                <evseId>DETEAE011102</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:54:00.876Z">
+                <evseId>DETEAE003503</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:52:01.367Z">
+                <evseId>DETEAE013604</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:55:01.452Z">
+                <evseId>DETEAE003102</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:54:00.880Z">
+                <evseId>DETEAE014702</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:54:00.880Z">
+                <evseId>DETEAE013701</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:52:02.106Z">
+                <evseId>DESSME001601</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:53:01.771Z">
+                <evseId>DESSME001103</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:55:02.183Z">
+                <evseId>DESSME001001</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:54:01.494Z">
+                <evseId>DESSME000301</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:54:01.494Z">
+                <evseId>DESSME001702</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:53:00.981Z">
+                <evseId>DEWKBE000206</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:53:00.980Z">
+                <evseId>DEWKBE000201</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:54:00.880Z">
+                <evseId>DEFILE000104</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:51:01.371Z">
+                <evseId>DESBVE000702</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:51:01.371Z">
+                <evseId>DESBVE000701</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:54:00.879Z">
+                <evseId>DEEGGE002101</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:54:00.881Z">
+                <evseId>DEEGGE005502</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:54:00.879Z">
+                <evseId>DEEGGE003001</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:51:01.369Z">
+                <evseId>DEWM1E000501</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:54:00.874Z">
+                <evseId>DEWM1E000201</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:51:01.367Z">
+                <evseId>DEEHME000203</evseId>
+            </evse>
+            <evse major="not-available" minor="outoforder" ttl="2022-12-29T12:51:01.367Z">
+                <evseId>DEEHME000202</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:54:00.879Z">
+                <evseId>DELFDE000101</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:55:01.455Z">
+                <evseId>DELFDE000102</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:52:01.367Z">
+                <evseId>DERREE000803</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:52:01.366Z">
+                <evseId>DERREE000102</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:53:00.979Z">
+                <evseId>DERREE000802</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:53:00.978Z">
+                <evseId>DERREE000201</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:53:00.978Z">
+                <evseId>DERREE000202</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:53:00.979Z">
+                <evseId>DERREE000801</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:52:01.367Z">
+                <evseId>DERREE000804</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:52:01.366Z">
+                <evseId>DERREE000101</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:53:00.975Z">
+                <evseId>DEEHIE001501</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:51:01.367Z">
+                <evseId>DEEHIE002201</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:51:01.370Z">
+                <evseId>DEEHIE003702</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:53:00.975Z">
+                <evseId>DEEHIE001202</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:51:01.370Z">
+                <evseId>DEEHIE003701</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:51:01.365Z">
+                <evseId>DEEHIE000402</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:53:00.975Z">
+                <evseId>DEEHIE001201</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:51:01.367Z">
+                <evseId>DEEHIE002202</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:52:01.368Z">
+                <evseId>DEEHIE003902</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:53:00.975Z">
+                <evseId>DEEHIE001502</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:54:00.881Z">
+                <evseId>DEOLCE000704</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:54:00.881Z">
+                <evseId>DEOLCE000702</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:54:00.878Z">
+                <evseId>DESTDE000602</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:54:00.879Z">
+                <evseId>DESD4E000402</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:54:00.879Z">
+                <evseId>DESD4E000401</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:51:01.363Z">
+                <evseId>DEDVVE001501</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:55:01.455Z">
+                <evseId>DEDVVE002801</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:54:00.874Z">
+                <evseId>DEDVVE001502</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:54:00.880Z">
+                <evseId>DEUEME001802</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:55:01.458Z">
+                <evseId>DEUEME000208</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:54:00.880Z">
+                <evseId>DEUEME001801</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:54:00.874Z">
+                <evseId>DEMETE000101</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:51:01.370Z">
+                <evseId>DEROSE001001</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:55:02.183Z">
+                <evseId>DEAMPE07112</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:55:02.183Z">
+                <evseId>DEAMPE07111</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:53:01.771Z">
+                <evseId>DEAMPE07051</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:53:01.771Z">
+                <evseId>DEAMPE07052</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:55:02.183Z">
+                <evseId>DEAMPE07062</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:52:02.106Z">
+                <evseId>DEAMPE11732</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:55:02.183Z">
+                <evseId>DEAMPE00012</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:53:01.771Z">
+                <evseId>DEAMPE07041</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:52:02.106Z">
+                <evseId>DEAMPE06961</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:54:01.494Z">
+                <evseId>DEAMPE09771</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:52:02.106Z">
+                <evseId>DEAMPE07001</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:51:01.370Z">
+                <evseId>DELUEE001001</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:53:00.981Z">
+                <evseId>DELUEE000902</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:53:00.977Z">
+                <evseId>DELUEE000301</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:50:02.039Z">
+                <evseId>DE212E000102</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:52:01.367Z">
+                <evseId>DEEWFE000402</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:53:00.977Z">
+                <evseId>DESBAE000301</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:55:01.452Z">
+                <evseId>DESROE000101</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:55:01.456Z">
+                <evseId>DEUEZE006601</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:51:01.369Z">
+                <evseId>DEUEZE007101</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:54:00.875Z">
+                <evseId>DEEVSE000802</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:52:01.361Z">
+                <evseId>DEEVSE001002</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:55:01.456Z">
+                <evseId>DEEVSE001401</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:55:01.453Z">
+                <evseId>DEEVSE001201</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:52:01.369Z">
+                <evseId>DEEVSE000203</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:51:01.369Z">
+                <evseId>DEVELE003001</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:54:00.879Z">
+                <evseId>DEVELE004901</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:53:00.972Z">
+                <evseId>DENEUE000301</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:51:01.364Z">
+                <evseId>DENEUE000201</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:51:01.370Z">
+                <evseId>DENVBE000304</evseId>
+            </evse>
+            <evse major="not-available" minor="outoforder" ttl="2022-12-29T12:52:01.366Z">
+                <evseId>DEFERE003302</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:52:01.363Z">
+                <evseId>DEFERE000802</evseId>
+            </evse>
+            <evse major="not-available" minor="outoforder" ttl="2022-12-29T12:52:01.367Z">
+                <evseId>DEFERE003602</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:53:00.979Z">
+                <evseId>DEFERE003603</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:55:01.452Z">
+                <evseId>DESONE000201</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:54:00.878Z">
+                <evseId>DEHZBE000102</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:54:00.880Z">
+                <evseId>DEESWE013001</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:53:00.982Z">
+                <evseId>DEESWE105205</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:53:00.982Z">
+                <evseId>DEESWE105206</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:54:00.877Z">
+                <evseId>DEESWE001802</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:52:01.366Z">
+                <evseId>DEHIGE000501</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:55:01.457Z">
+                <evseId>DEHIGE000602</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:55:01.457Z">
+                <evseId>DEHIGE000601</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:53:00.972Z">
+                <evseId>DEGWSE000102</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:53:00.972Z">
+                <evseId>DEGWSE000101</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:53:00.975Z">
+                <evseId>DEMUEE000403</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:54:00.879Z">
+                <evseId>DETBLE002002</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:53:00.975Z">
+                <evseId>DETBLE000601</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:51:01.366Z">
+                <evseId>DETBLE000702</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:51:01.366Z">
+                <evseId>DETBLE000701</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:53:00.975Z">
+                <evseId>DETBLE000602</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:54:00.879Z">
+                <evseId>DETBLE002001</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-28T13:00:11.000Z">
+                <evseId>DETROE000203</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-28T13:00:11.000Z">
+                <evseId>DETROE000801</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-28T13:00:11.000Z">
+                <evseId>DETROE000305</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-28T13:00:11.000Z">
+                <evseId>DETROE002301</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-28T13:00:11.000Z">
+                <evseId>DETROE000306</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-28T13:00:11.000Z">
+                <evseId>DETROE001402</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-28T13:00:11.000Z">
+                <evseId>DETROE002202</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-28T13:00:11.000Z">
+                <evseId>DETROE001102</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-28T13:00:11.000Z">
+                <evseId>DETROE002001</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-28T13:00:11.000Z">
+                <evseId>DETROE000101</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-28T13:00:11.000Z">
+                <evseId>DETROE000502</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-28T13:00:11.000Z">
+                <evseId>DETROE001601</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-28T13:00:11.000Z">
+                <evseId>DETROE000602</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-28T13:00:11.000Z">
+                <evseId>DETROE002402</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-28T13:00:11.000Z">
+                <evseId>DETROE001301</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-28T13:00:11.000Z">
+                <evseId>DETROE001801</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-28T13:00:11.000Z">
+                <evseId>DETROE002602</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-28T13:00:11.000Z">
+                <evseId>DETROE000102</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-28T13:00:11.000Z">
+                <evseId>DETROE000902</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-28T13:00:11.000Z">
+                <evseId>DETROE001702</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-28T13:00:11.000Z">
+                <evseId>DETROE002102</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-28T13:00:11.000Z">
+                <evseId>DETROE000301</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-28T13:00:11.000Z">
+                <evseId>DETROE000901</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-28T13:00:11.000Z">
+                <evseId>DETROE001201</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-28T13:00:11.000Z">
+                <evseId>DETROE001802</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-28T13:00:11.000Z">
+                <evseId>DETROE000802</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-28T13:00:11.000Z">
+                <evseId>DETROE001001</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-28T13:00:11.000Z">
+                <evseId>DETROE002101</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-28T13:00:11.000Z">
+                <evseId>DETROE000304</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-28T13:00:11.000Z">
+                <evseId>DETROE001303</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-28T13:00:11.000Z">
+                <evseId>DETROE002302</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-28T13:00:11.000Z">
+                <evseId>DETROE001302</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-28T13:00:11.000Z">
+                <evseId>DETROE002401</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-28T13:00:11.000Z">
+                <evseId>DETROE002801</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-28T13:00:11.000Z">
+                <evseId>DETROE002802</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-28T13:00:11.000Z">
+                <evseId>DETROE002201</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-28T13:00:11.000Z">
+                <evseId>DETROE001101</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-28T13:00:11.000Z">
+                <evseId>DETROE001401</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-28T13:00:11.000Z">
+                <evseId>DETROE002701</evseId>
+            </evse>
+            <evse major="not-available" minor="outoforder" ttl="2022-12-28T13:00:11.000Z">
+                <evseId>DETROE000702</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-28T13:00:11.000Z">
+                <evseId>DETROE002601</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-28T13:00:11.000Z">
+                <evseId>DETROE000302</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-28T13:00:11.000Z">
+                <evseId>DETROE002501</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-28T13:00:11.000Z">
+                <evseId>DETROE001202</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-28T13:00:11.000Z">
+                <evseId>DETROE002702</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-28T13:00:11.000Z">
+                <evseId>DETROE000601</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-28T13:00:11.000Z">
+                <evseId>DETROE000501</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-28T13:00:11.000Z">
+                <evseId>DETROE002502</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-28T13:00:11.000Z">
+                <evseId>DETROE001901</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-28T13:00:11.000Z">
+                <evseId>DETROE000204</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-28T13:00:11.000Z">
+                <evseId>DETROE001602</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-28T13:00:11.000Z">
+                <evseId>DETROE000303</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-28T13:00:11.000Z">
+                <evseId>DETROE000701</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-28T13:00:11.000Z">
+                <evseId>DETROE001701</evseId>
+            </evse>
+            <evse major="not-available" minor="outoforder" ttl="2022-12-28T13:00:11.000Z">
+                <evseId>DETROE001403</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-28T13:00:11.000Z">
+                <evseId>DETROE002002</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-28T13:00:11.000Z">
+                <evseId>DETROE001902</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-28T13:00:11.000Z">
+                <evseId>DETROE001002</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:55:01.455Z">
+                <evseId>DEFFOE000302</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:55:01.455Z">
+                <evseId>DEFFOE000301</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:54:01.494Z">
+                <evseId>DEALOE001502</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:55:02.183Z">
+                <evseId>DEALOE000201</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:54:01.494Z">
+                <evseId>DEALOE001501</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:53:00.978Z">
+                <evseId>DEFFBE000701</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:53:00.978Z">
+                <evseId>DEFFBE000902</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:55:01.456Z">
+                <evseId>DEVSGE003001</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:55:01.457Z">
+                <evseId>DEVSGE003101</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:51:01.371Z">
+                <evseId>DEVSGE003502</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:54:01.493Z">
+                <evseId>DELOHE000101</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:55:01.457Z">
+                <evseId>DEGWKE000302</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:54:00.878Z">
+                <evseId>DESNPE000404</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:54:00.877Z">
+                <evseId>DESNPE000401</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:54:00.877Z">
+                <evseId>DESNPE000402</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:54:00.877Z">
+                <evseId>DESNPE000403</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:55:01.456Z">
+                <evseId>DEEBPE000402</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:55:01.454Z">
+                <evseId>DEEBPE000201</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:53:00.979Z">
+                <evseId>DEEBPE000501</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:55:01.457Z">
+                <evseId>DEESBE009803</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:52:01.369Z">
+                <evseId>DEESBE012001</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:53:00.982Z">
+                <evseId>DEESBE015203</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:52:01.369Z">
+                <evseId>DEESBE010303</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:53:00.982Z">
+                <evseId>DEESBE015204</evseId>
+            </evse>
+            <evse major="unknown" ttl="2022-12-29T12:55:01.456Z">
+                <evseId>DEESBE004701</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:53:00.979Z">
+                <evseId>DEESBE003301</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:51:01.367Z">
+                <evseId>DEESBE000402</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:53:00.978Z">
+                <evseId>DEESBE001001</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:53:00.978Z">
+                <evseId>DEESBE001104</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:54:00.881Z">
+                <evseId>DEESBE010401</evseId>
+            </evse>
+            <evse major="unknown" ttl="2022-12-29T12:55:01.456Z">
+                <evseId>DEESBE004702</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:52:01.360Z">
+                <evseId>DEWESE000102</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:55:01.454Z">
+                <evseId>DEWSWE001902</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:55:01.455Z">
+                <evseId>DEWSWE002601</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:53:00.977Z">
+                <evseId>DECLEE000104</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:52:01.365Z">
+                <evseId>DECLEE000801</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:54:01.494Z">
+                <evseId>DERIEE000102</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:55:01.451Z">
+                <evseId>DEHEGE000502</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:54:00.880Z">
+                <evseId>DEKLSE004102</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:51:01.371Z">
+                <evseId>DEKLSE005305</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:55:01.455Z">
+                <evseId>DEKLSE002502</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:54:00.876Z">
+                <evseId>DE990E000401</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:55:01.457Z">
+                <evseId>DE990E002801</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:53:00.981Z">
+                <evseId>DESLGE001801</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:53:00.973Z">
+                <evseId>DESLGE000401</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:52:01.360Z">
+                <evseId>DE722E001202</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:52:01.366Z">
+                <evseId>DE722E003102</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:51:01.369Z">
+                <evseId>DE722E003702</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:53:00.978Z">
+                <evseId>DE722E003101</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:55:01.457Z">
+                <evseId>DEGAPE000703</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:52:01.368Z">
+                <evseId>DEAEWE003802</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:52:01.366Z">
+                <evseId>DEAEWE002001</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:54:00.879Z">
+                <evseId>DEAEWE002102</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:54:00.876Z">
+                <evseId>DEAEWE000601</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:52:01.368Z">
+                <evseId>DEAEWE003801</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:54:00.878Z">
+                <evseId>DEAEWE001601</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:53:00.977Z">
+                <evseId>DESIGE000201</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:53:00.979Z">
+                <evseId>DERWVE000101</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:52:01.361Z">
+                <evseId>DEAVGE000102</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:55:01.455Z">
+                <evseId>DEAVGE000142</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:55:01.456Z">
+                <evseId>DEAVGE001602</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:55:01.455Z">
+                <evseId>DEAVGE000141</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:53:00.979Z">
+                <evseId>DEEMSE000702</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:51:01.369Z">
+                <evseId>DEEMOE003507</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:52:01.362Z">
+                <evseId>DEEMOE001401</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:55:01.455Z">
+                <evseId>DEGROE000302</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:52:01.369Z">
+                <evseId>DEAW8E000401</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:52:01.369Z">
+                <evseId>DEAW8E000302</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:52:01.361Z">
+                <evseId>DEREME000501</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:52:01.362Z">
+                <evseId>DEJENE002701</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:51:01.364Z">
+                <evseId>DEJENE001001</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:51:01.366Z">
+                <evseId>DESWUE110801</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:52:01.368Z">
+                <evseId>DESWUE246815</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:54:00.881Z">
+                <evseId>DESWUE246810</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:55:01.453Z">
+                <evseId>DESWUE110703</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:51:01.369Z">
+                <evseId>DESWUE244301</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:52:01.361Z">
+                <evseId>DESWUE000702</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:54:00.876Z">
+                <evseId>DESWUE004202</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:55:01.453Z">
+                <evseId>DESWUE002801</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:52:01.366Z">
+                <evseId>DESWSE000504</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:52:01.359Z">
+                <evseId>DESGDE000102</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:55:01.457Z">
+                <evseId>DESGDE001806</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:55:01.452Z">
+                <evseId>DESWTE001201</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:53:00.980Z">
+                <evseId>DESWTE002202</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:52:01.368Z">
+                <evseId>DELIME003504</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:55:01.453Z">
+                <evseId>DELIME000301</evseId>
+            </evse>
+            <evse major="unknown" ttl="2022-12-29T12:55:01.451Z">
+                <evseId>DESWME000901</evseId>
+            </evse>
+            <evse major="unknown" ttl="2022-12-29T12:55:01.454Z">
+                <evseId>DESWME038001</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:54:00.875Z">
+                <evseId>DESWME008102</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:55:01.453Z">
+                <evseId>DESWME023101</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:55:01.453Z">
+                <evseId>DESWME034801</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:55:01.454Z">
+                <evseId>DESWME036801</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:55:01.454Z">
+                <evseId>DESWME042101</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:55:01.451Z">
+                <evseId>DESWME006701</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:53:00.974Z">
+                <evseId>DESWME027401</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:54:00.876Z">
+                <evseId>DESWME018801</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:54:00.878Z">
+                <evseId>DESWME043001</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:54:00.877Z">
+                <evseId>DESWME025301</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:54:00.877Z">
+                <evseId>DESWME025302</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:55:01.455Z">
+                <evseId>DESWME052901</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:54:00.877Z">
+                <evseId>DESWME034902</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:55:01.456Z">
+                <evseId>DESWME059101</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:53:00.976Z">
+                <evseId>DESWME040401</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:54:00.876Z">
+                <evseId>DESWME014501</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:55:01.452Z">
+                <evseId>DESWME013601</evseId>
+            </evse>
+            <evse major="unknown" ttl="2022-12-29T12:55:01.454Z">
+                <evseId>DESWME040802</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:53:00.974Z">
+                <evseId>DESWME029801</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:51:01.367Z">
+                <evseId>DESWME037202</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:52:01.365Z">
+                <evseId>DESWME050602</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:54:00.875Z">
+                <evseId>DESWME009901</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:53:00.976Z">
+                <evseId>DESWME044601</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:51:01.369Z">
+                <evseId>DESWME056901</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:55:01.453Z">
+                <evseId>DESWME022101</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:52:01.362Z">
+                <evseId>DESWME027402</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:52:01.365Z">
+                <evseId>DESWME051902</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:53:00.974Z">
+                <evseId>DESWME024301</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:55:01.453Z">
+                <evseId>DESWME029902</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:52:01.364Z">
+                <evseId>DESWME044901</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:55:01.452Z">
+                <evseId>DESWME021802</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:51:01.368Z">
+                <evseId>DESWME049301</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:51:01.368Z">
+                <evseId>DESWME054102</evseId>
+            </evse>
+            <evse major="not-available" minor="outoforder" ttl="2022-12-29T12:52:01.362Z">
+                <evseId>DESWME033202</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:51:01.369Z">
+                <evseId>DESWME059902</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:55:01.453Z">
+                <evseId>DESWME033302</evseId>
+            </evse>
+            <evse major="not-available" minor="outoforder" ttl="2022-12-29T12:55:01.453Z">
+                <evseId>DESWME028302</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:55:01.454Z">
+                <evseId>DESWME046701</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:55:01.451Z">
+                <evseId>DESWME007901</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:52:01.363Z">
+                <evseId>DESWME037402</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:52:01.360Z">
+                <evseId>DESWME013201</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:51:01.368Z">
+                <evseId>DESWME046002</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:54:00.877Z">
+                <evseId>DESWME033901</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:55:01.454Z">
+                <evseId>DESWME047101</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:52:01.365Z">
+                <evseId>DESWME051302</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:54:00.880Z">
+                <evseId>DESWME060103</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:55:01.454Z">
+                <evseId>DESWME042102</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:52:01.364Z">
+                <evseId>DESWME049401</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:55:01.452Z">
+                <evseId>DESWME015301</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:54:00.878Z">
+                <evseId>DESWME048701</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:55:01.453Z">
+                <evseId>DESWME022102</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:54:00.875Z">
+                <evseId>DESWME009902</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:55:01.452Z">
+                <evseId>DESWME013002</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:53:00.975Z">
+                <evseId>DESWME036701</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:53:00.976Z">
+                <evseId>DESWME046501</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:54:00.878Z">
+                <evseId>DESWME037002</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:51:01.367Z">
+                <evseId>DESWME035402</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:54:00.877Z">
+                <evseId>DESWME025202</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:54:00.875Z">
+                <evseId>DESWME012402</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:53:00.972Z">
+                <evseId>DESWME007701</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:54:00.877Z">
+                <evseId>DESWME026501</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:55:01.453Z">
+                <evseId>DESWME034802</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:55:01.451Z">
+                <evseId>DESWME006702</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:52:01.361Z">
+                <evseId>DESWME014202</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:54:00.879Z">
+                <evseId>DESWME056301</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:53:00.973Z">
+                <evseId>DESWME014201</evseId>
+            </evse>
+            <evse major="unknown" ttl="2022-12-29T12:52:01.361Z">
+                <evseId>DESWME018001</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:55:01.455Z">
+                <evseId>DESWME048401</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:53:00.972Z">
+                <evseId>DESWME007702</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:53:00.973Z">
+                <evseId>DESWME017802</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:53:00.976Z">
+                <evseId>DESWME047102</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:51:01.367Z">
+                <evseId>DESWME044101</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:52:01.363Z">
+                <evseId>DESWME038402</evseId>
+            </evse>
+            <evse major="not-available" minor="outoforder" ttl="2022-12-29T12:53:00.974Z">
+                <evseId>DESWME030401</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:55:01.454Z">
+                <evseId>DESWME035901</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:52:01.365Z">
+                <evseId>DESWME049402</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:54:00.878Z">
+                <evseId>DESWME047902</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:55:01.452Z">
+                <evseId>DESWME015302</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:55:01.453Z">
+                <evseId>DESWME023202</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:52:01.363Z">
+                <evseId>DESWME041001</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:53:00.976Z">
+                <evseId>DESWME040102</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:51:01.367Z">
+                <evseId>DESWME043601</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:54:00.875Z">
+                <evseId>DESWME008101</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:55:01.454Z">
+                <evseId>DESWME036802</evseId>
+            </evse>
+            <evse major="unknown" ttl="2022-12-29T12:55:01.454Z">
+                <evseId>DESWME038002</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:53:00.975Z">
+                <evseId>DESWME036702</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:54:00.878Z">
+                <evseId>DESWME037001</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:53:00.974Z">
+                <evseId>DESWME030202</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:54:00.877Z">
+                <evseId>DESWME033902</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:52:01.364Z">
+                <evseId>DESWME044902</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:54:00.878Z">
+                <evseId>DESWME048702</evseId>
+            </evse>
+            <evse major="not-available" minor="outoforder" ttl="2022-12-29T12:52:01.362Z">
+                <evseId>DESWME033201</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:53:00.974Z">
+                <evseId>DESWME030402</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:53:00.974Z">
+                <evseId>DESWME030201</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:55:01.453Z">
+                <evseId>DESWME032601</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:52:01.361Z">
+                <evseId>DESWME025901</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:51:01.366Z">
+                <evseId>DESWME030301</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:55:01.454Z">
+                <evseId>DESWME036301</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:52:01.363Z">
+                <evseId>DESWME038401</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:51:01.366Z">
+                <evseId>DESWME032402</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:53:00.973Z">
+                <evseId>DESWME017801</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:53:00.977Z">
+                <evseId>DESWME050101</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:54:00.876Z">
+                <evseId>DESWME016501</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:55:01.451Z">
+                <evseId>DESWME007602</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:51:01.368Z">
+                <evseId>DESWME046001</evseId>
+            </evse>
+            <evse major="unknown" ttl="2022-12-29T12:55:01.451Z">
+                <evseId>DESWME000902</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:52:01.362Z">
+                <evseId>DESWME033001</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:55:01.452Z">
+                <evseId>DESWME016901</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:54:00.875Z">
+                <evseId>DESWME012401</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:55:01.455Z">
+                <evseId>DESWME052501</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:54:00.878Z">
+                <evseId>DESWME047901</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:52:01.361Z">
+                <evseId>DESWME013202</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:51:01.365Z">
+                <evseId>DESWME013101</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:55:01.452Z">
+                <evseId>DESWME015802</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:53:00.976Z">
+                <evseId>DESWME044602</evseId>
+            </evse>
+            <evse major="unknown" ttl="2022-12-29T12:55:01.454Z">
+                <evseId>DESWME044002</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:53:00.976Z">
+                <evseId>DESWME040101</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:53:00.974Z">
+                <evseId>DESWME029802</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:55:01.453Z">
+                <evseId>DESWME032602</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:54:00.877Z">
+                <evseId>DESWME025201</evseId>
+            </evse>
+            <evse major="not-available" minor="outoforder" ttl="2022-12-29T12:51:01.369Z">
+                <evseId>DESWME059901</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:55:01.452Z">
+                <evseId>DESWME021801</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:52:01.361Z">
+                <evseId>DESWME020701</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:51:01.366Z">
+                <evseId>DESWME032401</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:53:00.973Z">
+                <evseId>DESWME012502</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:51:01.367Z">
+                <evseId>DESWME043602</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:55:01.452Z">
+                <evseId>DESWME013602</evseId>
+            </evse>
+            <evse major="unknown" ttl="2022-12-29T12:55:01.454Z">
+                <evseId>DESWME044001</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:52:01.361Z">
+                <evseId>DESWME025101</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:54:00.877Z">
+                <evseId>DESWME026502</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:52:01.363Z">
+                <evseId>DESWME037401</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:53:00.972Z">
+                <evseId>DESWME005301</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:54:00.878Z">
+                <evseId>DESWME038102</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:51:01.365Z">
+                <evseId>DESWME013102</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:53:00.977Z">
+                <evseId>DESWME052802</evseId>
+            </evse>
+            <evse major="unknown" ttl="2022-12-29T12:55:01.454Z">
+                <evseId>DESWME040801</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:55:01.454Z">
+                <evseId>DESWME039601</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:51:01.365Z">
+                <evseId>DESWME006001</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:53:00.976Z">
+                <evseId>DESWME046502</evseId>
+            </evse>
+            <evse major="unknown" ttl="2022-12-29T12:52:01.361Z">
+                <evseId>DESWME018002</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:55:01.453Z">
+                <evseId>DESWME023201</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:53:00.977Z">
+                <evseId>DESWME050102</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:55:01.451Z">
+                <evseId>DESWME007902</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:54:00.876Z">
+                <evseId>DESWME014502</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:55:01.452Z">
+                <evseId>DESWME011301</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:51:01.364Z">
+                <evseId>DESWME002902</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:54:00.877Z">
+                <evseId>DESWME034901</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:52:01.365Z">
+                <evseId>DESWME050601</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:55:01.455Z">
+                <evseId>DESWME048402</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:55:01.453Z">
+                <evseId>DESWME028301</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:52:01.361Z">
+                <evseId>DESWME020702</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:55:01.453Z">
+                <evseId>DESWME033301</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:51:01.364Z">
+                <evseId>DESWME005902</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:55:01.456Z">
+                <evseId>DESWME059102</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:52:01.362Z">
+                <evseId>DESWME033002</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:55:01.454Z">
+                <evseId>DESWME047701</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:53:00.972Z">
+                <evseId>DESWME004202</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:55:01.451Z">
+                <evseId>DESWME007601</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:51:01.365Z">
+                <evseId>DEDINE000801</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:55:01.456Z">
+                <evseId>DEDINE001703</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:51:01.365Z">
+                <evseId>DEDINE000802</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:52:01.361Z">
+                <evseId>DESWKE000301</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:55:01.458Z">
+                <evseId>DESWKE002801</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:51:01.370Z">
+                <evseId>DESWKE001201</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:53:00.980Z">
+                <evseId>DESWKE001301</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:52:01.361Z">
+                <evseId>DESWKE000302</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:54:00.875Z">
+                <evseId>DESWIE000202</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:53:00.972Z">
+                <evseId>DESWGE000101</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:53:00.972Z">
+                <evseId>DESWGE000102</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:53:00.972Z">
+                <evseId>DESWEE000901</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:52:01.360Z">
+                <evseId>DESWEE001601</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:55:02.183Z">
+                <evseId>DEBEEE000108</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:53:00.975Z">
+                <evseId>DESHUE000702</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:55:01.456Z">
+                <evseId>DEEMDE000502</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:52:01.367Z">
+                <evseId>DEEMDE001102</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:53:00.979Z">
+                <evseId>DEEMDE001101</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:53:00.976Z">
+                <evseId>DEEMAE003003</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:55:01.455Z">
+                <evseId>DEEMAE003502</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:54:00.875Z">
+                <evseId>DEEMAE000102</evseId>
+            </evse>
+            <evse major="not-available" minor="outoforder" ttl="2022-12-29T12:51:01.367Z">
+                <evseId>DEEMAE001302</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:52:01.366Z">
+                <evseId>DEHBSE000102</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:54:00.879Z">
+                <evseId>DEHBSE000202</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:51:01.368Z">
+                <evseId>DEEMBE001802</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:55:01.457Z">
+                <evseId>DESHIE001301</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:55:01.457Z">
+                <evseId>DESHIE001302</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:54:00.881Z">
+                <evseId>DESHIE003102</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:55:01.452Z">
+                <evseId>DESHIE000201</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:53:00.980Z">
+                <evseId>DE927E000704</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:53:01.771Z">
+                <evseId>DEDGVE001803</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:55:01.456Z">
+                <evseId>DESUNE005301</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:55:01.456Z">
+                <evseId>DEAAAE000701</evseId>
+            </evse>
+            <evse major="not-available" minor="outoforder" ttl="2022-12-29T12:55:01.458Z">
+                <evseId>DESWDE023301</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:51:01.370Z">
+                <evseId>DESWDE020601</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:55:01.458Z">
+                <evseId>DESWDE032902</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:51:01.366Z">
+                <evseId>DESWDE005902</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:55:01.453Z">
+                <evseId>DESWDE002301</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:53:00.981Z">
+                <evseId>DESWDE020402</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:53:00.977Z">
+                <evseId>DESWDE009401</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:53:00.981Z">
+                <evseId>DESWDE019701</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:54:00.881Z">
+                <evseId>DESWDE022301</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:52:01.361Z">
+                <evseId>DESWDE003301</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:52:01.368Z">
+                <evseId>DESWDE019401</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:52:01.361Z">
+                <evseId>DESWDE001601</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:51:01.371Z">
+                <evseId>DESWDE038102</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:54:00.881Z">
+                <evseId>DESWDE030302</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:55:01.458Z">
+                <evseId>DESWDE212701</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:55:01.455Z">
+                <evseId>DESWDE009402</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:55:01.458Z">
+                <evseId>DESWDE212702</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:55:01.457Z">
+                <evseId>DESWDE021301</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:54:00.876Z">
+                <evseId>DESWDE001201</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:52:01.369Z">
+                <evseId>DESWDE210701</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:55:01.457Z">
+                <evseId>DESWDE019702</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:54:00.881Z">
+                <evseId>DESWDE215203</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:52:01.368Z">
+                <evseId>DESWDE019002</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:52:01.368Z">
+                <evseId>DESWDE021201</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:55:01.458Z">
+                <evseId>DESWDE038103</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:54:00.881Z">
+                <evseId>DESWDE024801</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:55:01.456Z">
+                <evseId>DESWDE018902</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:52:01.369Z">
+                <evseId>DESWDE030902</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:52:01.367Z">
+                <evseId>DESVSE001201</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:55:01.455Z">
+                <evseId>DESVSE000202</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:52:01.367Z">
+                <evseId>DESVSE001202</evseId>
+            </evse>
+            <evse major="not-available" minor="charging" ttl="2022-12-29T12:52:01.367Z">
+                <evseId>DESVSE001203</evseId>
+            </evse>
+            <evse major="available" minor="available" ttl="2022-12-29T12:55:01.454Z">
+                <evseId>DE372E000101</evseId>
+            </evse>
+        </GetStatusResponse>
+    </soap:Body>
+</soap:Envelope>

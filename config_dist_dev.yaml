@@ -1,4 +1,4 @@
-PROJECT_URL: 'http://localhost:5000'
+PROJECT_URL: 'http://localhost:5010'
 SECRET_KEY: 'random-key'
 DEBUG: True
 
@@ -8,6 +8,21 @@ SQLALCHEMY_ENGINE_OPTIONS:
   pool_recycle: 600
 CELERY_BROKER_URL: 'amqp://rabbitmq'
 
+OBJECT_ID_SECRET: secret
+
 REMOTE_SERVERS:
+  LADENETZ:
+    url: http://mocked-ochp:5000
+    user: ocpdb
+    password: test
   STADTNAVI:
-    url: 'https://api.dev.stadtnavi.eu/herrenberg/charging-stations/charging-stations-ocpi.json'
+    url: http://mocked-stadtnavi:5000
+  CHARGEIT:
+    url: http://mocked-chargeit:5000
+    user: ocpdb
+    password: test
+  GIROE:
+    url: http://mocked-giroe:5000
+    user: ocpdb
+    password: test
+

@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 """
 Open ChargePoint DataBase OCPDB
 Copyright (C) 2021 binary butterfly GmbH
@@ -18,38 +16,38 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from flask import Flask, jsonify
+from flask import jsonify
 from flask_cors import cross_origin
-from webapp.openapi.openapi_decorator import document, Response, ResponseData, ErrorResponse, Schema
-from webapp.public_api.base_blueprint import PublicApiBaseBlueprint
-from webapp.public_api.base_method_view import PublicApiBaseMethodView
-from .ocpi_handler import OcpiHandler
+
+from webapp.common.base_blueprint import BaseBlueprint
 from webapp.dependencies import dependencies
+from flask_openapi.decorator import document, Response, ResponseData, ErrorResponse, Schema
+from .ocpi_handler import OcpiHandler
+from webapp.common.rest import BaseMethodView
 
 
-class OcpiBlueprint(PublicApiBaseBlueprint):
+class OcpiBlueprint(BaseBlueprint):
     documented = True
     ocpi_handler: OcpiHandler
 
-    def __init__(self, app: Flask):
+    def __init__(self):
         self.ocpi_handler = OcpiHandler(
             **self.get_base_handler_dependencies(),
-            location_respository=dependencies.get_location_repository(),
+            location_repository=dependencies.get_location_repository(),
         )
         super().__init__('locations', __name__, url_prefix='/api/ocpi/2.2/location')
 
-    def load_routes(self):
         self.add_url_rule(
             '/<int:location_id>',
             view_func=LocationsMethodView.as_view(
                 'location',
                 **self.get_base_method_view_dependencies(),
                 ocpi_handler=self.ocpi_handler,
-            )
+            ),
         )
 
 
-class OcpiBaseMethodView(PublicApiBaseMethodView):
+class OcpiBaseMethodView(BaseMethodView):
     ocpi_handler: OcpiHandler
 
     def __init__(self, *args, ocpi_handler: OcpiHandler, **kwargs):

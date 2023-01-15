@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 """
 Open ChargePoint DataBase OCPDB
 Copyright (C) 2021 binary butterfly GmbH
@@ -18,15 +16,16 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-import pytz
+from datetime import datetime
 from typing import Any
-from datetime import datetime, tzinfo
-from validataclass.validators import Validator, DateTimeValidator
+
+import pytz
+from validataclass.validators import Validator
 
 
 class DateTimeToUtcDateTimeValidator(Validator):
 
-    def validate(self, input_data: Any) -> datetime:
+    def validate(self, input_data: Any, **kwargs) -> datetime:
 
         self._ensure_type(input_data, datetime)
 

@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 """
 Open ChargePoint DataBase OCPDB
 Copyright (C) 2021 binary butterfly GmbH
@@ -18,11 +16,8 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-
-import json
-from lxml import etree
 from flask import make_response
-from .misc import DefaultJSONEncoder
+from lxml import etree
 
 
 def xml_response(xml_tree):
@@ -34,4 +29,10 @@ def xml_response(xml_tree):
 def protobuf_response(data: bytes):
     response = make_response(data)
     response.headers['Content-Type'] = 'application/x-protobuf'
+    return response
+
+
+def empty_json_response():
+    response = make_response('')
+    response.mimetype = 'application/json'
     return response

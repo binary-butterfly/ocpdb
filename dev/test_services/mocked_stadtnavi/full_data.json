@@ -1,0 +1,2520 @@
+
+{
+  "status_code": 1000,
+  "timestamp": "2022-12-24T12:39:05+01:00",
+  "data": [
+    {
+      "id": "DE*EBW*E800282",
+      "name": "Parkplatz Benzstraße",
+      "address": "Benzstraße 10",
+      "postal_code": "71083",
+      "city": "Herrenberg",
+      "country": "DEU",
+      "time_zone": "Europe/Berlin",
+      "last_updated": "2021-04-28T15:51:49",
+      "coordinates": {
+        "latitude": "48.599106",
+        "longitude": "8.870451"
+      },
+      "opening_times": {
+        "twentyfourseven": true
+      },
+      "evses": [
+        {
+          "id": "DE*EBW*E800282*1",
+          "evse_id": "DE*EBW*E800282*1",
+          "status": "AVAILABLE",
+          "phone": "072172586460",
+          "capabilities": [
+            "REMOTE_START_STOP_CAPABLE",
+            "RFID_READER"
+          ],
+          "connectors": [
+            {
+              "id": "1",
+              "standard": "IEC_62196_T2",
+              "format": "SOCKET",
+              "power_type": "AC_3_PHASE",
+              "max_voltage": 400,
+              "max_amperage": 32,
+              "max_electric_power": 22000
+            },
+            {
+              "id": "2",
+              "standard": "DOMESTIC_F",
+              "format": "SOCKET",
+              "power_type": "AC_1_PHASE",
+              "max_voltage": 230,
+              "max_amperage": 16,
+              "max_electric_power": 3680
+            }
+          ]
+        },
+        {
+          "id": "DE*EBW*E800282*2",
+          "evse_id": "DE*EBW*E800282*2",
+          "status": "BLOCKED",
+          "phone": "072172586460",
+          "capabilities": [
+            "REMOTE_START_STOP_CAPABLE",
+            "RFID_READER"
+          ],
+          "connectors": [
+            {
+              "id": "1",
+              "standard": "IEC_62196_T2",
+              "format": "SOCKET",
+              "power_type": "AC_3_PHASE",
+              "max_voltage": 400,
+              "max_amperage": 32,
+              "max_electric_power": 22000
+            },
+            {
+              "id": "2",
+              "standard": "DOMESTIC_F",
+              "format": "SOCKET",
+              "power_type": "AC_1_PHASE",
+              "max_voltage": 230,
+              "max_amperage": 16,
+              "max_electric_power": 3680
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "AT*HTB*EE100888",
+      "name": "Seeländer Areal Herrenberg",
+      "address": "Hirschgasse 19",
+      "postal_code": "71083",
+      "city": "Herrenberg",
+      "country": "DEU",
+      "time_zone": "Europe/Berlin",
+      "last_updated": "2021-04-28T15:51:49",
+      "coordinates": {
+        "latitude": "48.598089",
+        "longitude": "8.869369"
+      },
+      "opening_times": {
+        "twentyfourseven": true
+      },
+      "evses": [
+        {
+          "id": "AT*HTB*EE1008881",
+          "evse_id": "AT*HTB*EE1008881",
+          "status": "UNKNOWN",
+          "phone": "08312069770",
+          "capabilities": [
+            "REMOTE_START_STOP_CAPABLE",
+            "RFID_READER"
+          ],
+          "connectors": [
+            {
+              "id": "1",
+              "standard": "IEC_62196_T2",
+              "format": "SOCKET",
+              "power_type": "AC_3_PHASE",
+              "max_voltage": 400,
+              "max_amperage": 32,
+              "max_electric_power": 22000
+            }
+          ]
+        },
+        {
+          "id": "AT*HTB*EE1008882",
+          "evse_id": "AT*HTB*EE1008882",
+          "status": "UNKNOWN",
+          "phone": "08312069770",
+          "capabilities": [
+            "REMOTE_START_STOP_CAPABLE",
+            "RFID_READER"
+          ],
+          "connectors": [
+            {
+              "id": "1",
+              "standard": "IEC_62196_T2",
+              "format": "SOCKET",
+              "power_type": "AC_3_PHASE",
+              "max_voltage": 400,
+              "max_amperage": 32,
+              "max_electric_power": 22000
+            }
+          ]
+        },
+        {
+          "id": "AT*HTB*EE1008883",
+          "evse_id": "AT*HTB*EE1008883",
+          "status": "UNKNOWN",
+          "phone": "08312069770",
+          "capabilities": [
+            "REMOTE_START_STOP_CAPABLE",
+            "RFID_READER"
+          ],
+          "connectors": [
+            {
+              "id": "1",
+              "standard": "IEC_62196_T2",
+              "format": "SOCKET",
+              "power_type": "AC_3_PHASE",
+              "max_voltage": 400,
+              "max_amperage": 32,
+              "max_electric_power": 22000
+            }
+          ]
+        },
+        {
+          "id": "AT*HTB*EE1008884",
+          "evse_id": "AT*HTB*EE1008884",
+          "status": "UNKNOWN",
+          "phone": "08312069770",
+          "capabilities": [
+            "REMOTE_START_STOP_CAPABLE",
+            "RFID_READER"
+          ],
+          "connectors": [
+            {
+              "id": "1",
+              "standard": "IEC_62196_T2",
+              "format": "SOCKET",
+              "power_type": "AC_3_PHASE",
+              "max_voltage": 400,
+              "max_amperage": 32,
+              "max_electric_power": 22000
+            }
+          ]
+        },
+        {
+          "id": "AT*HTB*EE1008885",
+          "evse_id": "AT*HTB*EE1008885",
+          "status": "UNKNOWN",
+          "phone": "08312069770",
+          "capabilities": [
+            "REMOTE_START_STOP_CAPABLE",
+            "RFID_READER"
+          ],
+          "connectors": [
+            {
+              "id": "1",
+              "standard": "IEC_62196_T2",
+              "format": "SOCKET",
+              "power_type": "AC_3_PHASE",
+              "max_voltage": 400,
+              "max_amperage": 32,
+              "max_electric_power": 22000
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "NL*LMS*E1710198",
+      "name": "Auto Bebion",
+      "address": "Zeppelinstraße 4",
+      "postal_code": "71083",
+      "city": "Herrenberg",
+      "country": "DEU",
+      "time_zone": "Europe/Berlin",
+      "last_updated": "2021-04-28T15:51:49",
+      "coordinates": {
+        "latitude": "48.600207",
+        "longitude": "8.865511"
+      },
+      "opening_times": {
+        "twentyfourseven": true
+      },
+      "evses": [
+        {
+          "id": "NL*LMS*E1710198*1",
+          "evse_id": "NL*LMS*E1710198*1",
+          "status": "UNKNOWN",
+          "phone": "0703293610",
+          "capabilities": [
+            "REMOTE_START_STOP_CAPABLE",
+            "RFID_READER"
+          ],
+          "connectors": [
+            {
+              "id": "1",
+              "standard": "IEC_62196_T2",
+              "format": "SOCKET",
+              "power_type": "AC_3_PHASE",
+              "max_voltage": 400,
+              "max_amperage": 32,
+              "max_electric_power": 22000
+            }
+          ]
+        },
+        {
+          "id": "NL*LMS*E1710198*2",
+          "evse_id": "NL*LMS*E1710198*2",
+          "status": "UNKNOWN",
+          "phone": "0703293610",
+          "capabilities": [
+            "REMOTE_START_STOP_CAPABLE",
+            "RFID_READER"
+          ],
+          "connectors": [
+            {
+              "id": "1",
+              "standard": "IEC_62196_T2",
+              "format": "SOCKET",
+              "power_type": "AC_3_PHASE",
+              "max_voltage": 400,
+              "max_amperage": 32,
+              "max_electric_power": 22000
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "DE*BDO*E277490739",
+      "name": "VW Autohaus Weeber",
+      "address": "Daimlerstraße 32",
+      "postal_code": "71083",
+      "city": "Herrenberg",
+      "country": "DEU",
+      "time_zone": "Europe/Berlin",
+      "last_updated": "2021-04-28T15:51:49",
+      "coordinates": {
+        "latitude": "48.602928",
+        "longitude": "8.87091"
+      },
+      "opening_times": {
+        "twentyfourseven": true
+      },
+      "evses": [
+        {
+          "id": "DE*BDO*E277490739*1",
+          "evse_id": "DE*BDO*E277490739*1",
+          "status": "UNKNOWN",
+          "phone": "070329272100",
+          "capabilities": [
+            "REMOTE_START_STOP_CAPABLE",
+            "RFID_READER"
+          ],
+          "connectors": [
+            {
+              "id": "1",
+              "standard": "IEC_62196_T2_COMBO",
+              "format": "CABLE",
+              "power_type": "DC",
+              "max_voltage": 400,
+              "max_amperage": 125,
+              "max_electric_power": 50000
+            }
+          ]
+        },
+        {
+          "id": "DE*BDO*E277490739*2",
+          "evse_id": "DE*BDO*E277490739*2",
+          "status": "UNKNOWN",
+          "phone": "070329272100",
+          "capabilities": [
+            "REMOTE_START_STOP_CAPABLE",
+            "RFID_READER"
+          ],
+          "connectors": [
+            {
+              "id": "1",
+              "standard": "IEC_62196_T2_COMBO",
+              "format": "CABLE",
+              "power_type": "DC",
+              "max_voltage": 400,
+              "max_amperage": 125,
+              "max_electric_power": 50000
+            }
+          ]
+        },
+        {
+          "id": "DE*BDO*E277490739*3",
+          "evse_id": "DE*BDO*E277490739*3",
+          "status": "UNKNOWN",
+          "phone": "070329272100",
+          "capabilities": [
+            "REMOTE_START_STOP_CAPABLE",
+            "RFID_READER"
+          ],
+          "connectors": [
+            {
+              "id": "1",
+              "standard": "IEC_62196_T2",
+              "format": "SOCKET",
+              "power_type": "AC_3_PHASE",
+              "max_voltage": 400,
+              "max_amperage": 32,
+              "max_electric_power": 22000
+            }
+          ]
+        },
+        {
+          "id": "DE*BDO*E277490739*4",
+          "evse_id": "DE*BDO*E277490739*4",
+          "status": "UNKNOWN",
+          "phone": "070329272100",
+          "capabilities": [
+            "REMOTE_START_STOP_CAPABLE",
+            "RFID_READER"
+          ],
+          "connectors": [
+            {
+              "id": "1",
+              "standard": "IEC_62196_T2",
+              "format": "SOCKET",
+              "power_type": "AC_3_PHASE",
+              "max_voltage": 400,
+              "max_amperage": 32,
+              "max_electric_power": 22000
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "DETNME09500550",
+      "name": "Hotel Gasthof Hasen",
+      "address": "Hasenplatz 6",
+      "postal_code": "71083",
+      "city": "Herrenberg",
+      "country": "DEU",
+      "time_zone": "Europe/Berlin",
+      "last_updated": "2021-04-28T15:51:49",
+      "coordinates": {
+        "latitude": "48.594105",
+        "longitude": "8.872809"
+      },
+      "opening_times": {
+        "twentyfourseven": true
+      },
+      "evses": [
+        {
+          "id": "DETNME09500550*0",
+          "evse_id": "DETNME09500550*0",
+          "status": "UNKNOWN",
+          "phone": "070322040",
+          "capabilities": [
+            "REMOTE_START_STOP_CAPABLE",
+            "RFID_READER"
+          ],
+          "connectors": [
+            {
+              "id": "1",
+              "standard": "IEC_62196_T2",
+              "format": "SOCKET",
+              "power_type": "AC_3_PHASE",
+              "max_voltage": 400,
+              "max_amperage": 16,
+              "max_electric_power": 11000
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "DE*WLN*E000410",
+      "name": "ARAMIS Tagungs- und Sporthotel",
+      "address": "Siedlerstraße 40-44",
+      "postal_code": "71126",
+      "city": "Gäufelden",
+      "country": "DEU",
+      "time_zone": "Europe/Berlin",
+      "last_updated": "2021-04-28T15:51:49",
+      "coordinates": {
+        "latitude": "48.560039",
+        "longitude": "8.857696"
+      },
+      "opening_times": {
+        "twentyfourseven": true
+      },
+      "evses": [
+        {
+          "id": "DE*WLN*E0004107",
+          "evse_id": "DE*WLN*E0004107",
+          "status": "UNKNOWN",
+          "phone": "070327810",
+          "capabilities": [
+            "REMOTE_START_STOP_CAPABLE",
+            "RFID_READER"
+          ],
+          "connectors": [
+            {
+              "id": "1",
+              "standard": "IEC_62196_T2",
+              "format": "SOCKET",
+              "power_type": "AC_3_PHASE",
+              "max_voltage": 400,
+              "max_amperage": 32,
+              "max_electric_power": 22000
+            }
+          ]
+        },
+        {
+          "id": "DE*WLN*E0004108",
+          "evse_id": "DE*WLN*E0004108",
+          "status": "UNKNOWN",
+          "phone": "070327810",
+          "capabilities": [
+            "REMOTE_START_STOP_CAPABLE",
+            "RFID_READER"
+          ],
+          "connectors": [
+            {
+              "id": "1",
+              "standard": "IEC_62196_T2",
+              "format": "SOCKET",
+              "power_type": "AC_3_PHASE",
+              "max_voltage": 400,
+              "max_amperage": 32,
+              "max_electric_power": 22000
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "DE*ENBW*E904941",
+      "name": "Schönbuch West",
+      "address": "A81",
+      "postal_code": "71154",
+      "city": "Nufringen",
+      "country": "DEU",
+      "time_zone": "Europe/Berlin",
+      "last_updated": "2021-04-28T15:51:49",
+      "coordinates": {
+        "latitude": "48.614594",
+        "longitude": "8.90319"
+      },
+      "opening_times": {
+        "twentyfourseven": true
+      },
+      "evses": [
+        {
+          "id": "DE*ENBW*E904941*1",
+          "evse_id": "DE*ENBW*E904941*1",
+          "status": "UNKNOWN",
+          "phone": "072172586460",
+          "capabilities": [
+            "REMOTE_START_STOP_CAPABLE",
+            "RFID_READER"
+          ],
+          "connectors": [
+            {
+              "id": "1",
+              "standard": "IEC_62196_T2_COMBO",
+              "format": "CABLE",
+              "power_type": "DC",
+              "max_voltage": 400,
+              "max_amperage": 375,
+              "max_electric_power": 150000
+            }
+          ]
+        },
+        {
+          "id": "DE*ENBW*E904941*2",
+          "evse_id": "DE*ENBW*E904941*2",
+          "status": "UNKNOWN",
+          "phone": "072172586460",
+          "capabilities": [
+            "REMOTE_START_STOP_CAPABLE",
+            "RFID_READER"
+          ],
+          "connectors": [
+            {
+              "id": "1",
+              "standard": "IEC_62196_T2_COMBO",
+              "format": "CABLE",
+              "power_type": "DC",
+              "max_voltage": 400,
+              "max_amperage": 187,
+              "max_electric_power": 75000
+            }
+          ]
+        },
+        {
+          "id": "DE*EBW*E905976*1",
+          "evse_id": "DE*EBW*E905976*1",
+          "status": "UNKNOWN",
+          "phone": "072172586460",
+          "capabilities": [
+            "REMOTE_START_STOP_CAPABLE",
+            "RFID_READER"
+          ],
+          "connectors": [
+            {
+              "id": "1",
+              "standard": "IEC_62196_T2_COMBO",
+              "format": "CABLE",
+              "power_type": "DC",
+              "max_voltage": 400,
+              "max_amperage": 125,
+              "max_electric_power": 50000
+            }
+          ]
+        },
+        {
+          "id": "DE*EBW*E905976*2",
+          "evse_id": "DE*EBW*E905976*2",
+          "status": "UNKNOWN",
+          "phone": "072172586460",
+          "capabilities": [
+            "REMOTE_START_STOP_CAPABLE",
+            "RFID_READER"
+          ],
+          "connectors": [
+            {
+              "id": "1",
+              "standard": "CHADEMO",
+              "format": "CABLE",
+              "power_type": "DC",
+              "max_voltage": 400,
+              "max_amperage": 125,
+              "max_electric_power": 50000
+            }
+          ]
+        },
+        {
+          "id": "DE*EBW*E905976*3",
+          "evse_id": "DE*EBW*E905976*3",
+          "status": "UNKNOWN",
+          "phone": "072172586460",
+          "capabilities": [
+            "REMOTE_START_STOP_CAPABLE",
+            "RFID_READER"
+          ],
+          "connectors": [
+            {
+              "id": "1",
+              "standard": "IEC_62196_T2",
+              "format": "SOCKET",
+              "power_type": "AC_3_PHASE",
+              "max_voltage": 400,
+              "max_amperage": 63,
+              "max_electric_power": 43000
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ZZ*NAV*RT1029",
+      "name": "ChargerCube E-Bike Ladestation Café Ikarus Buttenhausen",
+      "address": "Wasserstetter Straße 4",
+      "postal_code": "72525",
+      "city": "Münsingen-Buttenhausen",
+      "country": "DEU",
+      "time_zone": "Europe/Berlin",
+      "last_updated": "2021-09-05T14:04:00",
+      "coordinates": {
+        "latitude": "48.361698",
+        "longitude": "9.475739"
+      },
+      "opening_times": {
+        "twentyfourseven": true
+      },
+      "evses": [
+        {
+          "id": "ZZ*NAV*RT1029*1",
+          "evse_id": "ZZ*NAV*RT1029*1",
+          "status": "UNKNOWN",
+          "phone": "073811820",
+          "capabilities": [
+          ],
+          "parking_restrictions": ["BICYCLE_ONLY"],
+          "connectors": [
+            {
+              "id": "1",
+              "standard": "DOMESTIC_F",
+              "format": "SOCKET",
+              "power_type": "AC_1_PHASE",
+              "max_voltage": 230,
+              "max_amperage": 16,
+              "max_electric_power": 3680
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ZZ*NAV*RT1046",
+      "name": "ChargerCube E-Bike Ladestation Biosphärenzentrum Auingen",
+      "address": "Biosphärenallee",
+      "postal_code": "72525",
+      "city": "Münsingen-Auingen",
+      "country": "DEU",
+      "time_zone": "Europe/Berlin",
+      "last_updated": "2021-09-05T14:04:00",
+      "coordinates": {
+        "latitude": "48.412526",
+        "longitude": "9.534062"
+      },
+      "opening_times": {
+        "twentyfourseven": true
+      },
+      "evses": [
+        {
+          "id": "ZZ*NAV*RT1046*1",
+          "evse_id": "ZZ*NAV*RT1046*1",
+          "status": "UNKNOWN",
+          "phone": "071211448485",
+          "capabilities": [
+          ],
+          "parking_restrictions": ["BICYCLE_ONLY"],
+          "connectors": [
+            {
+              "id": "1",
+              "standard": "DOMESTIC_F",
+              "format": "SOCKET",
+              "power_type": "AC_1_PHASE",
+              "max_voltage": 230,
+              "max_amperage": 16,
+              "max_electric_power": 3680
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ZZ*NAV*RT1028",
+      "name": "ChargerCube E-Bike Ladestation Rathausplatz Münsingen",
+      "address": "Bachwiesenstraße 7",
+      "postal_code": "72525",
+      "city": "Münsingen",
+      "country": "DEU",
+      "time_zone": "Europe/Berlin",
+      "last_updated": "2021-09-05T14:04:00",
+      "coordinates": {
+        "latitude": "48.412617",
+        "longitude": "9.492708"
+      },
+      "opening_times": {
+        "twentyfourseven": true
+      },
+      "evses": [
+        {
+          "id": "ZZ*NAV*RT1028*1",
+          "evse_id": "ZZ*NAV*RT1028*1",
+          "status": "UNKNOWN",
+          "phone": "073811820",
+          "capabilities": [
+          ],
+          "parking_restrictions": ["BICYCLE_ONLY"],
+          "connectors": [
+            {
+              "id": "1",
+              "standard": "DOMESTIC_F",
+              "format": "SOCKET",
+              "power_type": "AC_1_PHASE",
+              "max_voltage": 230,
+              "max_amperage": 16,
+              "max_electric_power": 3680
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ZZ*NAV*RT1012",
+      "name": "E-Tankstelle für PKW Albgut Münsingen",
+      "address": "Hauptstraße",
+      "postal_code": "72525",
+      "city": "Münsingen-Auingen",
+      "country": "DEU",
+      "time_zone": "Europe/Berlin",
+      "last_updated": "2021-09-05T15:40:00",
+      "coordinates": {
+        "latitude": "48.412622",
+        "longitude": "9.534473"
+      },
+      "opening_times": {
+        "twentyfourseven": true
+      },
+      "evses": [
+        {
+          "id": "ZZ*NAV*RT1012*1",
+          "evse_id": "ZZ*NAV*RT1012*1",
+          "status": "UNKNOWN",
+          "capabilities": [
+            "REMOTE_START_STOP_CAPABLE",
+            "RFID_READER"
+          ],
+          "connectors": [
+            {
+              "id": "1",
+              "standard": "IEC_62196_T2",
+              "format": "SOCKET",
+              "power_type": "AC_3_PHASE",
+              "max_voltage": 400,
+              "max_amperage": 32,
+              "max_electric_power": 22000
+            }
+          ]
+        },
+        {
+          "id": "ZZ*NAV*RT1012*2",
+          "evse_id": "ZZ*NAV*RT1012*2",
+          "status": "UNKNOWN",
+          "capabilities": [
+            "REMOTE_START_STOP_CAPABLE",
+            "RFID_READER"
+          ],
+          "connectors": [
+            {
+              "id": "1",
+              "standard": "IEC_62196_T2",
+              "format": "SOCKET",
+              "power_type": "AC_3_PHASE",
+              "max_voltage": 400,
+              "max_amperage": 32,
+              "max_electric_power": 22000
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ZZ*NAV*RT1006",
+      "name": "E-Tankstelle für PKW Bahnhof Münsingen",
+      "address": "Bahnhofstraße 6",
+      "postal_code": "72525",
+      "city": "Münsingen",
+      "country": "DEU",
+      "time_zone": "Europe/Berlin",
+      "last_updated": "2021-09-05T15:40:00",
+      "coordinates": {
+        "latitude": "48.410410",
+        "longitude": "9.490985"
+      },
+      "opening_times": {
+        "twentyfourseven": true
+      },
+      "evses": [
+        {
+          "id": "ZZ*NAV*RT1006*1",
+          "evse_id": "ZZ*NAV*RT1006*1",
+          "status": "UNKNOWN",
+          "phone": "072172586451",
+          "capabilities": [
+            "REMOTE_START_STOP_CAPABLE",
+            "RFID_READER"
+          ],
+          "connectors": [
+            {
+              "id": "1",
+              "standard": "IEC_62196_T2",
+              "format": "SOCKET",
+              "power_type": "AC_3_PHASE",
+              "max_voltage": 400,
+              "max_amperage": 32,
+              "max_electric_power": 22000
+            }
+          ]
+        },
+        {
+          "id": "ZZ*NAV*RT1006*2",
+          "evse_id": "ZZ*NAV*RT1006*2",
+          "status": "UNKNOWN",
+          "phone": "072172586451",
+          "capabilities": [
+            "REMOTE_START_STOP_CAPABLE",
+            "RFID_READER"
+          ],
+          "connectors": [
+            {
+              "id": "1",
+              "standard": "IEC_62196_T2",
+              "format": "SOCKET",
+              "power_type": "AC_3_PHASE",
+              "max_voltage": 400,
+              "max_amperage": 32,
+              "max_electric_power": 22000
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ZZ*NAV*RT1009",
+      "name": "E-Tankstelle für PKW Freibad Münsingen",
+      "address": "Alter Seeburger Weg 4",
+      "postal_code": "72525",
+      "city": "Münsingen",
+      "country": "DEU",
+      "time_zone": "Europe/Berlin",
+      "last_updated": "2021-09-05T15:40:00",
+      "coordinates": {
+        "latitude": "48.415557",
+        "longitude": "9.490235"
+      },
+      "opening_times": {
+        "twentyfourseven": true
+      },
+      "evses": [
+        {
+          "id": "ZZ*NAV*RT1009*1",
+          "evse_id": "ZZ*NAV*RT1009*1",
+          "status": "UNKNOWN",
+          "capabilities": [
+            "REMOTE_START_STOP_CAPABLE",
+            "RFID_READER"
+          ],
+          "connectors": [
+            {
+              "id": "1",
+              "standard": "IEC_62196_T2",
+              "format": "SOCKET",
+              "power_type": "AC_3_PHASE",
+              "max_voltage": 400,
+              "max_amperage": 32,
+              "max_electric_power": 22000
+            }
+          ]
+        },
+        {
+          "id": "ZZ*NAV*RT1009*2",
+          "evse_id": "ZZ*NAV*RT1009*2",
+          "status": "UNKNOWN",
+          "capabilities": [
+            "REMOTE_START_STOP_CAPABLE",
+            "RFID_READER"
+          ],
+          "connectors": [
+            {
+              "id": "1",
+              "standard": "IEC_62196_T2",
+              "format": "SOCKET",
+              "power_type": "AC_3_PHASE",
+              "max_voltage": 400,
+              "max_amperage": 32,
+              "max_electric_power": 22000
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ZZ*NAV*RT1010",
+      "name": "E-Tankstelle für PKW Hermann Menton GmbH & Co KG",
+      "address": "Graf-Zeppelin-Straße 2",
+      "postal_code": "72525",
+      "city": "Münsingen",
+      "country": "DEU",
+      "time_zone": "Europe/Berlin",
+      "last_updated": "2021-09-05T15:40:00",
+      "coordinates": {
+        "latitude": "48.415876",
+        "longitude": "9.477174"
+      },
+      "opening_times": {
+        "twentyfourseven": true
+      },
+      "evses": [
+        {
+          "id": "ZZ*NAV*RT1010*1",
+          "evse_id": "ZZ*NAV*RT1010*1",
+          "status": "UNKNOWN",
+          "phone": "07381756990",
+          "capabilities": [
+            "REMOTE_START_STOP_CAPABLE",
+            "RFID_READER"
+          ],
+          "connectors": [
+            {
+              "id": "1",
+              "standard": "IEC_62196_T2",
+              "format": "SOCKET",
+              "power_type": "AC_3_PHASE",
+              "max_voltage": 400,
+              "max_amperage": 32,
+              "max_electric_power": 22000
+            }
+          ]
+        },
+        {
+          "id": "ZZ*NAV*RT1010*2",
+          "evse_id": "ZZ*NAV*RT1010*2",
+          "status": "UNKNOWN",
+          "phone": "07381756990",
+          "capabilities": [
+            "REMOTE_START_STOP_CAPABLE",
+            "RFID_READER"
+          ],
+          "connectors": [
+            {
+              "id": "1",
+              "standard": "IEC_62196_T2",
+              "format": "SOCKET",
+              "power_type": "AC_3_PHASE",
+              "max_voltage": 400,
+              "max_amperage": 32,
+              "max_electric_power": 22000
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ZZ*NAV*RT1011",
+      "name": "E-Tankstelle für PKW Jllig Automobile GmbH & Co.KG",
+      "address": "Hauptstraße 62",
+      "postal_code": "72525",
+      "city": "Münsingen",
+      "country": "DEU",
+      "time_zone": "Europe/Berlin",
+      "last_updated": "2021-09-05T15:40:00",
+      "coordinates": {
+        "latitude": "48.409579",
+        "longitude": "9.499852"
+      },
+      "opening_times": {
+        "twentyfourseven": true
+      },
+      "evses": [
+        {
+          "id": "ZZ*NAV*RT1011*1",
+          "evse_id": "ZZ*NAV*RT1011*1",
+          "status": "UNKNOWN",
+          "phone": "0738193030",
+          "capabilities": [
+            "REMOTE_START_STOP_CAPABLE",
+            "RFID_READER"
+          ],
+          "connectors": [
+            {
+              "id": "1",
+              "standard": "IEC_62196_T2",
+              "format": "SOCKET",
+              "power_type": "AC_3_PHASE",
+              "max_voltage": 400,
+              "max_amperage": 32,
+              "max_electric_power": 22000
+            }
+          ]
+        },
+        {
+          "id": "ZZ*NAV*RT1011*2",
+          "evse_id": "ZZ*NAV*RT1011*2",
+          "status": "UNKNOWN",
+          "phone": "0738193030",
+          "capabilities": [
+            "REMOTE_START_STOP_CAPABLE",
+            "RFID_READER"
+          ],
+          "connectors": [
+            {
+              "id": "1",
+              "standard": "IEC_62196_T2",
+              "format": "SOCKET",
+              "power_type": "AC_3_PHASE",
+              "max_voltage": 400,
+              "max_amperage": 32,
+              "max_electric_power": 22000
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ZZ*NAV*RT1005",
+      "name": "E-Tankstelle für PKW Rathaus Münsingen",
+      "address": "Bachwiesenstraße 7",
+      "postal_code": "72525",
+      "city": "Münsingen",
+      "country": "DEU",
+      "time_zone": "Europe/Berlin",
+      "last_updated": "2021-09-05T15:40:00",
+      "coordinates": {
+        "latitude": "48.412620",
+        "longitude": "9.491937"
+      },
+      "opening_times": {
+        "twentyfourseven": true
+      },
+      "evses": [
+        {
+          "id": "ZZ*NAV*RT1005*1",
+          "evse_id": "ZZ*NAV*RT1005*1",
+          "status": "UNKNOWN",
+          "phone": "073811820",
+          "capabilities": [
+            "REMOTE_START_STOP_CAPABLE",
+            "RFID_READER"
+          ],
+          "connectors": [
+            {
+              "id": "1",
+              "standard": "IEC_62196_T2",
+              "format": "SOCKET",
+              "power_type": "AC_3_PHASE",
+              "max_voltage": 400,
+              "max_amperage": 32,
+              "max_electric_power": 22000
+            }
+          ]
+        },
+        {
+          "id": "ZZ*NAV*RT1005*2",
+          "evse_id": "ZZ*NAV*RT1005*2",
+          "status": "UNKNOWN",
+          "phone": "073811820",
+          "capabilities": [
+            "REMOTE_START_STOP_CAPABLE",
+            "RFID_READER"
+          ],
+          "connectors": [
+            {
+              "id": "1",
+              "standard": "IEC_62196_T2",
+              "format": "SOCKET",
+              "power_type": "AC_3_PHASE",
+              "max_voltage": 400,
+              "max_amperage": 32,
+              "max_electric_power": 22000
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ZZ*NAV*RT1007",
+      "name": "E-Tankstelle für PKW Uracher Straße Münsingen",
+      "address": "Uracher Straße",
+      "postal_code": "72525",
+      "city": "Münsingen",
+      "country": "DEU",
+      "time_zone": "Europe/Berlin",
+      "last_updated": "2021-09-05T15:40:00",
+      "coordinates": {
+        "latitude": "48.413808",
+        "longitude": "9.493674"
+      },
+      "opening_times": {
+        "twentyfourseven": true
+      },
+      "evses": [
+        {
+          "id": "ZZ*NAV*RT1007*1",
+          "evse_id": "ZZ*NAV*RT1007*1",
+          "status": "UNKNOWN",
+          "capabilities": [
+            "REMOTE_START_STOP_CAPABLE",
+            "RFID_READER"
+          ],
+          "connectors": [
+            {
+              "id": "1",
+              "standard": "IEC_62196_T2",
+              "format": "SOCKET",
+              "power_type": "AC_3_PHASE",
+              "max_voltage": 400,
+              "max_amperage": 32,
+              "max_electric_power": 22000
+            }
+          ]
+        },
+        {
+          "id": "ZZ*NAV*RT1007*2",
+          "evse_id": "ZZ*NAV*RT1007*2",
+          "status": "UNKNOWN",
+          "capabilities": [
+            "REMOTE_START_STOP_CAPABLE",
+            "RFID_READER"
+          ],
+          "connectors": [
+            {
+              "id": "1",
+              "standard": "IEC_62196_T2",
+              "format": "SOCKET",
+              "power_type": "AC_3_PHASE",
+              "max_voltage": 400,
+              "max_amperage": 32,
+              "max_electric_power": 22000
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ZZ*NAV*LB538632",
+      "name": "Ladepunkt Aldi-S\u00fcd",
+      "address": "Aldinger Stra\u00dfe 170",
+      "postal_code": "71638",
+      "city": "Ludwigsburg",
+      "country": "DEU",
+      "time_zone": "Europe/Berlin",
+      "last_updated": "2022-06-30T11:00:00",
+      "coordinates": {
+        "latitude": "48.879931",
+        "longitude": "9.2190404"
+      },
+      "opening_times": {
+        "twentyfourseven": false,
+        "regular_hours": [
+          {
+            "weekday": 1,
+            "period_begin": "08:00",
+            "period_end": "20:00"
+          },
+          {
+            "weekday": 2,
+            "period_begin": "08:00",
+            "period_end": "20:00"
+          },
+          {
+            "weekday": 3,
+            "period_begin": "08:00",
+            "period_end": "20:00"
+          },
+          {
+            "weekday": 4,
+            "period_begin": "08:00",
+            "period_end": "20:00"
+          },
+          {
+            "weekday": 5,
+            "period_begin": "08:00",
+            "period_end": "20:00"
+          },
+          {
+            "weekday": 6,
+            "period_begin": "08:00",
+            "period_end": "20:00"
+          }
+        ]
+      },
+      "evses": [
+        {
+          "id": "ZZ*NAV*LB538632*1",
+          "evse_id": "ZZ*NAV*LB538632*1",
+          "status": "UNKNOWN",
+          "capabilities": [],
+          "parking_restrictions": [
+            "CUSTOMERS"
+          ],
+          "connectors": [
+            {
+              "standard": "IEC_62196_T2",
+              "format": "SOCKET",
+              "power_type": "AC_3_PHASE",
+              "max_voltage": 400,
+              "max_amperage": 32,
+              "max_electric_power": 22000,
+              "id": "1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ZZ*NAV*LB538633",
+      "name": "Ladepunkt Aldi S\u00fcd",
+      "address": "Martin-Luther-Stra\u00dfe 82",
+      "postal_code": "71636",
+      "city": "Ludwigsburg",
+      "country": "DEU",
+      "time_zone": "Europe/Berlin",
+      "last_updated": "2022-06-30T11:00:00",
+      "coordinates": {
+        "latitude": "48.8908506",
+        "longitude": "9.1810516"
+      },
+      "opening_times": {
+        "twentyfourseven": false,
+        "regular_hours": [
+          {
+            "weekday": 1,
+            "period_begin": "08:00",
+            "period_end": "21:00"
+          },
+          {
+            "weekday": 2,
+            "period_begin": "08:00",
+            "period_end": "21:00"
+          },
+          {
+            "weekday": 3,
+            "period_begin": "08:00",
+            "period_end": "21:00"
+          },
+          {
+            "weekday": 4,
+            "period_begin": "08:00",
+            "period_end": "21:00"
+          },
+          {
+            "weekday": 5,
+            "period_begin": "08:00",
+            "period_end": "21:00"
+          },
+          {
+            "weekday": 6,
+            "period_begin": "08:00",
+            "period_end": "21:00"
+          }
+        ]
+      },
+      "evses": [
+        {
+          "id": "ZZ*NAV*LB538633*1",
+          "evse_id": "ZZ*NAV*LB538633*1",
+          "status": "UNKNOWN",
+          "capabilities": [],
+          "parking_restrictions": [
+            "CUSTOMERS"
+          ],
+          "connectors": [
+            {
+              "standard": "IEC_62196_T2",
+              "format": "SOCKET",
+              "power_type": "AC_3_PHASE",
+              "max_voltage": 400,
+              "max_amperage": 32,
+              "max_electric_power": 20000,
+              "id": "1"
+            }
+          ]
+        },
+        {
+          "id": "ZZ*NAV*LB538633*2",
+          "evse_id": "ZZ*NAV*LB538633*2",
+          "status": "UNKNOWN",
+          "capabilities": [],
+          "parking_restrictions": [
+            "CUSTOMERS"
+          ],
+          "connectors": [
+            {
+              "standard": "IEC_62196_T2",
+              "format": "SOCKET",
+              "power_type": "AC_3_PHASE",
+              "max_voltage": 400,
+              "max_amperage": 32,
+              "max_electric_power": 20000,
+              "id": "1"
+            }
+          ]
+        },
+        {
+          "id": "ZZ*NAV*LB538633*3",
+          "evse_id": "ZZ*NAV*LB538633*3",
+          "status": "UNKNOWN",
+          "capabilities": [],
+          "parking_restrictions": [
+            "CUSTOMERS"
+          ],
+          "connectors": [
+            {
+              "standard": "IEC_62196_T2",
+              "format": "SOCKET",
+              "power_type": "AC_3_PHASE",
+              "max_voltage": 400,
+              "max_amperage": 32,
+              "max_electric_power": 22000,
+              "id": "1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ZZ*NAV*LB538634",
+      "name": "Ladepunkt IKEA",
+      "address": "Heinkelstra\u00dfe 10",
+      "postal_code": "71634",
+      "city": "Ludwigsburg",
+      "country": "DEU",
+      "time_zone": "Europe/Berlin",
+      "last_updated": "2022-06-30T11:00:00",
+      "coordinates": {
+        "latitude": "48.9197637",
+        "longitude": "9.1542406"
+      },
+      "opening_times": {
+        "twentyfourseven": false,
+        "regular_hours": [
+          {
+            "weekday": 1,
+            "period_begin": "10:00",
+            "period_end": "20:00"
+          },
+          {
+            "weekday": 2,
+            "period_begin": "10:00",
+            "period_end": "20:00"
+          },
+          {
+            "weekday": 3,
+            "period_begin": "10:00",
+            "period_end": "20:00"
+          },
+          {
+            "weekday": 4,
+            "period_begin": "10:00",
+            "period_end": "20:00"
+          },
+          {
+            "weekday": 5,
+            "period_begin": "10:00",
+            "period_end": "20:00"
+          },
+          {
+            "weekday": 6,
+            "period_begin": "10:00",
+            "period_end": "20:00"
+          }
+        ]
+      },
+      "evses": [
+        {
+          "id": "ZZ*NAV*LB538634*1",
+          "evse_id": "ZZ*NAV*LB538634*1",
+          "status": "UNKNOWN",
+          "capabilities": [],
+          "parking_restrictions": [
+            "CUSTOMERS"
+          ],
+          "connectors": [
+            {
+              "standard": "IEC_62196_T2",
+              "format": "SOCKET",
+              "power_type": "AC_3_PHASE",
+              "max_voltage": 400,
+              "max_amperage": 32,
+              "max_electric_power": 20000,
+              "id": "1"
+            }
+          ]
+        },
+        {
+          "id": "ZZ*NAV*LB538634*2",
+          "evse_id": "ZZ*NAV*LB538634*2",
+          "status": "UNKNOWN",
+          "capabilities": [],
+          "parking_restrictions": [
+            "CUSTOMERS"
+          ],
+          "connectors": [
+            {
+              "standard": "IEC_62196_T2",
+              "format": "SOCKET",
+              "power_type": "AC_3_PHASE",
+              "max_voltage": 400,
+              "max_amperage": 32,
+              "max_electric_power": 20000,
+              "id": "1"
+            }
+          ]
+        },
+        {
+          "id": "ZZ*NAV*LB538634*3",
+          "evse_id": "ZZ*NAV*LB538634*3",
+          "status": "UNKNOWN",
+          "capabilities": [],
+          "parking_restrictions": [
+            "CUSTOMERS"
+          ],
+          "connectors": [
+            {
+              "standard": "IEC_62196_T2",
+              "format": "SOCKET",
+              "power_type": "AC_3_PHASE",
+              "max_voltage": 400,
+              "max_amperage": 32,
+              "max_electric_power": 20000,
+              "id": "1"
+            }
+          ]
+        },
+        {
+          "id": "ZZ*NAV*LB538634*4",
+          "evse_id": "ZZ*NAV*LB538634*4",
+          "status": "UNKNOWN",
+          "capabilities": [],
+          "parking_restrictions": [
+            "CUSTOMERS"
+          ],
+          "connectors": [
+            {
+              "standard": "IEC_62196_T2",
+              "format": "SOCKET",
+              "power_type": "AC_3_PHASE",
+              "max_voltage": 400,
+              "max_amperage": 32,
+              "max_electric_power": 20000,
+              "id": "1"
+            }
+          ]
+        },
+        {
+          "id": "ZZ*NAV*LB538634*5",
+          "evse_id": "ZZ*NAV*LB538634*5",
+          "status": "UNKNOWN",
+          "capabilities": [],
+          "parking_restrictions": [
+            "CUSTOMERS"
+          ],
+          "connectors": [
+            {
+              "standard": "IEC_62196_T2",
+              "format": "SOCKET",
+              "power_type": "AC_3_PHASE",
+              "max_voltage": 400,
+              "max_amperage": 32,
+              "max_electric_power": 22000,
+              "id": "1"
+            }
+          ]
+        },
+        {
+          "id": "ZZ*NAV*LB538634*6",
+          "evse_id": "ZZ*NAV*LB538634*6",
+          "status": "UNKNOWN",
+          "capabilities": [],
+          "parking_restrictions": [
+            "CUSTOMERS"
+          ],
+          "connectors": [
+            {
+              "standard": "IEC_62196_T2",
+              "format": "SOCKET",
+              "power_type": "AC_3_PHASE",
+              "max_voltage": 400,
+              "max_amperage": 32,
+              "max_electric_power": 22000,
+              "id": "1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ZZ*NAV*LB538635",
+      "name": "Ladepunkt Breuningerland",
+      "address": "Porschestra\u00dfe",
+      "postal_code": "71634",
+      "city": "Ludwigsburg",
+      "country": "DEU",
+      "time_zone": "Europe/Berlin",
+      "last_updated": "2022-06-30T11:00:00",
+      "coordinates": {
+        "latitude": "48.9208534",
+        "longitude": "9.149368"
+      },
+      "opening_times": {
+        "twentyfourseven": true
+      },
+      "evses": [
+        {
+          "id": "ZZ*NAV*LB538635*1",
+          "evse_id": "ZZ*NAV*LB538635*1",
+          "status": "UNKNOWN",
+          "capabilities": [],
+          "parking_restrictions": [
+            "CUSTOMERS"
+          ],
+          "connectors": [
+            {
+              "standard": "CHADEMO",
+              "format": "CABLE",
+              "power_type": "DC",
+              "max_voltage": 1000,
+              "max_amperage": 100,
+              "max_electric_power": 150000,
+              "id": "1"
+            }
+          ]
+        },
+        {
+          "id": "ZZ*NAV*LB538635*2",
+          "evse_id": "ZZ*NAV*LB538635*2",
+          "status": "UNKNOWN",
+          "capabilities": [],
+          "parking_restrictions": [
+            "CUSTOMERS"
+          ],
+          "connectors": [
+            {
+              "standard": "CHADEMO",
+              "format": "CABLE",
+              "power_type": "DC",
+              "max_voltage": 1000,
+              "max_amperage": 100,
+              "max_electric_power": 150000,
+              "id": "1"
+            }
+          ]
+        },
+        {
+          "id": "ZZ*NAV*LB538635*3",
+          "evse_id": "ZZ*NAV*LB538635*3",
+          "status": "UNKNOWN",
+          "capabilities": [],
+          "parking_restrictions": [
+            "CUSTOMERS"
+          ],
+          "connectors": [
+            {
+              "standard": "CHADEMO",
+              "format": "CABLE",
+              "power_type": "DC",
+              "max_voltage": 1000,
+              "max_amperage": 100,
+              "max_electric_power": 150000,
+              "id": "1"
+            }
+          ]
+        },
+        {
+          "id": "ZZ*NAV*LB538635*4",
+          "evse_id": "ZZ*NAV*LB538635*4",
+          "status": "UNKNOWN",
+          "capabilities": [],
+          "parking_restrictions": [
+            "CUSTOMERS"
+          ],
+          "connectors": [
+            {
+              "standard": "CHADEMO",
+              "format": "CABLE",
+              "power_type": "DC",
+              "max_voltage": 1000,
+              "max_amperage": 100,
+              "max_electric_power": 150000,
+              "id": "1"
+            }
+          ]
+        },
+        {
+          "id": "ZZ*NAV*LB538635*5",
+          "evse_id": "ZZ*NAV*LB538635*5",
+          "status": "UNKNOWN",
+          "capabilities": [],
+          "parking_restrictions": [
+            "CUSTOMERS"
+          ],
+          "connectors": [
+            {
+              "standard": "CHADEMO",
+              "format": "CABLE",
+              "power_type": "DC",
+              "max_voltage": 1000,
+              "max_amperage": 100,
+              "max_electric_power": 150000,
+              "id": "1"
+            }
+          ]
+        },
+        {
+          "id": "ZZ*NAV*LB538635*6",
+          "evse_id": "ZZ*NAV*LB538635*6",
+          "status": "UNKNOWN",
+          "capabilities": [],
+          "parking_restrictions": [
+            "CUSTOMERS"
+          ],
+          "connectors": [
+            {
+              "standard": "CHADEMO",
+              "format": "CABLE",
+              "power_type": "DC",
+              "max_voltage": 1000,
+              "max_amperage": 100,
+              "max_electric_power": 150000,
+              "id": "1"
+            }
+          ]
+        },
+        {
+          "id": "ZZ*NAV*LB538635*7",
+          "evse_id": "ZZ*NAV*LB538635*7",
+          "status": "UNKNOWN",
+          "capabilities": [],
+          "parking_restrictions": [
+            "CUSTOMERS"
+          ],
+          "connectors": [
+            {
+              "standard": "CHADEMO",
+              "format": "CABLE",
+              "power_type": "DC",
+              "max_voltage": 1000,
+              "max_amperage": 100,
+              "max_electric_power": 150000,
+              "id": "1"
+            }
+          ]
+        },
+        {
+          "id": "ZZ*NAV*LB538635*8",
+          "evse_id": "ZZ*NAV*LB538635*8",
+          "status": "UNKNOWN",
+          "capabilities": [],
+          "parking_restrictions": [
+            "CUSTOMERS"
+          ],
+          "connectors": [
+            {
+              "standard": "CHADEMO",
+              "format": "CABLE",
+              "power_type": "DC",
+              "max_voltage": 1000,
+              "max_amperage": 100,
+              "max_electric_power": 150000,
+              "id": "1"
+            }
+          ]
+        },
+        {
+          "id": "ZZ*NAV*LB538635*9",
+          "evse_id": "ZZ*NAV*LB538635*9",
+          "status": "UNKNOWN",
+          "capabilities": [],
+          "parking_restrictions": [
+            "CUSTOMERS"
+          ],
+          "connectors": [
+            {
+              "standard": "CHADEMO",
+              "format": "CABLE",
+              "power_type": "DC",
+              "max_voltage": 1000,
+              "max_amperage": 100,
+              "max_electric_power": 300000,
+              "id": "1"
+            }
+          ]
+        },
+        {
+          "id": "ZZ*NAV*LB538635*10",
+          "evse_id": "ZZ*NAV*LB538635*10",
+          "status": "UNKNOWN",
+          "capabilities": [],
+          "parking_restrictions": [
+            "CUSTOMERS"
+          ],
+          "connectors": [
+            {
+              "standard": "CHADEMO",
+              "format": "CABLE",
+              "power_type": "DC",
+              "max_voltage": 1000,
+              "max_amperage": 100,
+              "max_electric_power": 300000,
+              "id": "1"
+            }
+          ]
+        },
+        {
+          "id": "ZZ*NAV*LB538635*11",
+          "evse_id": "ZZ*NAV*LB538635*11",
+          "status": "UNKNOWN",
+          "capabilities": [],
+          "parking_restrictions": [
+            "CUSTOMERS"
+          ],
+          "connectors": [
+            {
+              "standard": "CHADEMO",
+              "format": "CABLE",
+              "power_type": "DC",
+              "max_voltage": 1000,
+              "max_amperage": 100,
+              "max_electric_power": 300000,
+              "id": "1"
+            }
+          ]
+        },
+        {
+          "id": "ZZ*NAV*LB538635*12",
+          "evse_id": "ZZ*NAV*LB538635*12",
+          "status": "UNKNOWN",
+          "capabilities": [],
+          "parking_restrictions": [
+            "CUSTOMERS"
+          ],
+          "connectors": [
+            {
+              "standard": "CHADEMO",
+              "format": "CABLE",
+              "power_type": "DC",
+              "max_voltage": 1000,
+              "max_amperage": 100,
+              "max_electric_power": 300000,
+              "id": "1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ZZ*NAV*LB539953",
+      "name": "Ladepunkt Noz Elektrotechnik",
+      "address": "Schulthei\u00df-K\u00f6hle-Stra\u00dfe 7",
+      "postal_code": "71636",
+      "city": "Ludwigsburg",
+      "country": "DEU",
+      "time_zone": "Europe/Berlin",
+      "last_updated": "2022-06-30T11:00:00",
+      "coordinates": {
+        "latitude": "48.8889958",
+        "longitude": "9.1558762"
+      },
+      "opening_times": {
+        "twentyfourseven": true
+      },
+      "evses": [
+        {
+          "id": "ZZ*NAV*LB539953*1",
+          "evse_id": "ZZ*NAV*LB539953*1",
+          "status": "UNKNOWN",
+          "capabilities": [],
+          "parking_restrictions": [
+            "CUSTOMERS"
+          ],
+          "connectors": [
+            {
+              "standard": "IEC_62196_T2",
+              "format": "SOCKET",
+              "power_type": "AC_3_PHASE",
+              "max_voltage": 400,
+              "max_amperage": 32,
+              "max_electric_power": 22000,
+              "id": "1"
+            }
+          ]
+        },
+        {
+          "id": "ZZ*NAV*LB539953*2",
+          "evse_id": "ZZ*NAV*LB539953*2",
+          "status": "UNKNOWN",
+          "capabilities": [],
+          "parking_restrictions": [
+            "CUSTOMERS"
+          ],
+          "connectors": [
+            {
+              "standard": "IEC_62196_T2",
+              "format": "SOCKET",
+              "power_type": "AC_3_PHASE",
+              "max_voltage": 400,
+              "max_amperage": 32,
+              "max_electric_power": 22000,
+              "id": "1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ZZ*NAV*LB539954",
+      "name": "Ladepunkt Gebr. Lotter",
+      "address": "Wald\u00e4cker",
+      "postal_code": "71636",
+      "city": "Ludwigsburg",
+      "country": "DEU",
+      "time_zone": "Europe/Berlin",
+      "last_updated": "2022-06-30T11:00:00",
+      "coordinates": {
+        "latitude": "48.8913347",
+        "longitude": "9.1569366"
+      },
+      "opening_times": {
+        "twentyfourseven": true
+      },
+      "evses": [
+        {
+          "id": "ZZ*NAV*LB539954*1",
+          "evse_id": "ZZ*NAV*LB539954*1",
+          "status": "UNKNOWN",
+          "capabilities": [],
+          "parking_restrictions": [
+            "CUSTOMERS"
+          ],
+          "connectors": [
+            {
+              "standard": "IEC_62196_T2",
+              "format": "SOCKET",
+              "power_type": "AC_3_PHASE",
+              "max_voltage": 400,
+              "max_amperage": 32,
+              "max_electric_power": 20000,
+              "id": "1"
+            }
+          ]
+        },
+        {
+          "id": "ZZ*NAV*LB539954*2",
+          "evse_id": "ZZ*NAV*LB539954*2",
+          "status": "UNKNOWN",
+          "capabilities": [],
+          "parking_restrictions": [
+            "CUSTOMERS"
+          ],
+          "connectors": [
+            {
+              "standard": "IEC_62196_T2",
+              "format": "SOCKET",
+              "power_type": "AC_3_PHASE",
+              "max_voltage": 400,
+              "max_amperage": 32,
+              "max_electric_power": 20000,
+              "id": "1"
+            }
+          ]
+        },
+        {
+          "id": "ZZ*NAV*LB539954*3",
+          "evse_id": "ZZ*NAV*LB539954*3",
+          "status": "UNKNOWN",
+          "capabilities": [],
+          "parking_restrictions": [
+            "CUSTOMERS"
+          ],
+          "connectors": [
+            {
+              "standard": "IEC_62196_T2",
+              "format": "SOCKET",
+              "power_type": "AC_3_PHASE",
+              "max_voltage": 400,
+              "max_amperage": 32,
+              "max_electric_power": 22000,
+              "id": "1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ZZ*NAV*LB539955",
+      "name": "",
+      "address": "Wald\u00e4cker",
+      "postal_code": "71636",
+      "city": "Ludwigsburg",
+      "country": "DEU",
+      "time_zone": "Europe/Berlin",
+      "last_updated": "2022-06-30T11:00:00",
+      "coordinates": {
+        "latitude": "48.8913347",
+        "longitude": "9.1569366"
+      },
+      "opening_times": {
+        "twentyfourseven": true
+      },
+      "evses": [
+        {
+          "id": "ZZ*NAV*LB539955*1",
+          "evse_id": "ZZ*NAV*LB539955*1",
+          "status": "UNKNOWN",
+          "capabilities": [],
+          "parking_restrictions": [
+            "CUSTOMERS"
+          ],
+          "connectors": [
+            {
+              "standard": "IEC_62196_T2",
+              "format": "SOCKET",
+              "power_type": "AC_3_PHASE",
+              "max_voltage": 400,
+              "max_amperage": 32,
+              "max_electric_power": 20000,
+              "id": "1"
+            }
+          ]
+        },
+        {
+          "id": "ZZ*NAV*LB539955*2",
+          "evse_id": "ZZ*NAV*LB539955*2",
+          "status": "UNKNOWN",
+          "capabilities": [],
+          "parking_restrictions": [
+            "CUSTOMERS"
+          ],
+          "connectors": [
+            {
+              "standard": "IEC_62196_T2",
+              "format": "SOCKET",
+              "power_type": "AC_3_PHASE",
+              "max_voltage": 400,
+              "max_amperage": 32,
+              "max_electric_power": 20000,
+              "id": "1"
+            }
+          ]
+        },
+        {
+          "id": "ZZ*NAV*LB539955*3",
+          "evse_id": "ZZ*NAV*LB539955*3",
+          "status": "UNKNOWN",
+          "capabilities": [],
+          "parking_restrictions": [
+            "CUSTOMERS"
+          ],
+          "connectors": [
+            {
+              "standard": "IEC_62196_T2",
+              "format": "SOCKET",
+              "power_type": "AC_3_PHASE",
+              "max_voltage": 400,
+              "max_amperage": 32,
+              "max_electric_power": 22000,
+              "id": "1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ZZ*NAV*LB539956",
+      "name": "Ladepunkt Hahn Automobile",
+      "address": "Wald\u00e4cker",
+      "postal_code": "71636",
+      "city": "Ludwigsburg",
+      "country": "DEU",
+      "time_zone": "Europe/Berlin",
+      "last_updated": "2022-06-30T11:00:00",
+      "coordinates": {
+        "latitude": "48.8904439",
+        "longitude": "9.1582522"
+      },
+      "opening_times": {
+        "twentyfourseven": true
+      },
+      "evses": [
+        {
+          "id": "ZZ*NAV*LB539956*1",
+          "evse_id": "ZZ*NAV*LB539956*1",
+          "status": "UNKNOWN",
+          "capabilities": [],
+          "parking_restrictions": [
+            "CUSTOMERS"
+          ],
+          "connectors": [
+            {
+              "standard": "CHADEMO",
+              "format": "CABLE",
+              "power_type": "DC",
+              "max_voltage": 1000,
+              "max_amperage": 100,
+              "max_electric_power": 190000,
+              "id": "1"
+            }
+          ]
+        },
+        {
+          "id": "ZZ*NAV*LB539956*2",
+          "evse_id": "ZZ*NAV*LB539956*2",
+          "status": "UNKNOWN",
+          "capabilities": [],
+          "parking_restrictions": [
+            "CUSTOMERS"
+          ],
+          "connectors": [
+            {
+              "standard": "CHADEMO",
+              "format": "CABLE",
+              "power_type": "DC",
+              "max_voltage": 1000,
+              "max_amperage": 100,
+              "max_electric_power": 190000,
+              "id": "1"
+            }
+          ]
+        },
+        {
+          "id": "ZZ*NAV*LB539956*3",
+          "evse_id": "ZZ*NAV*LB539956*3",
+          "status": "UNKNOWN",
+          "capabilities": [],
+          "parking_restrictions": [
+            "CUSTOMERS"
+          ],
+          "connectors": [
+            {
+              "standard": "IEC_62196_T2",
+              "format": "SOCKET",
+              "power_type": "AC_3_PHASE",
+              "max_voltage": 400,
+              "max_amperage": 32,
+              "max_electric_power": 22000,
+              "id": "1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ZZ*NAV*LB539957",
+      "name": "Ladepunkt Robert Bosch GmbH",
+      "address": "Schwieberdinger Stra\u00dfe 76",
+      "postal_code": "71636",
+      "city": "Ludwigsburg",
+      "country": "DEU",
+      "time_zone": "Europe/Berlin",
+      "last_updated": "2022-06-30T11:00:00",
+      "coordinates": {
+        "latitude": "48.8906124",
+        "longitude": "9.1723182"
+      },
+      "opening_times": {
+        "twentyfourseven": true
+      },
+      "evses": [
+        {
+          "id": "ZZ*NAV*LB539957*1",
+          "evse_id": "ZZ*NAV*LB539957*1",
+          "status": "UNKNOWN",
+          "capabilities": [],
+          "parking_restrictions": [
+            "CUSTOMERS"
+          ],
+          "connectors": [
+            {
+              "standard": "IEC_62196_T2",
+              "format": "SOCKET",
+              "power_type": "AC_3_PHASE",
+              "max_voltage": 400,
+              "max_amperage": 32,
+              "max_electric_power": 22000,
+              "id": "1"
+            }
+          ]
+        },
+        {
+          "id": "ZZ*NAV*LB539957*2",
+          "evse_id": "ZZ*NAV*LB539957*2",
+          "status": "UNKNOWN",
+          "capabilities": [],
+          "parking_restrictions": [
+            "CUSTOMERS"
+          ],
+          "connectors": [
+            {
+              "standard": "IEC_62196_T2",
+              "format": "SOCKET",
+              "power_type": "AC_3_PHASE",
+              "max_voltage": 400,
+              "max_amperage": 32,
+              "max_electric_power": 22000,
+              "id": "1"
+            }
+          ]
+        },
+        {
+          "id": "ZZ*NAV*LB539957*3",
+          "evse_id": "ZZ*NAV*LB539957*3",
+          "status": "UNKNOWN",
+          "capabilities": [],
+          "parking_restrictions": [
+            "CUSTOMERS"
+          ],
+          "connectors": [
+            {
+              "standard": "IEC_62196_T2",
+              "format": "SOCKET",
+              "power_type": "AC_3_PHASE",
+              "max_voltage": 400,
+              "max_amperage": 32,
+              "max_electric_power": 22000,
+              "id": "1"
+            }
+          ]
+        },
+        {
+          "id": "ZZ*NAV*LB539957*4",
+          "evse_id": "ZZ*NAV*LB539957*4",
+          "status": "UNKNOWN",
+          "capabilities": [],
+          "parking_restrictions": [
+            "CUSTOMERS"
+          ],
+          "connectors": [
+            {
+              "standard": "IEC_62196_T2",
+              "format": "SOCKET",
+              "power_type": "AC_3_PHASE",
+              "max_voltage": 400,
+              "max_amperage": 32,
+              "max_electric_power": 22000,
+              "id": "1"
+            }
+          ]
+        },
+        {
+          "id": "ZZ*NAV*LB539957*5",
+          "evse_id": "ZZ*NAV*LB539957*5",
+          "status": "UNKNOWN",
+          "capabilities": [],
+          "parking_restrictions": [
+            "CUSTOMERS"
+          ],
+          "connectors": [
+            {
+              "standard": "IEC_62196_T2",
+              "format": "SOCKET",
+              "power_type": "AC_3_PHASE",
+              "max_voltage": 400,
+              "max_amperage": 32,
+              "max_electric_power": 22000,
+              "id": "1"
+            }
+          ]
+        },
+        {
+          "id": "ZZ*NAV*LB539957*6",
+          "evse_id": "ZZ*NAV*LB539957*6",
+          "status": "UNKNOWN",
+          "capabilities": [],
+          "parking_restrictions": [
+            "CUSTOMERS"
+          ],
+          "connectors": [
+            {
+              "standard": "IEC_62196_T2",
+              "format": "SOCKET",
+              "power_type": "AC_3_PHASE",
+              "max_voltage": 400,
+              "max_amperage": 32,
+              "max_electric_power": 22000,
+              "id": "1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ZZ*NAV*LB539958",
+      "name": "Ladepunkt Autohaus Tschirner und Fuchs",
+      "address": "Neckartalstra\u00dfe",
+      "postal_code": "71642",
+      "city": "Ludwigsburg",
+      "country": "DEU",
+      "time_zone": "Europe/Berlin",
+      "last_updated": "2022-06-30T11:00:00",
+      "coordinates": {
+        "latitude": "48.9075127",
+        "longitude": "9.2311195"
+      },
+      "opening_times": {
+        "twentyfourseven": true
+      },
+      "evses": [
+        {
+          "id": "ZZ*NAV*LB539958*1",
+          "evse_id": "ZZ*NAV*LB539958*1",
+          "status": "UNKNOWN",
+          "capabilities": [],
+          "parking_restrictions": [
+            "CUSTOMERS"
+          ],
+          "connectors": [
+            {
+              "standard": "IEC_62196_T2",
+              "format": "SOCKET",
+              "power_type": "AC_3_PHASE",
+              "max_voltage": 400,
+              "max_amperage": 32,
+              "max_electric_power": 25000,
+              "id": "1"
+            }
+          ]
+        },
+        {
+          "id": "ZZ*NAV*LB539958*2",
+          "evse_id": "ZZ*NAV*LB539958*2",
+          "status": "UNKNOWN",
+          "capabilities": [],
+          "parking_restrictions": [
+            "CUSTOMERS"
+          ],
+          "connectors": [
+            {
+              "standard": "IEC_62196_T2",
+              "format": "SOCKET",
+              "power_type": "AC_3_PHASE",
+              "max_voltage": 400,
+              "max_amperage": 32,
+              "max_electric_power": 22000,
+              "id": "1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ZZ*NAV*LB539959",
+      "name": "Ladepunkt Hahn Automobile",
+      "address": "Teinacher Stra\u00dfe 57",
+      "postal_code": "71634",
+      "city": "Ludwigsburg",
+      "country": "DEU",
+      "time_zone": "Europe/Berlin",
+      "last_updated": "2022-06-30T11:00:00",
+      "coordinates": {
+        "latitude": "48.9032359",
+        "longitude": "9.1655712"
+      },
+      "opening_times": {
+        "twentyfourseven": true
+      },
+      "evses": [
+        {
+          "id": "ZZ*NAV*LB539959*1",
+          "evse_id": "ZZ*NAV*LB539959*1",
+          "status": "UNKNOWN",
+          "capabilities": [],
+          "parking_restrictions": [
+            "CUSTOMERS"
+          ],
+          "connectors": [
+            {
+              "standard": "CHADEMO",
+              "format": "CABLE",
+              "power_type": "DC",
+              "max_voltage": 1000,
+              "max_amperage": 100,
+              "max_electric_power": 190000,
+              "id": "1"
+            }
+          ]
+        },
+        {
+          "id": "ZZ*NAV*LB539959*2",
+          "evse_id": "ZZ*NAV*LB539959*2",
+          "status": "UNKNOWN",
+          "capabilities": [],
+          "parking_restrictions": [
+            "CUSTOMERS"
+          ],
+          "connectors": [
+            {
+              "standard": "CHADEMO",
+              "format": "CABLE",
+              "power_type": "DC",
+              "max_voltage": 1000,
+              "max_amperage": 100,
+              "max_electric_power": 190000,
+              "id": "1"
+            }
+          ]
+        },
+        {
+          "id": "ZZ*NAV*LB539959*3",
+          "evse_id": "ZZ*NAV*LB539959*3",
+          "status": "UNKNOWN",
+          "capabilities": [],
+          "parking_restrictions": [
+            "CUSTOMERS"
+          ],
+          "connectors": [
+            {
+              "standard": "IEC_62196_T2",
+              "format": "SOCKET",
+              "power_type": "AC_3_PHASE",
+              "max_voltage": 400,
+              "max_amperage": 32,
+              "max_electric_power": 22000,
+              "id": "1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ZZ*NAV*LB540033",
+      "name": "Ladepunkt Hahn+Kolb, Hummel Systemhaus GmbH & Co. KG",
+      "address": "Schlieffenstra\u00dfe",
+      "postal_code": "71636",
+      "city": "Ludwigsburg",
+      "country": "DEU",
+      "time_zone": "Europe/Berlin",
+      "last_updated": "2022-06-30T11:00:00",
+      "coordinates": {
+        "latitude": "48.8934274",
+        "longitude": "9.1638808"
+      },
+      "opening_times": {
+        "twentyfourseven": true
+      },
+      "evses": [
+        {
+          "id": "ZZ*NAV*LB540033*1",
+          "evse_id": "ZZ*NAV*LB540033*1",
+          "status": "UNKNOWN",
+          "capabilities": [],
+          "parking_restrictions": [
+            "CUSTOMERS"
+          ],
+          "connectors": [
+            {
+              "standard": "IEC_62196_T2",
+              "format": "SOCKET",
+              "power_type": "AC_3_PHASE",
+              "max_voltage": 400,
+              "max_amperage": 32,
+              "max_electric_power": 22000,
+              "id": "1"
+            }
+          ]
+        },
+        {
+          "id": "ZZ*NAV*LB540033*2",
+          "evse_id": "ZZ*NAV*LB540033*2",
+          "status": "UNKNOWN",
+          "capabilities": [],
+          "parking_restrictions": [
+            "CUSTOMERS"
+          ],
+          "connectors": [
+            {
+              "standard": "IEC_62196_T2",
+              "format": "SOCKET",
+              "power_type": "AC_3_PHASE",
+              "max_voltage": 400,
+              "max_amperage": 32,
+              "max_electric_power": 22000,
+              "id": "1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ZZ*NAV*LB540094",
+      "name": "Ladepunkt Hornbach",
+      "address": "W\u00f6hlerstra\u00dfe",
+      "postal_code": "71636",
+      "city": "Ludwigsburg",
+      "country": "DEU",
+      "time_zone": "Europe/Berlin",
+      "last_updated": "2022-06-30T11:00:00",
+      "coordinates": {
+        "latitude": "48.890664",
+        "longitude": "9.1529412"
+      },
+      "opening_times": {
+        "twentyfourseven": true
+      },
+      "evses": [
+        {
+          "id": "ZZ*NAV*LB540094*1",
+          "evse_id": "ZZ*NAV*LB540094*1",
+          "status": "UNKNOWN",
+          "capabilities": [],
+          "parking_restrictions": [
+            "CUSTOMERS"
+          ],
+          "connectors": [
+            {
+              "standard": "CHADEMO",
+              "format": "CABLE",
+              "power_type": "DC",
+              "max_voltage": 1000,
+              "max_amperage": 100,
+              "max_electric_power": 150000,
+              "id": "1"
+            }
+          ]
+        },
+        {
+          "id": "ZZ*NAV*LB540094*2",
+          "evse_id": "ZZ*NAV*LB540094*2",
+          "status": "UNKNOWN",
+          "capabilities": [],
+          "parking_restrictions": [
+            "CUSTOMERS"
+          ],
+          "connectors": [
+            {
+              "standard": "CHADEMO",
+              "format": "CABLE",
+              "power_type": "DC",
+              "max_voltage": 1000,
+              "max_amperage": 100,
+              "max_electric_power": 150000,
+              "id": "1"
+            }
+          ]
+        },
+        {
+          "id": "ZZ*NAV*LB540094*3",
+          "evse_id": "ZZ*NAV*LB540094*3",
+          "status": "UNKNOWN",
+          "capabilities": [],
+          "parking_restrictions": [
+            "CUSTOMERS"
+          ],
+          "connectors": [
+            {
+              "standard": "CHADEMO",
+              "format": "CABLE",
+              "power_type": "DC",
+              "max_voltage": 1000,
+              "max_amperage": 100,
+              "max_electric_power": 150000,
+              "id": "1"
+            }
+          ]
+        },
+        {
+          "id": "ZZ*NAV*LB540094*4",
+          "evse_id": "ZZ*NAV*LB540094*4",
+          "status": "UNKNOWN",
+          "capabilities": [],
+          "parking_restrictions": [
+            "CUSTOMERS"
+          ],
+          "connectors": [
+            {
+              "standard": "CHADEMO",
+              "format": "CABLE",
+              "power_type": "DC",
+              "max_voltage": 1000,
+              "max_amperage": 100,
+              "max_electric_power": 150000,
+              "id": "1"
+            }
+          ]
+        },
+        {
+          "id": "ZZ*NAV*LB540094*5",
+          "evse_id": "ZZ*NAV*LB540094*5",
+          "status": "UNKNOWN",
+          "capabilities": [],
+          "parking_restrictions": [
+            "CUSTOMERS"
+          ],
+          "connectors": [
+            {
+              "standard": "IEC_62196_T2",
+              "format": "SOCKET",
+              "power_type": "AC_3_PHASE",
+              "max_voltage": 400,
+              "max_amperage": 32,
+              "max_electric_power": 22000,
+              "id": "1"
+            }
+          ]
+        },
+        {
+          "id": "ZZ*NAV*LB540094*6",
+          "evse_id": "ZZ*NAV*LB540094*6",
+          "status": "UNKNOWN",
+          "capabilities": [],
+          "parking_restrictions": [
+            "CUSTOMERS"
+          ],
+          "connectors": [
+            {
+              "standard": "IEC_62196_T2",
+              "format": "SOCKET",
+              "power_type": "AC_3_PHASE",
+              "max_voltage": 400,
+              "max_amperage": 32,
+              "max_electric_power": 22000,
+              "id": "1"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
