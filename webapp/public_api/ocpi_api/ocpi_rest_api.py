@@ -72,5 +72,6 @@ class LocationsMethodView(OcpiBaseMethodView):
     )
     @cross_origin()
     def get(self, location_id: int):
-        return jsonify(self.ocpi_handler.get_location(location_id))
+        location = self.ocpi_handler.get_location(location_id)
+        return jsonify(location)
 

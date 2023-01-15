@@ -50,7 +50,6 @@ class LocationRepository(BaseRepository):
             location = location.options([
                 selectinload(Location.evses).selectinload(Evse.connectors),
                 selectinload(Location.operator),
-
             ])
 
         location = location.get(location_id)

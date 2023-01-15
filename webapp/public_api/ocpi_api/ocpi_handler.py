@@ -30,7 +30,7 @@ class OcpiHandler(PublicApiBaseHandler):
     def get_location(self, location_id: int):
         location = self.location_repository.fetch_location_by_id(location_id, include_children=True)
         location_dict = self.filter_none(location.to_dict(
-            ignore=['giroe_id', 'owner_id', 'owner_id', 'suboperator_id', 'created', 'modified', 'id', 'geometry'],
+            ignore=['giroe_id', 'operator_id', 'owner_id', 'suboperator_id', 'created', 'modified', 'id', 'geometry'],
             transform_ocpi=True,
         ))
         location_dict['evses'] = []
@@ -43,6 +43,9 @@ class OcpiHandler(PublicApiBaseHandler):
                     transform_ocpi=True,
                 )
             )
+        for business in ['operator', 'owner', 'suboperator']:
+            if getattr(location, f'{business}_id'):
+                location_dict[business] = self.filter_none(getattr(location, business).to_dict(ignore=['id', 'created', 'modified', 'logo_id']))
         for exceptional_opening in location.exceptional_openings:
             if 'exceptional_openings' not in location_dict['opening_times']:
                 location_dict['opening_times']['exceptional_openings'] = []
