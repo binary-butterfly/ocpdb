@@ -96,24 +96,6 @@
         });
         map.addLayer(
             {
-                id: 'chargepoints-static',
-                type: 'circle',
-                source: 'chargepoints-static',
-                'source-layer': 'chargepoints',
-                paint: {
-                    'circle-radius': 7,
-                    'circle-color': [
-                        "case",
-                        ["==", ["number", ["get", "c"]], ["number", ["get", "cs"]]], "#b6b6b6",
-                        ["==", ["number", ["get", "ca"]], 0], "#bb0000",
-                        ["!=", ["number", ["get", "c"]], ["number", ["get", "ca"]]], "#adc609",
-                        "#13bb00"
-                    ]
-                }
-            }
-        );
-        map.addLayer(
-            {
                 id: 'chargepoints',
                 type: 'circle',
                 source: 'chargepoints',
@@ -144,18 +126,6 @@
             alert(JSON.stringify(await result.json(), null, 2));
         });
 
-        map.on('mouseenter', 'chargepoints-static', () => {
-            map.getCanvasContainer().style.cursor = 'pointer';
-        });
-
-        map.on('mouseleave', 'chargepoints-static', () => {
-            map.getCanvasContainer().style.cursor = '';
-        });
-
-        map.on('click', 'chargepoints-static', async (e) => {
-            let result = await fetch(window.location.href.split('/static')[0] + '/api/ocpi/2.2/location/' + e.features[0].properties.id)
-            alert(JSON.stringify(await result.json(), null, 2));
-        });
     });
 
 
