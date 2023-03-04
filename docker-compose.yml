@@ -1,94 +1,107 @@
-version: '3.8'
+# Docker Compose project for local development
+name: ocpdb
 
 # binary butterfly GmbH projects add a project specific modifier to standard ports to prevent port collisions.
 # This project has the modified +10.
 
+# Define placeholder for running a container with the same UID/GID as your local user
+x-local-user: &local-user ${DOCKER_LOCAL_USER:?Variable needs to be set in .env (e.g. "DOCKER_LOCAL_USER=1000:1000")}
+
+# Define common defaults to reuse them in the service definitions (YAML anchors)
+x-flask-defaults: &flask-defaults
+  image: giro-e-backend-flask:local-dev
+  build:
+    context: .
+    dockerfile: Dockerfile.flask
+  volumes:
+    - .:/app
+  environment:
+    # Set this variable in .env to start the app with a different config file (default: config.yaml)
+    CONFIG_FILE:
+    # TODO: This should be removed at some point and the app should be made SQLAlchemy 2.0 compatible!
+    SQLALCHEMY_SILENCE_UBER_WARNING: 1
+  # The containers should run with the same UID/GID as your local user, so that files created by the containers are
+  # owned by and accessible to the local user.
+  user: *local-user
+  depends_on:
+    mysql:
+      condition: service_healthy
+    rabbitmq:
+      condition: service_healthy
+
+# Define reusable defaults for mocked services
+x-mocked-service-defaults: &mocked-service-defaults
+  image: registry.git.sectio-aurea.org/common/base-images/flask:ubuntu-22.04
+  command: ["python", "/app/app.py"]
+  user: *local-user
+
 services:
   flask:
-    build:
-      context: .
-      dockerfile: Dockerfile.flask
-    ports:
-      - "5010:5000"
-    depends_on:
-      - mysql
-      - rabbitmq
-    volumes:
-      - .:/app
-    user: ${CURRENT_UID}
+    <<: *flask-defaults
     command: ["python3", "runserver.py"]
+    ports:
+      - '5010:5000'
 
   worker:
-    build:
-      context: .
-      dockerfile: Dockerfile.flask
-    depends_on:
-      - mysql
-      - rabbitmq
-    volumes:
-      - .:/app
-    init: true
-    command: ["/app/celery_dev.sh"]
-    user: ${CURRENT_UID}
+    <<: *flask-defaults
+    command: ["python3", "celery_dev.py"]
 
   mysql:
     image: mariadb
     volumes:
       - .:/app
       - mysql:/var/lib/mysql
-    ports:
-      - "3316:3306"
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: ocpdb
-    logging:
-      driver: 'none'
+    healthcheck:
+      test: mysql -h mysql -P 3306 -u root -p$$MYSQL_ROOT_PASSWORD -e "SELECT 1"
+      interval: 1s
+      timeout: 1s
+      retries: 20
 
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
     ports:
-      - "8090:80"
+      - '8091:80'
     environment:
       PMA_USER: root
       PMA_PASSWORD: root
       PMA_HOST: mysql
-    depends_on:
-      - mysql
-    logging:
-      driver: 'none'
+      UPLOAD_LIMIT: 512M
+      # Disable spammy logging
+      APACHE_LOG_DIR: /tmp/logs
 
   rabbitmq:
     image: rabbitmq:latest
-    logging:
-      driver: 'none'
+    environment:
+      # Disable spammy logging
+      RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS: '-rabbit log [{console,[{level,warning}]}]'
+    healthcheck:
+      test: rabbitmq-diagnostics -q ping
+      interval: 1s
+      timeout: 1s
+      retries: 20
 
   mocked-ochp:
-    image: registry.git.sectio-aurea.org/common/base-images/flask:ubuntu-22.04
+    <<: *mocked-service-defaults
     volumes:
       - ./dev/test_services/mocked_ochp:/app
-    command: ["python", "/app/app.py"]
-    user: ${CURRENT_UID}
 
   mocked-chargeit:
-    image: registry.git.sectio-aurea.org/common/base-images/flask:ubuntu-22.04
+    <<: *mocked-service-defaults
     volumes:
       - ./dev/test_services/mocked_chargeit:/app
-    command: ["python", "/app/app.py"]
-    user: ${CURRENT_UID}
 
   mocked-stadtnavi:
-    image: registry.git.sectio-aurea.org/common/base-images/flask:ubuntu-22.04
+    <<: *mocked-service-defaults
     volumes:
       - ./dev/test_services/mocked_stadtnavi:/app
-    command: ["python", "/app/app.py"]
-    user: ${CURRENT_UID}
 
   mocked-giroe:
-    image: registry.git.sectio-aurea.org/common/base-images/flask:ubuntu-22.04
+    <<: *mocked-service-defaults
     volumes:
       - ./dev/test_services/mocked_giroe:/app
-    command: ["python", "/app/app.py"]
-    user: ${CURRENT_UID}
 
 volumes:
   mysql:

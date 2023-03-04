@@ -1,0 +1,19 @@
+[run]
+# Enable branch coverage
+branch = True
+
+[report]
+show_missing = True
+skip_empty = True
+exclude_lines =
+    pragma: no ?cover
+    @abstractmethod
+    @overload
+    if TYPE_CHECKING:
+
+[html]
+directory = reports/coverage_html/
+show_contexts = True
+
+# Enable this to only see files in the report that don't have 100% coverage yet.
+#skip_covered = True
