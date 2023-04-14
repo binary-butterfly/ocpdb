@@ -185,7 +185,7 @@ class BaseImportService(BaseService):
             setattr(business, key, value)
 
         if business_update.logo is not UnsetValue:
-            if not business_update.logo:
+            if not business.logo:
                 business.logo = Image()
 
             for key, value in business_update.logo.to_dict().items():

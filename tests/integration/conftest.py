@@ -20,7 +20,7 @@ import pytest
 from sqlalchemy import create_engine
 
 from webapp import launch
-from webapp.extensions import db as _db
+from webapp.extensions import db as flask_sqlalchemy
 
 
 @pytest.fixture(scope='session')
@@ -47,6 +47,5 @@ def db(app):
         connection = engine.connect()
         connection.execute('DROP DATABASE IF EXISTS ocpdb;')
         connection.execute('CREATE DATABASE IF NOT EXISTS ocpdb;')
-        _db.app = app  # this is needed for the db to have the app context
-        _db.create_all()
-        yield _db
+        flask_sqlalchemy.create_all()
+        yield flask_sqlalchemy

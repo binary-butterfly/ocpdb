@@ -1,2 +1,1 @@
-COMPOSE_PROJECT_NAME=ocpdb
 FLASK_APP="webapp.app:launch()"

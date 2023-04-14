@@ -1,20 +1,24 @@
-/config.yaml
 *.py[cod]
 .idea
 /.pytest_cache
+!/**/.gitkeep
+
+/config.yaml
+http-client.env.json
+/.env
+/Makefile.env
+/docker-compose_local.yml
+/docker-compose.override.yml
 
 /venv
-/logs/
-!/logs/.gitkeep
-/keys
-/dev/api_tests/http-client.env.json
+/logs
+/temp
+
 /static/images/dynamic/*.png
 /static/images/dynamic/*.jpg
 /static/images/dynamic/*.jpeg
 /static/images/dynamic/*.svg
-/reports
-/temp/
-!/temp/.gitkeep
 
+/reports
 /.coverage
 /htmlcov
