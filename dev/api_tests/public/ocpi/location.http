@@ -1,0 +1,2 @@
+### get location
+GET {{api_host}}/api/ocpi/2.2/location/1

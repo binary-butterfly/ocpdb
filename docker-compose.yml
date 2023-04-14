@@ -9,7 +9,7 @@ x-local-user: &local-user ${DOCKER_LOCAL_USER:?Variable needs to be set in .env 
 
 # Define common defaults to reuse them in the service definitions (YAML anchors)
 x-flask-defaults: &flask-defaults
-  image: giro-e-backend-flask:local-dev
+  image: ocpdb-flask:local-dev
   build:
     context: .
     dockerfile: Dockerfile.flask

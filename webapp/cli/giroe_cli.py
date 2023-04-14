@@ -16,7 +16,7 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import Optional
 
 import click
@@ -30,6 +30,11 @@ giroe_cli = AppGroup('giroe')
 
 
 @giroe_cli.command("import", help='Giro-e: downloads and saves chargepoint updates')
+@click.option(
+    '-p', '--preset', 'preset',
+    type=click.Choice(['daily', 'weekly']),
+    help='preset for daily (last 36 hours) or weekly (last 10 days) sync',
+)
 @click.option(
     '-cf', '--created-since', 'created_since',
     type=click.DateTime(formats=["%Y-%m-%d", "%Y-%m-%dT%H:%M:%S"]),
@@ -52,9 +57,23 @@ giroe_cli = AppGroup('giroe')
 )
 @catch_exception
 def cli_download_and_save(
+        preset: Optional[str] = None,
         created_since: Optional[datetime] = None,
         created_until: Optional[datetime] = None,
         modified_since: Optional[datetime] = None,
         modified_until: Optional[datetime] = None,
 ):
-    dependencies.get_import_services().giroe_import_service.download_and_save(created_since, created_until, modified_since, modified_until)
+    if preset and (created_since or created_until or modified_since or modified_until):
+        raise Exception('cannot use preset together with created / modified parameters')
+
+    if preset == 'daily':
+        modified_since = datetime.utcnow() - timedelta(hours=36)
+    elif preset == 'weekly':
+        modified_since = datetime.utcnow() - timedelta(days=10)
+
+    dependencies.get_import_services().giroe_import_service.download_and_save(
+        created_since=created_since,
+        created_until=created_until,
+        modified_since=modified_since,
+        modified_until=modified_until,
+    )

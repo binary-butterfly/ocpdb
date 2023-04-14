@@ -45,7 +45,9 @@ class OcpiHandler(PublicApiBaseHandler):
             )
         for business in ['operator', 'owner', 'suboperator']:
             if getattr(location, f'{business}_id'):
-                location_dict[business] = self.filter_none(getattr(location, business).to_dict(ignore=['id', 'created', 'modified', 'logo_id']))
+                location_dict[business] = self.filter_none(
+                    getattr(location, business).to_dict(ignore=['id', 'created', 'modified', 'logo_id']),
+                )
         for exceptional_opening in location.exceptional_openings:
             if 'exceptional_openings' not in location_dict['opening_times']:
                 location_dict['opening_times']['exceptional_openings'] = []

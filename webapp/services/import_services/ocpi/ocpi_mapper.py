@@ -19,8 +19,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from pycountry import countries
 
 from webapp.services.import_services.models import LocationUpdate, BusinessUpdate, EvseUpdate, ConnectorUpdate, RegularHoursUpdate, \
-    ExceptionalPeriodUpdate
-from webapp.services.import_services.ocpi.ocpi_validators import LocationInput, EvseInput, ConnectorInput
+    ExceptionalPeriodUpdate, ImageUpdate
+from webapp.services.import_services.ocpi.ocpi_validators import LocationInput, EvseInput, ConnectorInput, BusinessDetailsInput, ImageInput
 
 
 class OcpiMapper:
@@ -45,6 +45,12 @@ class OcpiMapper:
         )
         for evse_input in location_input.evses:
             location_update.evses.append(self.map_evse(evse_input))
+
+        for business_type in ('operator', 'suboperator', 'owner'):
+            if not getattr(location_input, business_type):
+                continue
+
+            setattr(location_update, business_type, self.map_business(business_input=getattr(location_input, business_type)))
 
         if location_input.opening_times:
             location_update.twentyfourseven = location_input.opening_times.twentyfourseven
@@ -103,3 +109,23 @@ class OcpiMapper:
 
         return connector_update
 
+    def map_business(self, business_input: BusinessDetailsInput) -> BusinessUpdate:
+        business_update = BusinessUpdate(
+            name=business_input.name,
+            website=business_input.website,
+        )
+        if business_input.logo:
+            business_update.logo = self.map_image(business_input.logo)
+
+        return business_update
+
+    @staticmethod
+    def map_image(image_input: ImageInput) -> ImageUpdate:
+        image_update = ImageUpdate(
+            external_url=image_input.url,
+            width=image_input.width,
+            category=image_input.category,
+            type=image_input.type,
+            height=image_input.height,
+        )
+        return image_update

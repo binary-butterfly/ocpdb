@@ -16,6 +16,15 @@
         "latitude": "48.599106",
         "longitude": "8.870451"
       },
+      "operator": {
+        "name": "EnBW",
+        "website": "https://www.enbw.com",
+        "logo": {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/6/62/EnBW.svg",
+          "category": "OPERATOR",
+          "type": "svg"
+        }
+      },
       "opening_times": {
         "twentyfourseven": true
       },
