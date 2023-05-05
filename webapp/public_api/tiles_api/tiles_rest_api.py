@@ -16,13 +16,13 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+from flask_openapi.decorator import document, Parameter, Response, ResponseData
 from validataclass.validators import DataclassValidator
 
 from webapp.common.base_blueprint import BaseBlueprint
 from webapp.common.response import protobuf_response
 from webapp.common.rest import BaseMethodView
 from webapp.dependencies import dependencies
-from flask_openapi.decorator import document, Parameter
 from .tiles_handler import TilesHandler
 from .tiles_validators import TileFilterInput
 
@@ -45,6 +45,7 @@ class TilesBlueprint(BaseBlueprint):
                 **self.get_base_method_view_dependencies(),
                 tiles_handler=self.tiles_handler,
             ),
+            methods=['GET'],
         )
 
 
@@ -61,12 +62,13 @@ class TilesMethodView(BaseMethodView):
         path=[
             Parameter('x', schema=int, example=1),
             Parameter('y', schema=int, example=1),
-            Parameter('z', schema=int, example=1)
+            Parameter('z', schema=int, example=1),
         ],
         query=[
-            Parameter('static', schema=bool, description='if set show just static (true) or just dynamic (false) locations'),
-            Parameter('filter_duplicates', schema=bool, default=True, description='filters matched static-dynamic-duplicates'),
-        ]
+            Parameter('static', schema={'type': 'boolean'}, description='if set show just static (true) or just dynamic (false) locations'),
+            Parameter('filter_duplicates', schema={'type': 'boolean'}, description='filters matched static-dynamic-duplicates'),
+        ],
+        response=[Response(ResponseData(mimetype='application/x-protobuf'), description='Tile in protobuf format.')],
     )
     def get(self, x: int, y: int, z: int):
         tile_filter_input = self.tile_filter_validator.validate(self.request_helper.get_query_args())

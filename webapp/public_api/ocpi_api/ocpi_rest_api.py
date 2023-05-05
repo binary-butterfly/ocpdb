@@ -67,11 +67,10 @@ class LocationsMethodView(OcpiBaseMethodView):
             Schema('RegularHours', 'regular-hours-schema', 'regular-hours-example'),
             Schema('ExceptionalPeriod', 'exceptional-period-schema', 'exceptional-period-example'),
             Schema('Evse', 'evse-schema', 'evse-example'),
-            Schema('Connector', 'connector-schema', 'connector-example')
-        ]
+            Schema('Connector', 'connector-schema', 'connector-example'),
+        ],
     )
     @cross_origin()
     def get(self, location_id: int):
         location = self.ocpi_handler.get_location(location_id)
         return jsonify(location)
-

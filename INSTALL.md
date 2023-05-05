@@ -1,25 +1,32 @@
 # Installation
 
-## Systemvoraussetzungen
+## System requirements
 
-Bei der Anwendung handelt es sich um eine Flask-basierte Webanwendung mit folgenden Voraussetzungen:
+This application is a flask application with following requirements:
 * Python 3.7+
-* SQLAlchemy-kompatibler SQL-Server (z.B. MariaDB)
-* Eine AMQP-Queue (z.B. RabbitMQ)
+* SQLAlchemy-compatible SQL-server (eg MariaDB)
+* An AMQP-Queue (eg RabbitMQ)
 
 
-## Produktiv-Version auf einem Server
-
-1) Mit `virtualenv -p python3 venv` ein Virtual Environment erstellen
-2) Mit `./venv/bin/pip install -r requirements.txt` die nötigen Python-Pakete installieren
-3) `/webapp/config_dist_dev.py` zu `/webapp/config.py` umbenennen und anpassen  
-4) Mit `./venv/bin/flask db upgrade` die Datenbank initialisieren 
-5) Mit `./venv/bin/gunicorn "webapp.entry_point_gunicorn:app"` die Anwendung starten.
-6) Mit `./venv/bin/flask` OCHP- oder OCPI-Downloads anstossen 
+## Production version
 
 
-## Entwicklungs-Version via docker
 
-1) `/webapp/config_dist_dev.py` zu `/webapp/config.py` umbenennen und anpassen
-2) Mit `make` die Container bauen und starten
-3) Mit `make migrate` die Datenbank initialisieren
+1) Use `virtualenv -p python3 venv` to create a virtual environment
+2) Use `./venv/bin/pip install -r requirements.txt` to install required packages
+3) Move `/config_dist_dev.yaml` zu `/config.yaml` and fill in all necessary data
+4) Use `./venv/bin/flask db upgrade` to upgrade your database
+5) Use `./venv/bin/gunicorn "webapp.entry_point_gunicorn:app"` to start the application
+6) Use `./venv/bin/flask` to start downloads
+
+
+## Development version via docker
+
+1) Use `make first-start` to create a dev environment
+2) Use `make` to start the container
+
+The web interface will be available at http://localhost:5010.
+
+All sources have mocked services, so you can play around with mocked data and import everything.
+
+At `dev/api_tests` you will find some HTTP request files you can use to emulate requests.

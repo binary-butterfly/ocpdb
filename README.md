@@ -1,26 +1,30 @@
 # Open ChargePoint DataBase - OCPDB
 
-Diese Anwendung aggregiert Ladesäulen-Daten aus verschiedenen Quellen und stellt diese ohne Authentifizierung via OCPI-artiger API und als Vectortile-Server zur Verfügung.
+This application aggregates chargepoint data from different sources and provices it without authentication using an OCPI-style JSON-API and a vector tile server.
 
 ## Status / Roadmap
 
 * eClearing OCHP Import: done
 * Custom Stadtnavi OCPI Import: done  
-* Giro-e: in progress
+* Giro-e: done
+* ChargeIT: done
+* BNetzA: done
 * More sources: yes, please!
 
-## API-Dokumentation
+There is also a matching algorithm which matches live data sources with bnetza sources. You can find details at [our matching docs](https://github.com/binary-butterfly/ocpdb/blob/main/docs/matching.md). 
 
-Auf [api.ocpdb.de](https://api.ocpdb.de/documentation) steht eine vollständige OpenAPI 3.0 Dokumentation bereit.
+## API documentation
 
-## Systemvoraussetzungen & Installation
+At [api.ocpdb.de](https://api.ocpdb.de/documentation/public.html) you will find an OpenAPI documentation of public endpoints you can use.
 
-Der Installationsprozess wird in der [INSTALL.md](https://github.com/binary-butterfly/ocpdb/blob/master/INSTALL.md) dokumentiert.
+## System requirements & installatiion
 
-## Lizenz
+The installation process is documented at [INSTALL.md](https://github.com/binary-butterfly/ocpdb/blob/main/INSTALL.md).
 
-Die OCPDB steht unter der AGPL. Details hierzu sind in der [LICENCE.txt](https://github.com/binary-butterfly/ocpdb/blob/master/LICENCE.txt) zu finden.
+## Licence
 
-## Mitmachen
+OCPDB is under AGPL. You will find details at the [LICENCE.txt](https://github.com/binary-butterfly/ocpdb/blob/main/LICENCE.txt).
 
-Wir freuen uns über [Bug-Reports und Feature-Requests](https://github.com/binary-butterfly/ocpdb/issues).
+## Participate
+
+We appreciate [bug reports and feature requests](https://github.com/binary-butterfly/ocpdb/issues).
