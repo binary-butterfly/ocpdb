@@ -29,4 +29,4 @@ https://github.com/mapbox/vector-tile-base/archive/refs/heads/master.tar.gz
 
 # binary butterfly shared libraries (https://git.sectio-aurea.org/public_libraries)
 --extra-index-url https://git.sectio-aurea.org/api/v4/groups/262/-/packages/pypi/simple
-flask-openapi==1.1.0rc0.dev16503
+flask-openapi==1.1.1.dev21980
