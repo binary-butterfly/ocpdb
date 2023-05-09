@@ -10,7 +10,7 @@ class BusinessHandler(PublicApiBaseHandler):
         self.business_repository = business_repository
 
     def get_business_by_id(self, business_id: int):
-        business = self.business_repository.fetch_businesses_by_id(business_id)
+        business = self.business_repository.fetch_by_id(business_id)
         return business
 
     def get_business_by_name(self, business_name: str):
