@@ -27,7 +27,7 @@ from .tiles_api import TilesBlueprint
 
 class PublicApi(BaseBlueprint):
     documentation_base = True
-    blueprints: List[Type[PublicApiBaseBlueprint]] = [
+    blueprints: List[Type[BaseBlueprint]] = [
         TilesBlueprint,
         BusinessBlueprint,
         OcpiBlueprint,
@@ -38,3 +38,4 @@ class PublicApi(BaseBlueprint):
         super().__init__('public', __name__, url_prefix='')
         for blueprint in self.blueprints:
             self.register_blueprint(blueprint())
+

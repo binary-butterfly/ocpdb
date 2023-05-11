@@ -10,13 +10,13 @@ from webapp.common.rest import BaseMethodView
 class BusinessBlueprint(BaseBlueprint):
     business_handler: BusinessHandler
 
-    def __int__(self):
+    def __init__(self):
         self.business_handler = BusinessHandler(
             **self.get_base_handler_dependencies(),
             business_repository=dependencies.get_business_repository(),
         )
 
-        super().__init__('business', __name__, url_prefix='/api/public/v1/businesses/')
+        super().__init__('businesses', __name__, url_prefix='/api/public/v1/businesses/')
 
         self.add_url_rule(
             '/<int:business_id>',
