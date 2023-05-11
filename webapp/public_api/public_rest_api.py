@@ -20,6 +20,7 @@ from typing import List, Type
 
 from webapp.common.base_blueprint import BaseBlueprint
 from .base_blueprint import PublicApiBaseBlueprint
+from .business_api import BusinessBlueprint
 from .ocpi_api import OcpiBlueprint
 from .tiles_api import TilesBlueprint
 
@@ -28,7 +29,9 @@ class PublicApi(BaseBlueprint):
     documentation_base = True
     blueprints: List[Type[PublicApiBaseBlueprint]] = [
         TilesBlueprint,
+        BusinessBlueprint,
         OcpiBlueprint,
+
     ]
 
     def __init__(self):
