@@ -22,10 +22,11 @@ from webapp.models import Business
 from .base_repository import BaseRepository, ObjectNotFoundException
 
 
-class BusinessRepository(BaseRepository):
+class BusinessRepository(BaseRepository[Business]):
+    model_cls = Business
 
     def fetch_by_id(self, business_id: int) -> Business:
-        result = self.session.query(Business).get(business_id)
+        result = self.session.query(Business).filter(Business.id == business_id).one_or_none()
 
         if result is None:
             raise ObjectNotFoundException(f'business with id {business_id} not found')
@@ -37,7 +38,7 @@ class BusinessRepository(BaseRepository):
 
     def fetch_business_by_name(self, name: str) -> Business:
 
-        result = self.session.query(Business).filter(Business.name == name).first()
+        result = self.session.query(Business).filter(Business.name.__contains__(name)).first()
 
         if result is None:
             raise ObjectNotFoundException(f'business with name {name} not found')

@@ -28,7 +28,8 @@ from .base_repository import BaseRepository
 from webapp.models import Option
 
 
-class OptionRepository(BaseRepository):
+class OptionRepository(BaseRepository[Option]):
+    model_cls = Option
 
     model_cls = Option
 

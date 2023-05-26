@@ -22,7 +22,8 @@ from webapp.models import Image
 from .base_repository import BaseRepository, ObjectNotFoundException
 
 
-class ImageRepository(BaseRepository):
+class ImageRepository(BaseRepository[Image]):
+    model_cls = Image
 
     def fetch_image_by_id(self, image_id: int) -> Image:
         result = self.session.query(Image).get(image_id)

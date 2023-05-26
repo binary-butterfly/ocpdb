@@ -15,13 +15,18 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-
+from abc import ABC, abstractmethod
 from typing import Optional
 
 from sqlalchemy.orm import Session
+from validataclass_search_queries.repositories import SearchQueryRepositoryMixin
 
 from webapp.common.error_handling.exceptions import AppException
 from webapp.extensions import db
+from webapp.models.base import BaseModel
+from typing import Generic, Type, TypeVar
+
+T_Model = TypeVar('T_Model', bound=BaseModel)
 
 
 class InconsistentDataException(AppException):
@@ -37,7 +42,12 @@ class ObjectNotFoundException(AppException):
     http_status = 404
 
 
-class BaseRepository:
+class BaseRepository(SearchQueryRepositoryMixin[T_Model], Generic[T_Model], ABC):
+
+    @property
+    @abstractmethod
+    def model_cls(self) -> Type[T_Model]:
+        raise NotImplementedError
 
     session: Session
 

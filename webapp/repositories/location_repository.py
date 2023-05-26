@@ -25,7 +25,8 @@ from sqlalchemy.orm import selectinload
 from .base_repository import BaseRepository, ObjectNotFoundException
 
 
-class LocationRepository(BaseRepository):
+class LocationRepository(BaseRepository[Location]):
+    model_cls = Location
 
     def fetch_locations_by_source(self, source: str, include_children: bool = True) -> List[Location]:
         locations = self.session.query(Location)
