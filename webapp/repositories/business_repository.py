@@ -16,7 +16,10 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from typing import List
+from typing import List, Optional
+
+from validataclass_search_queries.pagination import PaginatedResult
+from validataclass_search_queries.search_queries import BaseSearchQuery
 
 from webapp.models import Business
 from .base_repository import BaseRepository, ObjectNotFoundException
@@ -36,11 +39,12 @@ class BusinessRepository(BaseRepository[Business]):
     def fetch_businesses(self) -> List[Business]:
         return self.session.query(Business).all()
 
-    def fetch_business_by_name(self, name: str) -> Business:
-
-        result = self.session.query(Business).filter(Business.name.__contains__(name)).first()
+    def fetch_business_by_name(self,
+                               search_query: Optional[BaseSearchQuery] = None) -> PaginatedResult[Business]:
+        query = self.session.query(Business)
+        result = (self._search_and_paginate(query, search_query))
 
         if result is None:
-            raise ObjectNotFoundException(f'business with name {name} not found')
+            raise ObjectNotFoundException(f'business with name {search_query.name} not found')
 
         return result

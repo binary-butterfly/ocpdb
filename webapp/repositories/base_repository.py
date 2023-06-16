@@ -20,11 +20,11 @@ from typing import Optional
 
 from sqlalchemy.orm import Session
 from validataclass_search_queries.repositories import SearchQueryRepositoryMixin
-
 from webapp.common.error_handling.exceptions import AppException
 from webapp.extensions import db
 from webapp.models.base import BaseModel
 from typing import Generic, Type, TypeVar
+
 
 T_Model = TypeVar('T_Model', bound=BaseModel)
 
