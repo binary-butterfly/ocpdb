@@ -16,17 +16,15 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from flask import jsonify, request
+from flask import jsonify
 from flask_cors import cross_origin
-from validataclass.validators import DataclassValidator, StringValidator
-from validataclass_search_queries.pagination import PaginatedResult
+from validataclass.validators import DataclassValidator
 
 from webapp.dependencies import dependencies
 from webapp.common.base_blueprint import BaseBlueprint
 from .business_Search_Querries import BusinessSearchQuery
 from webapp.common.rest import BaseMethodView
 from .business_handler import BusinessHandler
-from ...models import Business
 
 
 class BusinessBlueprint(BaseBlueprint):
