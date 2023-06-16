@@ -1,10 +1,32 @@
-from flask import jsonify
+"""
+Open ChargePoint DataBase OCPDB
+Copyright (C) 2023 binary butterfly GmbH
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+"""
+
+from flask import jsonify, request
 from flask_cors import cross_origin
+from validataclass.validators import DataclassValidator, StringValidator
+from validataclass_search_queries.pagination import PaginatedResult
 
 from webapp.dependencies import dependencies
 from webapp.common.base_blueprint import BaseBlueprint
-from .business_handler import BusinessHandler
+from .business_Search_Querries import BusinessSearchQuery
 from webapp.common.rest import BaseMethodView
+from .business_handler import BusinessHandler
+from ...models import Business
 
 
 class BusinessBlueprint(BaseBlueprint):
@@ -16,12 +38,31 @@ class BusinessBlueprint(BaseBlueprint):
             business_repository=dependencies.get_business_repository(),
         )
 
-        super().__init__('businesses', __name__, url_prefix='/api/public/v1/businesses/')
+        super().__init__('businesses', __name__, url_prefix='/api/public/v1/businesses')
 
         self.add_url_rule(
             '/<int:business_id>',
-            view_func=BusinessMethodView.as_view(
-                'businesses',
+            view_func=BusinessIdMethodView.as_view(
+                'id',
+                **self.get_base_method_view_dependencies(),
+                business_handler=self.business_handler,
+            ),
+
+        )
+
+        self.add_url_rule(
+            '/<string:business_name>',
+            view_func=BusinessNameMethodView.as_view(
+                'name',
+                **self.get_base_method_view_dependencies(),
+                business_handler=self.business_handler,
+            ),
+
+        )
+        self.add_url_rule(
+            '/',
+            view_func=ViewAllMethodView.as_view(
+                'all',
                 **self.get_base_method_view_dependencies(),
                 business_handler=self.business_handler,
             ),
@@ -29,7 +70,7 @@ class BusinessBlueprint(BaseBlueprint):
         )
 
 
-class BusinessMethodView(BaseMethodView):
+class BusinessIdMethodView(BaseMethodView):
     business_handler: BusinessHandler
 
     def __init__(self, *args, business_handler: BusinessHandler, **kwargs):
@@ -39,4 +80,33 @@ class BusinessMethodView(BaseMethodView):
     @cross_origin()
     def get(self, business_id: int):
         business = self.business_handler.get_business_by_id(business_id)
+        return jsonify(business)
+
+
+class BusinessNameMethodView(BaseMethodView):
+    business_handler: BusinessHandler
+
+    def __init__(self, *args, business_handler: BusinessHandler, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.business_handler = business_handler
+
+    @cross_origin()
+    def get(self, business_name: str) :
+        name_validator = DataclassValidator(BusinessSearchQuery)
+        query = BusinessSearchQuery(name=business_name)
+        search_query = name_validator.validate(query.to_dict())
+        businesses = self.business_handler.get_business_by_name(search_query)
+        return jsonify(businesses.to_dict())
+
+
+class ViewAllMethodView(BaseMethodView):
+    business_handler: BusinessHandler
+
+    def __init__(self, *args, business_handler: BusinessHandler, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.business_handler = business_handler
+
+    @cross_origin()
+    def get(self):
+        business = self.business_handler.get_businesses()
         return jsonify(business)
