@@ -20,7 +20,7 @@ from validataclass_search_queries.pagination import PaginatedResult
 
 from webapp.models import Business
 from webapp.public_api.base_handler import PublicApiBaseHandler
-from webapp.public_api.business_api.business_Search_Querries import BusinessSearchQuery
+from webapp.public_api.business_api.business_search_queries import BusinessSearchQuery
 from webapp.repositories import BusinessRepository
 
 

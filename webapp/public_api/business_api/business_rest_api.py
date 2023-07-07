@@ -22,7 +22,7 @@ from validataclass.validators import DataclassValidator
 
 from webapp.dependencies import dependencies
 from webapp.common.base_blueprint import BaseBlueprint
-from .business_Search_Querries import BusinessSearchQuery
+from .business_search_queries import BusinessSearchQuery
 from webapp.common.rest import BaseMethodView
 from .business_handler import BusinessHandler
 
