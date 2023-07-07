@@ -33,6 +33,5 @@ class BusinessSearchQuery(SortingMixin, OffsetPaginationMixin, BaseSearchQuery):
 
     # Search filters
     name: Optional[str] = SearchParamContains(), StringValidator()
-    id: Optional[int] = SearchParamEquals(), IntegerValidator(allow_strings=True)
     # Pagination
     limit: Optional[int] = PaginationLimitValidator(optional=True), Default(None)
