@@ -77,7 +77,7 @@ class BusinessIdMethodView(BaseMethodView):
 
     @cross_origin()
     def get(self, business_id: int):
-        business = self.business_handler.get_business_by_id(business_id)
+        business = self.business_handler.get_business_by_id(business_id).to_dict()
         return jsonify(business)
 
 
@@ -93,8 +93,8 @@ class BusinessNameMethodView(BaseMethodView):
         name_validator = DataclassValidator(BusinessSearchQuery)
         query = BusinessSearchQuery(name=business_name)
         search_query = name_validator.validate(query.to_dict())
-        businesses = self.business_handler.get_business_by_name(search_query)
-        return jsonify(businesses.to_dict())
+        businesses = self.business_handler.get_business_by_name(search_query).to_dict()
+        return jsonify(businesses)
 
 
 class ViewAllMethodView(BaseMethodView):
