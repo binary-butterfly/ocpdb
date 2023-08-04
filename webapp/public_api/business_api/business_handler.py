@@ -31,7 +31,7 @@ class BusinessHandler(PublicApiBaseHandler):
         super().__init__(*args, **kwargs)
         self.business_repository = business_repository
 
-    def get_business_by_id(self, business_id: int):
+    def get_business_by_id(self, business_id: int) -> Business:
         business = self.business_repository.fetch_by_id(business_id)
         return business
 
