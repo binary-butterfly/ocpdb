@@ -21,7 +21,7 @@ from flask_cors import cross_origin
 from validataclass.validators import DataclassValidator
 
 from webapp.dependencies import dependencies
-from webapp.common.base_blueprint import BaseBlueprint
+from webapp.public_api.base_blueprint import BaseBlueprint
 from .business_search_queries import BusinessSearchQuery
 from webapp.common.rest import BaseMethodView
 from .business_handler import BusinessHandler
