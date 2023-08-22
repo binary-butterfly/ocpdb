@@ -55,7 +55,7 @@ class BnetzaImportService(BaseImportService):
         'Breitengrad': 'lat',
         'Längengrad': 'lon',
         'Inbetriebnahmedatum': 'launch_date',
-        'Anschlussleistung': 'connection_power',
+        'Nennleistung Ladeeinrichtung [kW]': 'connection_power',
         'Art der Ladeeinrichung': 'chargestation_type',
         'Anzahl Ladepunkte': 'connector_count',
         'Steckertypen1': 'connector_1_type',
