@@ -55,7 +55,7 @@ services:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: ocpdb
     healthcheck:
-      test: mysql -h mysql -P 3306 -u root -p$$MYSQL_ROOT_PASSWORD -e "SELECT 1"
+      test: mariadb -h mysql -P 3306 -u root -p$$MYSQL_ROOT_PASSWORD -e "SELECT 1"
       interval: 1s
       timeout: 1s
       retries: 20
