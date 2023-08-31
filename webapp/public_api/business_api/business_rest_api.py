@@ -50,15 +50,6 @@ class BusinessBlueprint(BaseBlueprint):
         )
 
         self.add_url_rule(
-            '/<string:business_name>',
-            view_func=BusinessNameMethodView.as_view(
-                'name',
-                **self.get_base_method_view_dependencies(),
-                business_handler=self.business_handler,
-            ),
-
-        )
-        self.add_url_rule(
             '',
             view_func=ViewAllMethodView.as_view(
                 'all',
@@ -79,19 +70,6 @@ class BusinessIdMethodView(BaseMethodView):
     @cross_origin()
     def get(self, business_id: int):
         business = self.business_handler.get_business_by_id(business_id)
-        return jsonify(business.to_dict())
-
-
-class BusinessNameMethodView(BaseMethodView):
-    business_handler: BusinessHandler
-
-    def __init__(self, *args, business_handler: BusinessHandler, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.business_handler = business_handler
-
-    @cross_origin()
-    def get(self, business_name: str):
-        business = self.business_handler.get_business_by_name(business_name)
         return jsonify(business.to_dict())
 
 
