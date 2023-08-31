@@ -83,13 +83,10 @@ class ViewAllMethodView(BaseMethodView):
     @cross_origin()
     def get(self):
         arguments = request.args.to_dict()
-        if len(arguments) == 0:
-            business = self.business_handler.list_all_businesses()
 
-        else:
-            name_validator = DataclassValidator(BusinessSearchQuery)
-            query = arguments
-            search_query = name_validator.validate(query)
-            business = self.business_handler.search_businesses(search_query)
+        name_validator = DataclassValidator(BusinessSearchQuery)
+        query = arguments
+        search_query = name_validator.validate(query)
+        business = self.business_handler.search_businesses(search_query)
 
         return jsonify(business)
