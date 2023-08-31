@@ -42,11 +42,12 @@ class BusinessRepository(BaseRepository[Business]):
 
         return result
 
-    def fetch_business_by_name(self, business_name: str) -> List[Business]:
-        result = self.session.query(Business).filter(Business.name == business_name).one_or_none()
+    def fetch_business_by_name(self, name: str) -> Business:
+
+        result = self.session.query(Business).filter(Business.name == name).first()
 
         if result is None:
-            raise ObjectNotFoundException(f'business with name {business_name} not found')
+            raise ObjectNotFoundException(f'business with name {name} not found')
 
         return result
 
