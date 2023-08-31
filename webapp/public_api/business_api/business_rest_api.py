@@ -15,8 +15,9 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
+from typing import Optional
 
-from flask import jsonify
+from flask import jsonify, request
 from flask_cors import cross_origin
 from validataclass.validators import DataclassValidator
 
@@ -58,7 +59,7 @@ class BusinessBlueprint(BaseBlueprint):
 
         )
         self.add_url_rule(
-            '/',
+            '',
             view_func=ViewAllMethodView.as_view(
                 'all',
                 **self.get_base_method_view_dependencies(),
@@ -77,8 +78,8 @@ class BusinessIdMethodView(BaseMethodView):
 
     @cross_origin()
     def get(self, business_id: int):
-        business = self.business_handler.get_business_by_id(business_id).to_dict()
-        return jsonify(business)
+        business = self.business_handler.get_business_by_id(business_id)
+        return jsonify(business.to_dict())
 
 
 class BusinessNameMethodView(BaseMethodView):
@@ -89,12 +90,9 @@ class BusinessNameMethodView(BaseMethodView):
         self.business_handler = business_handler
 
     @cross_origin()
-    def get(self, business_name: str) :
-        name_validator = DataclassValidator(BusinessSearchQuery)
-        query = BusinessSearchQuery(name=business_name)
-        search_query = name_validator.validate(query.to_dict())
-        businesses = self.business_handler.get_business_by_name(search_query).to_dict()
-        return jsonify(businesses)
+    def get(self, business_name: str):
+        business = self.business_handler.get_business_by_name(business_name)
+        return jsonify(business.to_dict())
 
 
 class ViewAllMethodView(BaseMethodView):
@@ -106,5 +104,14 @@ class ViewAllMethodView(BaseMethodView):
 
     @cross_origin()
     def get(self):
-        business = self.business_handler.get_businesses()
-        return jsonify(business)
+        arguments = request.args.to_dict()
+        if len(arguments) == 0:
+            business = self.business_handler.list_all_businesses()
+
+        else:
+            name_validator = DataclassValidator(BusinessSearchQuery)
+            query = arguments
+            search_query = name_validator.validate(query)
+            business = self.business_handler.search_businesses(search_query)
+
+        return jsonify(business.to_dict())

@@ -36,15 +36,23 @@ class BusinessRepository(BaseRepository[Business]):
 
         return result
 
-    def fetch_businesses(self) -> List[Business]:
-        return self.session.query(Business).all()
-
-    def fetch_business_by_name(self,
-                               search_query: Optional[BaseSearchQuery] = None) -> PaginatedResult[Business]:
+    def search_and_paginate_businesses(self, search_query: Optional[BaseSearchQuery] = None) -> PaginatedResult[Business]:
         query = self.session.query(Business)
         result = (self._search_and_paginate(query, search_query))
 
-        if result is None:
-            raise ObjectNotFoundException(f'business with name {search_query.name} not found')
+        if len(result) == 0:
+            raise ObjectNotFoundException(f'business with name containing  {search_query.name} not found')
 
         return result
+
+    def fetch_business_by_name(self, business_name: str) -> List[Business]:
+        result = self.session.query(Business).filter(Business.name == business_name).one_or_none()
+
+        if result is None:
+            raise ObjectNotFoundException(f'business with name {business_name} not found')
+
+        return result
+
+    def fetch_businesses(self) -> List[Business]:
+        return self.session.query(Business).all()
+
