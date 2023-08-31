@@ -86,4 +86,4 @@ class ViewAllMethodView(BaseMethodView):
         search_query = self.validate_query_args(self.search_query_validator)
         businesses = self.business_handler.search_businesses(search_query)
 
-        return jsonify(businesses)
+        return self.jsonify_paginated_response(businesses, search_query)
