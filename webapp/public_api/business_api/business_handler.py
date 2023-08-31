@@ -43,4 +43,4 @@ class BusinessHandler(PublicApiBaseHandler):
         return businesses
 
     def list_all_businesses(self) -> List[Business]:
-        return self.business_repository.fetch_all_businesses()
+        return self.business_repository.fetch_businesses()

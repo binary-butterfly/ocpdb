@@ -114,4 +114,4 @@ class ViewAllMethodView(BaseMethodView):
             search_query = name_validator.validate(query)
             business = self.business_handler.search_businesses(search_query)
 
-        return jsonify(business.to_dict())
+        return jsonify(business)
