@@ -2,4 +2,6 @@
 
 #GET {{api_host}}//api/public/v1/businesses/1
 
-GET {{api_host}}//api/public/v1/businesses?name=u
+#GET {{api_host}}//api/public/v1/businesses?name=u
+
+GET {{api_host}}//api/public/v1/businesses
