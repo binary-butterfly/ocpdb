@@ -40,9 +40,6 @@ class BusinessRepository(BaseRepository[Business]):
         query = self.session.query(Business)
         result = (self._search_and_paginate(query, search_query))
 
-        if len(result) == 0:
-            raise ObjectNotFoundException(f'business with name containing  {search_query.name} not found')
-
         return result
 
     def fetch_business_by_name(self, business_name: str) -> List[Business]:
