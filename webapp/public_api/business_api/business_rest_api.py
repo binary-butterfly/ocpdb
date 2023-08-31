@@ -75,7 +75,7 @@ class BusinessIdMethodView(BaseMethodView):
 
 class ViewAllMethodView(BaseMethodView):
     business_handler: BusinessHandler
-    validator = DataclassValidator(BusinessSearchQuery)
+    search_query_validator = DataclassValidator(BusinessSearchQuery)
 
     def __init__(self, *args, business_handler: BusinessHandler, **kwargs):
         super().__init__(*args, **kwargs)
@@ -83,10 +83,7 @@ class ViewAllMethodView(BaseMethodView):
 
     @cross_origin()
     def get(self):
-        arguments = request.args.to_dict()
+        search_query = self.validate_query_args(self.search_query_validator)
+        businesses = self.business_handler.search_businesses(search_query)
 
-        query = arguments
-        search_query = self.validator.validate(query)
-        business = self.business_handler.search_businesses(search_query)
-
-        return jsonify(business)
+        return jsonify(businesses)
