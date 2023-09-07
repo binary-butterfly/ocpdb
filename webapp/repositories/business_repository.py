@@ -38,9 +38,7 @@ class BusinessRepository(BaseRepository[Business]):
 
     def fetch_businesses(self, search_query: Optional[BaseSearchQuery] = None) -> PaginatedResult[Business]:
         query = self.session.query(Business)
-        result = (self._search_and_paginate(query, search_query))
-
-        return result
+        return self._search_and_paginate(query, search_query)
 
     def fetch_business_by_name(self, name: str) -> Business:
 
@@ -50,4 +48,3 @@ class BusinessRepository(BaseRepository[Business]):
             raise ObjectNotFoundException(f'business with name {name} not found')
 
         return result
-
