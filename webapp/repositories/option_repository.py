@@ -16,7 +16,6 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-
 import json
 from decimal import Decimal
 from datetime import datetime
@@ -28,8 +27,7 @@ from .base_repository import BaseRepository
 from webapp.models import Option
 
 
-class OptionRepository(BaseRepository):
-
+class OptionRepository(BaseRepository[Option]):
     model_cls = Option
 
     def get(self, key, default: Optional[Any] = None) -> Any:
@@ -83,4 +81,3 @@ class OptionRepository(BaseRepository):
             return
         self.session.delete(option)
         self.session.commit()
-

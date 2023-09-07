@@ -1,6 +1,7 @@
+
 """
 Open ChargePoint DataBase OCPDB
-Copyright (C) 2021 binary butterfly GmbH
+Copyright (C) 2023 binary butterfly GmbH
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published by
@@ -16,26 +17,4 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from typing import List, Type
-
-from webapp.common.base_blueprint import BaseBlueprint
-from .base_blueprint import PublicApiBaseBlueprint
-from .business_api import BusinessBlueprint
-from .ocpi_api import OcpiBlueprint
-from .tiles_api import TilesBlueprint
-
-
-class PublicApi(BaseBlueprint):
-    documentation_base = True
-    blueprints: List[Type[BaseBlueprint]] = [
-        TilesBlueprint,
-        BusinessBlueprint,
-        OcpiBlueprint,
-
-    ]
-
-    def __init__(self):
-        super().__init__('public', __name__, url_prefix='')
-        for blueprint in self.blueprints:
-            self.register_blueprint(blueprint())
-
+from .business_rest_api import BusinessBlueprint

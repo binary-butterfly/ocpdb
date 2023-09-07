@@ -11,6 +11,7 @@
 /docker-compose.override.yml
 
 /venv
+/.venv
 /logs
 /temp
 

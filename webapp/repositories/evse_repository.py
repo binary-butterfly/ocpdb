@@ -33,7 +33,8 @@ class EvseUpdate:
     status: OptionalUnset[EvseStatus] = UnsetValue
 
 
-class EvseRepository(BaseRepository):
+class EvseRepository(BaseRepository[Evse]):
+    model_cls = Evse
 
     def fetch_by_id(self, evse_id: int) -> Evse:
         result = self.session.query(Evse).get(evse_id)

@@ -22,7 +22,8 @@ from webapp.models import Connector, Evse, Location
 from .base_repository import BaseRepository, ObjectNotFoundException
 
 
-class ConnectorRepository(BaseRepository):
+class ConnectorRepository(BaseRepository[Connector]):
+    model_cls = Connector
 
     def fetch_by_id(self, connector_id: int) -> Connector:
         result = self.session.query(Connector).get(connector_id)
