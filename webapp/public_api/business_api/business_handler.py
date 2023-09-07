@@ -35,12 +35,6 @@ class BusinessHandler(PublicApiBaseHandler):
         business = self.business_repository.fetch_by_id(business_id)
         return business
 
-    def get_business_by_name(self, business_name: str) -> Business:
-        return self.business_repository.fetch_business_by_name(business_name)
-
     def search_businesses(self, search_query: Optional[BusinessSearchQuery] = None) -> PaginatedResult[Business]:
         businesses = self.business_repository.fetch_businesses(search_query)
         return businesses
-
-    def list_all_businesses(self) -> List[Business]:
-        return self.business_repository.fetch_businesses()
