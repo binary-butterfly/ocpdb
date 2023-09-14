@@ -23,3 +23,4 @@
 /reports
 /.coverage
 /htmlcov
+/dev/api_tests/public/business/http-client.env.json
