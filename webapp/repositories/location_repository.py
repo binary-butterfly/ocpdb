@@ -18,10 +18,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from typing import List, Optional
 
+from validataclass_search_queries.pagination import PaginatedResult
+from validataclass_search_queries.search_queries import BaseSearchQuery
 from mercantile import LngLatBbox
 from sqlalchemy import func
 from webapp.models import Location, Evse, Business
-from sqlalchemy.orm import selectinload
+from sqlalchemy.orm import selectinload, with_loader_criteria, joinedload, defer
 from .base_repository import BaseRepository, ObjectNotFoundException
 
 
@@ -84,7 +86,8 @@ class LocationRepository(BaseRepository[Location]):
         if commit:
             self.session.commit()
 
-    def fetch_locations_summary_by_bounds(self, bbox: LngLatBbox, static: Optional[bool] = None, filter_duplicates: bool = True):
+    def fetch_locations_summary_by_bounds(self, bbox: LngLatBbox, static: Optional[bool] = None,
+                                          filter_duplicates: bool = True):
         additional_where = ''
         if static is not None:
             additional_where += f'AND evse.status {"=" if static is True else "!="} "STATIC"'
@@ -105,11 +108,11 @@ class LocationRepository(BaseRepository[Location]):
                 f'GROUP BY location.id'
 
         return self.session.execute(query)
-    
+
     def fetch_locations_by_bounds(self, bbox: LngLatBbox) -> List[Location]:
-        locations = self.session.query(Location)\
-            .filter(func.MBRContains(func.GeomFromText(self._get_linestring_bounds(bbox)), Location.geometry))\
-            .filter(Location.source != 'bnetza')\
+        locations = self.session.query(Location) \
+            .filter(func.MBRContains(func.GeomFromText(self._get_linestring_bounds(bbox)), Location.geometry)) \
+            .filter(Location.source != 'bnetza') \
             .all()
 
         return locations
@@ -123,3 +126,10 @@ class LocationRepository(BaseRepository[Location]):
         self.session.delete(location)
         if commit:
             self.session.commit()
+
+    def fetch_locations_by_name(self,
+                                search_query: Optional[BaseSearchQuery] = None) -> PaginatedResult[Location]:
+        options = [defer(Location.geometry)
+                   ]
+        query = self.session.query(Location).options(*options)
+        return self._search_and_paginate(query, search_query)

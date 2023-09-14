@@ -15,8 +15,12 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
+from typing import List
+
 from webapp.models import Location
 from webapp.public_api.base_handler import PublicApiBaseHandler
+from webapp.public_api.location_api.location_search_queries import LocationSearchQuery
+from validataclass_search_queries.pagination import PaginatedResult
 from webapp.repositories import LocationRepository
 
 
@@ -27,6 +31,6 @@ class LocationHandler(PublicApiBaseHandler):
         super().__init__(*args, **kwargs)
         self.location_repository = location_repository
 
-    def get_location_by_id(self, location_id: int) -> Location:
-        location = self.location_repository.fetch_location_by_id(location_id)
+    def get_location_by_name(self, query: LocationSearchQuery) -> PaginatedResult[Location]:
+        location = self.location_repository.fetch_locations_by_name(query)
         return location

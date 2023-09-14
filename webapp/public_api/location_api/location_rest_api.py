@@ -23,6 +23,8 @@ from webapp.public_api.base_blueprint import BaseBlueprint
 from webapp.common.rest import BaseMethodView
 from webapp.dependencies import dependencies
 from .location_handler import LocationHandler
+from .location_search_queries import LocationSearchQuery
+from validataclass.validators import DataclassValidator
 
 
 class LocationBlueprint(BaseBlueprint):
@@ -37,7 +39,7 @@ class LocationBlueprint(BaseBlueprint):
         super().__init__('location', __name__, url_prefix='/api/public/v1/locations')
 
         self.add_url_rule(
-            '/<int:location_id>',
+            '',
             view_func=LocationIdMethodView.as_view(
                 'id',
                 **self.get_base_method_view_dependencies(),
@@ -49,12 +51,15 @@ class LocationBlueprint(BaseBlueprint):
 
 class LocationIdMethodView(BaseMethodView):
     location_handler: LocationHandler
+    search_query_validator = DataclassValidator(LocationSearchQuery)
 
     def __init__(self, *args, location_handler: LocationHandler, **kwargs):
         super().__init__(*args, **kwargs)
         self.location_handler = location_handler
 
     @cross_origin()
-    def get(self, location_id: int):
-        location = self.location_handler.get_location_by_id(location_id)
+    def get(self):
+        search_query = self.validate_query_args(self.search_query_validator)
+        print(search_query)
+        location = self.location_handler.get_location_by_name(search_query)
         return location
