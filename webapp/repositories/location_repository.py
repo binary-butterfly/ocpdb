@@ -90,26 +90,38 @@ class LocationRepository(BaseRepository):
         if filter_duplicates:
             additional_where += 'AND location.dynamic_location_id IS NULL'
 
-        query = f'' \
-                f'SELECT location.id, location.lat, location.lon, location.name, location.address, ' \
-                f'  COUNT(evse.id) as chargepoint_count, ' \
-                f'  SUM(CASE WHEN evse.status = "AVAILABLE" THEN 1 ELSE 0 END) as chargepoint_available_count, ' \
-                f'  SUM(CASE WHEN evse.status = "UNKNOWN" THEN 1 ELSE 0 END) as chargepoint_unknown_count, ' \
-                f'  SUM(CASE WHEN evse.status = "STATIC" THEN 1 ELSE 0 END) as chargepoint_static_count, ' \
-                f'  SUM(CASE WHEN evse.parking_restrictions & 64 = 64 THEN 1 ELSE 0 END) as chargepoint_bike_count ' \
-                f'FROM location ' \
-                f'LEFT JOIN evse ON evse.location_id = location.id ' \
-                f'WHERE MBRContains(GeomFromText("{self._get_linestring_bounds(bbox)}"), location.geometry) ' \
-                f'{additional_where} ' \
-                f'GROUP BY location.id'
+        query = f"" \
+                f"SELECT location.id, location.lat, location.lon, location.name, location.address, " \
+                f"  COUNT(evse.id) as chargepoint_count, " \
+                f"  SUM(CASE WHEN evse.status = 'AVAILABLE' THEN 1 ELSE 0 END) as chargepoint_available_count, " \
+                f"  SUM(CASE WHEN evse.status = 'UNKNOWN' THEN 1 ELSE 0 END) as chargepoint_unknown_count, " \
+                f"  SUM(CASE WHEN evse.status = 'STATIC' THEN 1 ELSE 0 END) as chargepoint_static_count, " \
+                f"  SUM(CASE WHEN evse.parking_restrictions & 64 = 64 THEN 1 ELSE 0 END) as chargepoint_bike_count " \
+                f"FROM location " \
+                f"LEFT JOIN evse ON evse.location_id = location.id "
+        if self.session.connection().dialect.name == 'postgresql':
+            query += f"WHERE ST_Contains(ST_MakeEnvelope({self._get_postgre_envelope_bounds(bbox)}, 4326), location.geometry)"
+        else:
+            query += f"WHERE MBRContains(GeomFromText('{self._get_linestring_bounds(bbox)}'), location.geometry) "
 
-        return self.session.execute(query)
+        query += f"{additional_where} GROUP BY location.id"
+
+        return list(self.session.execute(query))
     
     def fetch_locations_by_bounds(self, bbox: LngLatBbox) -> List[Location]:
-        locations = self.session.query(Location)\
-            .filter(func.MBRContains(func.GeomFromText(self._get_linestring_bounds(bbox)), Location.geometry))\
-            .filter(Location.source != 'bnetza')\
-            .all()
+        locations = self.session.query(Location)
+
+        if self.session.connection().dialect.name == 'postgresql':
+            locations = locations.filter(
+                func.ST_Contains(
+                    func.ST_MakeEnvelope(self._get_postgre_envelope_bounds(bbox), 4326),
+                    Location.geometry
+                ),
+            )
+        else:
+            locations = locations.filter(func.MBRContains(func.GeomFromText(self._get_linestring_bounds(bbox)), Location.geometry))
+
+        locations = locations.filter(Location.source != 'bnetza').all()
 
         return locations
 
@@ -117,6 +129,11 @@ class LocationRepository(BaseRepository):
     def _get_linestring_bounds(bbox: LngLatBbox):
         return f'LINESTRING({bbox[1] - (0.5 * (bbox[3] - bbox[1]))} {bbox[0] - (0.5 * (bbox[2] - bbox[0]))}, ' \
                f'{bbox[3] + (0.5 * (bbox[3] - bbox[1]))} {bbox[2] + (0.5 * (bbox[2] - bbox[0]))})'
+
+    @staticmethod
+    def _get_postgre_envelope_bounds(bbox: LngLatBbox):
+        return f'{bbox[0] - (0.5 * (bbox[2] - bbox[0]))}, {bbox[1] - (0.5 * (bbox[3] - bbox[1]))}, ' \
+               f'{bbox[2] + (0.5 * (bbox[2] - bbox[0]))}, {bbox[3] + (0.5 * (bbox[3] - bbox[1]))}'
 
     def delete_location(self, location: Location, *, commit: bool = True):
         self.session.delete(location)

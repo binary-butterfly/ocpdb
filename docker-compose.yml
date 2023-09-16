@@ -60,6 +60,21 @@ services:
       timeout: 1s
       retries: 20
 
+  postgre:
+    image: postgis/postgis
+    volumes:
+      - postgres:/var/lib/postgresql/data/
+    environment:
+      - POSTGRES_USER=ocpdb
+      - POSTGRES_PASSWORD=admin
+      - POSTGRES_DB=ocpdb
+      - PGUSER=ocpdb
+    healthcheck:
+      test: [ "CMD-SHELL", "sh -c 'pg_isready -U ocpdb -d ocpdb'" ]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
     ports:
@@ -71,6 +86,15 @@ services:
       UPLOAD_LIMIT: 512M
       # Disable spammy logging
       APACHE_LOG_DIR: /tmp/logs
+
+  pgadmin:
+    image: dpage/pgadmin4
+    ports:
+      - '8092:80'
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@binary-butterfly.de
+      PGADMIN_DISABLE_POSTFIX: 1
+      PGADMIN_DEFAULT_PASSWORD: admin
 
   rabbitmq:
     image: rabbitmq:latest
@@ -105,4 +129,5 @@ services:
 
 volumes:
   mysql:
+  postgres:
 
