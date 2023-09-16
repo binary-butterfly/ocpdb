@@ -178,10 +178,14 @@ class Location(db.Model, BaseModel):
 def set_geometry(mapper, connection, location):
     lat_history = db.inspect(location).attrs.lat.history
     lon_history = db.inspect(location).attrs.lon.history
+
     # just update when there are changes in lat or lon
     if (lat_history[0] and len(lat_history[0]))\
             or (lat_history[2] and len(lat_history[2]))\
             or (lon_history[0] and len(lon_history[0]))\
             or (lon_history[2] and len(lon_history[2])):
-        location.geometry = func.GeomFromText('POINT(%s %s)' % (float(location.lat), float(location.lon)))
+        if connection.dialect.name == 'postgresql':
+            location.geometry = func.ST_SetSRID(func.ST_MakePoint(float(location.lon), float(location.lat)), 4326)
+        else:
+            location.geometry = func.GeomFromText('POINT(%s %s)' % (float(location.lat), float(location.lon)))
 

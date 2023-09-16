@@ -6,7 +6,6 @@ Create Date: 2022-12-28 17:15:23.281301
 
 """
 from alembic import op
-import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
@@ -33,7 +32,10 @@ def upgrade():
     op.create_foreign_key(None, 'regular_hours', 'location', ['location_id'], ['id'], use_alter=True)
     op.create_foreign_key(None, 'related_resource', 'evse', ['evse_id'], ['id'], use_alter=True)
     # ### end Alembic commands ###
-    op.execute('CREATE SPATIAL INDEX geometry_index ON  location (geometry);')
+    if op.get_bind().engine.name == 'postgresql':
+        op.execute('CREATE INDEX geometry_index ON location USING GIST (geometry);')
+    else:
+        op.execute('CREATE SPATIAL INDEX geometry_index ON location (geometry);')
 
 
 def downgrade():
