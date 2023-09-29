@@ -90,7 +90,7 @@ test-integration:
     paths:
       - reports/
   script:
-    - export CONFIG_FILE=config.testing.yaml
+    - export CONFIG_FILE=config_testing.yaml
     - python -m pytest tests/integration --junitxml=reports/pytest_integration.xml 
         --cov=webapp --cov-report=term:skip-covered --cov-report=xml:reports/coverage_integration.xml
 
