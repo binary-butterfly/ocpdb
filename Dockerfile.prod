@@ -1,0 +1,16 @@
+FROM python:3.11-alpine
+
+WORKDIR /app
+
+ENV PATH="${PATH}:/home/flask/.local/bin/"
+EXPOSE 8000
+
+# Switch to an unprivileged user
+RUN adduser -S -D flask && chown flask /app
+USER flask
+
+COPY . .
+
+RUN pip install --user -r requirements.txt
+
+CMD ["gunicorn", "--bind", "0.0.0.0:5000", "app:app"]

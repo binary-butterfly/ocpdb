@@ -1,0 +1,7 @@
+pytest~=7.4.2
+pytest-cov~=4.1.0
+ruff~=0.0.282
+black~=23.7.0
+mypy~=1.4.1
+mypy-gitlab-code-quality~=0.0.15
+types-pyyaml~=6.0.12.11

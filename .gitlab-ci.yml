@@ -1,5 +1,8 @@
-stages:
-  - test
+default:
+  cache:
+    key: ${CI_COMMIT_REF_SLUG}
+    paths:
+      - .pip/
 
 variables:
   # Variables for test environment services
@@ -14,22 +17,121 @@ variables:
     - name: redis:latest
     - name: rabbitmq:latest
 
+lint:
+  image: registry.gitlab.com/pipeline-components/ruff:latest
+  before_script:
+    - mkdir reports
+  script:
+    - ruff --format=gitlab ./webapp > reports/gl-code-quality-report.json
+  allow_failure: true
+  artifacts:
+    paths:
+      - reports
+    reports:
+      codequality: reports/gl-code-quality-report.json
 
-# Test stage
-test-pytest:
-  stage: test
-  image:
-    name: ${CI_REGISTRY}/common/base-images/flask:ubuntu-20.04
-  services: *test_service_stack
+mypy:
+  extends: .test-base
+  script:
+    - mypy webapp --no-error-summary > mypy-out.txt || true
+    - PYTHONHASHSEED=0 mypy-gitlab-code-quality < mypy-out.txt > codequality.json
+  allow_failure: true
+  rules:
+    - when: always
   artifacts:
     when: always
     reports:
-      junit:
-        - reports/pytest_unit.xml
-        - reports/pytest_integration.xml
+      codequality: codequality.json
+
+betterer:
+  image:
+    name: ${CI_REGISTRY}/common/utility-images/betterer:3.18.0
+    entrypoint: [""]
+  script:
+    - run.sh ci
+
+# -- Test stage
+# Base for test jobs
+.test-base:
+  stage: test
+  image:
+    name: ${CI_REGISTRY}/common/base-images/flask:ubuntu-20.04
+  artifacts:
+    when: always
   before_script:
-    - pip install -r requirements.txt
+    - pip install poetry
+    - poetry config virtualenvs.create false && poetry install
     - cp config_dist_dev.yaml config.yaml
+
+
+# Run unit tests
+test-unit:
+  extends: .test-base
+  artifacts:
+    reports:
+      junit: reports/pytest_unit.xml
+      coverage_report:
+        coverage_format: cobertura
+        path: reports/coverage_unit.xml
   script:
     - python -m pytest tests/unit --junitxml=reports/pytest_unit.xml
-    - python -m pytest tests/integration --junitxml=reports/pytest_integration.xml
+        --cov=webapp --cov-report=term:skip-covered --cov-report=xml:reports/coverage_unit.xml
+
+
+# Run integration tests in a test environment with test services
+test-integration:
+  extends: .test-base
+  services: *test_service_stack
+  artifacts:
+    reports:
+      junit: reports/pytest_integration.xml
+      coverage_report:
+        coverage_format: cobertura
+        path: reports/coverage_integration.xml
+    paths:
+      - reports/
+  script:
+    - export CONFIG_FILE=config.testing.yaml
+    - python -m pytest tests/integration --junitxml=reports/pytest_integration.xml 
+        --cov=webapp --cov-report=term:skip-covered --cov-report=xml:reports/coverage_integration.xml
+
+
+# Combine coverage reports
+coverage-merge:
+  image: mcr.microsoft.com/dotnet/sdk:7.0
+  needs:
+    - test-integration
+    - test-unit
+  script:
+    - dotnet tool install --global dotnet-reportgenerator-globaltool
+    - /root/.dotnet/tools/reportgenerator "-reports:reports/coverage_*.xml" -targetdir:coveragereports "-reporttypes:TeamCitySummary"
+  coverage: '/##teamcity\[buildStatisticValue key=''CodeCoverageS'' value=''(\d+\.?\d*)''\]/'
+
+
+# Build image
+build-image:
+  image:
+      name: gcr.io/kaniko-project/executor:debug
+      entrypoint: [""]
+  before_script:
+    - mkdir -p /kaniko/.docker
+    - echo "{\"auths\":{\"$CI_REGISTRY\":{\"username\":\"$CI_REGISTRY_USER\",\"password\":\"$CI_REGISTRY_PASSWORD\"}}}" > /kaniko/.docker/config.json
+  rules:
+    # For default branch (main): tag image as "dev"
+    - if: '$CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH'
+      variables:
+        TARGET_IMAGE_TAG: dev
+    # For all other branches and git tags: use git branch/tag as image tag (e.g. "user-api-flask:testing")
+    - if: '$CI_COMMIT_TAG || $CI_COMMIT_BRANCH'
+      variables:
+        TARGET_IMAGE_TAG: $CI_COMMIT_REF_SLUG
+  script:
+    - >-
+      /kaniko/executor
+      --context $CI_PROJECT_DIR/
+      --dockerfile $CI_PROJECT_DIR/deployment/Dockerfile.prod
+      --destination $CI_REGISTRY_IMAGE/ocpi:$CI_COMMIT_SHA
+      --destination $CI_REGISTRY_IMAGE/ocpi:$TARGET_IMAGE_TAG
+      --cache-run-layers
+      --cache-copy-layers
+      --cache=true
