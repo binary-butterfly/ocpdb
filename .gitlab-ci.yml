@@ -59,8 +59,7 @@ betterer:
   artifacts:
     when: always
   before_script:
-    - pip install poetry
-    - poetry config virtualenvs.create false && poetry install
+    - pip install -r requirements.txt -r requirements-dev.txt
     - cp config_dist_dev.yaml config.yaml
 
 
