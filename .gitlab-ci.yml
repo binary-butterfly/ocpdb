@@ -53,7 +53,6 @@ betterer:
 # -- Test stage
 # Base for test jobs
 .test-base:
-  stage: test
   image:
     name: ${CI_REGISTRY}/common/base-images/flask:ubuntu-20.04
   artifacts:

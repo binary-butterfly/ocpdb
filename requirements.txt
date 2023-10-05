@@ -29,10 +29,11 @@ https://github.com/mapbox/vector-tile-base/archive/refs/heads/master.tar.gz
 
 # TODO: remove dev dependencies here as soon as the betterer image supports this
 ruff~=0.0.282
-black~=23.7.0
-mypy~=1.4.1
-mypy-gitlab-code-quality~=0.0.15
+black~=23.9.1
+mypy~=1.5.1
+mypy-gitlab-code-quality~=1.0.0
 types-pyyaml~=6.0.12.11
+types-lxml~=2023.3.28
 
 # binary butterfly shared libraries (https://git.sectio-aurea.org/public_libraries)
 --extra-index-url https://git.sectio-aurea.org/api/v4/groups/262/-/packages/pypi/simple

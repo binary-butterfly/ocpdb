@@ -3,13 +3,9 @@ name: build & publish Docker image
 on:
   push:
     branches:
-      - main
+      - ci-and-images
 
 jobs:
-  lint:
-    name: lint
-    uses: './.github/workflows/lint.yml'
-
   build-publish:
     needs: [lint]
     runs-on: ubuntu-latest
