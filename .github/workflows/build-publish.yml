@@ -32,4 +32,4 @@ jobs:
         # https://docs.docker.com/build/ci/github-actions/cache/#cache-backend-api
         cache-from: type=gha
         cache-to: type=gha,mode=max
-        file:
+        file: Dockerfile.prod
