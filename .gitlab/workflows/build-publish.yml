@@ -7,7 +7,6 @@ on:
 
 jobs:
   build-publish:
-    needs: [lint]
     runs-on: ubuntu-latest
     steps:
     - name: checkout
