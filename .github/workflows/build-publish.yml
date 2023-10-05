@@ -3,7 +3,7 @@ name: build & publish Docker image
 on:
   push:
     branches:
-      - ci-and-images
+      - main
 
 jobs:
   build-publish:
