@@ -158,6 +158,7 @@ class Location(db.Model, BaseModel):
             fields: Optional[List[str]] = None,
             ignore: Optional[List[str]] = None,
             transform_ocpi: bool = False,
+            search_result: bool = True,
     ) -> dict:
         result = super().to_dict(fields, ignore)
         if transform_ocpi:
@@ -170,6 +171,31 @@ class Location(db.Model, BaseModel):
                 'lat': self.lat,
                 'lon': self.lon
             }
+        if search_result:
+            del result['geometry']
+            result['images'] = self.images
+            result['operator'] = self.operator
+            result['evses'] = self.evses
+            result['exceptional_openings'] = self.exceptional_openings
+            result['exceptional_closings'] = self.exceptional_closings
+            result['regular_hours'] = self.regular_hours
+            result['operator'] = self.operator
+            result['operator_logo'] = self.operator.logo
+            result['suboperator'] = self.suboperator
+            result['operator_logo'] = self.suboperator.logo
+            result['owner'] = self.owner
+            result['owner_logo'] = self.owner.logo
+            connectors = []
+            evse_images = []
+            related_resources = []
+            for evses in self.evses:
+                connectors.append(evses.connectors)
+                evse_images.append(evses.images)
+                related_resources.append(evses.related_resources)
+            result['connectors'] = connectors
+            result['evse_images'] = evse_images
+            result['related_resources'] = related_resources
+
         return result
 
 
