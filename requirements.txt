@@ -25,6 +25,7 @@ ngram~=4.0.3
 geopy~=2.4.0
 celery~=5.3.4
 kombu~=5.3.2
+pytz~=2023.3.post1
 https://github.com/mapbox/vector-tile-base/archive/refs/heads/master.tar.gz
 
 # TODO: remove dev dependencies here as soon as the betterer image supports this
