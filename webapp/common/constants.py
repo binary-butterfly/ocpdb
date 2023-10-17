@@ -40,6 +40,8 @@ class BaseConfig:
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SQLALCHEMY_ECHO = False
 
+    REMOTE_SERVERS = {}
+
     ENFORCE_CONFIG_VALUES = [
         'PROJECT_URL',
         'SECRET_KEY',
