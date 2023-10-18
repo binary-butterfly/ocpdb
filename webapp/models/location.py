@@ -16,7 +16,6 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-
 from datetime import datetime
 from decimal import Decimal
 from enum import Enum
@@ -100,7 +99,8 @@ class Location(db.Model, BaseModel):
         Index('uid', 'source'),
     )
 
-    uid: Col[str] = db.Column(db.String(255), index=True, nullable=False)            # OCHP: locationId                      OCPI: id
+    uid: Col[str] = db.Column(db.String(255), index=True,
+                              nullable=False)  # OCHP: locationId                      OCPI: id
     source: Col[str] = db.Column(db.String(64), index=True, nullable=False)
 
     evses: Rel[List['Evse']] = db.relationship('Evse', back_populates='location', cascade="all, delete, delete-orphan")
@@ -133,23 +133,25 @@ class Location(db.Model, BaseModel):
     dynamic_location_id: Col[int] = db.Column(db.BigInteger)  # TODO: relation?
     dynamic_location_probability: Col[int] = db.Column(db.Float)
 
-    name: Col[str] = db.Column(db.String(255))                        # OCHP: locationName, OCPI: name
-    address: Col[str] = db.Column(db.String(255))                     # OCHP: chargePointAddress.address      OCPI: address
-    postal_code: Col[str] = db.Column(db.String(255))                 # OCHP: chargePointAddress.zipCode      OCPI: postal_code
-    city: Col[str] = db.Column(db.String(255))                        # OCHP: chargePointAddress.city         OCPI: city
-    state: Col[str] = db.Column(db.String(255))                       #                                       OCPI: state
-    country: Col[str] = db.Column(db.String(2))                       # OCHP: chargePointAddress.country      OCPI: country_code
-    lat: Col[Decimal] = db.Column(db.Numeric(9, 7))                   # OCHP: chargePointLocation.lat         OCPI: coordinates.latitude
-    lon: Col[Decimal] = db.Column(db.Numeric(10, 7))                  # OCHP: chargePointLocation.lon         OCPI: coordinates.longitude
+    name: Col[str] = db.Column(db.String(255))  # OCHP: locationName, OCPI: name
+    address: Col[str] = db.Column(db.String(255))  # OCHP: chargePointAddress.address      OCPI: address
+    postal_code: Col[str] = db.Column(db.String(255))  # OCHP: chargePointAddress.zipCode      OCPI: postal_code
+    city: Col[str] = db.Column(db.String(255))  # OCHP: chargePointAddress.city         OCPI: city
+    state: Col[str] = db.Column(db.String(255))  # OCPI: state
+    country: Col[str] = db.Column(db.String(2))  # OCHP: chargePointAddress.country      OCPI: country_code
+    lat: Col[Decimal] = db.Column(db.Numeric(9, 7))  # OCHP: chargePointLocation.lat         OCPI: coordinates.latitude
+    lon: Col[Decimal] = db.Column(
+        db.Numeric(10, 7))  # OCHP: chargePointLocation.lon         OCPI: coordinates.longitude
 
-    directions: Col[str] = db.Column(db.Text)                         #                                       OCPI: directions
+    directions: Col[str] = db.Column(db.Text)  # OCPI: directions
     parking_type: Col[ParkingType] = db.Column(db.Enum(ParkingType))
-    time_zone: Col[str] = db.Column(db.String(32))                    # OCHP: timeZone                        OCPI: time_zone
+    time_zone: Col[str] = db.Column(db.String(32))  # OCHP: timeZone                        OCPI: time_zone
 
-    last_updated: Col[datetime] = db.Column(UtcDateTime())            # OCHP: timestamp
+    last_updated: Col[datetime] = db.Column(UtcDateTime())  # OCHP: timestamp
 
-    terms_and_conditions: Col[str] = db.Column(db.String(255))        #                                       OCPI: terms_and_conditions
-    twentyfourseven: Col[bool] = db.Column(db.Boolean)                # OCHP: openingTimes.twentyfourseven    OCPI: opening_times.twentyfourseven
+    terms_and_conditions: Col[str] = db.Column(db.String(255))  # OCPI: terms_and_conditions
+    twentyfourseven: Col[bool] = db.Column(
+        db.Boolean)  # OCHP: openingTimes.twentyfourseven    OCPI: opening_times.twentyfourseven
 
     geometry = db.Column(Point(), nullable=False)
 
@@ -157,8 +159,9 @@ class Location(db.Model, BaseModel):
             self,
             fields: Optional[List[str]] = None,
             ignore: Optional[List[str]] = None,
+            search_result: Optional[bool] = True,
             transform_ocpi: bool = False,
-            search_result: bool = True,
+
     ) -> dict:
         result = super().to_dict(fields, ignore)
         if transform_ocpi:
@@ -180,11 +183,14 @@ class Location(db.Model, BaseModel):
             result['exceptional_closings'] = self.exceptional_closings
             result['regular_hours'] = self.regular_hours
             result['operator'] = self.operator
-            result['operator_logo'] = self.operator.logo
+            if self.operator is not None:
+                result['operator_logo'] = self.operator.logo
             result['suboperator'] = self.suboperator
-            result['operator_logo'] = self.suboperator.logo
+            if self.suboperator is not None:
+                result['operator_logo'] = self.suboperator.logo
             result['owner'] = self.owner
-            result['owner_logo'] = self.owner.logo
+            if self.owner is not None:
+                result['owner_logo'] = self.owner.logo
             connectors = []
             evse_images = []
             related_resources = []
@@ -205,9 +211,8 @@ def set_geometry(mapper, connection, location):
     lat_history = db.inspect(location).attrs.lat.history
     lon_history = db.inspect(location).attrs.lon.history
     # just update when there are changes in lat or lon
-    if (lat_history[0] and len(lat_history[0]))\
-            or (lat_history[2] and len(lat_history[2]))\
-            or (lon_history[0] and len(lon_history[0]))\
+    if (lat_history[0] and len(lat_history[0])) \
+            or (lat_history[2] and len(lat_history[2])) \
+            or (lon_history[0] and len(lon_history[0])) \
             or (lon_history[2] and len(lon_history[2])):
         location.geometry = func.GeomFromText('POINT(%s %s)' % (float(location.lat), float(location.lon)))
-
