@@ -34,13 +34,8 @@ class ConfigLoader:
         # Load base config (containing constants and default values)
         app.config.from_object(BaseConfig)
 
-        # load all OCPDB-prefixed values from ENV
-        for key, value in os.environ.items():
-            if not key.startswith('OCPDB_'):
-                continue
-            if key in ['OCPDB_POSTGRES_USER', 'OCPDB_POSTGRES_DB', 'OCPDB_POSTGRES_PASSWORD']:
-                continue
-            app.config[key[6:]] = value
+        # load all OCPDB-prefixed values from prefixed ENV
+        app.config.from_prefixed_env('OCPDB')
 
         # load db credentials from env
         if os.getenv('OCPDB_POSTGRES_USER') \

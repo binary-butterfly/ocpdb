@@ -20,6 +20,10 @@ x-flask-defaults: &flask-defaults
     CONFIG_FILE:
     # TODO: This should be removed at some point and the app should be made SQLAlchemy 2.0 compatible!
     SQLALCHEMY_SILENCE_UBER_WARNING: 1
+    OCPDB_POSTGRES_DB: ocpdb
+    OCPDB_POSTGRES_USER: ocpdb
+    OCPDB_POSTGRES_PASSWORD: admin
+    OCPDB_POSTGRES_DOCKER_COMPOSE_SERVICE: postgre
   # The containers should run with the same UID/GID as your local user, so that files created by the containers are
   # owned by and accessible to the local user.
   user: *local-user
