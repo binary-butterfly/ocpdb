@@ -187,20 +187,13 @@ class Location(db.Model, BaseModel):
                 result['operator_logo'] = self.operator.logo
             result['suboperator'] = self.suboperator
             if self.suboperator is not None:
-                result['operator_logo'] = self.suboperator.logo
+                result['suboperator_logo'] = self.suboperator.logo
             result['owner'] = self.owner
             if self.owner is not None:
                 result['owner_logo'] = self.owner.logo
-            connectors = []
-            evse_images = []
-            related_resources = []
-            for evses in self.evses:
-                connectors.append(evses.connectors)
-                evse_images.append(evses.images)
-                related_resources.append(evses.related_resources)
-            result['connectors'] = connectors
-            result['evse_images'] = evse_images
-            result['related_resources'] = related_resources
+            result['connectors'] = [connector for evse in self.evses for connector in evse.connectors]
+            result['evse_images'] = [image for evse in self.evses for image in evse.evse_images]
+            result['related_resources'] = [related for evse in self.evses for related in evse.related_resources]
 
         return result
 
