@@ -177,7 +177,6 @@ class Location(db.Model, BaseModel):
         if search_result:
             del result['geometry']
             result['images'] = self.images
-            result['operator'] = self.operator
             result['evses'] = self.evses
             result['exceptional_openings'] = self.exceptional_openings
             result['exceptional_closings'] = self.exceptional_closings
