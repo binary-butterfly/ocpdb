@@ -60,5 +60,5 @@ class LocationsMethodView(BaseMethodView):
     @cross_origin()
     def get(self):
         search_query = self.validate_query_args(self.search_query_validator)
-        location = self.location_handler.get_locations(search_query).to_dict()
-        return jsonify(location)
+        locations = self.location_handler.get_locations(search_query)
+        return jsonify(locations)
