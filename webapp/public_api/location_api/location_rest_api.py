@@ -61,4 +61,4 @@ class LocationsMethodView(BaseMethodView):
     def get(self):
         search_query = self.validate_query_args(self.search_query_validator)
         locations = self.location_handler.get_locations(search_query)
-        return jsonify(locations)
+        return self.jsonify_paginated_response(locations, search_query)
