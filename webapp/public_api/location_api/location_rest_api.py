@@ -40,8 +40,8 @@ class LocationBlueprint(BaseBlueprint):
 
         self.add_url_rule(
             '',
-            view_func=LocationIdMethodView.as_view(
-                'id',
+            view_func=LocationsMethodView.as_view(
+                'locations',
                 **self.get_base_method_view_dependencies(),
                 location_handler=self.location_handler,
             ),
@@ -49,7 +49,7 @@ class LocationBlueprint(BaseBlueprint):
         )
 
 
-class LocationIdMethodView(BaseMethodView):
+class LocationsMethodView(BaseMethodView):
     location_handler: LocationHandler
     search_query_validator = DataclassValidator(LocationSearchQuery)
 
@@ -60,5 +60,5 @@ class LocationIdMethodView(BaseMethodView):
     @cross_origin()
     def get(self):
         search_query = self.validate_query_args(self.search_query_validator)
-        location = self.location_handler.get_location_by_name(search_query).to_dict()
+        location = self.location_handler.get_locations(search_query).to_dict()
         return jsonify(location)
