@@ -191,7 +191,7 @@ class Location(db.Model, BaseModel):
             if self.owner is not None:
                 result['owner_logo'] = self.owner.logo
             result['connectors'] = [connector for evse in self.evses for connector in evse.connectors]
-            result['evse_images'] = [image for evse in self.evses for image in evse.evse_images]
+            result['evse_images'] = [image for evse in self.evses for image in evse.images]
             result['related_resources'] = [related for evse in self.evses for related in evse.related_resources]
 
         return result
