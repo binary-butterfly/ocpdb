@@ -31,6 +31,6 @@ class LocationHandler(PublicApiBaseHandler):
         super().__init__(*args, **kwargs)
         self.location_repository = location_repository
 
-    def get_location_by_name(self, query: LocationSearchQuery) -> PaginatedResult[Location]:
+    def get_locations(self, query: LocationSearchQuery) -> PaginatedResult[Location]:
         location = self.location_repository.fetch_locations_by_name(query)
         return location
