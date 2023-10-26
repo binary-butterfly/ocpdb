@@ -41,9 +41,9 @@ class ConfigLoader:
         if os.getenv('OCPDB_POSTGRES_USER') \
                 and os.getenv('OCPDB_POSTGRES_DB') \
                 and os.getenv('OCPDB_POSTGRES_PASSWORD') \
-                and os.getenv('OCPDB_POSTGRES_DOCKER_COMPOSE_SERVICE'):
+                and os.getenv('OCPDB_POSTGRES_HOST'):
             app.config['SQLALCHEMY_DATABASE_URI'] = f'postgresql://{os.getenv("OCPDB_POSTGRES_USER")}:{os.getenv("OCPDB_POSTGRES_PASSWORD")}' \
-                                                    f'@{os.getenv("OCPDB_POSTGRES_DOCKER_COMPOSE_SERVICE")}/{os.getenv("OCPDB_POSTGRES_DB")}'
+                                                    f'@{os.getenv("OCPDB_POSTGRES_HOST")}/{os.getenv("OCPDB_POSTGRES_DB")}'
 
         # Load config from yaml file
         config_path = os.path.join(app.config['PROJECT_ROOT'], os.pardir, os.getenv('CONFIG_FILE', 'config.yaml'))
