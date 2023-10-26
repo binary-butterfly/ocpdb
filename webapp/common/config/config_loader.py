@@ -34,6 +34,17 @@ class ConfigLoader:
         # Load base config (containing constants and default values)
         app.config.from_object(BaseConfig)
 
+        # load all OCPDB-prefixed values from prefixed ENV
+        app.config.from_prefixed_env('OCPDB')
+
+        # load db credentials from env
+        if os.getenv('OCPDB_POSTGRES_USER') \
+                and os.getenv('OCPDB_POSTGRES_DB') \
+                and os.getenv('OCPDB_POSTGRES_PASSWORD') \
+                and os.getenv('OCPDB_POSTGRES_DOCKER_COMPOSE_SERVICE'):
+            app.config['SQLALCHEMY_DATABASE_URI'] = f'postgresql://{os.getenv("OCPDB_POSTGRES_USER")}:{os.getenv("OCPDB_POSTGRES_PASSWORD")}' \
+                                                    f'@{os.getenv("OCPDB_POSTGRES_DOCKER_COMPOSE_SERVICE")}/{os.getenv("OCPDB_POSTGRES_DB")}'
+
         # Load config from yaml file
         config_path = os.path.join(app.config['PROJECT_ROOT'], os.pardir, os.getenv('CONFIG_FILE', 'config.yaml'))
         app.config.from_file(config_path, safe_load)
@@ -45,7 +56,7 @@ class ConfigLoader:
                 url=server['url'],
                 user=server.get('user'),
                 password=server.get('password'),
-                cert=server.get('cert')
+                cert=server.get('cert'),
             )
             for key, server in app.config['REMOTE_SERVERS'].items()
         }

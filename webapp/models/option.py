@@ -16,13 +16,6 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-import json
-from datetime import datetime, date
-from decimal import Decimal
-from typing import Union
-
-import pytz
-
 from webapp.common.sqlalchemy import Col
 from webapp.extensions import db
 from .base import BaseModel

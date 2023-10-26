@@ -161,3 +161,33 @@ test-integration: config
 open-coverage:
 	@test -f ./reports/coverage_html/index.html || make test-unit
 	$(or $(BROWSER),firefox) ./reports/coverage_html/index.html
+
+
+# Linting
+# -----------
+
+.PHONY: lint-fix
+lint-fix:
+	$(FLASK_RUN) ruff --fix ./webapp
+	$(FLASK_RUN) black ./webapp
+
+.PHONY: lint-check
+lint-check:
+	$(FLASK_RUN) ruff ./webapp
+	$(FLASK_RUN) black -S --check --diff ./webapp
+
+.PHONY: betterer
+betterer:
+	docker run --rm -ti -v .:/src --user $$(id -u):$$(id -g) registry.git.sectio-aurea.org/common/utility-images/betterer:3.18.0
+
+.PHONY: betterer-init
+betterer-init:
+	docker run --rm -ti -v .:/src --user $$(id -u):$$(id -g) registry.git.sectio-aurea.org/common/utility-images/betterer:3.18.0 init
+
+.PHONY: betterer-update
+betterer-update:
+	docker run --rm -ti -v .:/src --user $$(id -u):$$(id -g) registry.git.sectio-aurea.org/common/utility-images/betterer:3.18.0 --update
+
+.PHONY: betterer-pull
+betterer-pull:
+	docker run --rm -ti -v .:/src --pull always --user $$(id -u):$$(id -g) registry.git.sectio-aurea.org/common/utility-images/betterer:3.18.0
