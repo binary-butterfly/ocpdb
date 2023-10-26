@@ -34,7 +34,7 @@ class LocationSearchQuery(SortingMixin, OffsetPaginationMixin, BaseSearchQuery):
     # Search filters
     name: Optional[str] = SearchParamContains(), StringValidator()
     source: Optional[str] = SearchParamContains(), StringValidator()
-    postal_code: Optional[int] = SearchParamEquals(), StringValidator()
+    postal_code: Optional[str] = SearchParamEquals(), StringValidator()
 
     # Pagination
     limit: Optional[int] = PaginationLimitValidator(optional=True), Default(None)
