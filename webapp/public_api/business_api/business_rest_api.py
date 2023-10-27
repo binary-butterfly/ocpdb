@@ -15,8 +15,9 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
+from typing import Optional
 
-from flask import jsonify
+from flask import jsonify, request
 from flask_cors import cross_origin
 from validataclass.validators import DataclassValidator
 
@@ -49,16 +50,7 @@ class BusinessBlueprint(BaseBlueprint):
         )
 
         self.add_url_rule(
-            '/<string:business_name>',
-            view_func=BusinessNameMethodView.as_view(
-                'name',
-                **self.get_base_method_view_dependencies(),
-                business_handler=self.business_handler,
-            ),
-
-        )
-        self.add_url_rule(
-            '/',
+            '',
             view_func=ViewAllMethodView.as_view(
                 'all',
                 **self.get_base_method_view_dependencies(),
@@ -77,28 +69,13 @@ class BusinessIdMethodView(BaseMethodView):
 
     @cross_origin()
     def get(self, business_id: int):
-        business = self.business_handler.get_business_by_id(business_id).to_dict()
-        return jsonify(business)
-
-
-class BusinessNameMethodView(BaseMethodView):
-    business_handler: BusinessHandler
-
-    def __init__(self, *args, business_handler: BusinessHandler, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.business_handler = business_handler
-
-    @cross_origin()
-    def get(self, business_name: str) :
-        name_validator = DataclassValidator(BusinessSearchQuery)
-        query = BusinessSearchQuery(name=business_name)
-        search_query = name_validator.validate(query.to_dict())
-        businesses = self.business_handler.get_business_by_name(search_query).to_dict()
-        return jsonify(businesses)
+        business = self.business_handler.get_business_by_id(business_id)
+        return jsonify(business.to_dict())
 
 
 class ViewAllMethodView(BaseMethodView):
     business_handler: BusinessHandler
+    search_query_validator = DataclassValidator(BusinessSearchQuery)
 
     def __init__(self, *args, business_handler: BusinessHandler, **kwargs):
         super().__init__(*args, **kwargs)
@@ -106,5 +83,7 @@ class ViewAllMethodView(BaseMethodView):
 
     @cross_origin()
     def get(self):
-        business = self.business_handler.get_businesses()
-        return jsonify(business)
+        search_query = self.validate_query_args(self.search_query_validator)
+        businesses = self.business_handler.search_businesses(search_query)
+
+        return self.jsonify_paginated_response(businesses, search_query)

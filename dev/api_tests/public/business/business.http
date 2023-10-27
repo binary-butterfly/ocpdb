@@ -1,1 +1,7 @@
-GET {{api_host}}//api/public/v1/businesses/n
+GET {{api_host}}//api/public/v1/businesses/EnBW
+
+GET {{api_host}}//api/public/v1/businesses/1
+
+GET {{api_host}}//api/public/v1/businesses
+
+GET {{api_host}}//api/public/v1/businesses

@@ -58,5 +58,9 @@ class BaseModel:
 class Point(UserDefinedType):
     cache_ok = True
 
-    def get_col_spec(self):
-        return 'POINT'
+    def get_col_spec(self) -> str:
+        if db.session.get_bind().dialect.name == 'postgresql':
+            return 'GEOMETRY'
+        else:
+            return 'POINT'
+
