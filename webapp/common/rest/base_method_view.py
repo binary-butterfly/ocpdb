@@ -20,6 +20,7 @@ from typing import Any, TYPE_CHECKING, Optional
 
 from flask import jsonify, Response
 from flask.views import MethodView
+from flask import jsonify, Response
 from validataclass.exceptions import ValidationError
 from validataclass.validators import DataclassValidator, T_Dataclass
 from validataclass_search_queries.pagination import PaginatedResult, paginated_api_response

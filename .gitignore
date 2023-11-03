@@ -4,7 +4,7 @@
 !/**/.gitkeep
 
 /config.yaml
-/dev/api_tests/http-client.env.json
+http-client.env.json
 /.env
 /Makefile.env
 /docker-compose_local.yml
@@ -23,3 +23,4 @@
 /reports
 /.coverage
 /htmlcov
+/dev/api_tests/public/business/http-client.env.json
