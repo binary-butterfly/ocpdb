@@ -31,7 +31,7 @@ https://github.com/mapbox/vector-tile-base/archive/refs/heads/master.tar.gz
 # TODO: remove dev dependencies here as soon as the betterer image supports this
 ruff~=0.0.282
 black~=23.9.1
-mypy~=1.5.1
+mypy~=1.7.0
 mypy-gitlab-code-quality~=1.0.0
 types-pyyaml~=6.0.12.11
 types-lxml~=2023.3.28
