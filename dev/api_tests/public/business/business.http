@@ -1,7 +1,6 @@
-GET {{api_host}}//api/public/v1/businesses/EnBW
-
+### Get business by ID
 GET {{api_host}}//api/public/v1/businesses/1
 
-GET {{api_host}}//api/public/v1/businesses
 
+### List businesses
 GET {{api_host}}//api/public/v1/businesses
