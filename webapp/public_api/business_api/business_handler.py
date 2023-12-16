@@ -42,11 +42,10 @@ class BusinessHandler(PublicApiBaseHandler):
 
         return businesses.map(lambda business: self._map_business_to_ocpi(business))
 
-    @staticmethod
-    def _map_business_to_ocpi(business: Business) -> dict:
-        business_dict = business.to_dict(ignore=['created', 'modified', 'logo_id'])
+    def _map_business_to_ocpi(self, business: Business) -> dict:
+        business_dict = self.filter_none(business.to_dict(ignore=['created', 'modified', 'logo_id']))
 
         if business.logo_id:
-            business_dict['logo'] = business.logo.to_dict(ignore=['created', 'modified'])
+            business_dict['logo'] = self.filter_none(business.logo.to_dict(ignore=['created', 'modified']))
 
         return business_dict

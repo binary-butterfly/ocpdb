@@ -2,6 +2,7 @@ import pytest
 from unittest.mock import Mock
 
 import webapp.common.config
+from webapp.models import Business
 from webapp.public_api.business_api.business_handler import BusinessHandler, BusinessSearchQuery
 from webapp.repositories.business_repository import BusinessRepository
 
@@ -32,9 +33,16 @@ def business_query_mock():
 
 
 def test_business_handler_get_business_by_id(business_repository_mock, logger_mock, config_helper_mock):
-    business_repository_mock.fetch_by_id.return_value = "teststring"
-    handler = BusinessHandler(business_repository=business_repository_mock, logger=logger_mock,
-                              config_helper=config_helper_mock)
-    assert handler.get_business_by_id(1) is "teststring"
+    business = Business()
+    business.id = 1
+    business.name = 'test'
+
+    business_repository_mock.fetch_by_id.return_value = business
+    handler = BusinessHandler(
+        business_repository=business_repository_mock,
+        logger=logger_mock,
+        config_helper=config_helper_mock,
+    )
+    assert handler.get_business_by_id(1) == {'id': 1, 'name': 'test'}
     business_repository_mock.fetch_by_id.assert_called_with(1)
 
