@@ -16,13 +16,15 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from flask_openapi.decorator import document, Parameter, Response, ResponseData
+from flask_openapi.decorator import Parameter, Response, ResponseData, document
+from flask_openapi.schema import BooleanField
 from validataclass.validators import DataclassValidator
 
 from webapp.common.base_blueprint import BaseBlueprint
 from webapp.common.response import protobuf_response
 from webapp.common.rest import BaseMethodView
 from webapp.dependencies import dependencies
+
 from .tiles_handler import TilesHandler
 from .tiles_validators import TileFilterInput
 
@@ -65,8 +67,8 @@ class TilesMethodView(BaseMethodView):
             Parameter('z', schema=int, example=1),
         ],
         query=[
-            Parameter('static', schema={'type': 'boolean'}, description='if set show just static (true) or just dynamic (false) locations'),
-            Parameter('filter_duplicates', schema={'type': 'boolean'}, description='filters matched static-dynamic-duplicates'),
+            Parameter('static', schema=BooleanField(), description='if set show just static (true) or just dynamic (false) locations'),
+            Parameter('filter_duplicates', schema=BooleanField(), description='filters matched static-dynamic-duplicates'),
         ],
         response=[Response(ResponseData(mimetype='application/x-protobuf'), description='Tile in protobuf format.')],
     )

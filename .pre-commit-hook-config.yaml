@@ -1,8 +1,0 @@
-repos:
-  - repo: local
-    hooks:
-      - id: format-and-lint
-        name: Check formatting and linting
-        entry: ocpdb-flask:latest ruff ./app
-        language: docker_image
-        types: [ python ]

@@ -15,20 +15,34 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-from typing import Optional
 
-from flask import jsonify, request
+from flask import jsonify
 from flask_cors import cross_origin
+from flask_openapi.decorator import (
+    ExampleListReference,
+    ExampleReference,
+    Parameter,
+    Response,
+    ResponseData,
+    Schema,
+    SchemaListReference,
+    SchemaReference,
+    document,
+)
+from flask_openapi.schema import AnyOfField, IntegerField, StringField
 from validataclass.validators import DataclassValidator
 
+from webapp.common.rest import BaseMethodView
 from webapp.dependencies import dependencies
 from webapp.public_api.base_blueprint import BaseBlueprint
-from .business_search_queries import BusinessSearchQuery
-from webapp.common.rest import BaseMethodView
+from webapp.shared.ocpi_schema import business_details_example, business_details_schema, image_example, image_schema
+
 from .business_handler import BusinessHandler
+from .business_search_queries import BusinessSearchQuery
 
 
 class BusinessBlueprint(BaseBlueprint):
+    documented = True
     business_handler: BusinessHandler
 
     def __init__(self):
@@ -46,7 +60,6 @@ class BusinessBlueprint(BaseBlueprint):
                 **self.get_base_method_view_dependencies(),
                 business_handler=self.business_handler,
             ),
-
         )
 
         self.add_url_rule(
@@ -56,7 +69,6 @@ class BusinessBlueprint(BaseBlueprint):
                 **self.get_base_method_view_dependencies(),
                 business_handler=self.business_handler,
             ),
-
         )
 
 
@@ -67,6 +79,15 @@ class BusinessIdMethodView(BaseMethodView):
         super().__init__(*args, **kwargs)
         self.business_handler = business_handler
 
+    @document(
+        description='Get a single Business',
+        path=[Parameter('business_id', schema=IntegerField(minimum=1))],
+        response=[Response(ResponseData(SchemaReference('BusinessDetails'), ExampleReference('BusinessDetails')))],
+        components=[
+            Schema('BusinessDetails', business_details_schema, business_details_example),
+            Schema('Image', image_schema, image_example),
+        ],
+    )
     @cross_origin()
     def get(self, business_id: int):
         business = self.business_handler.get_business_by_id(business_id)
@@ -81,6 +102,19 @@ class ViewAllMethodView(BaseMethodView):
         super().__init__(*args, **kwargs)
         self.business_handler = business_handler
 
+    @document(
+        description='Get a list of Businesses',
+        query=[
+            Parameter('sorted_by', schema=AnyOfField(allowed_values=['name', 'created', 'modified'], required=False, default='name')),
+            Parameter('name', schema=StringField(required=False)),
+            Parameter('limit', schema=IntegerField(maximum=1000, required=False, default=100)),
+        ],
+        response=[Response(ResponseData(SchemaListReference('BusinessDetails'), ExampleListReference('BusinessDetails')))],
+        components=[
+            Schema('BusinessDetails', business_details_schema, business_details_example),
+            Schema('Image', image_schema, image_example),
+        ],
+    )
     @cross_origin()
     def get(self):
         search_query = self.validate_query_args(self.search_query_validator)

@@ -28,6 +28,7 @@ from .giroe.giroe_rest_api import GiroeBlueprint
 
 class ServerRestApi(BaseBlueprint):
     documentation_base = True
+    documentation_auth = False
     blueprints: List[Type[ServerApiBaseBlueprint]] = []
 
     def __init__(self):

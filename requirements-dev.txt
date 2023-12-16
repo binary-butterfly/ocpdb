@@ -1,8 +1,8 @@
-pytest~=7.4.2
+pytest~=7.4.3
 pytest-cov~=4.1.0
-ruff~=0.0.282
-black~=23.9.1
-mypy~=1.5.1
-mypy-gitlab-code-quality~=1.0.0
-types-pyyaml~=6.0.12.11
-types-lxml~=2023.3.28
+ruff~=0.1.8
+black~=23.12.0
+mypy~=1.7.1
+mypy-gitlab-code-quality~=1.1.0
+types-pyyaml~=6.0.12.12
+types-lxml~=2023.10.21

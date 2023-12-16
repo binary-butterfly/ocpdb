@@ -30,3 +30,6 @@ logger = Logger()
 
 from flask_cors import CORS
 cors = CORS()
+
+from flask_openapi import FlaskOpenapi
+openapi = FlaskOpenapi()

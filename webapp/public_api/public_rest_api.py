@@ -19,6 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from typing import List, Type
 
 from webapp.common.base_blueprint import BaseBlueprint
+
 from .base_blueprint import PublicApiBaseBlueprint
 from .business_api import BusinessBlueprint
 from .location_api import LocationBlueprint
@@ -33,11 +34,9 @@ class PublicApi(BaseBlueprint):
         BusinessBlueprint,
         OcpiBlueprint,
         LocationBlueprint,
-
     ]
 
     def __init__(self):
         super().__init__('public', __name__, url_prefix='')
         for blueprint in self.blueprints:
             self.register_blueprint(blueprint())
-

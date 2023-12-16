@@ -16,8 +16,11 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from flask import Blueprint, render_template
+from flask import Blueprint, render_template, jsonify
 from flask.views import MethodView
+
+from webapp.common.config import ConfigHelper
+from webapp.dependencies import dependencies
 
 
 class FrontendBlueprint(Blueprint):
@@ -28,11 +31,28 @@ class FrontendBlueprint(Blueprint):
 
         self.add_url_rule(
             '/',
-            view_func=FrontendFrontpageMethodView.as_view('frontpage'),
+            view_func=FrontendFrontpageMethodView.as_view(
+                'frontpage',
+                config_helper=dependencies.get_config_helper(),
+            ),
         )
 
 
 class FrontendFrontpageMethodView(MethodView):
+    config_helper: ConfigHelper
+
+    def __init__(self, *args, config_helper: ConfigHelper, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.config_helper = config_helper
 
     def get(self):
-        return render_template('frontpage.html')
+        if self.config_helper.get('SHOW_MAP'):
+            return render_template('frontpage.html')
+
+        return jsonify({
+            'application': 'ocpdb',
+            'documentation': {
+                'public': f'{self.config_helper.get("PROJECT_URL")}/documentation/public.html',
+                'server': f'{self.config_helper.get("PROJECT_URL")}/documentation/server.html',
+            },
+        })

@@ -18,7 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from typing import Optional
 
-from validataclass.dataclasses import validataclass, Default
+from validataclass.dataclasses import Default, validataclass
 from validataclass.validators import BooleanValidator
 
 

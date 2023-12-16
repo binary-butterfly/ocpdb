@@ -24,9 +24,18 @@ class PublicApiBaseHandler:
     """
     Base class for API handler classes (`auth.AuthHandler`, etc.)
     """
+
     logger: Logger
     config_helper: ConfigHelper
 
     def __init__(self, logger: Logger, config_helper: ConfigHelper):
         self.logger = logger
         self.config_helper = config_helper
+
+    @staticmethod
+    def filter_none(data: dict) -> dict:
+        return {key: value for key, value in data.items() if value is not None}
+
+    @staticmethod
+    def filter_none_and_empty_list(data: dict) -> dict:
+        return {key: value for key, value in data.items() if value is not None and value != []}
