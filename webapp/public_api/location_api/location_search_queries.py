@@ -37,4 +37,4 @@ class LocationSearchQuery(SortingMixin, OffsetPaginationMixin, BaseSearchQuery):
     postal_code: Optional[str] = SearchParamEquals(), StringValidator()
 
     # Pagination
-    limit: Optional[int] = PaginationLimitValidator(optional=True), Default(None)
+    limit: Optional[int] = PaginationLimitValidator(optional=True), Default(100)

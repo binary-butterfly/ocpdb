@@ -1,1 +1,6 @@
+### Get locations
 GET {{api_host}}//api/public/v1/locations
+
+
+### Get location by ID
+GET {{api_host}}//api/public/v1/locations/1

@@ -161,7 +161,6 @@ class Location(db.Model, BaseModel):
             ignore: Optional[List[str]] = None,
             search_result: Optional[bool] = True,
             transform_ocpi: bool = False,
-
     ) -> dict:
         result = super().to_dict(fields, ignore)
         if transform_ocpi:
@@ -175,7 +174,8 @@ class Location(db.Model, BaseModel):
                 'lon': self.lon
             }
         if search_result:
-            del result['geometry']
+            if 'geometry' in result:
+                del result['geometry']
             result['images'] = self.images
             result['evses'] = self.evses
             result['exceptional_openings'] = self.exceptional_openings
