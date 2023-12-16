@@ -15,7 +15,9 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-from typing import List, Optional
+
+from typing import Optional
+
 from validataclass_search_queries.pagination import PaginatedResult
 
 from webapp.models import Business
@@ -31,10 +33,19 @@ class BusinessHandler(PublicApiBaseHandler):
         super().__init__(*args, **kwargs)
         self.business_repository = business_repository
 
-    def get_business_by_id(self, business_id: int) -> Business:
+    def get_business_by_id(self, business_id: int) -> dict:
         business = self.business_repository.fetch_by_id(business_id)
-        return business
+        return self._map_business_to_ocpi(business)
 
-    def search_businesses(self, search_query: Optional[BusinessSearchQuery] = None) -> PaginatedResult[Business]:
+    def search_businesses(self, search_query: Optional[BusinessSearchQuery] = None) -> PaginatedResult[dict]:
         businesses = self.business_repository.fetch_businesses(search_query)
-        return businesses
+
+        return businesses.map(lambda business: self._map_business_to_ocpi(business))
+
+    def _map_business_to_ocpi(self, business: Business) -> dict:
+        business_dict = self.filter_none(business.to_dict(ignore=['created', 'modified', 'logo_id']))
+
+        if business.logo_id:
+            business_dict['logo'] = self.filter_none(business.logo.to_dict(ignore=['created', 'modified']))
+
+        return business_dict

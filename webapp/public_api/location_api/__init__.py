@@ -1,4 +1,3 @@
-
 """
 Open ChargePoint DataBase OCPDB
 Copyright (C) 2023 binary butterfly GmbH

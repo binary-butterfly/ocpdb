@@ -46,8 +46,12 @@ class BaseConfig:
         'PROJECT_URL',
         'SECRET_KEY',
         'SQLALCHEMY_DATABASE_URI',
-        'CELERY_BROKER_URL'
+        'CELERY_BROKER_URL',
     ]
+
+    SHOW_MAP: bool = True
+
+    OPENAPI_LOGIN_REQUIRED = False
 
     OPENAPI_TITLE = 'Open ChargePoint DataBase: Documentation'
     OPENAPI_DESCRIPTION = 'This service tries to collect and publish as many live data as possible.'
@@ -56,8 +60,8 @@ class BaseConfig:
     OPENAPI_SERVERS = [
         {
             'url': 'https://api.ocpdb.de',
-            'description': 'production'
-        }
+            'description': 'production',
+        },
     ]
 
     MATCHING_FACTOR_THRESHOLD = 0.25

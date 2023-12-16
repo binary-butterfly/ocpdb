@@ -7,9 +7,6 @@ DOCKER_REGISTRY = registry.git.sectio-aurea.org
 TESTING_COMPOSE_PROJECT_NAME = giro-e-backend_integrationtests
 TESTING_DOCKER_COMPOSE = $(DOCKER_COMPOSE) -p $(TESTING_COMPOSE_PROJECT_NAME)
 
-# Include file with environment variables if it exists
--include Makefile.env
-
 # Default target when running `make`
 .PHONY: all
 all: docker-up
@@ -175,19 +172,3 @@ lint-fix:
 lint-check:
 	$(FLASK_RUN) ruff ./webapp
 	$(FLASK_RUN) black -S --check --diff ./webapp
-
-.PHONY: betterer
-betterer:
-	docker run --rm -ti -v .:/src --user $$(id -u):$$(id -g) registry.git.sectio-aurea.org/common/utility-images/betterer:3.18.0
-
-.PHONY: betterer-init
-betterer-init:
-	docker run --rm -ti -v .:/src --user $$(id -u):$$(id -g) registry.git.sectio-aurea.org/common/utility-images/betterer:3.18.0 init
-
-.PHONY: betterer-update
-betterer-update:
-	docker run --rm -ti -v .:/src --user $$(id -u):$$(id -g) registry.git.sectio-aurea.org/common/utility-images/betterer:3.18.0 --update
-
-.PHONY: betterer-pull
-betterer-pull:
-	docker run --rm -ti -v .:/src --pull always --user $$(id -u):$$(id -g) registry.git.sectio-aurea.org/common/utility-images/betterer:3.18.0

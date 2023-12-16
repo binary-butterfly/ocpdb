@@ -23,13 +23,14 @@ from webapp.dependencies import dependencies
 
 class BaseBlueprint(FlaskBlueprint):
     documentation_base: bool = False
+    documentation_auth: bool = False
     documented: bool = False
 
     @staticmethod
     def get_base_handler_dependencies() -> dict:
         return {
             'logger': dependencies.get_logger(),
-            'config_helper': dependencies.get_config_helper()
+            'config_helper': dependencies.get_config_helper(),
         }
 
     @staticmethod

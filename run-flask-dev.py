@@ -1,6 +1,6 @@
 """
 Open ChargePoint DataBase OCPDB
-Copyright (C) 2021 binary butterfly GmbH
+Copyright (C) 2023 binary butterfly GmbH
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published by
@@ -17,14 +17,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 from flask_failsafe import failsafe
-from werkzeug._reloader import run_with_reloader
+from werkzeug.middleware.proxy_fix import ProxyFix
 
 
 @failsafe
-def run():
-    from webapp.entry_point_celery import celery
-    celery.worker_main(argv=['worker'])
+def create_app():
+    from webapp import launch
+    app = launch()
+    # Apply the "ProxyFix" to trust the X-Forwarded-Proto header
+    app.wsgi_app = ProxyFix(app.wsgi_app)
+    return app
 
 
-if __name__ == '__main__':
-    run_with_reloader(run)
+if __name__ == "__main__":
+    create_app().run(debug=True, host='0.0.0.0')

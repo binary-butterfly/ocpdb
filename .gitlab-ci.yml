@@ -43,13 +43,6 @@ mypy:
     reports:
       codequality: codequality.json
 
-betterer:
-  image:
-    name: ${CI_REGISTRY}/common/utility-images/betterer:3.18.0
-    entrypoint: [""]
-  script:
-    - run.sh ci
-
 # -- Test stage
 # Base for test jobs
 .test-base:

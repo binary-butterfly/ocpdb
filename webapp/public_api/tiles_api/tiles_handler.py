@@ -46,10 +46,12 @@ class TilesHandler(PublicApiBaseHandler):
         layer = tile.add_layer('chargepoints', 1)
         for item in chargepoints:
             feature = layer.add_point_feature()
-            feature.add_points([
-                int(4096 * (float(item.lon) - bbox[0]) / (bbox[2] - bbox[0])),
-                int(4096 * (bbox[3] - float(item.lat)) / (bbox[3] - bbox[1]))
-            ])
+            feature.add_points(
+                [
+                    int(4096 * (float(item.lon) - bbox[0]) / (bbox[2] - bbox[0])),
+                    int(4096 * (bbox[3] - float(item.lat)) / (bbox[3] - bbox[1])),
+                ]
+            )
             feature.id = item.id
             feature.attributes = {
                 'id': item.id,
@@ -58,8 +60,7 @@ class TilesHandler(PublicApiBaseHandler):
                 'ca': int(item.chargepoint_available_count),
                 'cu': int(item.chargepoint_unknown_count),
                 'cb': int(item.chargepoint_bike_count),
-                'cs': int(item.chargepoint_static_count)
+                'cs': int(item.chargepoint_static_count),
             }
             feature.extend = 4096
         return tile.serialize()
-

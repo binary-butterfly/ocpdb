@@ -20,57 +20,42 @@ from flask import jsonify
 from flask_cors import cross_origin
 
 from webapp.common.base_blueprint import BaseBlueprint
-from webapp.dependencies import dependencies
-from flask_openapi.decorator import document, Response, ResponseData, ErrorResponse, Schema
-from .ocpi_handler import OcpiHandler
 from webapp.common.rest import BaseMethodView
+from webapp.dependencies import dependencies
+from webapp.public_api.location_api.location_handler import LocationHandler
 
 
 class OcpiBlueprint(BaseBlueprint):
     documented = True
-    ocpi_handler: OcpiHandler
+    location_handler: LocationHandler
 
     def __init__(self):
-        self.ocpi_handler = OcpiHandler(
+        self.location_handler = LocationHandler(
             **self.get_base_handler_dependencies(),
             location_repository=dependencies.get_location_repository(),
         )
-        super().__init__('locations', __name__, url_prefix='/api/ocpi/2.2/location')
+        super().__init__('ocpi', __name__, url_prefix='/api/ocpi/2.2/location')
 
         self.add_url_rule(
             '/<int:location_id>',
             view_func=LocationsMethodView.as_view(
                 'location',
                 **self.get_base_method_view_dependencies(),
-                ocpi_handler=self.ocpi_handler,
+                location_handler=self.location_handler,
             ),
         )
 
 
 class OcpiBaseMethodView(BaseMethodView):
-    ocpi_handler: OcpiHandler
+    location_handler: LocationHandler
 
-    def __init__(self, *args, ocpi_handler: OcpiHandler, **kwargs):
+    def __init__(self, *args, location_handler: LocationHandler, **kwargs):
         super().__init__(*args, **kwargs)
-        self.ocpi_handler = ocpi_handler
+        self.location_handler = location_handler
 
 
 class LocationsMethodView(OcpiBaseMethodView):
-
-    @document(
-        description='Get location with all details',
-        response=[Response([ResponseData('location-reply', 'location-reply-example')]), ErrorResponse()],
-        components=[
-            Schema('Location', 'location-schema', 'location-example'),
-            Schema('GeoLocation', 'geo-location-schema', 'geo-location-example'),
-            Schema('Hours', 'hours-schema', 'hours-example'),
-            Schema('RegularHours', 'regular-hours-schema', 'regular-hours-example'),
-            Schema('ExceptionalPeriod', 'exceptional-period-schema', 'exceptional-period-example'),
-            Schema('Evse', 'evse-schema', 'evse-example'),
-            Schema('Connector', 'connector-schema', 'connector-example'),
-        ],
-    )
     @cross_origin()
     def get(self, location_id: int):
-        location = self.ocpi_handler.get_location(location_id)
+        location = self.location_handler.get_location(location_id)
         return jsonify(location)

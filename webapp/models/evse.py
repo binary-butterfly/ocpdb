@@ -158,12 +158,3 @@ class Evse(db.Model, BaseModel):
         '_parking_restrictions',
         descriptor=property(_get_parking_restrictions, _set_parking_restrictions)
     )
-
-    def to_dict(
-        self,
-        fields: Optional[List[str]] = None,
-        ignore: Optional[List[str]] = None,
-        transform_ocpi: bool = False,
-    ) -> dict:
-        result = super().to_dict(fields, ignore)
-        return result

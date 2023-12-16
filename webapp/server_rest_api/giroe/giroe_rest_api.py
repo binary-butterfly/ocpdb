@@ -16,7 +16,6 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from flask_openapi.decorator import document, Parameter, ErrorResponse, EmptyResponse, Schema, Request
 from validataclass.validators import DataclassValidator
 
 from webapp.common.response import empty_json_response
@@ -73,17 +72,6 @@ class GiroeBaseMethodView(BaseMethodView):
 class GiroeLocationMethodView(GiroeBaseMethodView):
     location_validator = DataclassValidator(LocationInput)
 
-    @document(
-        description='Puts a location.',
-        path=[Parameter('location_id', schema=int, example=1)],
-        request=Request('location-put-request', 'location-put-request-example'),
-        response=[EmptyResponse(), ErrorResponse()],
-        components=[
-            Schema('Location', 'location-schema', 'location-example'),
-            Schema('Station', 'station-schema', 'station-example'),
-            Schema('Connector', 'connector-schema', 'connector-example'),
-        ],
-    )
     @require_role(ServerAuthRole.GIROE)
     def put(self, location_id: int):
         input_data = self.validate_request(self.location_validator)
@@ -92,11 +80,6 @@ class GiroeLocationMethodView(GiroeBaseMethodView):
 
         return empty_json_response(), 204
 
-    @document(
-        description='Deletes a location.',
-        path=[Parameter('location_id', schema=int, example=1)],
-        response=[EmptyResponse(), ErrorResponse()],
-    )
     @require_role(ServerAuthRole.GIROE)
     def delete(self, location_id: int):
         self.giroe_handler.handle_delete_location(location_id)
@@ -107,13 +90,6 @@ class GiroeLocationMethodView(GiroeBaseMethodView):
 class GiroeConnectorMethodView(GiroeBaseMethodView):
     connector_patch_validator = DataclassValidator(ConnectorPatchInput)
 
-    @document(
-        description='Patches an connector.',
-        path=[Parameter('connector_id', schema=int, example=1)],
-        request=Request('connector-patch-request', 'connector-patch-request-example'),
-        response=[EmptyResponse(), ErrorResponse()],
-        components=[Schema('Connector', 'connector-schema', 'connector-example')],
-    )
     @require_role(ServerAuthRole.GIROE)
     def patch(self, connector_uid: str):
         connector_input = self.validate_request(self.connector_patch_validator)

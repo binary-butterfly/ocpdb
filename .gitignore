@@ -23,8 +23,6 @@ http-client.env.json
 /reports
 /.coverage
 /htmlcov
-/.betterer_cache
 /.ruff_cache
 /.mypy_cache
 /dev/api_tests/public/business/http-client.env.json
-/.betterer_cache

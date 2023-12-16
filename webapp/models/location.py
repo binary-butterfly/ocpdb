@@ -86,6 +86,14 @@ class EnvironmentalImpactCategory(Enum):
     CARBON_DIOXIDE = 'CARBON_DIOXIDE'
 
 
+# The TokenType Enum is just for documentation purposes, in public databases, this will never be set
+class TokenType(Enum):
+    AD_HOC_USER = 'AD_HOC_USER'
+    APP_USER = 'APP_USER'
+    OTHER = 'OTHER'
+    RFID = 'RFID'
+
+
 location_image = db.Table(
     'location_image',
     db.Column('location_id', db.BigInteger, db.ForeignKey('location.id', use_alter=True), nullable=False),
@@ -159,41 +167,25 @@ class Location(db.Model, BaseModel):
             self,
             fields: Optional[List[str]] = None,
             ignore: Optional[List[str]] = None,
-            search_result: Optional[bool] = True,
             transform_ocpi: bool = False,
     ) -> dict:
         result = super().to_dict(fields, ignore)
+
+        if 'geometry' in result:
+            del result['geometry']
+
         if transform_ocpi:
             del result['lat']
             del result['lon']
             del result['twentyfourseven']
+
             if self.twentyfourseven is not None:
                 result['opening_times'] = {'twentyfourseven': self.twentyfourseven}
+
             result['coordinates'] = {
                 'lat': self.lat,
                 'lon': self.lon
             }
-        if search_result:
-            if 'geometry' in result:
-                del result['geometry']
-            result['images'] = self.images
-            result['evses'] = self.evses
-            result['exceptional_openings'] = self.exceptional_openings
-            result['exceptional_closings'] = self.exceptional_closings
-            result['regular_hours'] = self.regular_hours
-            result['operator'] = self.operator
-            if self.operator is not None:
-                result['operator_logo'] = self.operator.logo
-            result['suboperator'] = self.suboperator
-            if self.suboperator is not None:
-                result['suboperator_logo'] = self.suboperator.logo
-            result['owner'] = self.owner
-            if self.owner is not None:
-                result['owner_logo'] = self.owner.logo
-            result['connectors'] = [connector for evse in self.evses for connector in evse.connectors]
-            result['evse_images'] = [image for evse in self.evses for image in evse.images]
-            result['related_resources'] = [related for evse in self.evses for related in evse.related_resources]
-
         return result
 
 

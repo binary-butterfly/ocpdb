@@ -1,16 +1,16 @@
 gunicorn~=21.2.0
-Flask~=2.3.3
+Flask~=3.0.0
 Flask-Failsafe~=0.2.0
 # Flask-SQLAlchemy 3.1 requires SQLAlchemy 2.0
 Flask-SQLAlchemy~=3.0.5
 Flask-Celery-Helper~=1.1.0
 Flask-Migrate~=4.0.5
 Flask-CORS~=4.0.0
-SQLAlchemy~=1.4.49
+SQLAlchemy~=1.4.50
 requests~=2.31.0
 lxml~=4.9.3
 mercantile~=1.2.1
-psycopg2-binary~=2.9.7
+psycopg2-binary~=2.9.9
 python-dateutil~=2.8.2
 python-dotenv~=1.0.0
 click~=8.1.7
@@ -20,23 +20,15 @@ validataclass~=0.9.0
 SQLAlchemy-Utc~=0.14.0
 openpyxl~=3.1.2
 protobuf~=3.20.2
-pycountry~=22.3.5
+pycountry~=23.12.11
 ngram~=4.0.3
 geopy~=2.4.0
-celery~=5.3.4
-kombu~=5.3.2
+celery~=5.3.6
+kombu~=5.3.4
 pytz~=2023.3.post1
 https://github.com/mapbox/vector-tile-base/archive/refs/heads/master.tar.gz
 
-# TODO: remove dev dependencies here as soon as the betterer image supports this
-ruff~=0.0.282
-black~=23.9.1
-mypy~=1.5.1
-mypy-gitlab-code-quality~=1.0.0
-types-pyyaml~=6.0.12.11
-types-lxml~=2023.3.28
-
 # binary butterfly shared libraries (https://git.sectio-aurea.org/public_libraries)
 --extra-index-url https://git.sectio-aurea.org/api/v4/groups/262/-/packages/pypi/simple
-flask-openapi==1.1.1.dev21980
-validataclass-search-queries~=0.4.0
+flask-openapi~=2.0.3
+validataclass-search-queries~=0.4.2

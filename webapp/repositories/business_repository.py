@@ -29,7 +29,7 @@ class BusinessRepository(BaseRepository[Business]):
     model_cls = Business
 
     def fetch_by_id(self, business_id: int) -> Business:
-        result = self.session.query(Business).filter(Business.id == business_id).one_or_none()
+        result = self.session.query(Business).get(business_id)
 
         if result is None:
             raise ObjectNotFoundException(f'business with id {business_id} not found')
