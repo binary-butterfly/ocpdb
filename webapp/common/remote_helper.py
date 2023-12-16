@@ -33,10 +33,11 @@ from webapp.common.json import DefaultJSONEncoder
 
 
 class RemoteServerType(Enum):
+    BNETZA = 'BNETZA'
     CHARGEIT = 'CHARGEIT'
     GIROE = 'GIROE'
-    STADTNAVI = 'STADTNAVI'
     LADENETZ = 'LADENETZ'
+    STADTNAVI = 'STADTNAVI'
 
 
 @dataclass
@@ -85,17 +86,17 @@ class RemoteHelper(RemoteHelperMethodMixin):
         self.logger = logger
 
     def request(
-            self,
-            method: str,
-            remote_server_type: Optional[RemoteServerType] = None,
-            url: Optional[str] = None,
-            path: Optional[str] = None,
-            auth: Optional[Tuple[str, str]] = None,
-            params: Optional[dict] = None,
-            data: Optional[dict] = None,
-            headers: Optional[dict] = None,
-            ignore_404: Optional[bool] = False,
-            raw: Optional[bool] = False,
+        self,
+        method: str,
+        remote_server_type: Optional[RemoteServerType] = None,
+        url: Optional[str] = None,
+        path: Optional[str] = None,
+        auth: Optional[Tuple[str, str]] = None,
+        params: Optional[dict] = None,
+        data: Optional[dict] = None,
+        headers: Optional[dict] = None,
+        ignore_404: Optional[bool] = False,
+        raw: Optional[bool] = False,
     ) -> Union[dict, list, bytes, None]:
         if remote_server_type:
             remote_server = self.config_helper.get('REMOTE_SERVERS')[remote_server_type]

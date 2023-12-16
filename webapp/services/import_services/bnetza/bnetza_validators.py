@@ -37,6 +37,7 @@ class BnetzaConnectorType(Enum):
     IEC_62196_T2 = 'AC Steckdose Typ 2'
     IEC_62196_T2_WIRED = 'AC Kupplung Typ 2'
     IEC_62196_T2_COMBO = 'DC Kupplung Combo'
+    IEC_62196_T3A = 'Typ 3'
     TESLA_S_1 = 'Typ 2 / Tesla'
     TESLA_S_2 = 'Tesla'
 

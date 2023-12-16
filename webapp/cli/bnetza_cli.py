@@ -16,18 +16,25 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+from pathlib import Path
+
 import click
 from flask.cli import AppGroup
 
 from webapp.common.error_handling import catch_exception
 from webapp.dependencies import dependencies
 
-
 bnetza_cli = AppGroup('bnetza')
 
 
-@bnetza_cli.command("import", help='Bundesnetzagentur: loads and saves chargepoints from XLXS file')
-@click.argument('import_file_path', type=click.File('rb'))
+@bnetza_cli.command("import-file", help='Bundesnetzagentur: loads and saves chargepoints from XLXS file')
+@click.argument('import_file_path', type=click.Path(dir_okay=False, path_type=Path))
 @catch_exception
-def cli_load_and_save(import_file_path):
-    dependencies.get_import_services().bnetza_import_service.load_and_save(import_file_path)
+def cli_load_and_save_file(import_file_path: Path):
+    dependencies.get_import_services().bnetza_import_service.load_and_save_from_file(import_file_path)
+
+
+@bnetza_cli.command("import-web", help='Bundesnetzagentur: loads and saves chargepoints from web')
+@catch_exception
+def cli_load_and_save_web():
+    dependencies.get_import_services().bnetza_import_service.load_and_save_from_web()
