@@ -27,3 +27,4 @@ http-client.env.json
 /.ruff_cache
 /.mypy_cache
 /dev/api_tests/public/business/http-client.env.json
+/.betterer_cache
