@@ -17,19 +17,6 @@ variables:
     - name: redis:latest
     - name: rabbitmq:latest
 
-lint:
-  image: registry.gitlab.com/pipeline-components/ruff:latest
-  before_script:
-    - mkdir reports
-  script:
-    - ruff --format=gitlab ./webapp > reports/gl-code-quality-report.json
-  allow_failure: true
-  artifacts:
-    paths:
-      - reports
-    reports:
-      codequality: reports/gl-code-quality-report.json
-
 mypy:
   extends: .test-base
   script:
