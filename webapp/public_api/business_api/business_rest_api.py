@@ -91,7 +91,7 @@ class BusinessIdMethodView(BaseMethodView):
     @cross_origin()
     def get(self, business_id: int):
         business = self.business_handler.get_business_by_id(business_id)
-        return jsonify(business.to_dict())
+        return jsonify(business)
 
 
 class ViewAllMethodView(BaseMethodView):
