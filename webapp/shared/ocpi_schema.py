@@ -379,11 +379,15 @@ location_schema = JsonSchema(
             maxLength=3,
             description="ID of the CPO that 'owns' this Location (following the ISO-15118 standard).",
         ),
-        'id': StringField(
+        'id': IntegerField(
+            minimum=1,
+            description='Unique internal ID which identifies the location',
+        ),
+        'uid': StringField(
             minLength=1,
             maxLength=36,
             description='Uniquely identifies the location within the CPOs platform (and suboperator platforms). This field can never be '
-            'changed, modified or renamed.',
+            'changed, modified or renamed. In original OCPI, this field is called id.',
         ),
         'publish': BooleanField(
             description='Defines if a Location may be published on an website or app etc. When this is set to false, only tokens '
