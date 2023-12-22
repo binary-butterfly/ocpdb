@@ -36,13 +36,13 @@ class LocationHandler(PublicApiBaseHandler):
         return locations.map(lambda location: self._map_location_to_ocpi(location))
 
     def get_location(self, location_id: int) -> dict:
-        location = self.location_repository.fetch_location_by_id(location_id)
+        location = self.location_repository.fetch_location_by_id(location_id, include_children=True)
         return self._map_location_to_ocpi(location)
 
     def _map_location_to_ocpi(self, location: Location):
         location_dict = self.filter_none(
             location.to_dict(
-                ignore=['giroe_id', 'operator_id', 'owner_id', 'suboperator_id', 'created', 'modified', 'id', 'geometry'],
+                ignore=['giroe_id', 'operator_id', 'owner_id', 'suboperator_id', 'created', 'modified', 'geometry'],
                 transform_ocpi=True,
             )
         )

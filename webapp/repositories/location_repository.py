@@ -144,8 +144,7 @@ class LocationRepository(BaseRepository[Location]):
         if commit:
             self.session.commit()
 
-    def fetch_locations(self,
-                        search_query: Optional[BaseSearchQuery] = None) -> PaginatedResult[Location]:
+    def fetch_locations(self, search_query: Optional[BaseSearchQuery] = None) -> PaginatedResult[Location]:
         options = [
             selectinload(Location.images),
             selectinload(Location.evses).selectinload(Evse.connectors),
@@ -157,7 +156,7 @@ class LocationRepository(BaseRepository[Location]):
             selectinload(Location.regular_hours),
             selectinload(Location.exceptional_closings),
             selectinload(Location.exceptional_openings),
-            ]
+        ]
 
         query = self.session.query(Location).options(*options)
         locations = self._search_and_paginate(query, search_query)
