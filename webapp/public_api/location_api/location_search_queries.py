@@ -16,11 +16,13 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+from decimal import Decimal
 from typing import Optional
 
 from validataclass.dataclasses import Default
-from validataclass.validators import AnyOfValidator, IntegerValidator, StringValidator
-from validataclass_search_queries.filters import SearchParamContains, SearchParamEquals
+from validataclass.exceptions import ValidationError
+from validataclass.validators import AnyOfValidator, StringValidator, DecimalValidator, IntegerValidator
+from validataclass_search_queries.filters import SearchParamContains, SearchParamEquals, SearchParamCustom
 from validataclass_search_queries.pagination import OffsetPaginationMixin, PaginationLimitValidator
 from validataclass_search_queries.search_queries import BaseSearchQuery, search_query_dataclass
 from validataclass_search_queries.sorting import SortingMixin
@@ -36,5 +38,13 @@ class LocationSearchQuery(SortingMixin, OffsetPaginationMixin, BaseSearchQuery):
     source: Optional[str] = SearchParamContains(), StringValidator()
     postal_code: Optional[str] = SearchParamEquals(), StringValidator()
 
+    lat: Optional[Decimal] = SearchParamCustom(), DecimalValidator()
+    lon: Optional[Decimal] = SearchParamCustom(), DecimalValidator()
+    radius: Optional[int] = SearchParamCustom(), IntegerValidator(allow_strings=True)
+
     # Pagination
     limit: int = PaginationLimitValidator(optional=False, max_value=1000), Default(100)
+
+    def __post_init__(self):
+        if (self.lat is not None or self.lon is not None or self.radius is not None) and not (self.lat and self.lon and self.radius):
+            raise ValidationError(reason='lat, lon and radius have all to be set if one is set')

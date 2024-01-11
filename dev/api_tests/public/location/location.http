@@ -2,5 +2,9 @@
 GET {{api_host}}/api/public/v1/locations
 
 
+### Get locations by lat, lon and radius
+GET {{api_host}}/api/public/v1/locations?lat=51.58&lon=7.67&radius=1000
+
+
 ### Get location by ID
 GET {{api_host}}/api/public/v1/locations/1
