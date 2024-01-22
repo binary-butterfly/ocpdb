@@ -1,5 +1,5 @@
 gunicorn~=21.2.0
-Flask~=3.0.0
+Flask~=3.0.1
 Flask-Failsafe~=0.2.0
 # Flask-SQLAlchemy 3.1 requires SQLAlchemy 2.0
 Flask-SQLAlchemy~=3.0.5
