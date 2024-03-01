@@ -18,12 +18,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from typing import List, Optional
 
-from validataclass_search_queries.pagination import PaginatedResult
-from validataclass_search_queries.search_queries import BaseSearchQuery
 from mercantile import LngLatBbox
 from sqlalchemy import func
+from sqlalchemy.orm import selectinload, joinedload
+from validataclass_search_queries.pagination import PaginatedResult
+from validataclass_search_queries.search_queries import BaseSearchQuery
+
+from webapp.common.sqlalchemy import Query
 from webapp.models import Location, Evse, Business
-from sqlalchemy.orm import selectinload, with_loader_criteria, joinedload, defer
 from .base_repository import BaseRepository, ObjectNotFoundException
 
 
@@ -86,8 +88,7 @@ class LocationRepository(BaseRepository[Location]):
         if commit:
             self.session.commit()
 
-    def fetch_locations_summary_by_bounds(self, bbox: LngLatBbox, static: Optional[bool] = None,
-                                          filter_duplicates: bool = True):
+    def fetch_locations_summary_by_bounds(self, bbox: LngLatBbox, static: Optional[bool] = None, filter_duplicates: bool = True):
         additional_where = ''
         if static is not None:
             additional_where += f'AND evse.status {"=" if static is True else "!="} "STATIC"'
@@ -131,8 +132,8 @@ class LocationRepository(BaseRepository[Location]):
 
     @staticmethod
     def _get_linestring_bounds(bbox: LngLatBbox):
-        return f'LINESTRING({bbox[1] - (0.5 * (bbox[3] - bbox[1]))} {bbox[0] - (0.5 * (bbox[2] - bbox[0]))}, ' \
-               f'{bbox[3] + (0.5 * (bbox[3] - bbox[1]))} {bbox[2] + (0.5 * (bbox[2] - bbox[0]))})'
+        return f'LINESTRING({bbox[0] - (0.5 * (bbox[2] - bbox[0]))} {bbox[1] - (0.5 * (bbox[3] - bbox[1]))}, ' \
+               f'{bbox[2] + (0.5 * (bbox[2] - bbox[0]))} {bbox[3] + (0.5 * (bbox[3] - bbox[1]))})'
 
     @staticmethod
     def _get_postgre_envelope_bounds(bbox: LngLatBbox):
@@ -161,3 +162,33 @@ class LocationRepository(BaseRepository[Location]):
         query = self.session.query(Location).options(*options)
         locations = self._search_and_paginate(query, search_query)
         return locations
+
+    def _filter_by_search_query(self, query: Query, search_query: Optional[BaseSearchQuery]) -> Query:
+        if search_query is None:
+            return query
+
+        for _param_name, bound_filter in search_query.get_search_filters():
+            if _param_name in ['lat', 'lon', 'radius']:
+                continue
+
+            query = self._apply_bound_search_filter(query, bound_filter)
+
+        if getattr(search_query, 'lat') and getattr(search_query, 'lon') and getattr(search_query, 'radius'):
+            if self.session.connection().dialect.name == 'postgresql':
+                query = query.filter(
+                    func.ST_DistanceSphere(
+                        Location.geometry,
+                        func.ST_GeomFromText(f'POINT({float(search_query.lon)} {float(search_query.lat)})'),
+                    )
+                    < search_query.radius
+                )
+            else:
+                query = query.filter(
+                    func.ST_Distance_Sphere(
+                        Location.geometry,
+                        func.ST_GeomFromText(f'POINT({float(search_query.lon)} {float(search_query.lat)})', 4326),
+                    )
+                    < search_query.radius
+                )
+
+        return query

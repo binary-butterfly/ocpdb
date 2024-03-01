@@ -29,7 +29,7 @@ from flask_openapi.decorator import (
     SchemaReference,
     document,
 )
-from flask_openapi.schema import AnyOfField, IntegerField, StringField
+from flask_openapi.schema import AnyOfField, IntegerField, StringField, NumericField
 from validataclass.validators import DataclassValidator
 
 from webapp.common.rest import BaseMethodView
@@ -67,7 +67,6 @@ from webapp.shared.ocpi_schema import (
     regular_hours_example,
     regular_hours_schema,
 )
-
 from .location_handler import LocationHandler
 from .location_search_queries import LocationSearchQuery
 
@@ -118,8 +117,26 @@ class LocationListMethodView(LocationBaseMethodView):
         query=[
             Parameter('sorted_by', schema=AnyOfField(allowed_values=['name', 'created', 'modified'], required=False, default='name')),
             Parameter('name', schema=StringField(required=False)),
-            Parameter('source', schema=StringField(required=False)),
-            Parameter('postal_code', schema=StringField(required=False)),
+            Parameter('source', schema=StringField(required=False), example='bnetza'),
+            Parameter('postal_code', schema=StringField(required=False), example='59423'),
+            Parameter(
+                'lat',
+                schema=NumericField(required=False),
+                example='51.58',
+                description='Radius, lat and lon always have to be set together.',
+            ),
+            Parameter(
+                'lon',
+                schema=NumericField(required=False),
+                example='7.67',
+                description='Radius, lat and lon always have to be set together.',
+            ),
+            Parameter(
+                'radius',
+                schema=IntegerField(required=False),
+                example='1000',
+                description='In meter. Radius, lat and lon always have to be set together.',
+            ),
             Parameter('limit', schema=IntegerField(maximum=1000, required=False, default=100)),
         ],
         response=[Response(ResponseData(SchemaListReference('Location'), ExampleListReference('Location')))],
