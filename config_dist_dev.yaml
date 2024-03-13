@@ -10,6 +10,14 @@ CELERY_BROKER_URL: 'amqp://rabbitmq'
 
 OBJECT_ID_SECRET: secret
 
+SERVER_AUTH_USERS:
+  # Test user for local development
+  dev:
+    hash: 9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08  # test
+    roles:
+      - bnetza
+
+
 REMOTE_SERVERS:
   LADENETZ:
     url: http://mocked-ochp:5000
@@ -25,4 +33,9 @@ REMOTE_SERVERS:
     url: http://mocked-giroe:5000
     user: ocpdb
     password: test
+  BNETZA:
+    url: http://localhost:5000
+    user: bnetza
+    password: test
+
 

@@ -29,10 +29,10 @@ from webapp.common.json import DefaultJSONEncoder
 
 class LogErrorsCelery(Celery):
     def init_app(self, app: Flask):
-        # register custom encoder, so Enumerations do not make json.dump exceptions
-        # In some tutorials they recommend registering an own ContentType when setting encoders because if you set
-        # content_type = application/json you will overwrite the old encoder. But if we just want another encoder, this is exactly what we
-        # want. We tested this, but if something breaks some time later this might be a place to start.
+        # register custom encoder, so Enumerations do not make json.dump exceptions In some tutorials they recommend
+        # registering an own ContentType when setting encoders because if you set content_type = application/json you
+        # will overwrite the old encoder. But if we just want another encoder, this is exactly what we want. We
+        # tested this, but if something breaks some time later this might be a place to start.
         register(
             'extended_json',
             lambda obj: json.dumps(obj, cls=DefaultJSONEncoder),
@@ -53,7 +53,8 @@ class LogErrorsCelery(Celery):
                 self.logger = logger
 
             def __call__(self, *args, **kwargs):
-                return self.run(*args, **kwargs)
+                with app.app_context() as app_context:
+                    return self.run(*args, **kwargs)
 
             def on_failure(self, exc, _task_id, _args, _kwargs, exc_info):
                 self.logger.critical('app', str(exc).strip(), str(exc_info).strip())

@@ -7,6 +7,8 @@ name: ocpdb
 # Define placeholder for running a container with the same UID/GID as your local user
 x-local-user: &local-user ${DOCKER_LOCAL_USER:?Variable needs to be set in .env (e.g. "DOCKER_LOCAL_USER=1000:1000")}
 
+
+
 # Define common defaults to reuse them in the service definitions (YAML anchors)
 x-flask-defaults: &flask-defaults
   image: ocpdb-flask:local-dev
@@ -134,4 +136,5 @@ services:
 volumes:
   mysql:
   postgres:
+
 

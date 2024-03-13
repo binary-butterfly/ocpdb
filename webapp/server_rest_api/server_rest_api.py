@@ -23,6 +23,7 @@ from flask import request, Response
 from webapp.common.base_blueprint import BaseBlueprint
 from webapp.extensions import logger
 from .base_blueprint import ServerApiBaseBlueprint
+from .bnetza.bnetza_import_rest_api import BnetzaImportBlueprint
 from .giroe.giroe_rest_api import GiroeBlueprint
 
 
@@ -35,20 +36,23 @@ class ServerRestApi(BaseBlueprint):
         super().__init__('server', __name__, url_prefix='/api/server/v1')
         self.blueprints = [
             GiroeBlueprint,
+            BnetzaImportBlueprint,
         ]
         for blueprint in self.blueprints:
             self.register_blueprint(blueprint())
 
         @self.after_request
         def after_request(response: Response):
-            if not request.path.startswith('/api/server'):
+            if not request.path.startswith('/api/server/v1'):
                 return response
-            logger.info(
-                'server-api',
-                "\n".join([
-                    f"{request.full_path}: HTTP {response.status}\n",
-                    *([f'<< {request.data.decode()}'] if request.method in ["POST", "PUT", "PATCH"] and request.data else []),
-                    *([f'>> {response.data.decode()}'] if response.data else []),
-                ]),
-            )
+
+            log_fragments = [f'{request.method.upper()} {request.full_path}: HTTP {response.status}']
+            if request.data:
+                if request.mimetype == 'application/json':
+                    log_fragments.append(f'>> {request.data.decode()}')
+                else:
+                    log_fragments.append(f'>> binary data with {len(request.data)} byte')
+            if response.data and response.data.decode().strip():
+                log_fragments.append(f'<< {response.data.decode().strip()}')
+
             return response

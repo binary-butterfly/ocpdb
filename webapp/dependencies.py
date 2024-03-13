@@ -22,6 +22,7 @@ from typing import Callable, TYPE_CHECKING
 from flask import current_app
 from sqlalchemy.orm import Session
 
+from webapp.common.celery import CeleryHelper
 from webapp.common.config import ConfigHelper
 from webapp.common.contexts import ContextHelper
 from webapp.common.remote_helper import RemoteHelper
@@ -59,6 +60,7 @@ def cache_dependency(fn: Callable):
 
         # Return the dependency from cache
         return self._cached_dependencies[name]
+
     return wrapper
 
 
@@ -100,6 +102,10 @@ class Dependencies:
     @cache_dependency
     def get_context_helper(self) -> ContextHelper:
         return ContextHelper()
+
+    @cache_dependency
+    def get_celery_helper(self) -> CeleryHelper:
+        return CeleryHelper()
 
     @cache_dependency
     def get_server_auth_helper(self) -> 'ServerAuthHelper':

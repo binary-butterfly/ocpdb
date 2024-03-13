@@ -32,6 +32,7 @@ class ServerAuthRole(Enum):
     Roles a server API user can have.
     """
     GIROE = 'giroe'
+    BNETZA = 'bnetza'
 
 
 @dataclass
