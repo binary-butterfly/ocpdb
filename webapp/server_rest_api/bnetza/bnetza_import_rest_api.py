@@ -20,7 +20,6 @@ from uuid import uuid4
 
 from flask import jsonify
 from flask_cors import cross_origin
-from flask_openapi.decorator import ErrorResponse
 
 from webapp.common.rest import BaseMethodView
 from webapp.common.rest.exceptions import InputValidationException
@@ -59,7 +58,7 @@ class BnetzaImportBaseMethodView(BaseMethodView):
     def post(self):
         bnetza_import_handler = self.bnetza_import_handler
         data = self.request_helper.get_request_body()
-        base_path = Path("temp/bnetza_import/")
+        base_path = Path('BNETZA_IMPORT_DIR')
 
         if not base_path.is_dir():
             base_path.mkdir(parents=True, exist_ok=True)

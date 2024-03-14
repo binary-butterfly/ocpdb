@@ -25,6 +25,7 @@ from openpyxl.worksheet.worksheet import Worksheet
 from validataclass.exceptions import ValidationError
 from validataclass.validators import DataclassValidator
 
+from webapp.common import constants
 from webapp.common.error_handling.exceptions import AppException
 from webapp.common.remote_helper import RemoteServerType
 from webapp.services.import_services.base_import_service import BaseImportService
@@ -119,6 +120,6 @@ class BnetzaImportService(BaseImportService):
         return location_dict
 
     def delete_import_files(self):
-        path = Path("temp/bnetza_import")
+        path = Path('BNETZA_IMPORT_DIR')
         for item in path.iterdir():
             item.unlink()
