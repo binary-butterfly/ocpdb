@@ -36,7 +36,7 @@ class BaseConfig:
     LOG_DIR = os.path.abspath(os.path.join(PROJECT_ROOT, os.pardir, 'logs'))
     TESTS_DIR = os.path.abspath(os.path.join(PROJECT_ROOT, os.pardir, 'tests'))
     DYNAMIC_IMAGE_DIR = os.path.abspath(os.path.join(PROJECT_ROOT, os.pardir, 'static', 'images', 'dynamic'))
-    BNETZA_IMPORT_DIR = os.path.abspath(os.path.join(PROJECT_ROOT, os.pardir, 'temp/bnetza_import'))
+    BNETZA_IMPORT_DIR = os.path.abspath(os.path.join(PROJECT_ROOT, os.pardir, 'temp', 'bnetza_import'))
 
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SQLALCHEMY_ECHO = False

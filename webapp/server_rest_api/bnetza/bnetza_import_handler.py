@@ -19,8 +19,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from pathlib import Path
 
 from webapp.server_rest_api.base_handler import ServerApiBaseHandler
+from webapp.services.import_services.bnetza import BnetzaImportService
 from webapp.services.import_services.import_celery import bnetza_import_by_file
-from ...services.import_services.bnetza import BnetzaImportService
 from webapp.dependencies import dependencies
 
 

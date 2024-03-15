@@ -25,6 +25,7 @@ from openpyxl.worksheet.worksheet import Worksheet
 from validataclass.exceptions import ValidationError
 from validataclass.validators import DataclassValidator
 
+from webapp.common.config import ConfigHelper
 from webapp.common.error_handling.exceptions import AppException
 from webapp.common.remote_helper import RemoteServerType
 from webapp.services.import_services.base_import_service import BaseImportService
@@ -35,7 +36,7 @@ from .bnetza_validators import BnetzaRowInput
 class BnetzaImportService(BaseImportService):
     bnetza_mapper: BnetzaMapper = BnetzaMapper()
     row_validator: DataclassValidator[BnetzaRowInput] = DataclassValidator(BnetzaRowInput)
-
+    config_helper: ConfigHelper
     header_line = {
         'Betreiber': 'operator',
         'Straße': 'address',
@@ -71,7 +72,7 @@ class BnetzaImportService(BaseImportService):
         self.load_and_save(worksheet)
 
     def load_and_save_from_file(self, import_file_path: Path):
-        worksheet = load_workbook(filename=Path(import_file_path)).active
+        worksheet = load_workbook(filename=import_file_path).active
         self.load_and_save(worksheet)
         self.delete_import_files()
 
@@ -119,6 +120,6 @@ class BnetzaImportService(BaseImportService):
         return location_dict
 
     def delete_import_files(self):
-        path = Path('BNETZA_IMPORT_DIR')
+        path = Path(self.config_helper.get('BNETZA_IMPORT_DIR'))
         for item in path.iterdir():
             item.unlink()
