@@ -25,7 +25,6 @@ from openpyxl.worksheet.worksheet import Worksheet
 from validataclass.exceptions import ValidationError
 from validataclass.validators import DataclassValidator
 
-from webapp.common.config import ConfigHelper
 from webapp.common.error_handling.exceptions import AppException
 from webapp.common.remote_helper import RemoteServerType
 from webapp.services.import_services.base_import_service import BaseImportService
