@@ -63,7 +63,6 @@ class BnetzaImportBaseMethodView(BaseMethodView):
         bnetza_import_handler = self.bnetza_import_handler
         data = self.request_helper.get_request_body()
         base_path = Path(self.config_helper.get('BNETZA_IMPORT_DIR'))
-        print(base_path)
 
         if not base_path.is_dir():
             base_path.mkdir(parents=True, exist_ok=True)

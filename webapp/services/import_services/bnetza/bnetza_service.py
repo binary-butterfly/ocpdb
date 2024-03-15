@@ -36,7 +36,6 @@ from .bnetza_validators import BnetzaRowInput
 class BnetzaImportService(BaseImportService):
     bnetza_mapper: BnetzaMapper = BnetzaMapper()
     row_validator: DataclassValidator[BnetzaRowInput] = DataclassValidator(BnetzaRowInput)
-    config_helper: ConfigHelper
     header_line = {
         'Betreiber': 'operator',
         'Straße': 'address',
