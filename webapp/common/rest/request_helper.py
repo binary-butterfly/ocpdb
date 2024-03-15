@@ -66,3 +66,6 @@ class RequestHelper:
 
     def get_client_ip(self):
         return self.request.headers.get('X-Forwarded-For', None)
+
+    def get_request_body(self) -> bytes:
+        return self.request.get_data()
