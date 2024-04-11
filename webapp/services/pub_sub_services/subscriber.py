@@ -13,13 +13,13 @@ from webapp.common.config import ConfigHelper
 from webapp.common.events import EventHelper
 from webapp.common.logger import Logger
 from webapp.models.evse import EvseStatus
-from webapp.repositories import EvseRepository, ObjectNotFoundException
-from webapp.services.pub_sub_services.subscribe_handler import PubSubTransactionHandler, PubSubBaseHandler
+from webapp.repositories import EvseRepository, ObjectNotFoundException, evse_repository
+from webapp.services.pub_sub_services.subscribe_handler.pubsub_base_handler import PubSubBaseHandler
+from webapp.services.pub_sub_services.subscribe_handler.pubsub_evse_handler import PubSubEvseHandler
 
 
 class PubSubSubscriber(PubSubSubscriberParent):
     evse_repository: EvseRepository
-    session_repository: SessionRepository
     event_helper: EventHelper
     logger: Logger
     handler: Dict[str, PubSubBaseHandler]
@@ -27,19 +27,17 @@ class PubSubSubscriber(PubSubSubscriberParent):
     pattern = '*.*.STATUS'
 
     def __init__(
-        self,
-        logger: Logger,
-        event_helper: EventHelper,
-        config_helper: ConfigHelper,
-        session_repository: SessionRepository,
+            self,
+            logger: Logger,
+            event_helper: EventHelper,
+            config_helper: ConfigHelper,
     ):
         self.handler = {
-
-            'TRANSACTION': PubSubTransactionHandler(
+            'CONNECTOR': PubSubEvseHandler(
                 event_helper=event_helper,
                 logger=logger,
                 config_helper=config_helper,
-                session_repository=session_repository,
+                evse_repository=evse_repository,
             ),
         }
 
@@ -66,7 +64,7 @@ class PubSubSubscriber(PubSubSubscriberParent):
             return
         self.logger.info(
             'redis-pub-sub',
-            f'evse {object_uid} got status update from {evse.status.name} to {value}',)
+            f'evse {object_uid} got status update from {evse.status.name} to {value}', )
         if evse_status == evse.status:
             return
         evse.status = evse_status
