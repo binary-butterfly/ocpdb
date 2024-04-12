@@ -6,7 +6,7 @@ All rights reserved.
 import click as click
 from flask.cli import AppGroup, with_appcontext
 from webapp.models.connector import ConnectorStatus
-from webapp.services.pub_sub_services.subscrption_service import PubSubSubscriber
+from webapp.services.pub_sub_services.subscrption_service import PubSubService
 from webapp.dependencies import dependencies
 
 cli_connector = AppGroup('connector')
@@ -23,8 +23,9 @@ def set_connector_status(connector_uid: str, connector_status: str):
 
 @cli_connector.command('subscribe', help='set connector status')
 def subscribe_connectors():
-    pub_sub_connector_service = PubSubSubscriber(
-        dependencies.get_event_helper(),
+    pub_sub_connector_service = PubSubService(
+        dependencies.get_evse_repository(),
+        dependencies.get_pubsub_client(),
         **dependencies.get_base_service_dependencies(),
     )
     pub_sub_connector_service.register()
