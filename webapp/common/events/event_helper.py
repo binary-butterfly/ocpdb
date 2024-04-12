@@ -17,14 +17,12 @@ from .event_receiver import EventReceiver
 
 
 class EventHelper:
-    celery_helper: CeleryHelper
     logger: Logger
     config_helper: ConfigHelper
     # event_receivers is a list with service classes. The service entrypoint has to be a method called run.
     event_receivers: Dict[EventType, List[EventReceiver]]
 
-    def __init__(self, celery_helper: CeleryHelper, config_helper: ConfigHelper, context_helper: ContextHelper, logger: Logger):
-        self.celery_helper = celery_helper
+    def __init__(self,  config_helper: ConfigHelper, context_helper: ContextHelper, logger: Logger):
         self.context_helper = context_helper
         self.logger = logger
         self.config_helper = config_helper

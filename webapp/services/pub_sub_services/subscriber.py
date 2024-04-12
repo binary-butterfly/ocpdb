@@ -31,6 +31,7 @@ class PubSubSubscriber(PubSubSubscriberParent):
             logger: Logger,
             event_helper: EventHelper,
             config_helper: ConfigHelper,
+
     ):
         self.handler = {
             'CONNECTOR': PubSubEvseHandler(

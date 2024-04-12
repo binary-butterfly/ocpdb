@@ -195,6 +195,18 @@ class Dependencies:
             redis_url=self.get_config_helper().get('REDIS_PUBLISH_URL'),
         )
 
+    def get_redis_subscription_client(self) -> PubSubClient:
+        return PubSubClient(redis_url=self.get_config_helper().get('REDIS_PUBLISH_URL'))
+
+    @cache_dependency
+    def get_event_helper(self) -> 'EventHelper':
+        from webapp.common.events import EventHelper
+        return EventHelper(
+            config_helper=self.get_config_helper(),
+            context_helper=self.get_context_helper(),
+            logger=self.get_logger(),
+        )
+
 
 # Instantiate one global dependencies object so we don't need to clutter the environment with lots of globals
 dependencies = Dependencies()
