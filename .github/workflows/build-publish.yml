@@ -1,9 +1,9 @@
 name: build & publish Docker image
 
 on:
-  push:
-    branches:
-      - main
+  release:
+    types:
+      - published
 
 jobs:
   build-publish:
@@ -27,9 +27,8 @@ jobs:
       with:
         push: true
         tags: |
-          ghcr.io/${{ github.repository }}:latest
+          ghcr.io/${{ steps.lower-repo.outputs.lowercase }}:latest,ghcr.io/${{ steps.lower-repo.outputs.lowercase }}:${{ github.ref_name }}
         platforms: linux/amd64,linux/arm64
-        # https://docs.docker.com/build/ci/github-actions/cache/#cache-backend-api
         cache-from: type=gha
         cache-to: type=gha,mode=max
         file: Dockerfile.prod

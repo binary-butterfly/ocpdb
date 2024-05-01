@@ -15,7 +15,6 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-
 from hashlib import sha256
 from io import BytesIO
 from pathlib import Path
@@ -36,7 +35,6 @@ from .bnetza_validators import BnetzaRowInput
 class BnetzaImportService(BaseImportService):
     bnetza_mapper: BnetzaMapper = BnetzaMapper()
     row_validator: DataclassValidator[BnetzaRowInput] = DataclassValidator(BnetzaRowInput)
-
     header_line = {
         'Betreiber': 'operator',
         'Straße': 'address',
@@ -74,6 +72,7 @@ class BnetzaImportService(BaseImportService):
     def load_and_save_from_file(self, import_file_path: Path):
         worksheet = load_workbook(filename=import_file_path).active
         self.load_and_save(worksheet)
+        self.delete_import_files()
 
     def load_and_save(self, worksheet: Worksheet):
         self.check_mapping(worksheet[11])
@@ -94,7 +93,8 @@ class BnetzaImportService(BaseImportService):
         location_dict = {}
         # there are 10 rows of explanation over the header, plus 1 line header -> we start at row 12
         for table_row in worksheet.iter_rows(min_row=12):
-            row_dict = {list(self.header_line.values())[i]: table_row[i].value for i in range(0, len(self.header_line.keys()))}
+            row_dict = {list(self.header_line.values())[i]: table_row[i].value for i in
+                        range(0, len(self.header_line.keys()))}
 
             # some postcodes are integer (why?! :( )
             row_dict['postcode'] = str(row_dict['postcode'])
@@ -116,3 +116,8 @@ class BnetzaImportService(BaseImportService):
             except ValidationError as exception:
                 print('%s: %s' % (row_dict, exception.to_dict()))
         return location_dict
+
+    def delete_import_files(self):
+        path = Path(self.config_helper.get('BNETZA_IMPORT_DIR'))
+        for item in path.iterdir():
+            item.unlink()
