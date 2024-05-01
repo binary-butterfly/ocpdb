@@ -1,5 +1,5 @@
-gunicorn~=21.2.0
-Flask~=3.0.0
+gunicorn~=22.0.0
+Flask~=3.0.3
 Flask-Failsafe~=0.2.0
 # Flask-SQLAlchemy 3.1 requires SQLAlchemy 2.0
 Flask-SQLAlchemy~=3.0.5
@@ -11,8 +11,8 @@ requests~=2.31.0
 lxml~=4.9.3
 mercantile~=1.2.1
 psycopg2-binary~=2.9.9
-python-dateutil~=2.8.2
-python-dotenv~=1.0.0
+python-dateutil~=2.9.0.post0
+python-dotenv~=1.0.1
 click~=8.1.7
 pymysql~=1.1.0
 pyyaml~=6.0.1
@@ -22,10 +22,10 @@ openpyxl~=3.1.2
 protobuf~=3.20.2
 pycountry~=23.12.11
 ngram~=4.0.3
-geopy~=2.4.0
-celery~=5.3.6
-kombu~=5.3.4
-pytz~=2023.3.post1
+geopy~=2.4.1
+celery~=5.4.0
+kombu~=5.3.7
+pytz~=2024.1
 https://github.com/mapbox/vector-tile-base/archive/refs/heads/master.tar.gz
 
 # binary butterfly shared libraries (https://git.sectio-aurea.org/public_libraries)
