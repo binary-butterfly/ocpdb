@@ -59,6 +59,10 @@ class EvseRepository(BaseRepository[Evse]):
 
         return items[0]
 
+    def fetch_only_by_uid(self, uid: str) -> Evse:
+        evse = self.session.query(Evse).filter(Evse.uid == uid).all()
+        return evse[0]
+
     def fetch_evse_by_location_id(self, location_id: int) -> List[Evse]:
         return self.session.query(Evse).filter(Evse.location_id == location_id)
 
