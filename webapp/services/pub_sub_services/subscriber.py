@@ -13,7 +13,8 @@ from webapp.common.config import ConfigHelper
 from webapp.common.events import EventHelper
 from webapp.common.logger import Logger
 from webapp.models.evse import EvseStatus
-from webapp.repositories import EvseRepository, ObjectNotFoundException, evse_repository
+from webapp.repositories import EvseRepository, ObjectNotFoundException
+from webapp.dependencies import dependencies
 from webapp.services.pub_sub_services.subscribe_handler.pubsub_base_handler import PubSubBaseHandler
 from webapp.services.pub_sub_services.subscribe_handler.pubsub_evse_handler import PubSubEvseHandler
 
@@ -44,6 +45,8 @@ class PubSubSubscriber(PubSubSubscriberParent):
         }
 
     def handle_message(self, message: PubSubMessage) -> None:
+        self.evse_repository = dependencies.get_evse_repository()
+        self.logger = dependencies.get_logger()
         channel_fragments = message['channel'].decode().split('.')
 
         # ignore invalid messages
@@ -54,7 +57,8 @@ class PubSubSubscriber(PubSubSubscriberParent):
         object_uid = channel_fragments[1]
         value = message['data'].decode().upper()
         try:
-            evse = self.evse_repository.fetch_evse_uids()
+
+            evse = self.evse_repository.fetch_only_by_uid(uid=object_uid)
         except ObjectNotFoundException:
             self.logger.info('redis-pub-sub', f'unknown evse {object_uid} got status update to {value}')
             return
@@ -66,8 +70,8 @@ class PubSubSubscriber(PubSubSubscriberParent):
             return
         self.logger.info(
             'redis-pub-sub',
-            f'evse {object_uid} got status update from {evse.status.name} to {value}', )
-        if evse_status == evse.status:
+            f'evse {object_uid} got status update from {object_uid} to {value}', )
+        if value == evse.status:
             return
         evse.status = evse_status
         self.evse_repository.save_evse(evse)
@@ -76,4 +80,4 @@ class PubSubSubscriber(PubSubSubscriberParent):
         if message_type not in self.handler:
             return
 
-        self.handler[message_type].handle(object_uid, value)
+        self.handler[message_type].handle(evse.id, value)
