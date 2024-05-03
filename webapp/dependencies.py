@@ -18,7 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import functools
 from typing import Callable, TYPE_CHECKING
-from butterfly_pubsub.asyncio import PubSubClient
+from butterfly_pubsub.sync import PubSubClient
 
 from flask import current_app
 from sqlalchemy.orm import Session
@@ -192,11 +192,11 @@ class Dependencies:
     @cache_dependency
     def get_pubsub_client(self) -> PubSubClient:
         return PubSubClient(
-            redis_url=self.get_config_helper().get('REDIS_PUBLISH_URL'),
+            redis_url=self.get_config_helper().get('REDIS_PUB_SUB_URL'),
         )
 
     def get_redis_subscription_client(self) -> PubSubClient:
-        return PubSubClient(redis_url=self.get_config_helper().get('REDIS_PUBLISH_URL'))
+        return PubSubClient(redis_url=self.get_config_helper().get('REDIS_PUB_SUB_URL'))
 
     @cache_dependency
     def get_event_helper(self) -> 'EventHelper':
