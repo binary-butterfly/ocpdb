@@ -18,14 +18,13 @@ cli_connector = AppGroup('connector')
 def set_connector_status(connector_uid: str, connector_status: str):
     pubsub_client = dependencies.get_pubsub_client()
     pubsub_client.pub(f'CONNECTOR.{connector_uid.upper()}.STATUS', connector_status)
-    print('done')
 
 
 @cli_connector.command('subscribe', help='set connector status')
 def subscribe_connectors():
     pub_sub_connector_service = PubSubService(
-        dependencies.get_evse_repository(),
-        dependencies.get_pubsub_client(),
+        evse_repository=dependencies.get_evse_repository(),
+        pubsub_client=dependencies.get_pubsub_client(),
         **dependencies.get_base_service_dependencies(),
     )
     pub_sub_connector_service.register()
