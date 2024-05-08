@@ -26,19 +26,19 @@ class EvseMapper:
     @staticmethod
     def map_charge_connector_status_to_evse_status(charge_connector_status: ChargeConnectorStatus) -> EvseStatus:
         return {
-            ChargeConnectorStatus.AVAILABLE: EvseStatus.AVAILABLE,
-            ChargeConnectorStatus.BLOCKED: EvseStatus.BLOCKED,
-            ChargeConnectorStatus.CHARGING: EvseStatus.CHARGING,
-            ChargeConnectorStatus.INOPERATIVE: EvseStatus.INOPERATIVE,
-            ChargeConnectorStatus.OUTOFORDER: EvseStatus.OUTOFORDER,
-            ChargeConnectorStatus.PLANNED: EvseStatus.PLANNED,
-            ChargeConnectorStatus.REMOVED: EvseStatus.REMOVED,
-            ChargeConnectorStatus.RESERVED: EvseStatus.RESERVED,
-            ChargeConnectorStatus.UNKNOWN: EvseStatus.UNKNOWN,
-            ChargeConnectorStatus.PREPARING: EvseStatus.CHARGING,
-            ChargeConnectorStatus.SUSPENDED_EVSE: EvseStatus.CHARGING,
-            ChargeConnectorStatus.SUSPENDED_EV: EvseStatus.CHARGING,
-            ChargeConnectorStatus.FINISHING: EvseStatus.CHARGING,
+            ChargeConnectorStatus.AVAILABLE: "AVAILABLE",
+            ChargeConnectorStatus.BLOCKED: "BLOCKED",
+            ChargeConnectorStatus.CHARGING: "CHARGING",
+            ChargeConnectorStatus.INOPERATIVE: "INOPERATIVE",
+            ChargeConnectorStatus.OUTOFORDER: "OUTOFORDER",
+            ChargeConnectorStatus.PLANNED: "PLANNED",
+            ChargeConnectorStatus.REMOVED: "REMOVED",
+            ChargeConnectorStatus.RESERVED: "RESERVED",
+            ChargeConnectorStatus.UNKNOWN: "UNKNOWN",
+            ChargeConnectorStatus.PREPARING: "CHARGING",
+            ChargeConnectorStatus.SUSPENDED_EVSE: "CHARGING",
+            ChargeConnectorStatus.SUSPENDED_EV: "CHARGING",
+            ChargeConnectorStatus.FINISHING: "CHARGING",
         }.get(charge_connector_status)
 
     @staticmethod
