@@ -78,9 +78,7 @@ class PubSubSubscriber(PubSubSubscriberParent):
             return
 
         try:
-            print(status)
             evse_status: EvseStatus = EvseStatus[status]
-            print(evse_status)
         except KeyError:
             self.logger.info('redis-pub-sub', f' evse {object_uid} unknown status {value}')
             return
