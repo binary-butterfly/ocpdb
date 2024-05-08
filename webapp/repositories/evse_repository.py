@@ -45,10 +45,10 @@ class EvseRepository(BaseRepository[Evse]):
         return result
 
     def fetch_by_uid(self, source: str, uid: str) -> Evse:
-        items = self.session.query(Evse)\
-            .filter(Evse.uid == uid)\
-            .join(Location, Location.id == Evse.location_id)\
-            .filter(Location.source == source)\
+        items = self.session.query(Evse) \
+            .filter(Evse.uid == uid) \
+            .join(Location, Location.id == Evse.location_id) \
+            .filter(Location.source == source) \
             .all()
 
         if len(items) == 0:
@@ -60,8 +60,24 @@ class EvseRepository(BaseRepository[Evse]):
         return items[0]
 
     def fetch_only_by_uid(self, uid: str) -> Evse:
-        evse = self.session.query(Evse).filter(Evse.uid == uid).all()
-        return evse[0]
+        evses = self.session.query(Evse).filter(Evse.uid == uid).all()
+
+        if len(evses) == 0:
+            raise ObjectNotFoundException(message=f'evse with uid {uid} not found')
+
+        if len(evses) > 1:
+            for i in range(0, len(evses)):
+                output = []
+                if evses[i].status != 'EvseStatus.REMOVED':
+                    output.append(evses[i])
+
+            if len(output) > 1:
+                raise InconsistentDataException(f'more than one evse with uid {uid}')
+
+            if len(output) == 0:
+                raise ObjectNotFoundException(message=f'evse with uid {uid} not found')
+
+        return evses[0]
 
     def fetch_evse_by_location_id(self, location_id: int) -> List[Evse]:
         return self.session.query(Evse).filter(Evse.location_id == location_id)
@@ -82,11 +98,11 @@ class EvseRepository(BaseRepository[Evse]):
             self.session.commit()
 
     def delete_evse_by_ids(self, evse_ids: List[int]):
-        self.session.query(Evse)\
-            .filter(Evse.id.in_(evse_ids))\
+        self.session.query(Evse) \
+            .filter(Evse.id.in_(evse_ids)) \
             .delete(synchronize_session=False)
 
     def delete_evse_by_id(self, evse_id: int):
-        self.session.query(Evse)\
-            .filter(id=evse_id)\
+        self.session.query(Evse) \
+            .filter(id=evse_id) \
             .delete(synchronize_session=False)
