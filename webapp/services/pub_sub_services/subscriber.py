@@ -22,7 +22,6 @@ from butterfly_pubsub import PubSubMessage
 from butterfly_pubsub.sync import PubSubSubscriber as PubSubSubscriberParent
 
 from webapp.common.config import ConfigHelper
-from webapp.common.events import EventHelper
 from webapp.common.logger import Logger
 from webapp.models.evse import EvseStatus
 from webapp.repositories import EvseRepository, ObjectNotFoundException
@@ -34,7 +33,6 @@ from webapp.shared.evse.evse_mapper import EvseMapper
 
 class PubSubSubscriber(PubSubSubscriberParent):
     evse_repository: EvseRepository
-    event_helper: EventHelper
     logger: Logger
     handler: Dict[str, PubSubBaseHandler]
     evse_mapper: EvseMapper = EvseMapper()
@@ -43,14 +41,12 @@ class PubSubSubscriber(PubSubSubscriberParent):
     def __init__(
             self,
             logger: Logger,
-            event_helper: EventHelper,
             config_helper: ConfigHelper,
             evse_repository: EvseRepository,
 
     ):
         self.handler = {
             'CONNECTOR': PubSubEvseHandler(
-                event_helper=event_helper,
                 logger=logger,
                 config_helper=config_helper,
                 evse_repository=evse_repository,

@@ -16,7 +16,6 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from webapp.common.events import EventHelper
 from webapp.models.evse import EvseStatus
 from webapp.repositories import ObjectNotFoundException, EvseRepository
 from webapp.services.pub_sub_services.subscribe_handler.pubsub_base_handler import PubSubBaseHandler
@@ -25,7 +24,7 @@ from webapp.services.pub_sub_services.subscribe_handler.pubsub_base_handler impo
 class PubSubEvseHandler(PubSubBaseHandler):
     evse_repository: EvseRepository
 
-    def __init__(self, *, evse_repository: EvseRepository, event_helper: EventHelper, **kwargs):
+    def __init__(self, *, evse_repository: EvseRepository, **kwargs):
         super().__init__(**kwargs)
         self.evse_repository = evse_repository
 

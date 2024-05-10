@@ -22,9 +22,6 @@ from webapp.repositories import EvseRepository
 from webapp.services.base_service import BaseService
 from .subscriber import PubSubSubscriber
 from webapp.dependencies import dependencies
-from ...common.config import ConfigHelper
-from ...common.events import EventHelper, event_helper
-from ...common.logger import Logger
 
 
 class PubSubService(BaseService):
@@ -37,12 +34,10 @@ class PubSubService(BaseService):
     ):
         super().__init__(**kwargs)
 
-        self.event_helper = dependencies.get_event_helper()
         self.pubsub_client = pubsub_client
         self.subscriber = PubSubSubscriber(
             logger=self.logger,
             config_helper=self.config_helper,
-            event_helper=self.event_helper,
             evse_repository=evse_repository,
         )
 
