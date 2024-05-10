@@ -61,21 +61,24 @@ class EvseRepository(BaseRepository[Evse]):
 
     def fetch_only_by_uid(self, uid: str) -> Evse:
         evses = self.session.query(Evse).filter(Evse.uid == uid).all()
+        output = []
 
         if len(evses) == 0:
             raise ObjectNotFoundException(message=f'evse with uid {uid} not found')
 
         if len(evses) > 1:
-            for i in range(0, len(evses)):
-                output = []
-                if evses[i].status != 'EvseStatus.REMOVED':
-                    output.append(evses[i])
+            for i in evses:
+                if str(i.status) != 'EvseStatus.REMOVED':
+                    output.append(i)
 
             if len(output) > 1:
-                raise InconsistentDataException(f'more than one evse with uid {uid}')
+                raise InconsistentDataException(f'more than one evse with uid {uid} ')
 
             if len(output) == 0:
-                raise ObjectNotFoundException(message=f'evse with uid {uid} not found')
+                if len(evses) > 0:
+                    raise InconsistentDataException(f'evse with uid {uid} removed')
+
+            return output[0]
 
         return evses[0]
 
