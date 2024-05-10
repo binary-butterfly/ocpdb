@@ -21,7 +21,6 @@ from butterfly_pubsub.asyncio import PubSubClient
 from webapp.repositories import EvseRepository
 from webapp.services.base_service import BaseService
 from .subscriber import PubSubSubscriber
-from webapp.dependencies import dependencies
 
 
 class PubSubService(BaseService):
