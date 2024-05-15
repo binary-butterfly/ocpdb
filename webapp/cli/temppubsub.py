@@ -36,7 +36,6 @@ def set_connector_status(connector_uid: str, connector_status: str):
 @cli_connector.command('subscribe', help='set connector status')
 def subscribe_connectors():
     pub_sub_connector_service = PubSubService(
-        evse_repository=dependencies.get_evse_repository(),
         pubsub_client=dependencies.get_pubsub_client(),
         **dependencies.get_base_service_dependencies(),
     )

@@ -16,9 +16,8 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from butterfly_pubsub.asyncio import PubSubClient
+from butterfly_pubsub.sync import PubSubClient
 
-from webapp.repositories import EvseRepository
 from webapp.services.base_service import BaseService
 from .subscriber import PubSubSubscriber
 
@@ -27,18 +26,13 @@ class PubSubService(BaseService):
 
     def __init__(
         self,
-        evse_repository: EvseRepository,
         pubsub_client: PubSubClient,
         **kwargs,
     ):
         super().__init__(**kwargs)
 
         self.pubsub_client = pubsub_client
-        self.subscriber = PubSubSubscriber(
-            logger=self.logger,
-            config_helper=self.config_helper,
-            evse_repository=evse_repository,
-        )
+        self.subscriber = PubSubSubscriber()
 
     def register(self):
         self.pubsub_client.register(self.subscriber)

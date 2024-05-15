@@ -15,46 +15,30 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-
-from typing import Dict
+from abc import ABC
 
 from butterfly_pubsub import PubSubMessage
 from butterfly_pubsub.sync import PubSubSubscriber as PubSubSubscriberParent
 
-from webapp.common.config import ConfigHelper
 from webapp.common.logger import Logger
 from webapp.models.evse import EvseStatus
-from webapp.repositories import EvseRepository, ObjectNotFoundException
+from webapp.repositories import ObjectNotFoundException
 from webapp.dependencies import dependencies
-from webapp.services.pub_sub_services.subscribe_handler.pubsub_base_handler import PubSubBaseHandler
-from webapp.services.pub_sub_services.subscribe_handler.pubsub_evse_handler import PubSubEvseHandler
 from webapp.shared.evse.evse_mapper import EvseMapper
 
 
-class PubSubSubscriber(PubSubSubscriberParent):
-    evse_repository: EvseRepository
+class PubSubSubscriber(PubSubSubscriberParent, ABC):
     logger: Logger
-    handler: Dict[str, PubSubBaseHandler]
     evse_mapper: EvseMapper = EvseMapper()
     pattern = 'CONNECTOR.*.STATUS'
 
     def __init__(
             self,
-            logger: Logger,
-            config_helper: ConfigHelper,
-            evse_repository: EvseRepository,
 
     ):
-        self.handler = {
-            'CONNECTOR': PubSubEvseHandler(
-                logger=logger,
-                config_helper=config_helper,
-                evse_repository=evse_repository,
-            ),
-        }
+        self.evse_repository = dependencies.get_evse_repository()
 
     def handle_message(self, message: PubSubMessage) -> None:
-        self.evse_repository = dependencies.get_evse_repository()
         self.logger = dependencies.get_logger()
         channel_fragments = message['channel'].decode().split('.')
 
@@ -62,7 +46,6 @@ class PubSubSubscriber(PubSubSubscriberParent):
         if len(channel_fragments) != 3:
             return
 
-        message_type = channel_fragments[0]
         object_uid = channel_fragments[1]
         status = self.evse_mapper.map_charge_connector_status_to_evse_status(message['data'].decode().upper())
         try:
@@ -86,8 +69,3 @@ class PubSubSubscriber(PubSubSubscriberParent):
 
         self.evse_repository.save_evse(evse)
 
-        # Discard unsupported message types
-        if message_type not in self.handler:
-            return
-
-        self.handler[message_type].handle(evse.id, status)
