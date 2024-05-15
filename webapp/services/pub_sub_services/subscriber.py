@@ -36,7 +36,7 @@ class PubSubSubscriber(PubSubSubscriberParent):
     logger: Logger
     handler: Dict[str, PubSubBaseHandler]
     evse_mapper: EvseMapper = EvseMapper()
-    pattern = '*.*.STATUS'
+    pattern = 'CONNECTOR.*.STATUS'
 
     def __init__(
             self,
@@ -64,23 +64,22 @@ class PubSubSubscriber(PubSubSubscriberParent):
 
         message_type = channel_fragments[0]
         object_uid = channel_fragments[1]
-        value = message['data'].decode().upper()
-        status = str(self.evse_mapper.map_charge_connector_status_to_evse_status(value))
+        status = self.evse_mapper.map_charge_connector_status_to_evse_status(message['data'].decode().upper())
         try:
 
             evse = self.evse_repository.fetch_only_by_uid(uid=object_uid)
         except ObjectNotFoundException:
-            self.logger.info('redis-pub-sub', f'unknown evse {object_uid} got status update to {value}')
+            self.logger.info('redis-pub-sub', f'unknown evse {object_uid} got status update to {status}')
             return
 
         try:
             evse_status: EvseStatus = EvseStatus[status]
         except KeyError:
-            self.logger.info('redis-pub-sub', f' evse {object_uid} unknown status {value}')
+            self.logger.info('redis-pub-sub', f' evse {object_uid} unknown status {status}')
             return
         self.logger.info(
             'redis-pub-sub',
-            f'evse {object_uid} got status update from {object_uid} to {value}', )
+            f'evse {object_uid} got status update from {object_uid} to {status}', )
         if status == evse.status:
             return
         evse.status = evse_status
