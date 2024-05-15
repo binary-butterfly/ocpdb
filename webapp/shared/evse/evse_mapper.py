@@ -24,7 +24,7 @@ from webapp.models.evse import EvseStatus
 class EvseMapper:
 
     @staticmethod
-    def map_charge_connector_status_to_evse_status(charge_connector_status: ChargeConnectorStatus) -> EvseStatus:
+    def map_charge_connector_status_to_evse_status(charge_connector_status: ChargeConnectorStatus) -> str:
         return {
             ChargeConnectorStatus.AVAILABLE: "AVAILABLE",
             ChargeConnectorStatus.BLOCKED: "BLOCKED",
@@ -40,21 +40,3 @@ class EvseMapper:
             ChargeConnectorStatus.SUSPENDED_EV: "CHARGING",
             ChargeConnectorStatus.FINISHING: "CHARGING",
         }.get(charge_connector_status)
-
-    @staticmethod
-    def map_evse_status_to_charge_connector_status(evse_status: EvseStatus) -> ChargeConnectorStatus:
-        return {
-            EvseStatus.AVAILABLE: ChargeConnectorStatus.AVAILABLE,
-            EvseStatus.BLOCKED: ChargeConnectorStatus.BLOCKED,
-            EvseStatus.CHARGING: ChargeConnectorStatus.CHARGING,
-            EvseStatus.INOPERATIVE: ChargeConnectorStatus.INOPERATIVE,
-            EvseStatus.OUTOFORDER: ChargeConnectorStatus.OUTOFORDER,
-            EvseStatus.PLANNED: ChargeConnectorStatus.PLANNED,
-            EvseStatus.REMOVED: ChargeConnectorStatus.REMOVED,
-            EvseStatus.RESERVED: ChargeConnectorStatus.RESERVED,
-            EvseStatus.UNKNOWN: ChargeConnectorStatus.UNKNOWN,
-            EvseStatus.PREPARING: ChargeConnectorStatus.PREPARING,
-            EvseStatus.SUSPENDED_EVSE: ChargeConnectorStatus.SUSPENDED_EVSE,
-            EvseStatus.SUSPENDED_EV: ChargeConnectorStatus.SUSPENDED_EV,
-            EvseStatus.FINISHING: ChargeConnectorStatus.FINISHING,
-        }.get(evse_status)
