@@ -34,7 +34,6 @@ class PubSubSubscriber(PubSubSubscriberParent, ABC):
 
     def __init__(
             self,
-
     ):
         self.evse_repository = dependencies.get_evse_repository()
 
@@ -56,7 +55,7 @@ class PubSubSubscriber(PubSubSubscriberParent, ABC):
             return
 
         try:
-            evse_status: EvseStatus = EvseStatus[status]
+            evse_status: EvseStatus = status
         except KeyError:
             self.logger.info('redis-pub-sub', f' evse {object_uid} unknown status {status}')
             return
