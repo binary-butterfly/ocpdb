@@ -89,19 +89,6 @@ class ConnectorStatus(Enum):
     FINISHING = 'FINISHING'
     PREPARING = 'PREPARING'
 
-    # TODO: remove this method as soon as all terminals are up2date, see ticket #23
-    def to_legacy_string(self) -> str:
-        return {
-            self.BLOCKED: 'UNAVAILABLE',
-            self.INOPERATIVE: 'UNAVAILABLE',
-            self.OUTOFORDER: 'FAULTED',
-            self.PLANNED: 'UNAVAILABLE',
-            self.REMOVED: 'FAULTED',
-            self.SUSPENDED_EVSE: 'FINISHING',
-            self.SUSPENDED_EV: 'FINISHING',
-            self.UNKNOWN: 'UNAVAILABLE',
-        }.get(self, self.value)
-
 
 class PowerType(Enum):
     AC_1_PHASE = 'AC_1_PHASE'
