@@ -24,11 +24,7 @@ from .subscriber import PubSubSubscriber
 
 class PubSubService(BaseService):
 
-    def __init__(
-        self,
-        pubsub_client: PubSubClient,
-        **kwargs,
-    ):
+    def __init__(self, pubsub_client: PubSubClient, **kwargs, ):
         super().__init__(**kwargs)
 
         self.pubsub_client = pubsub_client

@@ -32,9 +32,7 @@ class PubSubSubscriber(PubSubSubscriberParent, ABC):
     evse_mapper: EvseMapper = EvseMapper()
     pattern = 'CONNECTOR.*.STATUS'
 
-    def __init__(
-            self,
-    ):
+    def __init__(self):
         self.evse_repository = dependencies.get_evse_repository()
 
     def handle_message(self, message: PubSubMessage) -> None:
