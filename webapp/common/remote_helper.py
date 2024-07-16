@@ -114,7 +114,7 @@ class RemoteHelper(RemoteHelperMethodMixin):
                 auth=auth,
                 data=(data if raw else json.dumps(data, cls=DefaultJSONEncoder)) if data else None,
                 headers={'content-type': 'application/json', **({} if headers is None else headers)},
-                timeout=30,
+                timeout=600,
             )
 
             self.logger.info('server-remote', '%s %s: HTTP %s%s\n<< %s' % (
