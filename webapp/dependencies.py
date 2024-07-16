@@ -17,8 +17,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 import functools
-from typing import Callable, TYPE_CHECKING
+from typing import TYPE_CHECKING, Callable
 
+from butterfly_pubsub.sync import PubSubClient
 from flask import current_app
 from sqlalchemy.orm import Session
 
@@ -28,11 +29,12 @@ from webapp.common.contexts import ContextHelper
 from webapp.common.remote_helper import RemoteHelper
 from webapp.common.rest import RequestHelper
 from webapp.repositories import (
-    LocationRepository,
-    EvseRepository,
-    ConnectorRepository,
     BusinessRepository,
-    ImageRepository, OptionRepository,
+    ConnectorRepository,
+    EvseRepository,
+    ImageRepository,
+    LocationRepository,
+    OptionRepository,
 )
 from webapp.services.import_services import ImportServices
 from webapp.services.matching_service import MatchingService
@@ -175,7 +177,7 @@ class Dependencies:
             remote_helper=self.get_remote_helper(),
             location_repository=self.get_location_repository(),
             evse_repository=self.get_evse_repository(),
-            connector_repository=self.get_evse_repository(),
+            connector_repository=self.get_connector_repository(),
             business_repository=self.get_business_repository(),
             image_repository=self.get_image_repository(),
             option_repository=self.get_option_repository(),
@@ -187,6 +189,15 @@ class Dependencies:
             **self.get_base_service_dependencies(),
             location_repository=self.get_location_repository(),
         )
+
+    @cache_dependency
+    def get_pubsub_client(self) -> PubSubClient:
+        return PubSubClient(
+            redis_url=self.get_config_helper().get('REDIS_PUB_SUB_URL'),
+        )
+
+    def get_redis_subscription_client(self) -> PubSubClient:
+        return PubSubClient(redis_url=self.get_config_helper().get('REDIS_PUB_SUB_URL'))
 
 
 # Instantiate one global dependencies object so we don't need to clutter the environment with lots of globals

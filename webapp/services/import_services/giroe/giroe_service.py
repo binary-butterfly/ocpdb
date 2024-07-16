@@ -17,16 +17,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 from datetime import datetime
-from typing import Optional, List, Tuple
+from typing import List, Optional, Tuple
 
 from validataclass.exceptions import ValidationError
 from validataclass.validators import DataclassValidator
 
 from webapp.common.remote_helper import RemoteServerType
 from webapp.services.import_services.base_import_service import BaseImportService
-from .giroe_mapper import GiroeMapper
-from .giroe_validator import LocationListInput, LocationInput
+
 from ..models import LocationUpdate
+from .giroe_mapper import GiroeMapper
+from .giroe_validator import LocationInput, LocationListInput
 
 
 class GiroeImportService(BaseImportService):
@@ -81,7 +82,7 @@ class GiroeImportService(BaseImportService):
             self.logger.error(
                 'giroe',
                 'invalid datasets',
-                details="\n\n".join(["%s\n%s\n" % (location, exception.to_dict()) for location, exception in exceptions]),
+                details='\n\n'.join(['%s\n%s\n' % (location, exception.to_dict()) for location, exception in exceptions]),
             )
 
     def handle_pulled_locations(

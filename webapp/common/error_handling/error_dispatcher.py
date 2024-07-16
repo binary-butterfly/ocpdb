@@ -18,7 +18,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from typing import Optional
 
-from flask import Request, request as flask_request
+from flask import Request
+from flask import request as flask_request
 
 from .base_error_handler import BaseErrorHandler
 
@@ -47,8 +48,8 @@ class ErrorDispatcher:
 
         if response:
             return response
-        else:
-            raise error
+
+        raise error
 
     def wrap(self, func):
         """

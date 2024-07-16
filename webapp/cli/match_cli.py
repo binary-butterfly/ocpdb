@@ -18,12 +18,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
 from flask.cli import AppGroup
-from webapp.dependencies import dependencies
 
+from webapp.dependencies import dependencies
 
 match_cli = AppGroup('match')
 
 
-@match_cli.command("run", help='tries to match static and dynamic data')
+@match_cli.command('run', help='tries to match static and dynamic data')
 def cli_get():
     dependencies.get_matching_service().match()

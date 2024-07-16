@@ -18,8 +18,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from typing import Optional
 
-from flask.globals import app_ctx, request_ctx
 from flask.ctx import AppContext, RequestContext, has_request_context
+from flask.globals import app_ctx, request_ctx
 
 
 class ContextHelper:

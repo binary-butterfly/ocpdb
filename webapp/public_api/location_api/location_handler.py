@@ -47,6 +47,8 @@ class LocationHandler(PublicApiBaseHandler):
             )
         )
         for regular_hours in location.regular_hours:
+            if 'opening_times' not in location_dict:
+                location_dict['opening_times'] = {}
             if 'regular_hours' not in location_dict['opening_times']:
                 location_dict['opening_times']['regular_hours'] = []
             location_dict['opening_times']['regular_hours'].append(

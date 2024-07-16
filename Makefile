@@ -165,10 +165,8 @@ open-coverage:
 
 .PHONY: lint-fix
 lint-fix:
-	$(FLASK_RUN) ruff --fix ./webapp
-	$(FLASK_RUN) black ./webapp
+	$(FLASK_RUN) ruff check --fix ./webapp
 
 .PHONY: lint-check
 lint-check:
-	$(FLASK_RUN) ruff ./webapp
-	$(FLASK_RUN) black -S --check --diff ./webapp
+	$(FLASK_RUN) ruff check ./webapp

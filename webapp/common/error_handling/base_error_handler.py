@@ -17,7 +17,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 import traceback
-from typing import Callable, Optional, Type, TYPE_CHECKING
+from typing import TYPE_CHECKING, Callable, Optional, Type
 
 from sqlalchemy.orm import scoped_session
 
@@ -63,8 +63,8 @@ class BaseErrorHandler:
         handler = self._find_handler(type(error))
         if handler:
             return handler(error)
-        else:
-            return None
+
+        return None
 
     def _find_handler(self, error_class: Type[Exception]) -> Optional[Callable]:
         """

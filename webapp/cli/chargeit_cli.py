@@ -21,7 +21,6 @@ from flask.cli import AppGroup
 from webapp.common.error_handling import catch_exception
 from webapp.dependencies import dependencies
 
-
 chargeit_cli = AppGroup('chargeit')
 
 

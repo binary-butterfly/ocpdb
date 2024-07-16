@@ -26,7 +26,7 @@ from webapp.common.error_handling import ErrorDispatcher
 from webapp.common.json import JSONProvider
 from webapp.common.rest import RestApiErrorHandler
 from webapp.dependencies import dependencies
-from webapp.extensions import db, celery, migrate, logger, cors, openapi
+from webapp.extensions import celery, cors, db, logger, migrate, openapi
 from webapp.frontend import FrontendBlueprint
 from webapp.public_api import PublicApi
 from webapp.server_rest_api import ServerRestApi
@@ -71,11 +71,11 @@ def configure_blueprints(app):
 def configure_error_handlers(app: Flask):
     # ErrorDispatcher: Class that passes errors either to FrontendErrorHandler (rendering error HTML pages) or
     # to RestApiErrorHandler (returning JSON responses) depending on the request path.
-    error_handler_kwargs = dict(
-        logger=dependencies.get_logger(),
-        db_session=dependencies.get_db_session(),
-        debug=bool(app.config['DEBUG']),
-    )
+    error_handler_kwargs = {
+        'logger': dependencies.get_logger(),
+        'db_session': dependencies.get_db_session(),
+        'debug': bool(app.config['DEBUG']),
+    }
     error_dispatcher = ErrorDispatcher(
         RestApiErrorHandler(**error_handler_kwargs)
     )

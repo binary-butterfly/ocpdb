@@ -23,13 +23,15 @@ from validataclass.helpers import UnsetValue
 
 from webapp.models.connector import ConnectorFormat, ConnectorType
 from webapp.models.evse import EvseStatus
-from webapp.services.import_services.models import LocationUpdate, EvseUpdate, ConnectorUpdate, BusinessUpdate
-from .chargeit_validators import LocationInput, CircuitInput, CircuitStatus, Plug, OperatorInput
+from webapp.services.import_services.models import BusinessUpdate, ConnectorUpdate, EvseUpdate, LocationUpdate
+
+from .chargeit_validators import CircuitInput, CircuitStatus, LocationInput, OperatorInput, Plug
 
 
 class ChargeitMapper:
     def map_location_to_location_update(self, operator_input: OperatorInput, location_input: LocationInput) -> LocationUpdate:
-        location_update = LocationUpdate(
+        # TODO: regular hours
+        return LocationUpdate(
             source='chargeit',
             uid=location_input.shortcode,
             name=location_input.name,
@@ -44,8 +46,6 @@ class ChargeitMapper:
             operator=BusinessUpdate(name=operator_input.operatorName),
             evses=[self.map_circuit_to_evse_update(circuit_input) for circuit_input in location_input.circuits],
         )
-        # TODO: regular hours
-        return location_update
 
     def map_circuit_to_evse_update(self, circuit_input: CircuitInput) -> EvseUpdate:
         return EvseUpdate(

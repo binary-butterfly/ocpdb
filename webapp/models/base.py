@@ -17,7 +17,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 from datetime import datetime, timezone
-from typing import TypeVar, Optional, List
+from typing import List, Optional
 
 from sqlalchemy.types import UserDefinedType
 from sqlalchemy_utc import UtcDateTime
@@ -25,15 +25,12 @@ from sqlalchemy_utc import UtcDateTime
 from webapp.common.sqlalchemy import Col
 from webapp.extensions import db
 
-CurrentObject = TypeVar('CurrentObject', bound='Parent')
-
 
 class BaseModel:
     __table_args__ = {
         'mysql_charset': 'utf8mb4',
         'mysql_collate': 'utf8mb4_unicode_ci',
     }
-    version = '1.0'
 
     id: Col[int] = db.Column(db.BigInteger, primary_key=True)
     created: Col[datetime] = db.Column(UtcDateTime(), nullable=False, default=lambda: datetime.now(tz=timezone.utc))
@@ -59,8 +56,9 @@ class Point(UserDefinedType):
     cache_ok = True
 
     def get_col_spec(self) -> str:
-        if db.session.get_bind().dialect.name == 'postgresql':
+        dialect_name = db.session.get_bind().dialect.name
+        if dialect_name == 'postgresql':
             return 'GEOMETRY'
-        else:
+        if dialect_name == 'mysql':
             return 'POINT'
-
+        raise Exception('unsupported dialect')

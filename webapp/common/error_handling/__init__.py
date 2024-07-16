@@ -17,5 +17,5 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 from .base_error_handler import BaseErrorHandler
-from .error_dispatcher import ErrorDispatcher
 from .decorator import catch_exception
+from .error_dispatcher import ErrorDispatcher

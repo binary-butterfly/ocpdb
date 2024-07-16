@@ -18,9 +18,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from pycountry import countries
 
-from webapp.services.import_services.models import LocationUpdate, BusinessUpdate, EvseUpdate, ConnectorUpdate, RegularHoursUpdate, \
-    ExceptionalPeriodUpdate, ImageUpdate
-from webapp.services.import_services.ocpi.ocpi_validators import LocationInput, EvseInput, ConnectorInput, BusinessDetailsInput, ImageInput
+from webapp.services.import_services.models import (
+    BusinessUpdate,
+    ConnectorUpdate,
+    EvseUpdate,
+    ExceptionalPeriodUpdate,
+    ImageUpdate,
+    LocationUpdate,
+    RegularHoursUpdate,
+)
+from webapp.services.import_services.ocpi.ocpi_validators import BusinessDetailsInput, ConnectorInput, EvseInput, ImageInput, LocationInput
 
 
 class OcpiMapper:
@@ -95,7 +102,7 @@ class OcpiMapper:
 
     @staticmethod
     def map_connector(connector_input: ConnectorInput) -> ConnectorUpdate:
-        connector_update = ConnectorUpdate(
+        return ConnectorUpdate(
             uid=connector_input.id,
             standard=connector_input.standard,
             format=connector_input.format,
@@ -106,8 +113,6 @@ class OcpiMapper:
             last_updated=connector_input.last_updated,
             terms_and_conditions=connector_input.terms_and_conditions,
         )
-
-        return connector_update
 
     def map_business(self, business_input: BusinessDetailsInput) -> BusinessUpdate:
         business_update = BusinessUpdate(
@@ -121,11 +126,10 @@ class OcpiMapper:
 
     @staticmethod
     def map_image(image_input: ImageInput) -> ImageUpdate:
-        image_update = ImageUpdate(
+        return ImageUpdate(
             external_url=image_input.url,
             width=image_input.width,
             category=image_input.category,
             type=image_input.type,
             height=image_input.height,
         )
-        return image_update

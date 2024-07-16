@@ -17,10 +17,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 from enum import Enum
-from typing import List, TYPE_CHECKING
+from typing import TYPE_CHECKING, List
 
-from webapp.common.sqlalchemy import Rel, Col
+from webapp.common.sqlalchemy import Col, Rel
 from webapp.extensions import db
+
 from .base import BaseModel
 
 if TYPE_CHECKING:
@@ -38,7 +39,7 @@ class RelatedResourceType(Enum):
 
 
 class RelatedResource(db.Model, BaseModel):
-    __tablename__ = "related_resource"
+    __tablename__ = 'related_resource'
 
     evse: Rel['Evse'] = db.relationship('Evse', back_populates='related_resources')
     evse_id: Col[int] = db.Column(db.BigInteger, db.ForeignKey('evse.id', use_alter=True), nullable=False)

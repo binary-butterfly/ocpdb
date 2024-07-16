@@ -23,6 +23,7 @@ from sqlalchemy_utc import UtcDateTime
 
 from webapp.common.sqlalchemy import Col, Rel
 from webapp.extensions import db
+
 from .base import BaseModel
 
 if TYPE_CHECKING:
@@ -30,7 +31,7 @@ if TYPE_CHECKING:
 
 
 class ExceptionalOpeningPeriod(db.Model, BaseModel):
-    __tablename__ = "exceptional_opening_period"
+    __tablename__ = 'exceptional_opening_period'
 
     location: Rel['Location'] = db.relationship('Location', back_populates='exceptional_openings')
     location_id: Col[int] = db.Column(db.BigInteger, db.ForeignKey('location.id', use_alter=True), nullable=False)

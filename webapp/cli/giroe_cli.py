@@ -25,11 +25,10 @@ from flask.cli import AppGroup
 from webapp.common.error_handling import catch_exception
 from webapp.dependencies import dependencies
 
-
 giroe_cli = AppGroup('giroe')
 
 
-@giroe_cli.command("import", help='Giro-e: downloads and saves chargepoint updates')
+@giroe_cli.command('import', help='Giro-e: downloads and saves chargepoint updates')
 @click.option(
     '-p', '--preset', 'preset',
     type=click.Choice(['daily', 'weekly']),
@@ -37,22 +36,22 @@ giroe_cli = AppGroup('giroe')
 )
 @click.option(
     '-cf', '--created-since', 'created_since',
-    type=click.DateTime(formats=["%Y-%m-%d", "%Y-%m-%dT%H:%M:%S"]),
+    type=click.DateTime(formats=['%Y-%m-%d', '%Y-%m-%dT%H:%M:%S']),
     help='created since'
 )
 @click.option(
     '-ct', '--created-until', 'created_until',
-    type=click.DateTime(formats=["%Y-%m-%d", "%Y-%m-%dT%H:%M:%S"]),
+    type=click.DateTime(formats=['%Y-%m-%d', '%Y-%m-%dT%H:%M:%S']),
     help='created until'
 )
 @click.option(
     '-cf', '--modified-since', 'modified_since',
-    type=click.DateTime(formats=["%Y-%m-%d", "%Y-%m-%dT%H:%M:%S"]),
+    type=click.DateTime(formats=['%Y-%m-%d', '%Y-%m-%dT%H:%M:%S']),
     help='modified since'
 )
 @click.option(
     '-ct', '--modified-until', 'modified_until',
-    type=click.DateTime(formats=["%Y-%m-%d", "%Y-%m-%dT%H:%M:%S"]),
+    type=click.DateTime(formats=['%Y-%m-%d', '%Y-%m-%dT%H:%M:%S']),
     help='modified until'
 )
 @catch_exception

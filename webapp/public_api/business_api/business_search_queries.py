@@ -19,8 +19,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from typing import Optional
 
 from validataclass.dataclasses import Default
-from validataclass.validators import AnyOfValidator, IntegerValidator, StringValidator
-from validataclass_search_queries.filters import SearchParamContains, SearchParamEquals
+from validataclass.validators import AnyOfValidator, StringValidator
+from validataclass_search_queries.filters import SearchParamContains
 from validataclass_search_queries.pagination import OffsetPaginationMixin, PaginationLimitValidator
 from validataclass_search_queries.search_queries import BaseSearchQuery, search_query_dataclass
 from validataclass_search_queries.sorting import SortingMixin

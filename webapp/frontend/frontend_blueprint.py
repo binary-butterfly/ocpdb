@@ -16,7 +16,7 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from flask import Blueprint, render_template, jsonify
+from flask import Blueprint, jsonify, render_template
 from flask.views import MethodView
 
 from webapp.common.config import ConfigHelper

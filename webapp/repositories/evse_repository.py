@@ -20,11 +20,12 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import List, Tuple
 
-from validataclass.helpers import UnsetValue, OptionalUnset
+from validataclass.helpers import OptionalUnset, UnsetValue
 
 from webapp.models import Evse, Location
 from webapp.models.evse import EvseStatus
-from .base_repository import BaseRepository, ObjectNotFoundException, InconsistentDataException
+
+from .base_repository import BaseRepository, InconsistentDataException, ObjectNotFoundException
 
 
 @dataclass
@@ -45,10 +46,10 @@ class EvseRepository(BaseRepository[Evse]):
         return result
 
     def fetch_by_uid(self, source: str, uid: str) -> Evse:
-        items = self.session.query(Evse)\
-            .filter(Evse.uid == uid)\
-            .join(Location, Location.id == Evse.location_id)\
-            .filter(Location.source == source)\
+        items = self.session.query(Evse) \
+            .filter(Evse.uid == uid) \
+            .join(Location, Location.id == Evse.location_id) \
+            .filter(Location.source == source) \
             .all()
 
         if len(items) == 0:
@@ -58,6 +59,20 @@ class EvseRepository(BaseRepository[Evse]):
             raise InconsistentDataException(f'more than one evse with uid {uid} and source {source}')
 
         return items[0]
+
+    def fetch_only_by_uid(self, uid: str) -> Evse:
+        evses = self.session.query(Evse)\
+            .filter(Evse.uid == uid)\
+            .filter(Evse.status != EvseStatus.REMOVED)\
+            .all()
+
+        if len(evses) < 1:
+            raise ObjectNotFoundException(message=f'evse with uid {uid} not found')
+
+        if len(evses) > 1:
+            raise InconsistentDataException(f'more than one evse with uid {uid} ')
+
+        return evses[0]
 
     def fetch_evse_by_location_id(self, location_id: int) -> List[Evse]:
         return self.session.query(Evse).filter(Evse.location_id == location_id)
@@ -78,11 +93,11 @@ class EvseRepository(BaseRepository[Evse]):
             self.session.commit()
 
     def delete_evse_by_ids(self, evse_ids: List[int]):
-        self.session.query(Evse)\
-            .filter(Evse.id.in_(evse_ids))\
+        self.session.query(Evse) \
+            .filter(Evse.id.in_(evse_ids)) \
             .delete(synchronize_session=False)
 
     def delete_evse_by_id(self, evse_id: int):
-        self.session.query(Evse)\
-            .filter(id=evse_id)\
+        self.session.query(Evse) \
+            .filter(id=evse_id) \
             .delete(synchronize_session=False)

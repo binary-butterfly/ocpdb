@@ -27,14 +27,14 @@ from webapp.dependencies import dependencies
 bnetza_cli = AppGroup('bnetza')
 
 
-@bnetza_cli.command("import-file", help='Bundesnetzagentur: loads and saves chargepoints from XLXS file')
+@bnetza_cli.command('import-file', help='Bundesnetzagentur: loads and saves chargepoints from XLXS file')
 @click.argument('import_file_path', type=click.Path(dir_okay=False, path_type=Path))
 @catch_exception
 def cli_load_and_save_file(import_file_path: Path):
     dependencies.get_import_services().bnetza_import_service.load_and_save_from_file(import_file_path)
 
 
-@bnetza_cli.command("import-web", help='Bundesnetzagentur: loads and saves chargepoints from web')
+@bnetza_cli.command('import-web', help='Bundesnetzagentur: loads and saves chargepoints from web')
 @catch_exception
 def cli_load_and_save_web():
     dependencies.get_import_services().bnetza_import_service.load_and_save_from_web()

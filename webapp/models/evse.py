@@ -19,18 +19,19 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from datetime import datetime
 from decimal import Decimal
 from enum import Enum
-from typing import List, Optional, TYPE_CHECKING
+from typing import TYPE_CHECKING, List
 
 from sqlalchemy_utc import UtcDateTime
 
 from webapp.common.sqlalchemy import Col, Rel
 from webapp.extensions import db
+
 from .base import BaseModel
 
 if TYPE_CHECKING:
-    from .location import Location
     from .connector import Connector
     from .image import Image
+    from .location import Location
     from .related_resource import RelatedResource
 
 
@@ -68,7 +69,7 @@ class Capability(Enum):
     REMOTE_START_STOP_CAPABLE = 'REMOTE_START_STOP_CAPABLE'
     RESERVABLE = 'RESERVABLE'
     RFID_READER = 'RFID_READER'
-    TOKEN_GROUP_CAPABLE = 'TOKEN_GROUP_CAPABLE'
+    TOKEN_GROUP_CAPABLE = 'TOKEN_GROUP_CAPABLE'  # noqa: S105
     UNLOCK_CAPABLE = 'UNLOCK_CAPABLE'
     PUBLIC = 'PUBLIC'
     LOCAL_KEY = 'LOCAL_KEY'
@@ -85,18 +86,18 @@ evse_image = db.Table(
 
 
 class Evse(db.Model, BaseModel):
-    __tablename__ = "evse"
+    __tablename__ = 'evse'
 
     connectors: Rel[List['Connector']] = db.relationship(
         'Connector',
         back_populates='evse',
-        cascade="all, delete, delete-orphan",
+        cascade='all, delete, delete-orphan',
     )
-    images: Rel[List['Image']] = db.relationship("Image", secondary=evse_image)
+    images: Rel[List['Image']] = db.relationship('Image', secondary=evse_image)
     related_resources: Rel['RelatedResource'] = db.relationship(
         'RelatedResource',
         back_populates='evse',
-        cascade="all, delete, delete-orphan",
+        cascade='all, delete, delete-orphan',
     )
     location: Rel['Location'] = db.relationship('Location', back_populates='evses')
     location_id: Col[int] = db.Column(db.BigInteger, db.ForeignKey('location.id', use_alter=True), nullable=False)

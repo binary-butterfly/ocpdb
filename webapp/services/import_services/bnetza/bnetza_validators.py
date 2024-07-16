@@ -19,13 +19,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from datetime import datetime
 from decimal import Decimal
 from enum import Enum
-from typing import Optional, List
+from typing import List, Optional
 
 from validataclass.dataclasses import validataclass
-from validataclass.validators import ListValidator, EnumValidator, StringValidator, IntegerValidator
+from validataclass.validators import EnumValidator, IntegerValidator, ListValidator, StringValidator
 
-from webapp.common.validation import EmptystringToNoneable, IntegerToStringValidator, \
-    CommaStringToDecimalValidator, PrintableStringValidator, DateTimeToUtcDateTimeValidator
+from webapp.common.validation import (
+    CommaStringToDecimalValidator,
+    DateTimeToUtcDateTimeValidator,
+    EmptystringToNoneable,
+    IntegerToStringValidator,
+    PrintableStringValidator,
+)
 
 
 class BnetzaConnectorType(Enum):

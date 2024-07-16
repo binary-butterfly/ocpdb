@@ -1,0 +1,36 @@
+name: lint
+
+on:
+  push:
+    branches:
+      - '*'
+  pull_request:
+    branches:
+      - '*'
+  # make workflow "callable" by others
+  workflow_call:
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version:
+          - '3'
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4
+    - name: setup Python v${{ matrix.python-version }}
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ matrix.python-version }}
+        cache: 'pip'
+
+    - name: pip install
+      run: pip install -r requirements.txt -r requirements-dev.txt
+
+    - name: lint using ruff
+      # We could also use the official GitHub Actions integration.
+      # https://beta.ruff.rs/docs/usage/#github-action
+      # uses: chartboost/ruff-action@v1
+      run: ruff check --output-format github ./webapp ./tests

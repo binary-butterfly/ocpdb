@@ -18,10 +18,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from typing import List
 
-from webapp.models.connector import ConnectorType, ConnectorFormat
+from webapp.models.connector import ConnectorFormat, ConnectorType
 from webapp.models.evse import EvseStatus
-from webapp.services.import_services.models import LocationUpdate, BusinessUpdate, EvseUpdate, ConnectorUpdate
-from .bnetza_validators import BnetzaRowInput, BnetzaConnectorType
+from webapp.services.import_services.models import BusinessUpdate, ConnectorUpdate, EvseUpdate, LocationUpdate
+
+from .bnetza_validators import BnetzaConnectorType, BnetzaRowInput
 
 
 class BnetzaMapper:
@@ -62,7 +63,7 @@ class BnetzaMapper:
         This is fundamentally broken: sometimes multiple connector types in a single inline counter mean multiple
         EVSEs (eg DC Kupplung Combo, DC CHAdeMO), sometimes it means the same EVSE (eg AC Steckdose Typ 2, AC Schuko).
         There is no way to decide this in a reliable way. We assume one inline counter is one EVSE (but we don't have
-        EVSEs anyway, so ...). 
+        EVSEs anyway, so ...).
         """
         evse_updates = []
         for inline_counter in range(1, 5):

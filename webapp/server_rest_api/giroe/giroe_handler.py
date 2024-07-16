@@ -20,8 +20,8 @@ from webapp.repositories import EvseRepository, LocationRepository, ObjectNotFou
 from webapp.server_rest_api.base_handler import ServerApiBaseHandler
 from webapp.services.import_services.giroe import GiroeImportService
 from webapp.services.import_services.giroe.giroe_validator import LocationInput
+
 from .giroe_validator import ConnectorPatchInput
-from ...models import Location
 
 
 class GiroeHandler(ServerApiBaseHandler):

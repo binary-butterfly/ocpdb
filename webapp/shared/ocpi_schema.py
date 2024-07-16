@@ -28,7 +28,6 @@ from flask_openapi.schema import (
     Reference,
     RegexpField,
     StringField,
-    TimeField,
     UriField,
 )
 

@@ -19,6 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from typing import List
 
 from webapp.models import Connector, Evse, Location
+
 from .base_repository import BaseRepository, ObjectNotFoundException
 
 
@@ -27,8 +28,10 @@ class ConnectorRepository(BaseRepository[Connector]):
 
     def fetch_by_id(self, connector_id: int) -> Connector:
         result = self.session.query(Connector).get(connector_id)
+
         if result is None:
             raise ObjectNotFoundException(f'connector with id {connector_id} not found')
+
         return result
 
     def fetch_connectors_by_ids(self, connector_ids: List[int]) -> List[Connector]:

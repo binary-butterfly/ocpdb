@@ -17,7 +17,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 from webapp.common.remote_helper import RemoteHelper
-from webapp.repositories import LocationRepository, EvseRepository, ConnectorRepository, OptionRepository
+from webapp.repositories import ConnectorRepository, EvseRepository, LocationRepository, OptionRepository
 from webapp.repositories.business_repository import BusinessRepository
 from webapp.repositories.image_repository import ImageRepository
 from webapp.services.base_service import BaseService

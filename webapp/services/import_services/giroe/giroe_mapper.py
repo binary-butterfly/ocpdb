@@ -22,8 +22,9 @@ from math import sqrt
 from webapp.common.config import ConfigHelper
 from webapp.models.connector import PowerType
 from webapp.models.evse import Capability
-from webapp.services.import_services.models import LocationUpdate, EvseUpdate, ConnectorUpdate
-from .giroe_validator import LocationInput, StationInput, ConnectorInput
+from webapp.services.import_services.models import ConnectorUpdate, EvseUpdate, LocationUpdate
+
+from .giroe_validator import ConnectorInput, LocationInput, StationInput
 
 
 class GiroeMapper:

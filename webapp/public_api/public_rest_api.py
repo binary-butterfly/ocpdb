@@ -20,7 +20,6 @@ from typing import List, Type
 
 from webapp.common.base_blueprint import BaseBlueprint
 
-from .base_blueprint import PublicApiBaseBlueprint
 from .business_api import BusinessBlueprint
 from .location_api import LocationBlueprint
 from .ocpi_api import OcpiBlueprint

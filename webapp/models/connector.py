@@ -25,6 +25,7 @@ from sqlalchemy_utc import UtcDateTime
 
 from webapp.common.sqlalchemy import Col, Rel
 from webapp.extensions import db
+
 from .base import BaseModel
 
 if TYPE_CHECKING:
@@ -74,6 +75,22 @@ class ConnectorFormat(Enum):
     CABLE = 'CABLE'
 
 
+class ConnectorStatus(Enum):
+    AVAILABLE = 'AVAILABLE'
+    BLOCKED = 'BLOCKED'
+    CHARGING = 'CHARGING'
+    INOPERATIVE = 'INOPERATIVE'
+    OUTOFORDER = 'OUTOFORDER'
+    PLANNED = 'PLANNED'
+    REMOVED = 'REMOVED'
+    RESERVED = 'RESERVED'
+    UNKNOWN = 'UNKNOWN'
+    SUSPENDED_EVSE = 'SUSPENDED_EVSE'
+    SUSPENDED_EV = 'SUSPENDED_EV'
+    FINISHING = 'FINISHING'
+    PREPARING = 'PREPARING'
+
+
 class PowerType(Enum):
     AC_1_PHASE = 'AC_1_PHASE'
     AC_3_PHASE = 'AC_3_PHASE'
@@ -81,20 +98,20 @@ class PowerType(Enum):
 
 
 class Connector(db.Model, BaseModel):
-    __tablename__ = "connector"
+    __tablename__ = 'connector'
 
     evse: Rel['Evse'] = db.relationship('Evse', back_populates='connectors')
     evse_id: Col[int] = db.Column(db.BigInteger, db.ForeignKey('evse.id', use_alter=True), nullable=False)
 
-    uid: Col[str] = db.Column(db.String(64), nullable=False, index=True)                          # OCPI: id
+    uid: Col[str] = db.Column(db.String(64), nullable=False, index=True)  # OCPI: id
     standard: Col[ConnectorType] = db.Column(db.Enum(ConnectorType))
     format: Col[ConnectorFormat] = db.Column(db.Enum(ConnectorFormat))
-    power_type: Col[PowerType] = db.Column(db.Enum(PowerType))              # OCHP: chargePointType             OCPI: power_type
-    max_voltage: Col[int] = db.Column(db.Integer)                     # OCHP: nominalVoltage              OCPI: max_voltage
-    max_amperage: Col[int] = db.Column(db.Integer)                    #                                   OCPI: max_amperage
-    max_electric_power: Col[int] = db.Column(db.Integer)              # OCHP: maximumPower                OCPI: max_electric_power
+    power_type: Col[PowerType] = db.Column(db.Enum(PowerType))  # OCHP: chargePointType             OCPI: power_type
+    max_voltage: Col[int] = db.Column(db.Integer)  # OCHP: nominalVoltage              OCPI: max_voltage
+    max_amperage: Col[int] = db.Column(db.Integer)  # OCPI: max_amperage
+    max_electric_power: Col[int] = db.Column(db.Integer)  # OCHP: maximumPower                OCPI: max_electric_power
     last_updated: Col[datetime] = db.Column(UtcDateTime())
-    terms_and_conditions: Col[str] = db.Column(db.String(255))        #                                   OCPI: terms_and_conditions
+    terms_and_conditions: Col[str] = db.Column(db.String(255))  # OCPI: terms_and_conditions
 
     # tariff_ids TODO
 

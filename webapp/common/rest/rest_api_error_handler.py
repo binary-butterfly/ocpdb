@@ -99,8 +99,8 @@ class RestApiErrorHandler(BaseErrorHandler):
         code_str = self._http_error_code_mapping.get(error.code)
         if code_str:
             return code_str
-        else:
-            return 'http_' + type(error).__name__.lower()
+
+        return 'http_' + type(error).__name__.lower()
 
     def _handle_validation_error(self, error: ValidationError):
         """

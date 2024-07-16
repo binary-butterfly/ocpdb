@@ -18,11 +18,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from datetime import datetime
 from typing import List, Optional
 
-from lxml import etree, builder
+from lxml import builder, etree
 from validataclass.validators import DataclassValidator
 
 from webapp.common.config import ConfigHelper
 from webapp.common.remote_helper import RemoteHelper, RemoteServerType
+
 from .ochp_helper import xml_to_dict
 from .ochp_validators import GetChargePointListInput, GetStatusEnvelopeInput
 
@@ -116,7 +117,7 @@ class OchpApiClient:
             headers={'content-type': 'text/xml', 'SOAPAction': action},
             raw=True,
         )
-        return etree.fromstring(result.decode('latin-1'))
+        return etree.fromstring(result.decode('latin-1'))  # noqa: S320
 
     def get_security_header(self):
         nsmap_sec = {
@@ -134,7 +135,7 @@ class OchpApiClient:
             em_user.Username(self.config_helper.get('REMOTE_SERVERS')[RemoteServerType.LADENETZ].user),
             em_user.Password(
                 self.config_helper.get('REMOTE_SERVERS')[RemoteServerType.LADENETZ].password,
-                Type="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0#PasswordText"
+                Type='http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0#PasswordText'
             )
         )
         username_token.attrib['{%s}Id' % nsmap_user['wsu']] = 'UsernameToken-1'

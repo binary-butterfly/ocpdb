@@ -19,6 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import functools
 
 from webapp.dependencies import dependencies
+
 from .server_auth_helper import ServerAuthHelper
 from .server_auth_users import ServerAuthRole
 
@@ -58,5 +59,5 @@ def require_role(role: ServerAuthRole):
 
 
 def skip_basic_auth(fn):
-    setattr(fn, 'skip_basic_auth', True)
+    fn.skip_basic_auth = True
     return fn

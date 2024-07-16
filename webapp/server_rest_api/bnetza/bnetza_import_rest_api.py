@@ -24,7 +24,7 @@ from flask_cors import cross_origin
 from webapp.common.config import ConfigHelper
 from webapp.common.rest import BaseMethodView
 from webapp.common.rest.exceptions import InputValidationException
-from webapp.common.server_auth import require_role, ServerAuthRole
+from webapp.common.server_auth import ServerAuthRole, require_role
 from webapp.dependencies import dependencies
 from webapp.server_rest_api.base_blueprint import ServerApiBaseBlueprint
 from webapp.server_rest_api.bnetza.bnetza_import_handler import BnetzaImportHandler
@@ -67,9 +67,9 @@ class BnetzaImportBaseMethodView(BaseMethodView):
         if not base_path.is_dir():
             base_path.mkdir(parents=True, exist_ok=True)
         if data:
-            import_path = base_path.joinpath(f"{str(uuid4())}.xlsx")
+            import_path = base_path.joinpath(f'{str(uuid4())}.xlsx')
             with import_path.open('wb') as data_file:
                 data_file.write(data)
             return jsonify(bnetza_import_handler.handle_import_by_file(import_path))
-        else:
-            raise InputValidationException(message='no import file')
+
+        raise InputValidationException(message='no import file')

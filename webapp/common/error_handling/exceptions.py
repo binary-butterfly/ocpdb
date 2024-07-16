@@ -59,8 +59,8 @@ class AppException(Exception):
     def __str__(self):
         if self.message:
             return '{}: {} ({})'.format(self.code, self.message, self.http_status)
-        else:
-            return '{} ({})'.format(self.code, self.http_status)
+
+        return '{} ({})'.format(self.code, self.http_status)
 
     def response_data(self, debug_mode: bool = False):
         response_data = {

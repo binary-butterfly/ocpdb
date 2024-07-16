@@ -18,7 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from hashlib import sha256
 from io import BytesIO
 from pathlib import Path
-from typing import Tuple, Dict, List
+from typing import Dict, List, Tuple
 
 from openpyxl import load_workbook
 from openpyxl.worksheet.worksheet import Worksheet
@@ -28,6 +28,7 @@ from validataclass.validators import DataclassValidator
 from webapp.common.error_handling.exceptions import AppException
 from webapp.common.remote_helper import RemoteServerType
 from webapp.services.import_services.base_import_service import BaseImportService
+
 from .bnetza_mapper import BnetzaMapper
 from .bnetza_validators import BnetzaRowInput
 
@@ -113,8 +114,8 @@ class BnetzaImportService(BaseImportService):
                 if geo_hash not in location_dict:
                     location_dict[geo_hash] = []
                 location_dict[geo_hash].append(row)
-            except ValidationError as exception:
-                print('%s: %s' % (row_dict, exception.to_dict()))
+            except ValidationError as e:
+                self.logger.info('import-bnetza', f'row {row_dict} is invalid: {e.to_dict()}')
         return location_dict
 
     def delete_import_files(self):

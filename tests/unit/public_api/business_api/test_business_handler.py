@@ -1,5 +1,6 @@
-import pytest
 from unittest.mock import Mock
+
+import pytest
 
 import webapp.common.config
 from webapp.models import Business
@@ -29,7 +30,7 @@ def logger_mock():
 
 @pytest.fixture
 def business_query_mock():
-    return Mock(BusinessSearchQuery(name="EN"))
+    return Mock(BusinessSearchQuery(name='EN'))
 
 
 def test_business_handler_get_business_by_id(business_repository_mock, logger_mock, config_helper_mock):

@@ -19,6 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from typing import List
 
 from webapp.models import Image
+
 from .base_repository import BaseRepository, ObjectNotFoundException
 
 
