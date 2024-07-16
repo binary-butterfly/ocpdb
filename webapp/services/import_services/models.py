@@ -16,15 +16,15 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from dataclasses import dataclass, asdict
+from dataclasses import asdict, dataclass
 from datetime import datetime
 from decimal import Decimal
 from typing import List
 
 from validataclass.helpers import OptionalUnset, UnsetValue
 
-from webapp.models.connector import ConnectorType, ConnectorFormat, PowerType
-from webapp.models.evse import EvseStatus, Capability, ParkingRestriction
+from webapp.models.connector import ConnectorFormat, ConnectorType, PowerType
+from webapp.models.evse import Capability, EvseStatus, ParkingRestriction
 from webapp.models.image import ImageCategory
 from webapp.models.location import ParkingType
 from webapp.models.related_resource import RelatedResourceType

@@ -21,9 +21,8 @@ from validataclass.validators import DataclassValidator
 
 from webapp.common.remote_helper import RemoteServerType
 from webapp.services.import_services.base_import_service import BaseImportService
-from webapp.services.import_services.ocpi.ocpi_validators import OcpiInput, LocationInput
-
 from webapp.services.import_services.ocpi.ocpi_mapper import OcpiMapper
+from webapp.services.import_services.ocpi.ocpi_validators import LocationInput, OcpiInput
 
 
 class StadtnaviImportService(BaseImportService):

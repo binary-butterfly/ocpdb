@@ -53,11 +53,11 @@ class LogErrorsCelery(Celery):
                 self.logger = logger
 
             def __call__(self, *args, **kwargs):
-                with app.app_context() as app_context:
+                with app.app_context():
                     return self.run(*args, **kwargs)
 
             def on_failure(self, exc, _task_id, _args, _kwargs, exc_info):
                 self.logger.critical('app', str(exc).strip(), str(exc_info).strip())
 
-        setattr(ContextTask, 'abstract', True)
-        setattr(self, 'Task', ContextTask)
+        ContextTask.abstract = True
+        self.Task = ContextTask

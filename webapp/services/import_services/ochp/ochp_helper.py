@@ -17,7 +17,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 from collections import defaultdict
-from typing import List, Tuple, Optional
+from typing import List, Optional, Tuple
 
 from lxml import etree
 

@@ -20,12 +20,13 @@ from typing import List, Optional
 
 from mercantile import LngLatBbox
 from sqlalchemy import func
-from sqlalchemy.orm import selectinload, joinedload
+from sqlalchemy.orm import joinedload, selectinload
 from validataclass_search_queries.pagination import PaginatedResult
 from validataclass_search_queries.search_queries import BaseSearchQuery
 
 from webapp.common.sqlalchemy import Query
-from webapp.models import Location, Evse, Business
+from webapp.models import Business, Evse, Location
+
 from .base_repository import BaseRepository, ObjectNotFoundException
 
 
@@ -95,24 +96,24 @@ class LocationRepository(BaseRepository[Location]):
         if filter_duplicates:
             additional_where += 'AND location.dynamic_location_id IS NULL'
 
-        query = f"" \
-                f"SELECT location.id, location.lat, location.lon, location.name, location.address, " \
-                f"  COUNT(evse.id) as chargepoint_count, " \
-                f"  SUM(CASE WHEN evse.status = 'AVAILABLE' THEN 1 ELSE 0 END) as chargepoint_available_count, " \
-                f"  SUM(CASE WHEN evse.status = 'UNKNOWN' THEN 1 ELSE 0 END) as chargepoint_unknown_count, " \
-                f"  SUM(CASE WHEN evse.status = 'STATIC' THEN 1 ELSE 0 END) as chargepoint_static_count, " \
-                f"  SUM(CASE WHEN evse.parking_restrictions & 64 = 64 THEN 1 ELSE 0 END) as chargepoint_bike_count " \
-                f"FROM location " \
-                f"LEFT JOIN evse ON evse.location_id = location.id "
+        query = "" \
+                "SELECT location.id, location.lat, location.lon, location.name, location.address, " \
+                "  COUNT(evse.id) as chargepoint_count, " \
+                "  SUM(CASE WHEN evse.status = 'AVAILABLE' THEN 1 ELSE 0 END) as chargepoint_available_count, " \
+                "  SUM(CASE WHEN evse.status = 'UNKNOWN' THEN 1 ELSE 0 END) as chargepoint_unknown_count, " \
+                "  SUM(CASE WHEN evse.status = 'STATIC' THEN 1 ELSE 0 END) as chargepoint_static_count, " \
+                "  SUM(CASE WHEN evse.parking_restrictions & 64 = 64 THEN 1 ELSE 0 END) as chargepoint_bike_count " \
+                "FROM location " \
+                "LEFT JOIN evse ON evse.location_id = location.id "
         if self.session.connection().dialect.name == 'postgresql':
-            query += f"WHERE ST_Contains(ST_MakeEnvelope({self._get_postgre_envelope_bounds(bbox)}, 4326), location.geometry)"
+            query += f'WHERE ST_Contains(ST_MakeEnvelope({self._get_postgre_envelope_bounds(bbox)}, 4326), location.geometry)'
         else:
             query += f"WHERE MBRContains(GeomFromText('{self._get_linestring_bounds(bbox)}'), location.geometry) "
 
-        query += f"{additional_where} GROUP BY location.id"
+        query += f'{additional_where} GROUP BY location.id'
 
         return list(self.session.execute(query))
-    
+
     def fetch_locations_by_bounds(self, bbox: LngLatBbox) -> List[Location]:
         locations = self.session.query(Location)
 
@@ -126,9 +127,7 @@ class LocationRepository(BaseRepository[Location]):
         else:
             locations = locations.filter(func.MBRContains(func.GeomFromText(self._get_linestring_bounds(bbox)), Location.geometry))
 
-        locations = locations.filter(Location.source != 'bnetza').all()
-
-        return locations
+        return locations.filter(Location.source != 'bnetza').all()
 
     @staticmethod
     def _get_linestring_bounds(bbox: LngLatBbox):
@@ -160,8 +159,7 @@ class LocationRepository(BaseRepository[Location]):
         ]
 
         query = self.session.query(Location).options(*options)
-        locations = self._search_and_paginate(query, search_query)
-        return locations
+        return self._search_and_paginate(query, search_query)
 
     def _filter_by_search_query(self, query: Query, search_query: Optional[BaseSearchQuery]) -> Query:
         if search_query is None:
@@ -173,7 +171,7 @@ class LocationRepository(BaseRepository[Location]):
 
             query = self._apply_bound_search_filter(query, bound_filter)
 
-        if getattr(search_query, 'lat') and getattr(search_query, 'lon') and getattr(search_query, 'radius'):
+        if search_query.lat and search_query.lon and search_query.radius:
             if self.session.connection().dialect.name == 'postgresql':
                 query = query.filter(
                     func.ST_DistanceSphere(

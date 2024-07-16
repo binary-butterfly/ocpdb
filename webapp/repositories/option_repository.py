@@ -17,14 +17,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 import json
-from decimal import Decimal
 from datetime import datetime
+from decimal import Decimal
 from typing import Any, Optional
 
 import pytz
 
-from .base_repository import BaseRepository
 from webapp.models import Option
+
+from .base_repository import BaseRepository
 
 
 class OptionRepository(BaseRepository[Option]):
@@ -34,24 +35,24 @@ class OptionRepository(BaseRepository[Option]):
         option = self.session.query(Option).filter_by(key=key).first()
         if not option:
             return default
-        output = self.get_output_value(option)
-        return output
+        return self.get_output_value(option)
 
-    def get_output_value(self, option: Option) -> Any:
+    def get_output_value(self, option: Optional[Option]) -> Any:
         if not option:
             return None
         if not option.type or option.type == 'string':
             return option.value
-        elif option.type == 'integer':
+        if option.type == 'integer':
             return int(option.value)
-        elif option.type == 'decimal':
+        if option.type == 'decimal':
             return Decimal(option.value)
-        elif option.type == 'datetime':
+        if option.type == 'datetime':
             return datetime.strptime(option.value, '%Y-%m-%dT%H:%M:%S').replace(tzinfo=pytz.UTC)
-        elif option.type == 'date':
+        if option.type == 'date':
             return datetime.strptime(option.value, '%Y-%m-%d').date()
-        elif option.type in ['dict', 'list']:
+        if option.type in ['dict', 'list']:
             return json.loads(option.value)
+        return None
 
     def set(self, key: str, value: Any, value_type='string'):
         option = self.session.query(Option).filter_by(key=key).first()

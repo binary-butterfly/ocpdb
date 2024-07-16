@@ -16,20 +16,18 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from .common.celery import LogErrorsCelery
-celery = LogErrorsCelery()
-
-from flask_sqlalchemy import SQLAlchemy
-db = SQLAlchemy()
-
-from flask_migrate import Migrate
-migrate = Migrate()
-
-from .common.logger import Logger
-logger = Logger()
-
 from flask_cors import CORS
-cors = CORS()
-
+from flask_migrate import Migrate
 from flask_openapi import FlaskOpenapi
+
+from webapp.common.sqlalchemy import SQLAlchemy
+
+from .common.celery import LogErrorsCelery
+from .common.logger import Logger
+
+celery = LogErrorsCelery()
+db = SQLAlchemy()
+migrate = Migrate()
 openapi = FlaskOpenapi()
+cors = CORS()
+logger = Logger()

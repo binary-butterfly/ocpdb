@@ -46,9 +46,13 @@ class ServerAuthUser:
 
     def __post_init__(self):
         # Type checks
-        assert type(self.username) is str
-        assert type(self.password_hash) is str
-        assert type(self.roles) is list and all(isinstance(role, ServerAuthRole) for role in self.roles)
+        if (
+            not isinstance(self.username, str)
+            or not isinstance(self.password_hash, str)
+            or not isinstance(self.roles, list)
+            or not all(isinstance(role, ServerAuthRole) for role in self.roles)
+        ):
+            raise Exception('invalid server config')
 
     @classmethod
     def create_from_dict(cls, username: str, data: dict) -> 'ServerAuthUser':
@@ -73,7 +77,8 @@ class ServerAuthDatabase:
     _users: Dict[str, ServerAuthUser]
 
     def __init__(self, *, server_auth_users: Dict[str, ServerAuthUser]):
-        assert all(isinstance(user, ServerAuthUser) for user in server_auth_users.values())
+        if not all(isinstance(user, ServerAuthUser) for user in server_auth_users.values()):
+            raise Exception('invalid server config')
         self._users = server_auth_users
 
     @classmethod

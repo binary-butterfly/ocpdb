@@ -29,7 +29,7 @@ from flask_openapi.decorator import (
     SchemaReference,
     document,
 )
-from flask_openapi.schema import AnyOfField, IntegerField, StringField, NumericField
+from flask_openapi.schema import AnyOfField, IntegerField, NumericField, StringField
 from validataclass.validators import DataclassValidator
 
 from webapp.common.rest import BaseMethodView
@@ -67,6 +67,7 @@ from webapp.shared.ocpi_schema import (
     regular_hours_example,
     regular_hours_schema,
 )
+
 from .location_handler import LocationHandler
 from .location_search_queries import LocationSearchQuery
 

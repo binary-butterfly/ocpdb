@@ -16,6 +16,6 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from .server_auth_users import ServerAuthUser, ServerAuthRole, ServerAuthDatabase
+from .decorators import require_role, require_roles, skip_basic_auth
 from .server_auth_helper import ServerAuthHelper
-from .decorators import require_roles, require_role, skip_basic_auth
+from .server_auth_users import ServerAuthDatabase, ServerAuthRole, ServerAuthUser

@@ -21,8 +21,8 @@ from typing import Optional
 
 from validataclass.dataclasses import Default
 from validataclass.exceptions import ValidationError
-from validataclass.validators import AnyOfValidator, StringValidator, DecimalValidator, IntegerValidator
-from validataclass_search_queries.filters import SearchParamContains, SearchParamEquals, SearchParamCustom
+from validataclass.validators import AnyOfValidator, DecimalValidator, IntegerValidator, StringValidator
+from validataclass_search_queries.filters import SearchParamContains, SearchParamCustom, SearchParamEquals
 from validataclass_search_queries.pagination import OffsetPaginationMixin, PaginationLimitValidator
 from validataclass_search_queries.search_queries import BaseSearchQuery, search_query_dataclass
 from validataclass_search_queries.sorting import SortingMixin

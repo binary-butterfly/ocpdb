@@ -16,11 +16,10 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from typing import Any, TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING, Any, Optional
 
-from flask import jsonify, Response
+from flask import Response, jsonify
 from flask.views import MethodView
-from flask import jsonify, Response
 from validataclass.exceptions import ValidationError
 from validataclass.validators import DataclassValidator, T_Dataclass
 from validataclass_search_queries.pagination import PaginatedResult, paginated_api_response
@@ -28,6 +27,7 @@ from validataclass_search_queries.search_queries import BaseSearchQuery
 
 from webapp.common.config import ConfigHelper
 from webapp.common.unset_parameter import UnsetParameter
+
 from .exceptions import InputValidationException
 from .request_helper import RequestHelper
 
@@ -66,7 +66,7 @@ class BaseMethodView(MethodView):
             raw_input = self.request_helper.get_query_args(skip_empty=True)
             return validator.validate(raw_input)
         except ValidationError as e:
-            raise InputValidationException('Validation errors in query parameters.', data=e.to_dict())
+            raise InputValidationException('Validation errors in query parameters.', data=e.to_dict()) from e
 
     def validate_request(self, validator: DataclassValidator[T_Dataclass], *, default: Any = UnsetParameter) -> T_Dataclass:
         """
@@ -81,7 +81,7 @@ class BaseMethodView(MethodView):
             raw_input = self.request_helper.get_parsed_json(default=default)
             return validator.validate(raw_input)
         except ValidationError as e:
-            raise InputValidationException('Validation errors in request body.', data=e.to_dict())
+            raise InputValidationException('Validation errors in request body.', data=e.to_dict()) from e
 
     def jsonify_paginated_response(
         self,

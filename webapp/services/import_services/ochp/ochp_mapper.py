@@ -17,25 +17,36 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 from datetime import datetime, timezone
-from typing import List, Any, Dict
+from typing import Any, Dict, List
 
 from pycountry import countries
 
-from webapp.models.connector import PowerType, ConnectorFormat, ConnectorType
-from webapp.models.evse import EvseStatus, ParkingRestriction, Capability
+from webapp.models.connector import ConnectorFormat, ConnectorType, PowerType
+from webapp.models.evse import Capability, EvseStatus, ParkingRestriction
 from webapp.models.image import ImageCategory
 from webapp.models.location import ParkingType
-from webapp.services.import_services.models import LocationUpdate, EvseUpdate, ConnectorUpdate, ImageUpdate, RegularHoursUpdate
-from .ochp_models import OchpParkingRestrictionType, OchpStaticStatus, OchpChargePointType, OchpAuthMethodType, OchpLocationType, \
-    OchpConnectorFormat, OchpConnectorStandard, OchpImageCategory, OchpMajorStatus, OchpMinorStatus
-from .ochp_validators import ChargePointInput, ConnectorInput, ImageInput, ChargePointStatusInput
+from webapp.services.import_services.models import ConnectorUpdate, EvseUpdate, ImageUpdate, LocationUpdate, RegularHoursUpdate
+
+from .ochp_models import (
+    OchpAuthMethodType,
+    OchpChargePointType,
+    OchpConnectorFormat,
+    OchpConnectorStandard,
+    OchpImageCategory,
+    OchpLocationType,
+    OchpMajorStatus,
+    OchpMinorStatus,
+    OchpParkingRestrictionType,
+    OchpStaticStatus,
+)
+from .ochp_validators import ChargePointInput, ChargePointStatusInput, ConnectorInput, ImageInput
 
 
 class OchpMapper:
 
     @staticmethod
     def clean_list(items: List[Any]) -> List[Any]:
-        return list(set([item for item in items if item is not None]))
+        return list({item for item in items if item is not None})
 
     @staticmethod
     def map_connector_format(ochp_format: OchpConnectorFormat) -> ConnectorFormat:
@@ -237,10 +248,12 @@ class OchpMapper:
             uid=evse_status.evseId,
             last_updated=evse_status.ttl,
         )
+
         if evse_status.minor is None:
             evse_update.status = self.map_ochp_major_status_to_evse_status(evse_status.major)
         else:
             evse_update.status = self.map_ochp_minor_status_to_evse_status(evse_status.minor)
+
         return evse_update
 
     @staticmethod

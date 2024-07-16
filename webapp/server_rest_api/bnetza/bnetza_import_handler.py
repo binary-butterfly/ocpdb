@@ -18,10 +18,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from pathlib import Path
 
+from webapp.dependencies import dependencies
 from webapp.server_rest_api.base_handler import ServerApiBaseHandler
 from webapp.services.import_services.bnetza import BnetzaImportService
 from webapp.services.import_services.import_celery import bnetza_import_by_file
-from webapp.dependencies import dependencies
 
 
 class BnetzaImportHandler(ServerApiBaseHandler):
@@ -35,4 +35,4 @@ class BnetzaImportHandler(ServerApiBaseHandler):
     def handle_import_by_file(import_path: Path) -> str:
         helper = dependencies.get_celery_helper()
         helper.delay(bnetza_import_by_file, str(import_path))
-        return "Import started"
+        return 'Import started'

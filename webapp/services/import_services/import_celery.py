@@ -17,8 +17,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 from pathlib import Path
 
-from webapp.extensions import celery
 from webapp.dependencies import dependencies
+from webapp.extensions import celery
 
 
 @celery.task

@@ -16,13 +16,14 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from datetime import datetime, time, timezone, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Dict, List
 
 from validataclass.exceptions import ValidationError
 from validataclass.validators import DataclassValidator
 
 from webapp.services.import_services.base_import_service import BaseImportService
+
 from .ochp_api_client import OchpApiClient
 from .ochp_mapper import OchpMapper
 from .ochp_validators import ChargePointInput, ChargePointStatusInput
@@ -30,8 +31,8 @@ from .ochp_validators import ChargePointInput, ChargePointStatusInput
 
 class OchpImportService(BaseImportService):
     ochp_api_client: OchpApiClient
-    charge_point_validator: ChargePointInput = DataclassValidator(ChargePointInput)
-    charge_point_status_validator: ChargePointStatusInput = DataclassValidator(ChargePointStatusInput)
+    charge_point_validator = DataclassValidator(ChargePointInput)
+    charge_point_status_validator = DataclassValidator(ChargePointStatusInput)
 
     ochp_mapper = OchpMapper()
 
@@ -47,7 +48,7 @@ class OchpImportService(BaseImportService):
         for item in self.ochp_api_client.download_base_data():
             try:
                 ochp_chargepoint = self.charge_point_validator.validate(item)
-            except ValidationError as e:
+            except ValidationError:
                 # TODO: error handling
                 continue
             if ochp_chargepoint.locationId not in chargepoints_by_location.keys():
@@ -55,7 +56,7 @@ class OchpImportService(BaseImportService):
             chargepoints_by_location[ochp_chargepoint.locationId].append(ochp_chargepoint)
 
         location_updates = []
-        for location_uid, ochp_chargepoints in chargepoints_by_location.items():
+        for ochp_chargepoints in chargepoints_by_location.values():
             location_updates.append(self.ochp_mapper.map_chargepoint_to_location_update(ochp_chargepoints))
 
         self.save_location_updates(location_updates, 'ochp')

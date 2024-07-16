@@ -21,15 +21,15 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from enum import Enum
 from json.decoder import JSONDecodeError
-from typing import Optional, Union, Tuple
+from typing import Optional, Tuple, Union
 
 from requests import request
 from requests.exceptions import ConnectionError, Timeout
 from urllib3.exceptions import NewConnectionError
 
 from webapp.common.config import ConfigHelper
-from webapp.common.logger import Logger
 from webapp.common.json import DefaultJSONEncoder
+from webapp.common.logger import Logger
 
 
 class RemoteServerType(Enum):
@@ -114,28 +114,29 @@ class RemoteHelper(RemoteHelperMethodMixin):
                 auth=auth,
                 data=(data if raw else json.dumps(data, cls=DefaultJSONEncoder)) if data else None,
                 headers={'content-type': 'application/json', **({} if headers is None else headers)},
+                timeout=30,
             )
 
-            self.logger.info('server-remote', "%s %s: HTTP %s%s\n<< %s" % (
+            self.logger.info('server-remote', '%s %s: HTTP %s%s\n<< %s' % (
                 url,
                 method,
                 response.status_code,
-                '' if data is None else ("\n>> %s" % data),
+                '' if data is None else ('\n>> %s' % data),
                 response.text,
             ))
             try:
                 if response.status_code == 404 and ignore_404:
-                    return
+                    return None
                 if response.status_code not in [200, 201]:
                     raise RemoteException(http_status=response.status_code)
                 if response.status_code == 204:
-                    return
+                    return None
                 if raw:
                     return response.content
                 return response.json()
-            except JSONDecodeError:
-                raise RemoteException(http_status=response.status_code)
+            except JSONDecodeError as e:
+                raise RemoteException(http_status=response.status_code) from e
 
-        except (ConnectionError, NewConnectionError, Timeout):
+        except (ConnectionError, NewConnectionError, Timeout) as e:
             self.logger.error('server-remote', 'cannot %s data to %s: %s' % (method, url, data))
-            raise RemoteException
+            raise RemoteException from e

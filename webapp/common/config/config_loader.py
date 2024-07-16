@@ -22,7 +22,7 @@ from flask import Flask
 from yaml import safe_load
 
 from webapp.common.constants import BaseConfig
-from webapp.common.remote_helper import RemoteServerType, RemoteServer
+from webapp.common.remote_helper import RemoteServer, RemoteServerType
 
 
 class ConfigLoader:
@@ -42,8 +42,10 @@ class ConfigLoader:
                 and os.getenv('OCPDB_POSTGRES_DB') \
                 and os.getenv('OCPDB_POSTGRES_PASSWORD') \
                 and os.getenv('OCPDB_POSTGRES_HOST'):
-            app.config['SQLALCHEMY_DATABASE_URI'] = f'postgresql://{os.getenv("OCPDB_POSTGRES_USER")}:{os.getenv("OCPDB_POSTGRES_PASSWORD")}' \
-                                                    f'@{os.getenv("OCPDB_POSTGRES_HOST")}/{os.getenv("OCPDB_POSTGRES_DB")}'
+            app.config['SQLALCHEMY_DATABASE_URI'] = (
+                f'postgresql://{os.getenv("OCPDB_POSTGRES_USER")}:{os.getenv("OCPDB_POSTGRES_PASSWORD")}'
+                f'@{os.getenv("OCPDB_POSTGRES_HOST")}/{os.getenv("OCPDB_POSTGRES_DB")}'
+            )
 
         # Load config from yaml file
         config_path = os.path.join(app.config['PROJECT_ROOT'], os.pardir, os.getenv('CONFIG_FILE', 'config.yaml'))

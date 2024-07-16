@@ -16,14 +16,12 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from typing import Tuple, Dict
-
-from ngram import NGram
 from decimal import Decimal
-from math import pi, cos, exp
-from geopy.distance import geodesic
+from math import cos, exp, pi
 
+from geopy.distance import geodesic
 from mercantile import LngLatBbox
+from ngram import NGram
 
 from webapp.models import Location
 from webapp.repositories import LocationRepository
@@ -48,7 +46,7 @@ class MatchingService(BaseService):
 
     def match(self):
         static_locations = self.location_repository.fetch_locations_by_source('bnetza')
-        for counter, static_location in enumerate(static_locations):
+        for static_location in static_locations:
             self.match_location(static_location)
 
     def match_location(self, static_location: Location):

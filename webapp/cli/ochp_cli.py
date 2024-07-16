@@ -22,7 +22,6 @@ from flask.cli import AppGroup
 from webapp.common.error_handling import catch_exception
 from webapp.dependencies import dependencies
 
-
 ochp_cli = AppGroup('ochp')
 
 
@@ -44,5 +43,5 @@ def cli_get(full: bool = False):
 @ochp_cli.command('status', help='OCHP GetStatus: downloads and stores chargepoint live status')
 @click.option('--full', 'full_sync', default=False, is_flag=True)
 @catch_exception
-def cli_get(full_sync: bool = False):
+def cli_get_status(full_sync: bool = False):
     dependencies.get_import_services().ochp_import_service.live_load_and_save(full_sync)

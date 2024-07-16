@@ -16,17 +16,17 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from typing import List, Dict, Union, Optional
+from typing import Dict, List, Optional, Union
 
 from validataclass.helpers import OptionalUnset, UnsetValue
 
 from webapp.common.remote_helper import RemoteHelper
-from webapp.models import Location, Business, Image, Evse, Connector, RegularHours
-from webapp.repositories import LocationRepository, EvseRepository, ConnectorRepository, ObjectNotFoundException, OptionRepository
+from webapp.models import Business, Connector, Evse, Image, Location, RegularHours
+from webapp.repositories import ConnectorRepository, EvseRepository, LocationRepository, ObjectNotFoundException, OptionRepository
 from webapp.repositories.business_repository import BusinessRepository
 from webapp.repositories.image_repository import ImageRepository
 from webapp.services.base_service import BaseService
-from webapp.services.import_services.models import LocationUpdate, EvseUpdate, ConnectorUpdate, ImageUpdate, RegularHoursUpdate
+from webapp.services.import_services.models import ConnectorUpdate, EvseUpdate, ImageUpdate, LocationUpdate, RegularHoursUpdate
 
 
 class BaseImportService(BaseService):

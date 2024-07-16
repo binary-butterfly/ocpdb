@@ -17,15 +17,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 import click as click
-from flask.cli import AppGroup, with_appcontext
-from webapp.models.connector import ConnectorStatus
-from webapp.services.pub_sub_services.subscrption_service import PubSubService
+from flask.cli import AppGroup
+
 from webapp.dependencies import dependencies
+from webapp.models.connector import ConnectorStatus
+from webapp.services.pub_sub_services import PubSubService
 
-cli_connector = AppGroup('connector')
+pubsub_cli = AppGroup('pubsub')
 
 
-@cli_connector.command('set-status', help='set connector status')
+@pubsub_cli.command('set-connector-status', help='set connector status')
 @click.argument('connector_uid', type=str)
 @click.argument('connector_status', type=click.Choice([item.value for item in ConnectorStatus]))
 def set_connector_status(connector_uid: str, connector_status: str):
@@ -33,7 +34,7 @@ def set_connector_status(connector_uid: str, connector_status: str):
     pubsub_client.pub(f'CONNECTOR.{connector_uid.upper()}.STATUS', connector_status)
 
 
-@cli_connector.command('subscribe', help='set connector status')
+@pubsub_cli.command('subscribe', help='set connector status')
 def subscribe_connectors():
     pub_sub_connector_service = PubSubService(
         pubsub_client=dependencies.get_pubsub_client(),

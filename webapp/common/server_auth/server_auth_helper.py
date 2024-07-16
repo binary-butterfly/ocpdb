@@ -19,7 +19,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from flask import Request
 
 from webapp.common.contexts import ContextHelper
-from .exceptions import ServerApiUnauthorizedException, ServerApiMissingRoleException
+
+from .exceptions import ServerApiMissingRoleException, ServerApiUnauthorizedException
 from .server_auth_users import ServerAuthDatabase, ServerAuthRole, ServerAuthUser
 
 
@@ -50,7 +51,7 @@ class ServerAuthHelper:
 
         # Set user in request context
         request_ctx = self.context_helper.get_request_context()
-        setattr(request_ctx, 'server_auth_user', user)
+        request_ctx.server_auth_user = user
 
     def is_authenticated(self) -> bool:
         """

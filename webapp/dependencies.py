@@ -17,9 +17,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 import functools
-from typing import Callable, TYPE_CHECKING
-from butterfly_pubsub.sync import PubSubClient
+from typing import TYPE_CHECKING, Callable
 
+from butterfly_pubsub.sync import PubSubClient
 from flask import current_app
 from sqlalchemy.orm import Session
 
@@ -29,11 +29,12 @@ from webapp.common.contexts import ContextHelper
 from webapp.common.remote_helper import RemoteHelper
 from webapp.common.rest import RequestHelper
 from webapp.repositories import (
-    LocationRepository,
-    EvseRepository,
-    ConnectorRepository,
     BusinessRepository,
-    ImageRepository, OptionRepository,
+    ConnectorRepository,
+    EvseRepository,
+    ImageRepository,
+    LocationRepository,
+    OptionRepository,
 )
 from webapp.services.import_services import ImportServices
 from webapp.services.matching_service import MatchingService
@@ -176,7 +177,7 @@ class Dependencies:
             remote_helper=self.get_remote_helper(),
             location_repository=self.get_location_repository(),
             evse_repository=self.get_evse_repository(),
-            connector_repository=self.get_evse_repository(),
+            connector_repository=self.get_connector_repository(),
             business_repository=self.get_business_repository(),
             image_repository=self.get_image_repository(),
             option_repository=self.get_option_repository(),

@@ -16,11 +16,13 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from typing import Any, Optional, Dict
+from typing import Any, Dict, Optional
 
-from flask import Request, request as flask_request
+from flask import Request
+from flask import request as flask_request
 
 from webapp.common.unset_parameter import UnsetParameter
+
 from .exceptions import WrongContentTypeException
 
 

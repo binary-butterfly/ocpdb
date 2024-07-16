@@ -17,8 +17,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 from flask import current_app, request
-from webapp.common.base_blueprint import BaseBlueprint
 
+from webapp.common.base_blueprint import BaseBlueprint
 from webapp.dependencies import dependencies
 
 

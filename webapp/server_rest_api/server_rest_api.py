@@ -18,10 +18,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from typing import List, Type
 
-from flask import request, Response
+from flask import Response, request
 
 from webapp.common.base_blueprint import BaseBlueprint
-from webapp.extensions import logger
+
 from .base_blueprint import ServerApiBaseBlueprint
 from .bnetza.bnetza_import_rest_api import BnetzaImportBlueprint
 from .giroe.giroe_rest_api import GiroeBlueprint

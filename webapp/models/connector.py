@@ -25,6 +25,7 @@ from sqlalchemy_utc import UtcDateTime
 
 from webapp.common.sqlalchemy import Col, Rel
 from webapp.extensions import db
+
 from .base import BaseModel
 
 if TYPE_CHECKING:
@@ -97,7 +98,7 @@ class PowerType(Enum):
 
 
 class Connector(db.Model, BaseModel):
-    __tablename__ = "connector"
+    __tablename__ = 'connector'
 
     evse: Rel['Evse'] = db.relationship('Evse', back_populates='connectors')
     evse_id: Col[int] = db.Column(db.BigInteger, db.ForeignKey('evse.id', use_alter=True), nullable=False)

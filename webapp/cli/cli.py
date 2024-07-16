@@ -18,14 +18,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from flask import Flask
 
-from .match_cli import match_cli
-from .ochp_cli import ochp_cli
-from .stadtnavi_cli import stadtnavi_cli
+from .bnetza_cli import bnetza_cli
 from .chargeit_cli import chargeit_cli
 from .giroe_cli import giroe_cli
-from .bnetza_cli import bnetza_cli
-from .temppubsub import set_connector_status
-from .temppubsub import subscribe_connectors
+from .match_cli import match_cli
+from .ochp_cli import ochp_cli
+from .pubsub import pubsub_cli
+from .stadtnavi_cli import stadtnavi_cli
 
 
 def register_cli_to_app(app: Flask):
@@ -35,5 +34,4 @@ def register_cli_to_app(app: Flask):
     app.cli.add_command(match_cli)
     app.cli.add_command(ochp_cli)
     app.cli.add_command(stadtnavi_cli)
-    app.cli.add_command(set_connector_status)
-    app.cli.add_command(subscribe_connectors)
+    app.cli.add_command(pubsub_cli)

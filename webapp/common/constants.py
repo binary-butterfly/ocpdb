@@ -20,9 +20,9 @@ import os
 
 
 class BaseConfig:
-    INSTANCE_FOLDER_PATH = os.path.join('/tmp', 'instance')
+    INSTANCE_FOLDER_PATH = os.path.join('/tmp', 'instance')  # noqa: S108
 
-    PROJECT_NAME = "ocpdb"
+    PROJECT_NAME = 'ocpdb'
     PROJECT_VERSION = '1.0'
 
     MAIL_SERVER = 'letterbox-online.de'

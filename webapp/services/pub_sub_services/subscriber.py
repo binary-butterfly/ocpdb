@@ -21,9 +21,9 @@ from butterfly_pubsub import PubSubMessage
 from butterfly_pubsub.sync import PubSubSubscriber as PubSubSubscriberParent
 
 from webapp.common.logger import Logger
+from webapp.dependencies import dependencies
 from webapp.models.evse import EvseStatus
 from webapp.repositories import ObjectNotFoundException
-from webapp.dependencies import dependencies
 from webapp.shared.evse.evse_mapper import EvseMapper
 
 

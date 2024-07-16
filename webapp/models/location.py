@@ -19,22 +19,23 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from datetime import datetime
 from decimal import Decimal
 from enum import Enum
-from typing import Optional, List, TYPE_CHECKING
+from typing import TYPE_CHECKING, List, Optional
 
-from sqlalchemy import event, func, Index
+from sqlalchemy import Index, event, func
 from sqlalchemy_utc import UtcDateTime
 
 from webapp.common.sqlalchemy import Col, Rel
 from webapp.extensions import db
+
 from .base import BaseModel, Point
 
 if TYPE_CHECKING:
+    from .business import Business
     from .evse import Evse
+    from .exceptional_closing_period import ExceptionalClosingPeriod
+    from .exceptional_opening_period import ExceptionalOpeningPeriod
     from .image import Image
     from .regular_hours import RegularHours
-    from .exceptional_opening_period import ExceptionalOpeningPeriod
-    from .exceptional_closing_period import ExceptionalClosingPeriod
-    from .business import Business
 
 
 class ParkingType(Enum):
@@ -102,7 +103,7 @@ location_image = db.Table(
 
 
 class Location(db.Model, BaseModel):
-    __tablename__ = "location"
+    __tablename__ = 'location'
     __table_args__ = (
         Index('uid', 'source'),
     )
@@ -111,23 +112,23 @@ class Location(db.Model, BaseModel):
                               nullable=False)  # OCHP: locationId                      OCPI: id
     source: Col[str] = db.Column(db.String(64), index=True, nullable=False)
 
-    evses: Rel[List['Evse']] = db.relationship('Evse', back_populates='location', cascade="all, delete, delete-orphan")
-    images: Rel[List['Image']] = db.relationship("Image", secondary=location_image)
+    evses: Rel[List['Evse']] = db.relationship('Evse', back_populates='location', cascade='all, delete, delete-orphan')
+    images: Rel[List['Image']] = db.relationship('Image', secondary=location_image)
 
     exceptional_openings: Rel[List['ExceptionalOpeningPeriod']] = db.relationship(
         'ExceptionalOpeningPeriod',
         back_populates='location',
-        cascade="all, delete, delete-orphan",
+        cascade='all, delete, delete-orphan',
     )
     exceptional_closings: Rel[List['ExceptionalClosingPeriod']] = db.relationship(
         'ExceptionalClosingPeriod',
         back_populates='location',
-        cascade="all, delete, delete-orphan",
+        cascade='all, delete, delete-orphan',
     )
     regular_hours: Rel[List['RegularHours']] = db.relationship(
         'RegularHours',
         back_populates='location',
-        cascade="all, delete, delete-orphan",
+        cascade='all, delete, delete-orphan',
     )
 
     operator_id: Col[int] = db.Column(db.BigInteger, db.ForeignKey('business.id', use_alter=True))
@@ -148,8 +149,7 @@ class Location(db.Model, BaseModel):
     state: Col[str] = db.Column(db.String(255))  # OCPI: state
     country: Col[str] = db.Column(db.String(2))  # OCHP: chargePointAddress.country      OCPI: country_code
     lat: Col[Decimal] = db.Column(db.Numeric(9, 7))  # OCHP: chargePointLocation.lat         OCPI: coordinates.latitude
-    lon: Col[Decimal] = db.Column(
-        db.Numeric(10, 7))  # OCHP: chargePointLocation.lon         OCPI: coordinates.longitude
+    lon: Col[Decimal] = db.Column(db.Numeric(10, 7))  # OCHP: chargePointLocation.lon         OCPI: coordinates.longitude
 
     directions: Col[str] = db.Column(db.Text)  # OCPI: directions
     parking_type: Col[ParkingType] = db.Column(db.Enum(ParkingType))
@@ -158,16 +158,15 @@ class Location(db.Model, BaseModel):
     last_updated: Col[datetime] = db.Column(UtcDateTime())  # OCHP: timestamp
 
     terms_and_conditions: Col[str] = db.Column(db.String(255))  # OCPI: terms_and_conditions
-    twentyfourseven: Col[bool] = db.Column(
-        db.Boolean)  # OCHP: openingTimes.twentyfourseven    OCPI: opening_times.twentyfourseven
+    twentyfourseven: Col[bool] = db.Column(db.Boolean)  # OCHP: openingTimes.twentyfourseven    OCPI: opening_times.twentyfourseven
 
     geometry = db.Column(Point(), nullable=False)
 
     def to_dict(
-            self,
-            fields: Optional[List[str]] = None,
-            ignore: Optional[List[str]] = None,
-            transform_ocpi: bool = False,
+        self,
+        fields: Optional[List[str]] = None,
+        ignore: Optional[List[str]] = None,
+        transform_ocpi: bool = False,
     ) -> dict:
         result = super().to_dict(fields, ignore)
 

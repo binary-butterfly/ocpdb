@@ -16,10 +16,11 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from typing import Optional, List, TYPE_CHECKING
+from typing import TYPE_CHECKING, List, Optional
 
 from webapp.common.sqlalchemy import Col, Rel
 from webapp.extensions import db
+
 from .base import BaseModel
 
 if TYPE_CHECKING:
@@ -27,7 +28,7 @@ if TYPE_CHECKING:
 
 
 class RegularHours(db.Model, BaseModel):
-    __tablename__ = "regular_hours"
+    __tablename__ = 'regular_hours'
 
     location: Rel['Location'] = db.relationship('Location', back_populates='regular_hours')
     location_id = db.Column(db.BigInteger, db.ForeignKey('location.id', use_alter=True), nullable=False)

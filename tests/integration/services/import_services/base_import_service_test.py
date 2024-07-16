@@ -18,9 +18,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from decimal import Decimal
 
 import pytest
+
 from webapp.dependencies import dependencies
 from webapp.models import Location
-
 from webapp.services.import_services.base_import_service import BaseImportService
 from webapp.services.import_services.models import LocationUpdate
 

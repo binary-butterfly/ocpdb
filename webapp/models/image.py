@@ -19,13 +19,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import os
 from datetime import datetime
 from enum import Enum
-from typing import Optional, List
+from typing import List, Optional
 
 from flask import current_app
 from sqlalchemy_utc import UtcDateTime
 
 from webapp.common.sqlalchemy import Col
 from webapp.extensions import db
+
 from .base import BaseModel
 
 
@@ -40,7 +41,7 @@ class ImageCategory(Enum):
 
 
 class Image(db.Model, BaseModel):
-    __tablename__ = "image"
+    __tablename__ = 'image'
 
     external_url: Col[str] = db.Column(db.String(255), index=True)
     type: Col[str] = db.Column(db.String(4))

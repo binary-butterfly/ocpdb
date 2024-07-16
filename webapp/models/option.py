@@ -18,6 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from webapp.common.sqlalchemy import Col
 from webapp.extensions import db
+
 from .base import BaseModel
 
 

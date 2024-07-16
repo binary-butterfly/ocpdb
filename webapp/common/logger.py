@@ -22,7 +22,7 @@ from logging import Logger as PythonLogger
 from logging.handlers import WatchedFileHandler
 from typing import Optional
 
-from flask import Flask, Config
+from flask import Config, Flask
 
 
 class Logger:
@@ -66,19 +66,19 @@ class Logger:
         return logger
 
     def debug(self, log_name: str, message: str, details: Optional[str] = None):
-        self.get_log(log_name).debug(message if details is None else "%s:\n%s" % (message, details))
+        self.get_log(log_name).debug(message if details is None else '%s:\n%s' % (message, details))
 
     def info(self, log_name: str, message: str, details: Optional[str] = None):
-        self.get_log(log_name).info(message if details is None else "%s:\n%s" % (message, details))
+        self.get_log(log_name).info(message if details is None else '%s:\n%s' % (message, details))
 
     def warn(self, log_name: str, message: str, details: Optional[str] = None):
-        self.get_log(log_name).warning(message if details is None else "%s:\n%s" % (message, details))
+        self.get_log(log_name).warning(message if details is None else '%s:\n%s' % (message, details))
 
     def error(self, log_name: str, message: str, details: Optional[str] = None):
-        self.get_log(log_name).error(message if details is None else "%s:\n%s" % (message, details))
+        self.get_log(log_name).error(message if details is None else '%s:\n%s' % (message, details))
 
     def exception(self, log_name: str, message: str, details: Optional[str] = None):
-        self.get_log(log_name).exception(message if details is None else "%s:\n%s" % (message, details))
+        self.get_log(log_name).exception(message if details is None else '%s:\n%s' % (message, details))
 
     def critical(self, log_name: str, message: str, details: Optional[str] = None):
-        self.get_log(log_name).critical(message if details is None else "%s:\n%s" % (message, details))
+        self.get_log(log_name).critical(message if details is None else '%s:\n%s' % (message, details))
