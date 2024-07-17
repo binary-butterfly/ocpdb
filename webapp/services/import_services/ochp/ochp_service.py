@@ -47,9 +47,12 @@ class OchpImportService(BaseImportService):
         chargepoints_by_location: Dict[str, List[ChargePointInput]] = {}
         for item in self.ochp_api_client.download_base_data():
             try:
-                ochp_chargepoint = self.charge_point_validator.validate(item)
-            except ValidationError:
-                # TODO: error handling
+                ochp_chargepoint: ChargePointInput = self.charge_point_validator.validate(item)
+            except ValidationError as e:
+                self.logger.info(
+                    'import-ochp',
+                    f'evse status {item} has validation error: {e.to_dict()}',
+                )
                 continue
             if ochp_chargepoint.locationId not in chargepoints_by_location.keys():
                 chargepoints_by_location[ochp_chargepoint.locationId] = []
@@ -71,9 +74,14 @@ class OchpImportService(BaseImportService):
 
         for evse_status_dict in evse_status_dicts:
             try:
-                evse_status_input = self.charge_point_status_validator.validate(evse_status_dict)
-            except ValidationError:
-                # TODO: error handling
+                evse_status_input: ChargePointStatusInput = self.charge_point_status_validator.validate(
+                    evse_status_dict,
+                )
+            except ValidationError as e:
+                self.logger.info(
+                    'import-ochp',
+                    f'evse status {evse_status_dict} has validation error: {e.to_dict()}',
+                )
                 continue
             evse_update = self.ochp_mapper.map_evse_status_to_update(evse_status_input)
             evse_updates.append(evse_update)

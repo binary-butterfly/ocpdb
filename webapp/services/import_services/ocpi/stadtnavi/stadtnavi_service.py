@@ -27,8 +27,8 @@ from webapp.services.import_services.ocpi.ocpi_validators import LocationInput, 
 
 class StadtnaviImportService(BaseImportService):
 
-    ocpi_validator: OcpiInput = DataclassValidator(OcpiInput)
-    location_validator: LocationInput = DataclassValidator(LocationInput)
+    ocpi_validator = DataclassValidator(OcpiInput)
+    location_validator = DataclassValidator(LocationInput)
     ocpi_mapper = OcpiMapper()
 
     def download_and_save(self):
@@ -37,15 +37,17 @@ class StadtnaviImportService(BaseImportService):
             path='/herrenberg/charging-stations/charging-stations-ocpi.json',
         )
 
-        input_data = self.ocpi_validator.validate(input_dict)
+        input_data: OcpiInput = self.ocpi_validator.validate(input_dict)
 
-        exceptions = []
         location_updates = []
         for location_dict in input_data.data:
             try:
-                location_input = self.location_validator.validate(location_dict)
-            except ValidationError as exception:
-                exceptions.append((input_data, exception))
+                location_input: LocationInput = self.location_validator.validate(location_dict)
+            except ValidationError as e:
+                self.logger.info(
+                    'import-stadtnavi',
+                    f'evse status {location_dict} has validation error: {e.to_dict()}',
+                )
                 continue
             location_updates.append(self.ocpi_mapper.map_location(location_input, 'stadtnavi'))
         self.save_location_updates(location_updates, 'stadtnavi')

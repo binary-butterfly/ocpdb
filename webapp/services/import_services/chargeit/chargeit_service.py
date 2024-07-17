@@ -28,8 +28,8 @@ from .chargeit_validators import ChargeitInput, LocationInput
 
 class ChargeitImportService(BaseImportService):
     chargit_mapper: ChargeitMapper = ChargeitMapper()
-    chargeit_validator: DataclassValidator[ChargeitInput] = DataclassValidator(ChargeitInput)
-    location_validator: DataclassValidator[LocationInput] = DataclassValidator(LocationInput)
+    chargeit_validator = DataclassValidator(ChargeitInput)
+    location_validator = DataclassValidator(LocationInput)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -37,15 +37,17 @@ class ChargeitImportService(BaseImportService):
     def download_and_save(self):
         input_dict = self.remote_helper.get(remote_server_type=RemoteServerType.CHARGEIT, path='/ps/rest/feed')
 
-        input_data = self.chargeit_validator.validate(input_dict)
+        input_data: ChargeitInput = self.chargeit_validator.validate(input_dict)
 
-        exceptions = []
         location_updates = []
         for location_dict in input_data.operator.operatorPlaces:
             try:
-                location_input = self.location_validator.validate(location_dict)
-            except ValidationError as exception:
-                exceptions.append((input_data, exception))
+                location_input: LocationInput = self.location_validator.validate(location_dict)
+            except ValidationError as e:
+                self.logger.info(
+                    'import-charge-it',
+                    f'location {location_dict} has validation error: {e.to_dict()}',
+                )
                 continue
 
             # don't add unpublished location to list, then it will be removed afterwards if it still is in db
