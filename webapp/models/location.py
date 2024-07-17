@@ -203,4 +203,3 @@ def set_geometry(mapper, connection, location):
             location.geometry = func.ST_SetSRID(func.ST_MakePoint(float(location.lon), float(location.lat)), 4326)
         else:
             location.geometry = func.GeomFromText('POINT(%s %s)' % (float(location.lon), float(location.lat)))
-
