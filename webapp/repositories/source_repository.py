@@ -16,11 +16,22 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from .base_repository import ObjectNotFoundException
-from .business_repository import BusinessRepository
-from .connector_repository import ConnectorRepository
-from .evse_repository import EvseRepository
-from .image_repository import ImageRepository
-from .location_repository import LocationRepository
-from .option_repository import OptionRepository
-from .source_repository import SourceRepository
+
+from webapp.models import Image, Source
+
+from .base_repository import BaseRepository
+
+
+class SourceRepository(BaseRepository[Source]):
+    model_cls = Source
+
+    def fetch_source_by_uid(self, source_uid: str) -> Source:
+        result = self.session.query(Image).get(source_uid)
+
+        return self._or_raise(result, f'source {source_uid} not found')
+
+    def save_source(self, source: Source, *, commit: bool = True):
+        self._save_resources(source, commit=commit)
+
+    def delete_source(self, source: Source, *, commit: bool = True):
+        self._delete_resources(source, commit=commit)

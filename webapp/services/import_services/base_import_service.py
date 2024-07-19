@@ -16,22 +16,33 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+from abc import ABC, abstractmethod
+from datetime import datetime, timezone
 from typing import Dict, List, Optional, Union
 
 from validataclass.helpers import OptionalUnset, UnsetValue
 
 from webapp.common.remote_helper import RemoteHelper
-from webapp.models import Business, Connector, Evse, Image, Location, RegularHours
-from webapp.repositories import ConnectorRepository, EvseRepository, LocationRepository, ObjectNotFoundException, OptionRepository
+from webapp.models import Business, Connector, Evse, Image, Location, RegularHours, Source
+from webapp.models.source import SourceStatus
+from webapp.repositories import (
+    ConnectorRepository,
+    EvseRepository,
+    LocationRepository,
+    ObjectNotFoundException,
+    OptionRepository,
+    SourceRepository,
+)
 from webapp.repositories.business_repository import BusinessRepository
 from webapp.repositories.image_repository import ImageRepository
 from webapp.services.base_service import BaseService
-from webapp.services.import_services.models import ConnectorUpdate, EvseUpdate, ImageUpdate, LocationUpdate, RegularHoursUpdate
+from webapp.services.import_services.models import ConnectorUpdate, EvseUpdate, ImageUpdate, LocationUpdate, RegularHoursUpdate, SourceInfo
 
 
-class BaseImportService(BaseService):
+class BaseImportService(BaseService, ABC):
     remote_helper: RemoteHelper
 
+    source_repository: SourceRepository
     location_repository: LocationRepository
     evse_repository: EvseRepository
     connector_repository: ConnectorRepository
@@ -39,17 +50,22 @@ class BaseImportService(BaseService):
     image_repository: ImageRepository
     option_repository: OptionRepository
 
+    @abstractmethod
+    @property
+    def source_info(self) -> SourceInfo:
+        pass
+
     def __init__(
-            self,
-            *args,
-            remote_helper: RemoteHelper,
-            location_repository: LocationRepository,
-            evse_repository: EvseRepository,
-            connector_repository: ConnectorRepository,
-            business_repository: BusinessRepository,
-            image_repository: ImageRepository,
-            option_repository: OptionRepository,
-            **kwargs,
+        self,
+        *args,
+        remote_helper: RemoteHelper,
+        location_repository: LocationRepository,
+        evse_repository: EvseRepository,
+        connector_repository: ConnectorRepository,
+        business_repository: BusinessRepository,
+        image_repository: ImageRepository,
+        option_repository: OptionRepository,
+        **kwargs,
     ):
         super().__init__(*args, **kwargs)
         self.remote_helper = remote_helper
@@ -60,9 +76,9 @@ class BaseImportService(BaseService):
         self.image_repository = image_repository
         self.option_repository = option_repository
 
-    def save_location_updates(self, location_updates: List[LocationUpdate], source: str):
+    def save_location_updates(self, location_updates: List[LocationUpdate]):
         # get old location ids
-        old_location_ids = self.location_repository.fetch_location_ids_by_source(source)
+        old_location_ids = self.location_repository.fetch_location_ids_by_source(self.source_info.uid)
 
         # Business and Images are shared, so we just cache them to prevent sql queries
         businesses_by_name = {business.name: business for business in self.business_repository.fetch_businesses()}
@@ -73,7 +89,7 @@ class BaseImportService(BaseService):
         # evse_uids = {item[0]: item[1] for item in self.evse_repository.fetch_extended_evse_uids()}
 
         for location_update in location_updates:
-            self.save_location_update(source, location_update, businesses_by_name, old_location_ids, images_by_url)
+            self.save_location_update(location_update, businesses_by_name, old_location_ids, images_by_url)
 
         # delete locations which are not part of the updated dataset anymore
         for old_location_id in old_location_ids:
@@ -82,15 +98,14 @@ class BaseImportService(BaseService):
             )
 
     def save_location_update(
-            self,
-            source: str,
-            location_update: LocationUpdate,
-            businesses_by_name: Optional[Dict[str, Business]] = None,
-            old_location_ids: Optional[List[int]] = None,
-            images_by_url: Optional[Dict[str, Image]] = None,
+        self,
+        location_update: LocationUpdate,
+        businesses_by_name: Optional[Dict[str, Business]] = None,
+        old_location_ids: Optional[List[int]] = None,
+        images_by_url: Optional[Dict[str, Image]] = None,
     ):
         try:
-            location = self.location_repository.fetch_location_by_uid(source, location_update.uid, include_children=True)
+            location = self.location_repository.fetch_location_by_uid(self.source_info.uid, location_update.uid, include_children=True)
         except ObjectNotFoundException:
             location = Location()
         for key, value in location_update.to_dict().items():
@@ -115,13 +130,13 @@ class BaseImportService(BaseService):
         if old_location_ids is not None and location.id in old_location_ids:
             old_location_ids.remove(location.id)
 
-    def save_evse_updates(self, source: str, evse_updates: List[EvseUpdate]):
+    def save_evse_updates(self, evse_updates: List[EvseUpdate]):
         for evse_update in evse_updates:
-            self.save_evse_update(source, evse_update)
+            self.save_evse_update(evse_update)
 
-    def save_evse_update(self, source: str, evse_update: EvseUpdate):
+    def save_evse_update(self, evse_update: EvseUpdate):
         try:
-            evse = self.evse_repository.fetch_by_uid(source, evse_update.uid)
+            evse = self.evse_repository.fetch_by_uid(self.source_info.uid, evse_update.uid)
         except ObjectNotFoundException:
             return
 
@@ -156,11 +171,11 @@ class BaseImportService(BaseService):
         return connector
 
     def set_business(
-            self,
-            location: Location,
-            location_update: LocationUpdate,
-            location_key: str,
-            businesses_by_name: Optional[Dict[str, Business]] = None,
+        self,
+        location: Location,
+        location_update: LocationUpdate,
+        location_key: str,
+        businesses_by_name: Optional[Dict[str, Business]] = None,
     ):
         business_update = getattr(location_update, location_key)
         if business_update is UnsetValue:
@@ -194,10 +209,10 @@ class BaseImportService(BaseService):
         setattr(location, location_key, business)
 
     def set_image_list(
-            self,
-            primary_object: Union[Location, Evse],
-            image_updates: OptionalUnset[List[ImageUpdate]],
-            images_by_url: Optional[Dict[str, Image]] = None,
+        self,
+        primary_object: Union[Location, Evse],
+        image_updates: OptionalUnset[List[ImageUpdate]],
+        images_by_url: Optional[Dict[str, Image]] = None,
     ):
         if image_updates is UnsetValue:
             return
@@ -245,3 +260,42 @@ class BaseImportService(BaseService):
                 setattr(regular_hours, key, value)
             new_regular_hours_items.append(regular_hours)
         location.regular_hours = new_regular_hours_items
+
+    def get_source(self) -> Source:
+        try:
+            return self.source_repository.fetch_source_by_uid(self.source_info.uid)
+        except ObjectNotFoundException:
+            source = Source()
+            for key, value in self.source_info.to_dict().items():
+                setattr(source, key, value)
+            self.source_repository.save_source(source)
+
+            return source
+
+    def update_source(
+        self,
+        source: Source,
+        static_error_count: Optional[int] = None,
+        realtime_error_count: Optional[int] = None,
+        static_status: Optional[SourceStatus] = None,
+        realtime_status: Optional[SourceStatus] = None,
+    ):
+        for key, value in self.source_info.to_dict().items():
+            setattr(source, key, value)
+
+        if static_status is not None:
+            source.static_status = static_status
+        if realtime_status is not None:
+            source.realtime_status = realtime_status
+
+        if static_error_count is None:
+            source.static_data_updated_at = datetime.now(tz=timezone.utc)
+            source.static_error_count = static_error_count
+            source.static_status = SourceStatus.ACTIVE
+        if realtime_error_count is None:
+            source.realtime_data_updated_at = datetime.now(tz=timezone.utc)
+            source.realtime_error_count = realtime_error_count
+            if source.static_status == SourceStatus.ACTIVE:
+                source.realtime_status = SourceStatus.ACTIVE
+
+        self.source_repository.save_source(source)

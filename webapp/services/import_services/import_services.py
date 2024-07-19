@@ -17,7 +17,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 from webapp.common.remote_helper import RemoteHelper
-from webapp.repositories import ConnectorRepository, EvseRepository, LocationRepository, OptionRepository
+from webapp.repositories import ConnectorRepository, EvseRepository, LocationRepository, OptionRepository, SourceRepository
 from webapp.repositories.business_repository import BusinessRepository
 from webapp.repositories.image_repository import ImageRepository
 from webapp.services.base_service import BaseService
@@ -36,20 +36,22 @@ class ImportServices(BaseService):
     stadtnavi_import_service: StadtnaviImportService
 
     def __init__(
-            self,
-            *args,
-            location_repository: LocationRepository,
-            evse_repository: EvseRepository,
-            connector_repository: ConnectorRepository,
-            business_repository: BusinessRepository,
-            image_repository: ImageRepository,
-            option_repository: OptionRepository,
-            remote_helper: RemoteHelper,
-            **kwargs,
+        self,
+        *,
+        source_repository: SourceRepository,
+        location_repository: LocationRepository,
+        evse_repository: EvseRepository,
+        connector_repository: ConnectorRepository,
+        business_repository: BusinessRepository,
+        image_repository: ImageRepository,
+        option_repository: OptionRepository,
+        remote_helper: RemoteHelper,
+        **kwargs,
     ):
-        super().__init__(*args, **kwargs)
+        super().__init__(**kwargs)
 
         default_dependencies = {
+            'source_repository': source_repository,
             'location_repository': location_repository,
             'evse_repository': evse_repository,
             'connector_repository': connector_repository,

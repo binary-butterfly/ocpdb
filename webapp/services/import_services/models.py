@@ -19,7 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from dataclasses import asdict, dataclass
 from datetime import datetime
 from decimal import Decimal
-from typing import List
+from typing import List, Optional
 
 from validataclass.helpers import OptionalUnset, UnsetValue
 
@@ -28,6 +28,22 @@ from webapp.models.evse import Capability, EvseStatus, ParkingRestriction
 from webapp.models.image import ImageCategory
 from webapp.models.location import ParkingType
 from webapp.models.related_resource import RelatedResourceType
+
+
+@dataclass
+class SourceInfo:
+    uid: str
+    name: str
+    public_url: str
+    has_realtime_data: Optional[bool]
+    timezone: str = 'Europe/Berlin'
+    source_url: Optional[str] = None
+    attribution_license: Optional[str] = None
+    attribution_url: Optional[str] = None
+    attribution_contributor: Optional[str] = None
+
+    def to_dict(self) -> dict:
+        return {key: value for key, value in asdict(self).items() if value is not None}
 
 
 @dataclass

@@ -35,8 +35,8 @@ class OchpApiClient:
         'soapenv': 'http://schemas.xmlsoap.org/soap/envelope/',
         'ns': 'http://ochp.eu/1.4',
     }
-    get_charge_point_list_validator: DataclassValidator[GetChargePointListInput] = DataclassValidator(GetChargePointListInput)
-    get_status_validator: GetStatusEnvelopeInput = DataclassValidator(GetStatusEnvelopeInput)
+    get_charge_point_list_validator = DataclassValidator(GetChargePointListInput)
+    get_status_validator = DataclassValidator(GetStatusEnvelopeInput)
 
     def __init__(self, config_helper: ConfigHelper, remote_helper: RemoteHelper):
         self.config_helper = config_helper
@@ -78,7 +78,7 @@ class OchpApiClient:
                 'AuthMethodType',
             ]
         )
-        result = self.get_charge_point_list_validator.validate(input_dict)
+        result: GetChargePointListInput = self.get_charge_point_list_validator.validate(input_dict)
         return result.Envelope.Body.GetChargePointListResponse.chargePointInfoArray
 
     def download_live_data(self, last_update: Optional[datetime] = None) -> List[dict]:
@@ -97,7 +97,7 @@ class OchpApiClient:
             ],
             remote_type_tags=[],
         )
-        input_data = self.get_status_validator.validate(input_dict)
+        input_data: GetStatusEnvelopeInput = self.get_status_validator.validate(input_dict)
         return input_data.Envelope.Body.GetStatusResponse.evse
 
     def ochp_request(self, path: str, request_data: etree, action: str) -> etree.Element:

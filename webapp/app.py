@@ -28,6 +28,7 @@ from webapp.common.rest import RestApiErrorHandler
 from webapp.dependencies import dependencies
 from webapp.extensions import celery, cors, db, logger, migrate, openapi
 from webapp.frontend import FrontendBlueprint
+from webapp.prometheus_api import PrometheusRestApi
 from webapp.public_api import PublicApi
 from webapp.server_rest_api import ServerRestApi
 
@@ -65,6 +66,7 @@ def configure_blueprints(app):
     app.register_blueprint(PublicApi())
     app.register_blueprint(FrontendBlueprint())
     app.register_blueprint(ServerRestApi())
+    app.register_blueprint(PrometheusRestApi())
     register_cli_to_app(app)
 
 
