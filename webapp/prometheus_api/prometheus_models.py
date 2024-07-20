@@ -46,6 +46,13 @@ class SourceMetric(BaseMetric):
 
 
 @dataclass
+class EvseMetric(SourceMetric):
+    evse: str
+    location: str
+
+
+
+@dataclass
 class Metrics:
     help: str
     type: MetricType

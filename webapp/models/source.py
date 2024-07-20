@@ -20,11 +20,11 @@ from datetime import datetime
 from enum import Enum
 from typing import Optional
 
-from sqlalchemy.orm import Mapped
 from sqlalchemy_utc import UtcDateTime
 
 from webapp.extensions import db
 
+from ..common.sqlalchemy import Mapped
 from .base import BaseModel
 
 
@@ -38,7 +38,7 @@ class SourceStatus(Enum):
 class Source(db.Model, BaseModel):
     __tablename__ = 'source'
 
-    uid: Mapped[str] = db.Column(db.String(256), nullable=False, index=True)
+    uid: Mapped[str] = db.Column(db.String(256), nullable=False, index=True, unique=True)
     name: Mapped[str] = db.Column(db.String(256), nullable=True)
     public_url: Mapped[Optional[str]] = db.Column(db.String(4096), nullable=True)
 

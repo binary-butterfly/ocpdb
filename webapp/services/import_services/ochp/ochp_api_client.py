@@ -19,6 +19,8 @@ from datetime import datetime
 from typing import List, Optional
 
 from lxml import builder, etree
+from lxml.etree import XMLSyntaxError
+from validataclass.exceptions import ValidationError
 from validataclass.validators import DataclassValidator
 
 from webapp.common.config import ConfigHelper
@@ -76,9 +78,10 @@ class OchpApiClient:
                 'ChargePointStatusType',
                 'GeneralLocationType',
                 'AuthMethodType',
-            ]
+            ],
         )
         result: GetChargePointListInput = self.get_charge_point_list_validator.validate(input_dict)
+
         return result.Envelope.Body.GetChargePointListResponse.chargePointInfoArray
 
     def download_live_data(self, last_update: Optional[datetime] = None) -> List[dict]:
@@ -98,6 +101,7 @@ class OchpApiClient:
             remote_type_tags=[],
         )
         input_data: GetStatusEnvelopeInput = self.get_status_validator.validate(input_dict)
+
         return input_data.Envelope.Body.GetStatusResponse.evse
 
     def ochp_request(self, path: str, request_data: etree, action: str) -> etree.Element:
@@ -117,7 +121,10 @@ class OchpApiClient:
             headers={'content-type': 'text/xml', 'SOAPAction': action},
             raw=True,
         )
-        return etree.fromstring(result.decode('latin-1'))  # noqa: S320
+        try:
+            return etree.fromstring(result.decode('latin-1'))  # noqa: S320
+        except XMLSyntaxError:
+            raise ValidationError(code='invalid_xml', reason='Invalid XML')
 
     def get_security_header(self):
         nsmap_sec = {

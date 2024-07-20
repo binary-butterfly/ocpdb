@@ -21,6 +21,7 @@ from typing import Dict, List
 from validataclass.exceptions import ValidationError
 from validataclass.validators import DataclassValidator
 
+from webapp.common.remote_helper import RemoteException
 from webapp.models.source import SourceStatus
 from webapp.services.import_services.base_import_service import BaseImportService, SourceInfo
 
@@ -57,8 +58,8 @@ class OchpImportService(BaseImportService):
         chargepoints_by_location: Dict[str, List[ChargePointInput]] = {}
         try:
             ochp_chargepoint_dicts = self.ochp_api_client.download_base_data()
-        except ValidationError as e:
-            self.logger.info('import-ochp', f'ochp static data has validation error: {e.to_dict()}')
+        except (ValidationError, RemoteException) as e:
+            self.logger.info('import-ochp', f'ochp static data has error: {e.to_dict()}')
             self.update_source(source, static_status=SourceStatus.FAILED)
             return
         for ochp_chargepoint_dict in ochp_chargepoint_dicts:
@@ -93,8 +94,8 @@ class OchpImportService(BaseImportService):
             evse_status_dicts = self.ochp_api_client.download_live_data(
                 last_update=None if full_sync is True else source.realtime_data_updated_at,
             )
-        except ValidationError as e:
-            self.logger.info('import-ochp', f'ochp realtime data has validation error: {e.to_dict()}')
+        except (ValidationError, RemoteException) as e:
+            self.logger.info('import-ochp', f'ochp realtime data has error: {e.to_dict()}')
             self.update_source(source, realtime_status=SourceStatus.FAILED)
             return
         evse_updates = []

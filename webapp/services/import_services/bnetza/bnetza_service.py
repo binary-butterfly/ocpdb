@@ -15,18 +15,20 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
+
 from hashlib import sha256
 from io import BytesIO
 from pathlib import Path
 from typing import Dict, List, Tuple
 
 from openpyxl import load_workbook
+from openpyxl.utils.exceptions import InvalidFileException
 from openpyxl.worksheet.worksheet import Worksheet
 from validataclass.exceptions import ValidationError
 from validataclass.validators import DataclassValidator
 
-from webapp.common.remote_helper import RemoteServerType
-from webapp.models.source import SourceStatus
+from webapp.common.remote_helper import RemoteException, RemoteServerType
+from webapp.models.source import Source, SourceStatus
 from webapp.services.import_services.base_import_service import BaseImportService, SourceInfo
 
 from .bnetza_mapper import BnetzaMapper
@@ -74,17 +76,29 @@ class BnetzaImportService(BaseImportService):
     )
 
     def load_and_save_from_web(self):
-        data = self.remote_helper.get(remote_server_type=RemoteServerType.BNETZA, raw=True)
+        source = self.get_source()
+        try:
+            data = self.remote_helper.get(remote_server_type=RemoteServerType.BNETZA, raw=True)
+        except RemoteException as e:
+            self.logger.info('import-bnetza', f'bnetza request failed: {e.to_dict()}')
+            self.update_source(source, static_status=SourceStatus.FAILED)
+            return
         worksheet = load_workbook(filename=BytesIO(data)).active
-        self.load_and_save(worksheet)
+        self.load_and_save(source=source, worksheet=worksheet)
 
     def load_and_save_from_file(self, import_file_path: Path):
-        worksheet = load_workbook(filename=import_file_path).active
-        self.load_and_save(worksheet)
+        source = self.get_source()
+
+        try:
+            worksheet = load_workbook(filename=import_file_path).active
+        except InvalidFileException:
+            self.logger.info('import-bnetza', f'bnetza file {import_file_path} loading failed')
+            self.update_source(source, static_status=SourceStatus.FAILED)
+            return
+        self.load_and_save(source=source, worksheet=worksheet)
         self.delete_import_files()
 
-    def load_and_save(self, worksheet: Worksheet):
-        source = self.get_source()
+    def load_and_save(self, source: Source, worksheet: Worksheet):
         try:
             self.check_mapping(worksheet[11])
         except ValidationError as e:

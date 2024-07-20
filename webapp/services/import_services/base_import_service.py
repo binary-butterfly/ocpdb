@@ -50,8 +50,8 @@ class BaseImportService(BaseService, ABC):
     image_repository: ImageRepository
     option_repository: OptionRepository
 
-    @abstractmethod
     @property
+    @abstractmethod
     def source_info(self) -> SourceInfo:
         pass
 
@@ -59,6 +59,7 @@ class BaseImportService(BaseService, ABC):
         self,
         *args,
         remote_helper: RemoteHelper,
+        source_repository: SourceRepository,
         location_repository: LocationRepository,
         evse_repository: EvseRepository,
         connector_repository: ConnectorRepository,
@@ -69,6 +70,7 @@ class BaseImportService(BaseService, ABC):
     ):
         super().__init__(*args, **kwargs)
         self.remote_helper = remote_helper
+        self.source_repository = source_repository
         self.location_repository = location_repository
         self.evse_repository = evse_repository
         self.connector_repository = connector_repository
@@ -288,11 +290,11 @@ class BaseImportService(BaseService, ABC):
         if realtime_status is not None:
             source.realtime_status = realtime_status
 
-        if static_error_count is None:
+        if static_error_count is not None:
             source.static_data_updated_at = datetime.now(tz=timezone.utc)
             source.static_error_count = static_error_count
             source.static_status = SourceStatus.ACTIVE
-        if realtime_error_count is None:
+        if realtime_error_count is not None:
             source.realtime_data_updated_at = datetime.now(tz=timezone.utc)
             source.realtime_error_count = realtime_error_count
             if source.static_status == SourceStatus.ACTIVE:

@@ -32,7 +32,7 @@ class PrometheusRestApi(BaseBlueprint):
 
         prometheus_handler = PrometheusHandler(
             **self.get_base_handler_dependencies(),
-            parking_site_repository=dependencies.get_parking_site_repository(),
+            evse_repository=dependencies.get_evse_repository(),
             source_repository=dependencies.get_source_repository(),
         )
 

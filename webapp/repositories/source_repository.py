@@ -16,8 +16,9 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+from typing import List
 
-from webapp.models import Image, Source
+from webapp.models import Source
 
 from .base_repository import BaseRepository
 
@@ -25,8 +26,11 @@ from .base_repository import BaseRepository
 class SourceRepository(BaseRepository[Source]):
     model_cls = Source
 
+    def fetch_sources(self) -> List[Source]:
+        return self.session.query(Source).all()
+
     def fetch_source_by_uid(self, source_uid: str) -> Source:
-        result = self.session.query(Image).get(source_uid)
+        result = self.session.query(Source).filter(Source.uid == source_uid).first()
 
         return self._or_raise(result, f'source {source_uid} not found')
 

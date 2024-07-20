@@ -31,5 +31,5 @@ class ConfigHelper:
         return current_app.config
 
     @staticmethod
-    def get(key: str) -> Any:
-        return current_app.config.get(key)
+    def get(key: str, default: Any = None) -> Any:
+        return current_app.config.get(key, default)

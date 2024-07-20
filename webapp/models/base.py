@@ -22,7 +22,7 @@ from typing import List, Optional
 from sqlalchemy.types import UserDefinedType
 from sqlalchemy_utc import UtcDateTime
 
-from webapp.common.sqlalchemy import Col
+from webapp.common.sqlalchemy import Mapped
 from webapp.extensions import db
 
 
@@ -32,9 +32,9 @@ class BaseModel:
         'mysql_collate': 'utf8mb4_unicode_ci',
     }
 
-    id: Col[int] = db.Column(db.BigInteger, primary_key=True)
-    created: Col[datetime] = db.Column(UtcDateTime(), nullable=False, default=lambda: datetime.now(tz=timezone.utc))
-    modified: Col[datetime] = db.Column(
+    id: Mapped[int] = db.Column(db.BigInteger, primary_key=True)
+    created: Mapped[datetime] = db.Column(UtcDateTime(), nullable=False, default=lambda: datetime.now(tz=timezone.utc))
+    modified: Mapped[datetime] = db.Column(
         UtcDateTime(),
         nullable=False,
         default=datetime.now(tz=timezone.utc),

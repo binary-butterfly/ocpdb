@@ -19,7 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from validataclass.exceptions import ValidationError
 from validataclass.validators import DataclassValidator
 
-from webapp.common.remote_helper import RemoteServerType
+from webapp.common.remote_helper import RemoteException, RemoteServerType
 from webapp.models.source import SourceStatus
 from webapp.services.import_services.base_import_service import BaseImportService, SourceInfo
 from webapp.services.import_services.ocpi.ocpi_mapper import OcpiMapper
@@ -41,10 +41,15 @@ class StadtnaviImportService(BaseImportService):
 
     def download_and_save(self):
         source = self.get_source()
-        input_dict = self.remote_helper.get(
-            remote_server_type=RemoteServerType.STADTNAVI,
-            path='/herrenberg/charging-stations/charging-stations-ocpi.json',
-        )
+        try:
+            input_dict = self.remote_helper.get(
+                remote_server_type=RemoteServerType.STADTNAVI,
+                path='/herrenberg/charging-stations/charging-stations-ocpi.json',
+            )
+        except RemoteException as e:
+            self.logger.info('import-stadtnavi', f'stadtnavi request failed: {e.to_dict()}')
+            self.update_source(source, static_status=SourceStatus.FAILED, realtime_status=SourceStatus.FAILED)
+            return
         static_error_count: int = 0
         realtime_error_count: int = 0
 

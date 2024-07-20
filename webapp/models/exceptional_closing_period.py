@@ -21,7 +21,7 @@ from typing import TYPE_CHECKING
 
 from sqlalchemy_utc import UtcDateTime
 
-from webapp.common.sqlalchemy import Col, Rel
+from webapp.common.sqlalchemy import Mapped
 from webapp.extensions import db
 
 from .base import BaseModel
@@ -33,7 +33,7 @@ if TYPE_CHECKING:
 class ExceptionalClosingPeriod(db.Model, BaseModel):
     __tablename__ = 'exceptional_closing_period'
 
-    location: Rel['Location'] = db.relationship('Location', back_populates='exceptional_closings')
-    location_id: Col[int] = db.Column(db.BigInteger, db.ForeignKey('location.id', use_alter=True), nullable=False)
-    period_begin: Col[datetime] = db.Column(UtcDateTime(), nullable=False)
-    period_end: Col[datetime] = db.Column(UtcDateTime(), nullable=False)
+    location: Mapped['Location'] = db.relationship('Location', back_populates='exceptional_closings')
+    location_id: Mapped[int] = db.Column(db.BigInteger, db.ForeignKey('location.id', use_alter=True), nullable=False)
+    period_begin: Mapped[datetime] = db.Column(UtcDateTime(), nullable=False)
+    period_end: Mapped[datetime] = db.Column(UtcDateTime(), nullable=False)

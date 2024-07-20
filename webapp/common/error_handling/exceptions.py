@@ -75,3 +75,9 @@ class AppException(Exception):
             response_data['_debug'] = self.debug_data
 
         return response_data
+
+    def to_dict(self) -> dict:
+        return {
+            'code': self.code,
+            'message': self.message,
+        }

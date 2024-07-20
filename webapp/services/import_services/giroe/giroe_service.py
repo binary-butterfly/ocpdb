@@ -22,7 +22,7 @@ from typing import List, Optional
 from validataclass.exceptions import ValidationError
 from validataclass.validators import DataclassValidator
 
-from webapp.common.remote_helper import RemoteServerType
+from webapp.common.remote_helper import RemoteException, RemoteServerType
 from webapp.models.source import SourceStatus
 from webapp.services.import_services.base_import_service import BaseImportService, SourceInfo
 
@@ -57,8 +57,9 @@ class GiroeImportService(BaseImportService):
         source = self.get_source()
         location_updates: List[LocationUpdate] = []
         static_error_count = 0
-        location_list_input: LocationListInput = self.location_list_validator.validate(
-            self.remote_helper.get(
+
+        try:
+            location_list_data = self.remote_helper.get(
                 remote_server_type=RemoteServerType.GIROE,
                 path='/api/server/v1/charge-locations',
                 params={
@@ -69,23 +70,28 @@ class GiroeImportService(BaseImportService):
                     **({} if modified_until is None else {'modified_until': modified_until}),
                 },
             )
-        )
+            location_list_input: LocationListInput = self.location_list_validator.validate(location_list_data)
+        except (ValidationError, RemoteException) as e:
+            self.logger.info('import-giro-e', f'giro-e static data has error: {e.to_dict()}')
+            self.update_source(source, static_status=SourceStatus.FAILED)
+            return
+
         location_dicts: List[dict] = location_list_input.items
 
         while location_list_input.next_path:
             try:
-                location_list_input: LocationListInput = self.location_list_validator.validate(
-                    self.remote_helper.get(
-                        remote_server_type=RemoteServerType.GIROE,
-                        path=location_list_input.next_path,
-                    ),
+                location_list_data = self.remote_helper.get(
+                    remote_server_type=RemoteServerType.GIROE,
+                    path=location_list_input.next_path,
                 )
+                location_list_input: LocationListInput = self.location_list_validator.validate(location_list_data)
                 location_dicts += location_list_input.items
-            except ValidationError:
-                self.update_source(source=source, static_status=SourceStatus.FAILED)
+            except (ValidationError, RemoteException) as e:
+                self.logger.info('import-giro-e', f'giro-e static data has error: {e.to_dict()}')
+                self.update_source(source, static_status=SourceStatus.FAILED)
+                return
 
-        location_inputs: List[LocationUpdate] = []
-        for location_dict in location_list_input.items:
+        for location_dict in location_dicts:
             try:
                 location_input: LocationInput = self.location_validator.validate(location_dict)
             except ValidationError as e:
@@ -99,7 +105,7 @@ class GiroeImportService(BaseImportService):
             if not location_input.public:
                 continue
 
-            location_inputs.append(self.giroe_mapper.map_location_input_to_update(location_input))
+            location_updates.append(self.giroe_mapper.map_location_input_to_update(location_input))
 
         self.save_location_updates(location_updates)
 

@@ -24,7 +24,7 @@ from typing import List, Optional
 from flask import current_app
 from sqlalchemy_utc import UtcDateTime
 
-from webapp.common.sqlalchemy import Col
+from webapp.common.sqlalchemy import Mapped
 from webapp.extensions import db
 
 from .base import BaseModel
@@ -43,12 +43,12 @@ class ImageCategory(Enum):
 class Image(db.Model, BaseModel):
     __tablename__ = 'image'
 
-    external_url: Col[str] = db.Column(db.String(255), index=True)
-    type: Col[str] = db.Column(db.String(4))
-    category: Col[ImageCategory] = db.Column(db.Enum(ImageCategory))
-    width: Col[int] = db.Column(db.Integer)
-    height: Col[int] = db.Column(db.Integer)
-    last_download: Col[datetime] = db.Column(UtcDateTime(timezone=True))
+    external_url: Mapped[str] = db.Column(db.String(255), index=True)
+    type: Mapped[str] = db.Column(db.String(4))
+    category: Mapped[ImageCategory] = db.Column(db.Enum(ImageCategory))
+    width: Mapped[int] = db.Column(db.Integer)
+    height: Mapped[int] = db.Column(db.Integer)
+    last_download: Mapped[datetime] = db.Column(UtcDateTime(timezone=True))
 
     @property
     def url(self):

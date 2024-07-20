@@ -204,9 +204,6 @@ class Dependencies:
             redis_url=self.get_config_helper().get('REDIS_PUB_SUB_URL'),
         )
 
-    def get_redis_subscription_client(self) -> PubSubClient:
-        return PubSubClient(redis_url=self.get_config_helper().get('REDIS_PUB_SUB_URL'))
-
 
 # Instantiate one global dependencies object so we don't need to clutter the environment with lots of globals
 dependencies = Dependencies()

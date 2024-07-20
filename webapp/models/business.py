@@ -18,7 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from typing import TYPE_CHECKING
 
-from webapp.common.sqlalchemy import Col, Rel
+from webapp.common.sqlalchemy import Mapped
 from webapp.extensions import db
 
 from .base import BaseModel
@@ -30,7 +30,7 @@ if TYPE_CHECKING:
 class Business(db.Model, BaseModel):
     __tablename__ = 'business'
 
-    logo: Rel['Image'] = db.relationship('Image', uselist=False)
-    logo_id: Col[int] = db.Column(db.BigInteger, db.ForeignKey('image.id', use_alter=True), nullable=True)
-    name: Col[str] = db.Column(db.String(255), index=True, nullable=False)
-    website: Col[str] = db.Column(db.String(255))
+    logo: Mapped['Image'] = db.relationship('Image', uselist=False)
+    logo_id: Mapped[int] = db.Column(db.BigInteger, db.ForeignKey('image.id', use_alter=True), nullable=True)
+    name: Mapped[str] = db.Column(db.String(255), index=True, nullable=False)
+    website: Mapped[str] = db.Column(db.String(255))
