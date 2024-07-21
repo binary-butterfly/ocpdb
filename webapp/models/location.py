@@ -24,7 +24,7 @@ from typing import TYPE_CHECKING, List, Optional
 from sqlalchemy import Index, event, func
 from sqlalchemy_utc import UtcDateTime
 
-from webapp.common.sqlalchemy import Col, Rel
+from webapp.common.sqlalchemy import Mapped
 from webapp.extensions import db
 
 from .base import BaseModel, Point
@@ -108,57 +108,57 @@ class Location(db.Model, BaseModel):
         Index('uid', 'source'),
     )
 
-    uid: Col[str] = db.Column(db.String(255), index=True,
+    uid: Mapped[str] = db.Column(db.String(255), index=True,
                               nullable=False)  # OCHP: locationId                      OCPI: id
-    source: Col[str] = db.Column(db.String(64), index=True, nullable=False)
+    source: Mapped[str] = db.Column(db.String(64), index=True, nullable=False)
 
-    evses: Rel[List['Evse']] = db.relationship('Evse', back_populates='location', cascade='all, delete, delete-orphan')
-    images: Rel[List['Image']] = db.relationship('Image', secondary=location_image)
+    evses: Mapped[List['Evse']] = db.relationship('Evse', back_populates='location', cascade='all, delete, delete-orphan')
+    images: Mapped[List['Image']] = db.relationship('Image', secondary=location_image)
 
-    exceptional_openings: Rel[List['ExceptionalOpeningPeriod']] = db.relationship(
+    exceptional_openings: Mapped[List['ExceptionalOpeningPeriod']] = db.relationship(
         'ExceptionalOpeningPeriod',
         back_populates='location',
         cascade='all, delete, delete-orphan',
     )
-    exceptional_closings: Rel[List['ExceptionalClosingPeriod']] = db.relationship(
+    exceptional_closings: Mapped[List['ExceptionalClosingPeriod']] = db.relationship(
         'ExceptionalClosingPeriod',
         back_populates='location',
         cascade='all, delete, delete-orphan',
     )
-    regular_hours: Rel[List['RegularHours']] = db.relationship(
+    regular_hours: Mapped[List['RegularHours']] = db.relationship(
         'RegularHours',
         back_populates='location',
         cascade='all, delete, delete-orphan',
     )
 
-    operator_id: Col[int] = db.Column(db.BigInteger, db.ForeignKey('business.id', use_alter=True))
-    suboperator_id: Col[int] = db.Column(db.BigInteger, db.ForeignKey('business.id', use_alter=True))
-    owner_id: Col[int] = db.Column(db.BigInteger, db.ForeignKey('business.id', use_alter=True))
+    operator_id: Mapped[int] = db.Column(db.BigInteger, db.ForeignKey('business.id', use_alter=True))
+    suboperator_id: Mapped[int] = db.Column(db.BigInteger, db.ForeignKey('business.id', use_alter=True))
+    owner_id: Mapped[int] = db.Column(db.BigInteger, db.ForeignKey('business.id', use_alter=True))
 
-    operator: Rel['Business'] = db.relationship('Business', foreign_keys=[operator_id])
-    suboperator: Rel['Business'] = db.relationship('Business', foreign_keys=[suboperator_id])
-    owner: Rel['Business'] = db.relationship('Business', foreign_keys=[owner_id])
+    operator: Mapped['Business'] = db.relationship('Business', foreign_keys=[operator_id])
+    suboperator: Mapped['Business'] = db.relationship('Business', foreign_keys=[suboperator_id])
+    owner: Mapped['Business'] = db.relationship('Business', foreign_keys=[owner_id])
 
-    dynamic_location_id: Col[int] = db.Column(db.BigInteger)  # TODO: relation?
-    dynamic_location_probability: Col[int] = db.Column(db.Float)
+    dynamic_location_id: Mapped[int] = db.Column(db.BigInteger)  # TODO: relation?
+    dynamic_location_probability: Mapped[int] = db.Column(db.Float)
 
-    name: Col[str] = db.Column(db.String(255))  # OCHP: locationName, OCPI: name
-    address: Col[str] = db.Column(db.String(255))  # OCHP: chargePointAddress.address      OCPI: address
-    postal_code: Col[str] = db.Column(db.String(255))  # OCHP: chargePointAddress.zipCode      OCPI: postal_code
-    city: Col[str] = db.Column(db.String(255))  # OCHP: chargePointAddress.city         OCPI: city
-    state: Col[str] = db.Column(db.String(255))  # OCPI: state
-    country: Col[str] = db.Column(db.String(2))  # OCHP: chargePointAddress.country      OCPI: country_code
-    lat: Col[Decimal] = db.Column(db.Numeric(9, 7))  # OCHP: chargePointLocation.lat         OCPI: coordinates.latitude
-    lon: Col[Decimal] = db.Column(db.Numeric(10, 7))  # OCHP: chargePointLocation.lon         OCPI: coordinates.longitude
+    name: Mapped[str] = db.Column(db.String(255))  # OCHP: locationName, OCPI: name
+    address: Mapped[str] = db.Column(db.String(255))  # OCHP: chargePointAddress.address      OCPI: address
+    postal_code: Mapped[str] = db.Column(db.String(255))  # OCHP: chargePointAddress.zipCode      OCPI: postal_code
+    city: Mapped[str] = db.Column(db.String(255))  # OCHP: chargePointAddress.city         OCPI: city
+    state: Mapped[str] = db.Column(db.String(255))  # OCPI: state
+    country: Mapped[str] = db.Column(db.String(2))  # OCHP: chargePointAddress.country      OCPI: country_code
+    lat: Mapped[Decimal] = db.Column(db.Numeric(9, 7))  # OCHP: chargePointLocation.lat         OCPI: coordinates.latitude
+    lon: Mapped[Decimal] = db.Column(db.Numeric(10, 7))  # OCHP: chargePointLocation.lon         OCPI: coordinates.longitude
 
-    directions: Col[str] = db.Column(db.Text)  # OCPI: directions
-    parking_type: Col[ParkingType] = db.Column(db.Enum(ParkingType))
-    time_zone: Col[str] = db.Column(db.String(32))  # OCHP: timeZone                        OCPI: time_zone
+    directions: Mapped[str] = db.Column(db.Text)  # OCPI: directions
+    parking_type: Mapped[ParkingType] = db.Column(db.Enum(ParkingType))
+    time_zone: Mapped[str] = db.Column(db.String(32))  # OCHP: timeZone                        OCPI: time_zone
 
-    last_updated: Col[datetime] = db.Column(UtcDateTime())  # OCHP: timestamp
+    last_updated: Mapped[datetime] = db.Column(UtcDateTime())  # OCHP: timestamp
 
-    terms_and_conditions: Col[str] = db.Column(db.String(255))  # OCPI: terms_and_conditions
-    twentyfourseven: Col[bool] = db.Column(db.Boolean)  # OCHP: openingTimes.twentyfourseven    OCPI: opening_times.twentyfourseven
+    terms_and_conditions: Mapped[str] = db.Column(db.String(255))  # OCPI: terms_and_conditions
+    twentyfourseven: Mapped[bool] = db.Column(db.Boolean)  # OCHP: openingTimes.twentyfourseven    OCPI: opening_times.twentyfourseven
 
     geometry = db.Column(Point(), nullable=False)
 

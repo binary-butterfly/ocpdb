@@ -23,7 +23,7 @@ from typing import TYPE_CHECKING, List
 
 from sqlalchemy_utc import UtcDateTime
 
-from webapp.common.sqlalchemy import Col, Rel
+from webapp.common.sqlalchemy import Mapped
 from webapp.extensions import db
 
 from .base import BaseModel
@@ -88,41 +88,42 @@ evse_image = db.Table(
 class Evse(db.Model, BaseModel):
     __tablename__ = 'evse'
 
-    connectors: Rel[List['Connector']] = db.relationship(
+    connectors: Mapped[List['Connector']] = db.relationship(
         'Connector',
         back_populates='evse',
         cascade='all, delete, delete-orphan',
     )
-    images: Rel[List['Image']] = db.relationship('Image', secondary=evse_image)
-    related_resources: Rel['RelatedResource'] = db.relationship(
+    images: Mapped[List['Image']] = db.relationship('Image', secondary=evse_image)
+    related_resources: Mapped['RelatedResource'] = db.relationship(
         'RelatedResource',
         back_populates='evse',
         cascade='all, delete, delete-orphan',
     )
-    location: Rel['Location'] = db.relationship('Location', back_populates='evses')
-    location_id: Col[int] = db.Column(db.BigInteger, db.ForeignKey('location.id', use_alter=True), nullable=False)
+    location: Mapped['Location'] = db.relationship('Location', back_populates='evses')
+    location_id: Mapped[int] = db.Column(db.BigInteger, db.ForeignKey('location.id', use_alter=True), nullable=False)
 
-    uid: Col[str] = db.Column(db.String(64), nullable=False, index=True)
-    status: Col[EvseStatus] = db.Column(db.Enum(EvseStatus, name='EvseStatus'), default=EvseStatus.UNKNOWN, nullable=False)
+    uid: Mapped[str] = db.Column(db.String(64), nullable=False, index=True)
+    status: Mapped[EvseStatus] = db.Column(db.Enum(EvseStatus, name='EvseStatus'), default=EvseStatus.UNKNOWN, nullable=False)
 
-    lat: Col[Decimal] = db.Column(db.Numeric(9, 7))
-    lon: Col[Decimal] = db.Column(db.Numeric(10, 7))
+    lat: Mapped[Decimal] = db.Column(db.Numeric(9, 7))
+    lon: Mapped[Decimal] = db.Column(db.Numeric(10, 7))
 
-    floor_level: Col[str] = db.Column(db.String(16))
-    physical_reference: Col[str] = db.Column(db.String(255))
-    directions: Col[str] = db.Column(db.Text)
-    phone: Col[str] = db.Column(db.String(255))                       # OCHP: telephoneNumber
+    floor_level: Mapped[str] = db.Column(db.String(16))
+    physical_reference: Mapped[str] = db.Column(db.String(255))
+    directions: Mapped[str] = db.Column(db.Text)
+    phone: Mapped[str] = db.Column(db.String(255))                       # OCHP: telephoneNumber
 
-    parking_uid: Col[str] = db.Column(db.String(255))                 # OCHP: parkingSpot.parkingId
-    parking_floor_level: Col[str] = db.Column(db.String(255))         # OCHP: parkingSpot.floorlevel
-    parking_spot_number: Col[str] = db.Column(db.String(255))         # OCHP: parkingSpot.parkingSpotNumber
+    parking_uid: Mapped[str] = db.Column(db.String(255))                 # OCHP: parkingSpot.parkingId
+    parking_floor_level: Mapped[str] = db.Column(db.String(255))         # OCHP: parkingSpot.floorlevel
+    parking_spot_number: Mapped[str] = db.Column(db.String(255))         # OCHP: parkingSpot.parkingSpotNumber
 
-    last_updated: Col[datetime] = db.Column(UtcDateTime())
-    max_reservation: Col[float] = db.Column(db.Float)                 # OCHP maxReservation
-    _capabilities: Col[int] = db.Column('capabilities', db.Integer)   #                                           OCPI: capability
-    _parking_restrictions: Col[int] = db.Column('parking_restrictions', db.Integer)   # OCHP: RestrictionType     OCPI: parking_restrictions
+    last_updated: Mapped[datetime] = db.Column(UtcDateTime())
+    max_reservation: Mapped[float] = db.Column(db.Float)                 # OCHP maxReservation
+    _capabilities: Mapped[int] = db.Column('capabilities', db.Integer)   # OCPI: capability
+    # OCHP: RestrictionType     OCPI: parking_restrictions
+    _parking_restrictions: Mapped[int] = db.Column('parking_restrictions', db.Integer)
 
-    terms_and_conditions: Col[str] = db.Column(db.String(255))        #                                           OCPI: terms_and_conditions
+    terms_and_conditions: Mapped[str] = db.Column(db.String(255))  # OCPI: terms_and_conditions
 
     # status_schedule TODO
     # user_interface_lang TODO                              # OCHP userInterfaceLang

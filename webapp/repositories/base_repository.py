@@ -16,7 +16,7 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 from abc import ABC, abstractmethod
-from typing import Generic, Optional, Type, TypeVar
+from typing import Any, Generic, Optional, Type, TypeVar
 
 from sqlalchemy.orm import Session
 from validataclass_search_queries.repositories import SearchQueryRepositoryMixin
@@ -55,3 +55,41 @@ class BaseRepository(SearchQueryRepositoryMixin[T_Model], Generic[T_Model], ABC)
 
     def exists(self, obj, field, value):
         return self.session.query(obj).filter(**{field: value}).count() > 0
+
+    @staticmethod
+    def _or_raise(
+        resource: Optional[Any],
+        exception_msg: str,
+        exception_cls: Type[Exception] = ObjectNotFoundException,
+    ) -> Any:
+        """
+        Returns the resource unless it is None.
+        If None, raises an exception with the given message and type (default: `ObjectNotFoundException`).
+        """
+        if resource is None:
+            raise exception_cls(exception_msg)
+        return resource
+
+    def _save_resources(self, *resources, commit: bool = True) -> None:
+        """
+        Saves one or more resources to the database. This means adding the objects to the session, flushing the session
+        and (unless `commit=False`) committing the transaction.
+        """
+        for resource in resources:
+            self.session.add(resource)
+        self.session.flush()
+
+        if commit:
+            self.session.commit()
+
+    def _delete_resources(self, *resources, commit: bool = True) -> None:
+        """
+        Deletes one or more resources from the database. This means deleting the objects from the session, flushing the
+        session and (unless `commit=False`) committing the transaction.
+        """
+        for resource in resources:
+            self.session.delete(resource)
+        self.session.flush()
+
+        if commit:
+            self.session.commit()

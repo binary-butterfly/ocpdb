@@ -23,3 +23,4 @@ from .evse_repository import EvseRepository
 from .image_repository import ImageRepository
 from .location_repository import LocationRepository
 from .option_repository import OptionRepository
+from .source_repository import SourceRepository

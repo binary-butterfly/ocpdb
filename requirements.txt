@@ -8,6 +8,7 @@ Flask-Migrate~=4.0.5
 Flask-CORS~=4.0.1
 SQLAlchemy~=1.4.52
 requests~=2.32.3
+alembic~=1.13.2
 lxml~=5.2.2
 mercantile~=1.2.1
 psycopg2-binary~=2.9.9

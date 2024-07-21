@@ -28,6 +28,7 @@ from requests.exceptions import ConnectionError, Timeout
 from urllib3.exceptions import NewConnectionError
 
 from webapp.common.config import ConfigHelper
+from webapp.common.error_handling.exceptions import AppException
 from webapp.common.json import DefaultJSONEncoder
 from webapp.common.logger import Logger
 
@@ -70,11 +71,21 @@ class RemoteHelperMethodMixin(ABC):
         return self.request(method='delete', **kwargs)
 
 
-class RemoteException(Exception):
+class RemoteException(AppException):
+    url: str
+    code = 'remote_exception'
     http_status: Optional[int] = None
 
-    def __init__(self, http_status: Optional[int] = None):
+    def __init__(self, *args, url: str, http_status: Optional[int] = None, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.url = url
         self.http_status = http_status
+
+    def to_dict(self) -> dict:
+        result = super().to_dict()
+        if self.http_status is not None:
+            result['http_status'] = self.http_status
+        return result
 
 
 class RemoteHelper(RemoteHelperMethodMixin):
@@ -117,26 +128,37 @@ class RemoteHelper(RemoteHelperMethodMixin):
                 timeout=600,
             )
 
-            self.logger.info('server-remote', '%s %s: HTTP %s%s\n<< %s' % (
-                url,
-                method,
-                response.status_code,
-                '' if data is None else ('\n>> %s' % data),
-                response.text,
-            ))
+            log_fragments = [f'{method.upper()} {response.url}: HTTP {response.status_code}']
+            if data is not None:
+                log_fragments.append(f'>> {data}')
+            if response.text and response.text.strip():
+                binary_mimetypes = [
+                    'application/octet-stream',
+                    'application/pdf',
+                    'vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                ]
+                if response.headers.get('Content-Type') in binary_mimetypes:
+                    log_fragments.append(
+                        f'<< binary data with mimetype {response.headers.get("Content-Type")} '
+                        f'and length {response.headers.get("Content-Length", "unknown")} byte'
+                    )
+                else:
+                    log_fragments.append(f'<< {response.text.strip()}')
+            self.logger.info('requests-out', '\n'.join(log_fragments))
+
             try:
                 if response.status_code == 404 and ignore_404:
                     return None
                 if response.status_code not in [200, 201]:
-                    raise RemoteException(http_status=response.status_code)
+                    raise RemoteException(url=url, http_status=response.status_code, message='Invalid http status code')
                 if response.status_code == 204:
                     return None
                 if raw:
                     return response.content
                 return response.json()
             except JSONDecodeError as e:
-                raise RemoteException(http_status=response.status_code) from e
+                raise RemoteException(url=url, http_status=response.status_code, message='Invalid JSON') from e
 
         except (ConnectionError, NewConnectionError, Timeout) as e:
             self.logger.error('server-remote', 'cannot %s data to %s: %s' % (method, url, data))
-            raise RemoteException from e
+            raise RemoteException(url=url, message='Connection issue') from e

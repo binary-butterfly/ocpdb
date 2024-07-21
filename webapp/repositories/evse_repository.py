@@ -17,10 +17,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 from dataclasses import dataclass
-from datetime import datetime
 from typing import List, Tuple
-
-from validataclass.helpers import OptionalUnset, UnsetValue
 
 from webapp.models import Evse, Location
 from webapp.models.evse import EvseStatus
@@ -29,9 +26,11 @@ from .base_repository import BaseRepository, InconsistentDataException, ObjectNo
 
 
 @dataclass
-class EvseUpdate:
-    last_updated: OptionalUnset[datetime] = UnsetValue
-    status: OptionalUnset[EvseStatus] = UnsetValue
+class EvseStatusSummary:
+    evse: str
+    location: str
+    status: EvseStatus
+    source: str
 
 
 class EvseRepository(BaseRepository[Evse]):
@@ -60,20 +59,6 @@ class EvseRepository(BaseRepository[Evse]):
 
         return items[0]
 
-    def fetch_only_by_uid(self, uid: str) -> Evse:
-        evses = self.session.query(Evse)\
-            .filter(Evse.uid == uid)\
-            .filter(Evse.status != EvseStatus.REMOVED)\
-            .all()
-
-        if len(evses) < 1:
-            raise ObjectNotFoundException(message=f'evse with uid {uid} not found')
-
-        if len(evses) > 1:
-            raise InconsistentDataException(f'more than one evse with uid {uid} ')
-
-        return evses[0]
-
     def fetch_evse_by_location_id(self, location_id: int) -> List[Evse]:
         return self.session.query(Evse).filter(Evse.location_id == location_id)
 
@@ -101,3 +86,16 @@ class EvseRepository(BaseRepository[Evse]):
         self.session.query(Evse) \
             .filter(id=evse_id) \
             .delete(synchronize_session=False)
+
+    def fetch_evse_status_summary(self) -> List[EvseStatusSummary]:
+        items = (
+            self.session.query(Evse.uid.label('evse'), Evse.status, Location.uid.label('location'), Location.source)
+            .filter(Evse.status != EvseStatus.STATIC)
+            .join(Evse.location)
+            .all()
+        )
+        result: List[EvseStatusSummary] = []
+        for item in items:
+            result.append(EvseStatusSummary(**dict(item)))
+
+        return result

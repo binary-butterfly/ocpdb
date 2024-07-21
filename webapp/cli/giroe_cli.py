@@ -24,6 +24,8 @@ from flask.cli import AppGroup
 
 from webapp.common.error_handling import catch_exception
 from webapp.dependencies import dependencies
+from webapp.models.connector import ConnectorStatus
+from webapp.services.import_services.giroe.pub_sub_services import PubSubService
 
 giroe_cli = AppGroup('giroe')
 
@@ -56,11 +58,11 @@ giroe_cli = AppGroup('giroe')
 )
 @catch_exception
 def cli_download_and_save(
-        preset: Optional[str] = None,
-        created_since: Optional[datetime] = None,
-        created_until: Optional[datetime] = None,
-        modified_since: Optional[datetime] = None,
-        modified_until: Optional[datetime] = None,
+    preset: Optional[str] = None,
+    created_since: Optional[datetime] = None,
+    created_until: Optional[datetime] = None,
+    modified_since: Optional[datetime] = None,
+    modified_until: Optional[datetime] = None,
 ):
     if preset and (created_since or created_until or modified_since or modified_until):
         raise Exception('cannot use preset together with created / modified parameters')
@@ -76,3 +78,24 @@ def cli_download_and_save(
         modified_since=modified_since,
         modified_until=modified_until,
     )
+
+
+
+@giroe_cli.command('set-connector-status', help='set connector status')
+@click.argument('connector_uid', type=str)
+@click.argument('connector_status', type=click.Choice([item.value for item in ConnectorStatus]))
+def set_connector_status(connector_uid: str, connector_status: str):
+    pubsub_client = dependencies.get_pubsub_client()
+    pubsub_client.pub(f'CONNECTOR.{connector_uid.upper()}.STATUS', connector_status)
+
+
+@giroe_cli.command('subscribe', help='subscribe to Giro-e redis pubsub')
+def subscribe_connectors():
+    pub_sub_connector_service = PubSubService(
+        pubsub_client=dependencies.get_pubsub_client(),
+        source_repository=dependencies.get_source_repository(),
+        evse_repository=dependencies.get_evse_repository(),
+        **dependencies.get_base_service_dependencies(),
+    )
+    pub_sub_connector_service.register()
+    pub_sub_connector_service.listen_for_updates()

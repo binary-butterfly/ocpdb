@@ -20,7 +20,8 @@ from validataclass.exceptions import ValidationError
 from validataclass.validators import DataclassValidator
 
 from webapp.common.remote_helper import RemoteServerType
-from webapp.services.import_services.base_import_service import BaseImportService
+from webapp.models.source import SourceStatus
+from webapp.services.import_services.base_import_service import BaseImportService, SourceInfo
 
 from .chargeit_mapper import ChargeitMapper
 from .chargeit_validators import ChargeitInput, LocationInput
@@ -31,13 +32,26 @@ class ChargeitImportService(BaseImportService):
     chargeit_validator = DataclassValidator(ChargeitInput)
     location_validator = DataclassValidator(LocationInput)
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    source_info = SourceInfo(
+        uid='chargeit',
+        name='LichtBlick SE',
+        public_url='https://www.lichtblick.de',
+        has_realtime_data=True,
+    )
 
     def download_and_save(self):
+        source = self.get_source()
+        static_error_count = 0
+        realtime_error_count = 0
+
         input_dict = self.remote_helper.get(remote_server_type=RemoteServerType.CHARGEIT, path='/ps/rest/feed')
 
-        input_data: ChargeitInput = self.chargeit_validator.validate(input_dict)
+        try:
+            input_data: ChargeitInput = self.chargeit_validator.validate(input_dict)
+        except ValidationError as e:
+            self.logger.info('import-chargeit', f'chargeit data {input_dict} has validation error: {e.to_dict()}')
+            self.update_source(source, static_status=SourceStatus.FAILED, realtime_status=SourceStatus.FAILED)
+            return
 
         location_updates = []
         for location_dict in input_data.operator.operatorPlaces:
@@ -48,6 +62,8 @@ class ChargeitImportService(BaseImportService):
                     'import-charge-it',
                     f'location {location_dict} has validation error: {e.to_dict()}',
                 )
+                static_error_count += 1
+                realtime_error_count += 1
                 continue
 
             # don't add unpublished location to list, then it will be removed afterwards if it still is in db
@@ -59,4 +75,6 @@ class ChargeitImportService(BaseImportService):
                 location_input=location_input,
             ))
 
-        self.save_location_updates(location_updates, 'chargeit')
+        self.save_location_updates(location_updates)
+
+        self.update_source(source=source, static_error_count=static_error_count, realtime_error_count=realtime_error_count)

@@ -22,8 +22,9 @@ from typing import List, Optional
 from validataclass.exceptions import ValidationError
 from validataclass.validators import DataclassValidator
 
-from webapp.common.remote_helper import RemoteServerType
-from webapp.services.import_services.base_import_service import BaseImportService
+from webapp.common.remote_helper import RemoteException, RemoteServerType
+from webapp.models.source import SourceStatus
+from webapp.services.import_services.base_import_service import BaseImportService, SourceInfo
 
 from ..models import LocationUpdate
 from .giroe_mapper import GiroeMapper
@@ -34,6 +35,13 @@ class GiroeImportService(BaseImportService):
     giroe_mapper: GiroeMapper
     location_list_validator = DataclassValidator(LocationListInput)
     location_validator = DataclassValidator(LocationInput)
+
+    source_info = SourceInfo(
+        uid='giroe',
+        name='GLS Mobility GmbH',
+        public_url='https://www.gls-mobility.de',
+        has_realtime_data=True,
+    )
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -46,9 +54,12 @@ class GiroeImportService(BaseImportService):
         modified_since: Optional[datetime] = None,
         modified_until: Optional[datetime] = None,
     ):
+        source = self.get_source()
         location_updates: List[LocationUpdate] = []
-        location_list_input: LocationListInput = self.location_list_validator.validate(
-            self.remote_helper.get(
+        static_error_count = 0
+
+        try:
+            location_list_data = self.remote_helper.get(
                 remote_server_type=RemoteServerType.GIROE,
                 path='/api/server/v1/charge-locations',
                 params={
@@ -59,24 +70,28 @@ class GiroeImportService(BaseImportService):
                     **({} if modified_until is None else {'modified_until': modified_until}),
                 },
             )
-        )
-        new_location_updates = self.handle_pulled_locations(location_list_input)
-        location_updates += new_location_updates
+            location_list_input: LocationListInput = self.location_list_validator.validate(location_list_data)
+        except (ValidationError, RemoteException) as e:
+            self.logger.info('import-giro-e', f'giro-e static data has error: {e.to_dict()}')
+            self.update_source(source, static_status=SourceStatus.FAILED)
+            return
+
+        location_dicts: List[dict] = location_list_input.items
 
         while location_list_input.next_path:
-            location_list_input: LocationListInput = self.location_list_validator.validate(
-                self.remote_helper.get(
+            try:
+                location_list_data = self.remote_helper.get(
                     remote_server_type=RemoteServerType.GIROE,
                     path=location_list_input.next_path,
-                ),
-            )
-            self.handle_pulled_locations(location_list_input)
+                )
+                location_list_input: LocationListInput = self.location_list_validator.validate(location_list_data)
+                location_dicts += location_list_input.items
+            except (ValidationError, RemoteException) as e:
+                self.logger.info('import-giro-e', f'giro-e static data has error: {e.to_dict()}')
+                self.update_source(source, static_status=SourceStatus.FAILED)
+                return
 
-        self.save_location_updates(location_updates, 'giro-e')
-
-    def handle_pulled_locations(self, location_list_input: LocationListInput) -> List[LocationUpdate]:
-        location_inputs: List[LocationUpdate] = []
-        for location_dict in location_list_input.items:
+        for location_dict in location_dicts:
             try:
                 location_input: LocationInput = self.location_validator.validate(location_dict)
             except ValidationError as e:
@@ -84,10 +99,14 @@ class GiroeImportService(BaseImportService):
                     'import-giro-e',
                     f'location {location_dict} has validation error: {e.to_dict()}',
                 )
+                static_error_count += 1
                 continue
 
             if not location_input.public:
                 continue
 
-            location_inputs.append(self.giroe_mapper.map_location_input_to_update(location_input))
-        return location_inputs
+            location_updates.append(self.giroe_mapper.map_location_input_to_update(location_input))
+
+        self.save_location_updates(location_updates)
+
+        self.update_source(source=source, static_error_count=static_error_count)

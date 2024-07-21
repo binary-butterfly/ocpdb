@@ -18,22 +18,23 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from typing import TypeVar, Union
 
-from sqlalchemy import Column
-from sqlalchemy.orm import RelationshipProperty
+from sqlalchemy.orm import QueryableAttribute
 
 __all__ = [
-    'Col',
-    'Rel',
+    'Mapped',
 ]
 
 """
 Define type alias for proper type hinting in models.
 
 Usage:
-    some_integer: Col[int] = db.Column(db.Integer, nullable=False, ...)
-    nullable_integer: Col[Optional[int]] = db.Column(db.Integer, nullable=True, ...)
+    some_integer: Mapped[int] = db.Column(db.Integer, nullable=False, ...)
+    nullable_integer: Mapped[Optional[int]] = db.Column(db.Integer, nullable=True, ...)
+    some_related_things: Mapped[List[Foo]] = db.relationship('Foo')
 """
 
 T = TypeVar('T')
-Col = Union[Column, T]
-Rel = Union[RelationshipProperty, T]
+
+# Note: SQLAlchemy actually comes with a class `sqlalchemy.orm.Mapped` which is exactly for the purpose of type hinting.
+# Sadly, this is supported either by PyCharm nor by typeshed (as of 2022-11-08), so we define our own type alias here.
+Mapped = Union[QueryableAttribute, T]

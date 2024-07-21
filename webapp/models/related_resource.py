@@ -19,7 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from enum import Enum
 from typing import TYPE_CHECKING, List
 
-from webapp.common.sqlalchemy import Col, Rel
+from webapp.common.sqlalchemy import Mapped
 from webapp.extensions import db
 
 from .base import BaseModel
@@ -41,11 +41,11 @@ class RelatedResourceType(Enum):
 class RelatedResource(db.Model, BaseModel):
     __tablename__ = 'related_resource'
 
-    evse: Rel['Evse'] = db.relationship('Evse', back_populates='related_resources')
-    evse_id: Col[int] = db.Column(db.BigInteger, db.ForeignKey('evse.id', use_alter=True), nullable=False)
+    evse: Mapped['Evse'] = db.relationship('Evse', back_populates='related_resources')
+    evse_id: Mapped[int] = db.Column(db.BigInteger, db.ForeignKey('evse.id', use_alter=True), nullable=False)
 
-    url: Col[str] = db.Column(db.String(255))
-    _types: Col[int] = db.Column('types', db.Integer)
+    url: Mapped[str] = db.Column(db.String(255))
+    _types: Mapped[int] = db.Column('types', db.Integer)
 
     def _get_types(self) -> List[RelatedResourceType]:
         if not self._types:

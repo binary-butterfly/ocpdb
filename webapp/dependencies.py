@@ -35,6 +35,7 @@ from webapp.repositories import (
     ImageRepository,
     LocationRepository,
     OptionRepository,
+    SourceRepository,
 )
 from webapp.services.import_services import ImportServices
 from webapp.services.matching_service import MatchingService
@@ -128,6 +129,12 @@ class Dependencies:
 
     # Repositories
     @cache_dependency
+    def get_source_repository(self) -> SourceRepository:
+        return SourceRepository(
+            session=self.get_db_session(),
+        )
+
+    @cache_dependency
     def get_location_repository(self) -> LocationRepository:
         return LocationRepository(
             session=self.get_db_session(),
@@ -175,6 +182,7 @@ class Dependencies:
         return ImportServices(
             **self.get_base_service_dependencies(),
             remote_helper=self.get_remote_helper(),
+            source_repository=self.get_source_repository(),
             location_repository=self.get_location_repository(),
             evse_repository=self.get_evse_repository(),
             connector_repository=self.get_connector_repository(),
@@ -195,9 +203,6 @@ class Dependencies:
         return PubSubClient(
             redis_url=self.get_config_helper().get('REDIS_PUB_SUB_URL'),
         )
-
-    def get_redis_subscription_client(self) -> PubSubClient:
-        return PubSubClient(redis_url=self.get_config_helper().get('REDIS_PUB_SUB_URL'))
 
 
 # Instantiate one global dependencies object so we don't need to clutter the environment with lots of globals

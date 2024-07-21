@@ -245,7 +245,7 @@ class GetStatusEvseInput:
 
 @validataclass
 class GetStatusResponseInput:
-    GetStatusResponse: List[GetStatusEvseInput] = DataclassValidator(GetStatusEvseInput)
+    GetStatusResponse: GetStatusEvseInput = DataclassValidator(GetStatusEvseInput)
 
 
 @validataclass
@@ -256,4 +256,3 @@ class GetStatusBodyInput:
 @validataclass
 class GetStatusEnvelopeInput:
     Envelope: GetStatusBodyInput = DataclassValidator(GetStatusBodyInput)
-

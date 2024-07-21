@@ -20,6 +20,7 @@ from datetime import datetime
 from decimal import Decimal
 from typing import List, Optional
 
+from butterfly_pubsub.giroe import ChargeConnectorStatus
 from validataclass.dataclasses import Default, DefaultUnset, validataclass
 from validataclass.helpers import OptionalUnset
 from validataclass.validators import (
@@ -45,7 +46,7 @@ class ConnectorInput:
     modified: datetime = DateTimeValidator()
     uid: str = StringValidator()
     ocpp_connector_id: int = IntegerValidator()
-    status: EvseStatus = EnumValidator(EvseStatus)
+    status: ChargeConnectorStatus = EnumValidator(ChargeConnectorStatus)
     power: int = IntegerValidator()
     power_type: PowerType = EnumValidator(PowerType)
     standard: ConnectorType = EnumValidator(ConnectorType)

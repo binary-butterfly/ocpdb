@@ -27,3 +27,4 @@ from .location import Location
 from .option import Option
 from .regular_hours import RegularHours
 from .related_resource import RelatedResource
+from .source import Source

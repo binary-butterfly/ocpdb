@@ -19,9 +19,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from hashlib import sha256
 from math import sqrt
 
+from butterfly_pubsub.giroe import ChargeConnectorStatus
+
 from webapp.common.config import ConfigHelper
 from webapp.models.connector import PowerType
-from webapp.models.evse import Capability
+from webapp.models.evse import Capability, EvseStatus
 from webapp.services.import_services.models import ConnectorUpdate, EvseUpdate, LocationUpdate
 
 from .giroe_validator import ConnectorInput, LocationInput, StationInput
@@ -31,7 +33,7 @@ class GiroeMapper:
     amperage_factor = {
         PowerType.DC: 400,
         PowerType.AC_3_PHASE: 400 * sqrt(3),
-        PowerType.AC_1_PHASE: 230
+        PowerType.AC_1_PHASE: 230,
     }
 
     def __init__(self, config_helper: ConfigHelper):
@@ -65,7 +67,7 @@ class GiroeMapper:
     def map_station_connector_to_evse_connector(self, station_input: StationInput, connector_input: ConnectorInput):
         return EvseUpdate(
             uid=connector_input.uid,
-            status=connector_input.status,
+            status=self.map_charge_connector_status_to_evse_status(connector_input.status),
             capabilities=[
                 Capability.UNLOCK_CAPABLE,
                 Capability.RFID_READER,
@@ -84,3 +86,21 @@ class GiroeMapper:
                 last_updated=connector_input.modified,
             )]
         )
+
+    @staticmethod
+    def map_charge_connector_status_to_evse_status(charge_connector_status: ChargeConnectorStatus) -> EvseStatus:
+        return {
+            ChargeConnectorStatus.AVAILABLE: EvseStatus.AVAILABLE,
+            ChargeConnectorStatus.BLOCKED: EvseStatus.BLOCKED,
+            ChargeConnectorStatus.CHARGING: EvseStatus.CHARGING,
+            ChargeConnectorStatus.INOPERATIVE: EvseStatus.INOPERATIVE,
+            ChargeConnectorStatus.OUTOFORDER: EvseStatus.OUTOFORDER,
+            ChargeConnectorStatus.PLANNED: EvseStatus.PLANNED,
+            ChargeConnectorStatus.REMOVED: EvseStatus.REMOVED,
+            ChargeConnectorStatus.RESERVED: EvseStatus.RESERVED,
+            ChargeConnectorStatus.UNKNOWN: EvseStatus.UNKNOWN,
+            ChargeConnectorStatus.PREPARING: EvseStatus.CHARGING,
+            ChargeConnectorStatus.SUSPENDED_EVSE: EvseStatus.CHARGING,
+            ChargeConnectorStatus.SUSPENDED_EV: EvseStatus.CHARGING,
+            ChargeConnectorStatus.FINISHING: EvseStatus.CHARGING,
+        }.get(charge_connector_status)
