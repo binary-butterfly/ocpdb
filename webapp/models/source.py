@@ -22,9 +22,9 @@ from typing import Optional
 
 from sqlalchemy_utc import UtcDateTime
 
+from webapp.common.sqlalchemy import Mapped
 from webapp.extensions import db
 
-from ..common.sqlalchemy import Mapped
 from .base import BaseModel
 
 

@@ -57,12 +57,12 @@ class PrometheusHandler:
             type=MetricType.gauge,
             identifier='app_ocpdb_source_last_realtime_update',
         )
-        source_static_parking_site_errors = Metrics(
+        source_static_errors = Metrics(
             help='Static errors by source',
             type=MetricType.gauge,
             identifier='app_static_ocpdb_source_errors',
         )
-        source_realtime_parking_site_errors = Metrics(
+        source_realtime_errors = Metrics(
             help='Realtime error by source',
             type=MetricType.gauge,
             identifier='app_realtime_ocpdb_source_errors',
@@ -88,7 +88,7 @@ class PrometheusHandler:
                         value=int((datetime.now(tz=timezone.utc) - source.static_data_updated_at).total_seconds()),
                     )
                 )
-            source_static_parking_site_errors.metrics.append(
+            source_static_errors.metrics.append(
                 SourceMetric(
                     source=source.uid,
                     value=source.static_error_count,
@@ -111,7 +111,7 @@ class PrometheusHandler:
                         value=int((datetime.now(tz=timezone.utc) - source.realtime_data_updated_at).total_seconds()),
                     )
                 )
-            source_realtime_parking_site_errors.metrics.append(
+            source_realtime_errors.metrics.append(
                 SourceMetric(
                     source=source.uid,
                     value=source.realtime_error_count,
@@ -127,10 +127,10 @@ class PrometheusHandler:
         metrics = (
             failed_static_sources.to_metrics()
             + last_static_update_metrics.to_metrics()
-            + source_static_parking_site_errors.to_metrics()
+            + source_static_errors.to_metrics()
             + failed_realtime_sources.to_metrics()
             + last_realtime_update_metrics.to_metrics()
-            + source_realtime_parking_site_errors.to_metrics()
+            + source_realtime_errors.to_metrics()
         )
 
         if self.config_helper.get('EVSE_STATUS_METRICS', False):
