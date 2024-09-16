@@ -33,4 +33,4 @@ https://github.com/mapbox/vector-tile-base/archive/refs/heads/master.tar.gz
 --extra-index-url https://git.sectio-aurea.org/api/v4/groups/262/-/packages/pypi/simple
 flask-openapi~=2.0.3
 validataclass-search-queries~=0.5.0
-butterfly_pubsub~=2.0.0
+butterfly_pubsub~=2.1.1
