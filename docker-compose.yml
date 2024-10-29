@@ -14,7 +14,7 @@ x-flask-defaults: &flask-defaults
   image: ocpdb-flask:local-dev
   build:
     context: .
-    dockerfile: Dockerfile.flask
+    dockerfile: Dockerfile.dev
   volumes:
     - .:/app
   environment:
