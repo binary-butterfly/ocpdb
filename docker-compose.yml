@@ -44,13 +44,13 @@ x-mocked-service-defaults: &mocked-service-defaults
 services:
   flask:
     <<: *flask-defaults
-    command: ["python3", "run-flask-dev.py"]
+    command: ["python3", "run_flask_dev.py"]
     ports:
       - '5010:5000'
 
   worker:
     <<: *flask-defaults
-    command: ["python3", "run-celery-dev.py"]
+    command: ["python3", "run_celery_dev.py"]
 
   mysql:
     image: mariadb
@@ -145,5 +145,3 @@ services:
 volumes:
   mysql:
   postgres:
-
-
