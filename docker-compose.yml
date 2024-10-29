@@ -37,7 +37,7 @@ x-flask-defaults: &flask-defaults
 
 # Define reusable defaults for mocked services
 x-mocked-service-defaults: &mocked-service-defaults
-  image: registry.git.sectio-aurea.org/common/base-images/flask:ubuntu-22.04
+  image: ocpdb-flask:local-dev
   command: ["python", "/app/app.py"]
   user: *local-user
 
