@@ -1,7 +1,7 @@
 DOCKER_COMPOSE = docker compose
 FLASK_RUN = $(DOCKER_COMPOSE) run --rm flask
 
-DOCKER_REGISTRY = registry.git.sectio-aurea.org
+DOCKER_REGISTRY = registry.git.binary-butterfly.de
 
 # Separate environment for running integration tests
 TESTING_COMPOSE_PROJECT_NAME = giro-e-backend_integrationtests
