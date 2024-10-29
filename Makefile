@@ -4,7 +4,7 @@ FLASK_RUN = $(DOCKER_COMPOSE) run --rm flask
 DOCKER_REGISTRY = registry.git.binary-butterfly.de
 
 # Separate environment for running integration tests
-TESTING_COMPOSE_PROJECT_NAME = giro-e-backend_integrationtests
+TESTING_COMPOSE_PROJECT_NAME = ocpdb_integrationtests
 TESTING_DOCKER_COMPOSE = $(DOCKER_COMPOSE) -p $(TESTING_COMPOSE_PROJECT_NAME)
 
 # Default target when running `make`
