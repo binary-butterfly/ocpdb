@@ -22,12 +22,21 @@ import pytest
 from webapp.dependencies import dependencies
 from webapp.models import Location
 from webapp.services.import_services.base_import_service import BaseImportService
-from webapp.services.import_services.models import LocationUpdate
+from webapp.services.import_services.models import LocationUpdate, SourceInfo
+
+
+class TestingImportService(BaseImportService):
+    """
+    Minimal version of a BaseImportService subclass for testing puroposes
+    """
+    @property
+    def source_info(self) -> SourceInfo:
+        return SourceInfo(uid='test_source_uid', name='test_source', public_url='test_url', has_realtime_data=None)
 
 
 @pytest.fixture
-def base_import_service():
-    return BaseImportService(
+def testing_import_service():
+    return TestingImportService(
         **dependencies.get_base_service_dependencies(),
         remote_helper=dependencies.get_remote_helper(),
         location_repository=dependencies.get_location_repository(),
@@ -36,14 +45,19 @@ def base_import_service():
         business_repository=dependencies.get_business_repository(),
         image_repository=dependencies.get_image_repository(),
         option_repository=dependencies.get_option_repository(),
+        source_repository=dependencies.get_source_repository(),
     )
 
 
-def test_save_location_updates_simple(db, base_import_service: BaseImportService):
-    base_import_service.save_location_updates([LocationUpdate(
-        uid='test',
-        source='test',
-        lat=Decimal('2.0'),
-        lon=Decimal('2.0'),
-    )], 'test')
+def test_save_location_updates_simple(db, testing_import_service: BaseImportService):
+    testing_import_service.save_location_updates(
+        [
+            LocationUpdate(
+                uid='test',
+                source='test',
+                lat=Decimal('2.0'),
+                lon=Decimal('2.0'),
+            )
+        ]
+    )
     assert db.session.query(Location).count() == 1
