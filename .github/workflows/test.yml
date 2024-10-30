@@ -1,0 +1,37 @@
+name: test
+
+on:
+  push:
+    branches:
+      - '*'
+  pull_request:
+    branches:
+      - '*'
+  # make workflow "callable" by others
+  workflow_call:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+
+    - name: set timezone
+      uses: szenius/set-timezone@v2.0
+      with:
+        timezoneLinux: "Europe/Berlin"
+
+    - name: checkout
+      uses: actions/checkout@v4
+
+    - name: setup Python v3.11
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+        cache: 'pip'
+
+    - name: pip install
+      run: pip install -r requirements.txt -r requirements-dev.txt
+
+    - name: run pytest
+      run: python -m pytest tests
