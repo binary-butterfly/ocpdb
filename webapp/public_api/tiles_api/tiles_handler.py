@@ -56,7 +56,7 @@ class TilesHandler(PublicApiBaseHandler):
             point_x = int(4096 * (float(item.lon) - bbox[0]) / (bbox[2] - bbox[0]))
             point_y = int(4096 * (bbox[3] - float(item.lat)) / (bbox[3] - bbox[1]))
             feature = {
-                'geometry': f'POINT({point_x}, {point_y})',
+                'geometry': f'POINT({point_x} {point_y})',
                 'properties': {
                     'id': item.id,
                     'name': item.name or item.address,
