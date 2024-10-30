@@ -29,8 +29,8 @@ kombu~=5.3.7
 pytz~=2024.1
 https://github.com/mapbox/vector-tile-base/archive/refs/heads/master.tar.gz
 
-# binary butterfly shared libraries (https://git.sectio-aurea.org/public_libraries)
---extra-index-url https://git.sectio-aurea.org/api/v4/groups/262/-/packages/pypi/simple
+# binary butterfly shared libraries (https://git.binary-butterfly.de/public_libraries)
+--extra-index-url https://git.binary-butterfly.de/api/v4/groups/262/-/packages/pypi/simple
 flask-openapi~=2.0.3
 validataclass-search-queries~=0.5.0
 butterfly_pubsub~=2.0.0

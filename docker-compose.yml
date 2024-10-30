@@ -14,7 +14,7 @@ x-flask-defaults: &flask-defaults
   image: ocpdb-flask:local-dev
   build:
     context: .
-    dockerfile: Dockerfile.flask
+    dockerfile: Dockerfile.dev
   volumes:
     - .:/app
   environment:
@@ -37,20 +37,20 @@ x-flask-defaults: &flask-defaults
 
 # Define reusable defaults for mocked services
 x-mocked-service-defaults: &mocked-service-defaults
-  image: registry.git.sectio-aurea.org/common/base-images/flask:ubuntu-22.04
+  image: ocpdb-flask:local-dev
   command: ["python", "/app/app.py"]
   user: *local-user
 
 services:
   flask:
     <<: *flask-defaults
-    command: ["python3", "run-flask-dev.py"]
+    command: ["python3", "run_flask_dev.py"]
     ports:
       - '5010:5000'
 
   worker:
     <<: *flask-defaults
-    command: ["python3", "run-celery-dev.py"]
+    command: ["python3", "run_celery_dev.py"]
 
   mysql:
     image: mariadb
@@ -145,5 +145,3 @@ services:
 volumes:
   mysql:
   postgres:
-
-

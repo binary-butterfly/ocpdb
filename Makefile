@@ -1,10 +1,8 @@
 DOCKER_COMPOSE = docker compose
 FLASK_RUN = $(DOCKER_COMPOSE) run --rm flask
 
-DOCKER_REGISTRY = registry.git.sectio-aurea.org
-
 # Separate environment for running integration tests
-TESTING_COMPOSE_PROJECT_NAME = giro-e-backend_integrationtests
+TESTING_COMPOSE_PROJECT_NAME = ocpdb_integrationtests
 TESTING_DOCKER_COMPOSE = $(DOCKER_COMPOSE) -p $(TESTING_COMPOSE_PROJECT_NAME)
 
 # Default target when running `make`
@@ -31,16 +29,11 @@ config.yaml:
 # --------------------
 
 .PHONY: first-start
-first-start: config docker-login docker-build migrate
+first-start: config docker-build migrate
 	$(DOCKER_COMPOSE) down
 	@echo
 	@echo 'Database is all set up! \o/'
 	@echo 'You can now start the project with "make docker-up"'
-
-# Login to Docker registry
-.PHONY: docker-login
-docker-login:
-	docker login $(DOCKER_REGISTRY)
 
 # Builds and starts all docker containers
 .PHONY: docker-up
