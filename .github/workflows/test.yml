@@ -40,4 +40,6 @@ jobs:
       run: python -m pytest tests/unit
 
     - name: run pytest integration
+      env:
+        DOCKER_LOCAL_USER: 1000:1000
       run: docker compose run --rm flask python -m pytest tests/integration
