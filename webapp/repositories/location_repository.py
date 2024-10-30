@@ -89,7 +89,12 @@ class LocationRepository(BaseRepository[Location]):
         if commit:
             self.session.commit()
 
-    def fetch_locations_summary_by_bounds(self, bbox: LngLatBbox, static: Optional[bool] = None, filter_duplicates: bool = True):
+    def fetch_locations_summary_by_bounds(
+        self,
+        bbox: LngLatBbox,
+        static: Optional[bool] = None,
+        filter_duplicates: bool = True,
+    ) -> list:
         additional_where = ''
         if static is not None:
             additional_where += f'AND evse.status {"=" if static is True else "!="} "STATIC"'
