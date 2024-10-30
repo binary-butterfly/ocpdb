@@ -36,5 +36,8 @@ jobs:
     - name: copy config
       run: cp config_dist_dev.yaml config.yaml
 
-    - name: run pytest
-      run: python -m pytest tests
+    - name: run pytest unit
+      run: python -m pytest tests/unit
+
+    - name: run pytest integration
+      run: python -m pytest tests/integration
