@@ -1,0 +1,46 @@
+name: test
+
+on:
+  push:
+    branches:
+      - '*'
+  pull_request:
+    types: [opened, closed]
+    branches:
+      - '*'
+  # make workflow "callable" by others
+  workflow_call:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+
+    - name: set timezone
+      uses: szenius/set-timezone@v2.0
+      with:
+        timezoneLinux: "Europe/Berlin"
+
+    - name: checkout
+      uses: actions/checkout@v4
+
+    - name: setup Python v3.11
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+        cache: 'pip'
+
+    - name: pip install
+      run: pip install -r requirements.txt -r requirements-dev.txt
+
+    - name: copy config
+      run: cp config_dist_dev.yaml config.yaml
+
+    - name: run pytest unit
+      run: python -m pytest tests/unit
+
+    - name: run pytest integration
+      env:
+        DOCKER_LOCAL_USER: 1000:1000
+      run: docker compose run --rm flask python -m pytest tests/integration
