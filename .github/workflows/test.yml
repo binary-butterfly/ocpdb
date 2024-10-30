@@ -40,4 +40,4 @@ jobs:
       run: python -m pytest tests/unit
 
     - name: run pytest integration
-      run: python -m pytest tests/integration
+      run: docker compose run --rm flask python -m pytest tests/integration
