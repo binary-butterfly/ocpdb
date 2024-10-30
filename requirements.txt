@@ -20,14 +20,13 @@ pyyaml~=6.0.1
 validataclass~=0.10.0
 SQLAlchemy-Utc~=0.14.0
 openpyxl~=3.1.5
-protobuf~=3.20.2
 pycountry~=23.12.11
 ngram~=4.0.3
 geopy~=2.4.1
 celery~=5.4.0
 kombu~=5.3.7
 pytz~=2024.1
-https://github.com/mapbox/vector-tile-base/archive/refs/heads/master.tar.gz
+mapbox-vector-tile~=2.1.0
 
 # binary butterfly shared libraries (https://git.binary-butterfly.de/public_libraries)
 --extra-index-url https://git.binary-butterfly.de/api/v4/groups/262/-/packages/pypi/simple
