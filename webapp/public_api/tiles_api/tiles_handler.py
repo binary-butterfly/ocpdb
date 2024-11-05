@@ -69,4 +69,4 @@ class TilesHandler(PublicApiBaseHandler):
             }
             layer['features'].append(feature)
 
-        return encode(layers=[layer])
+        return encode(layers=[layer], default_options={'y_coord_down': True})
