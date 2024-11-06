@@ -39,6 +39,7 @@ class RemoteServerType(Enum):
     GIROE = 'GIROE'
     LADENETZ = 'LADENETZ'
     STADTNAVI = 'STADTNAVI'
+    SW_STUTTGART = 'SW_STUTTGART'
 
 
 @dataclass

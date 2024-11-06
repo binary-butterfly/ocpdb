@@ -25,6 +25,8 @@ REMOTE_SERVERS:
     password: test
   STADTNAVI:
     url: http://mocked-stadtnavi:5000
+  SW_STUTTGART:
+    url: http://mocked-sw-stuttgart:5000
   CHARGEIT:
     url: http://mocked-chargeit:5000
     user: ocpdb
@@ -37,5 +39,3 @@ REMOTE_SERVERS:
     url: http://localhost:5000
     user: bnetza
     password: test
-
-

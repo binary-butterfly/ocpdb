@@ -1,6 +1,6 @@
 """
 Open ChargePoint DataBase OCPDB
-Copyright (C) 2021 binary butterfly GmbH
+Copyright (C) 2024 binary butterfly GmbH
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published by
@@ -16,22 +16,22 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from flask import Flask
+from typing import Any
 
-from .bnetza_cli import bnetza_cli
-from .chargeit_cli import chargeit_cli
-from .giroe_cli import giroe_cli
-from .match_cli import match_cli
-from .ochp_cli import ochp_cli
-from .stadtnavi_cli import stadtnavi_cli
-from .sw_stuttgart_cli import sw_stuttgart_cli
+from validataclass.validators import StringValidator
 
 
-def register_cli_to_app(app: Flask):
-    app.cli.add_command(bnetza_cli)
-    app.cli.add_command(chargeit_cli)
-    app.cli.add_command(giroe_cli)
-    app.cli.add_command(match_cli)
-    app.cli.add_command(ochp_cli)
-    app.cli.add_command(stadtnavi_cli)
-    app.cli.add_command(sw_stuttgart_cli)
+class ReplacingStringValidator(StringValidator):
+    mapping: dict[str, str]
+
+    def __init__(self, *args, mapping: dict[str, str], **kwargs):
+        super().__init__(*args, **kwargs)
+        self.mapping = mapping
+
+    def validate(self, input_data: Any, **kwargs) -> str:
+        self._ensure_type(input_data, str)
+
+        for search, replace in self.mapping.items():
+            input_data = input_data.replace(search, replace)
+
+        return super().validate(input_data, **kwargs)
