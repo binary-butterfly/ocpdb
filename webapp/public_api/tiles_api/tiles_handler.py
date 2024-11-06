@@ -33,11 +33,11 @@ class TilesHandler(PublicApiBaseHandler):
         self.location_repository = location_respository
 
     def generate_tile(self, x: int, y: int, z: int, tile_filter_input: TileFilterInput) -> bytes:
-        # don't render any chargepoints if zoomed out too far
+        # Don't render any chargepoints if zoomed out too far
         if z < RENDER_CHARGEPOINTS_MIN_ZOOM:
             return encode(layers=[])
 
-        # fetch chargepoints in the tile's bounding box
+        # Fetch chargepoints in the tile's bounding box
         bbox = mercantile.bounds((x, y, z))
         chargepoints = self.location_repository.fetch_locations_summary_by_bounds(
             bbox,
@@ -45,13 +45,13 @@ class TilesHandler(PublicApiBaseHandler):
             static=tile_filter_input.static,
         )
 
-        # create layer dict
+        # Create layer dict
         layer = {
             'name': 'chargepoints',
             'features': [],
         }
 
-        # add features for chargepoints
+        # Add features for chargepoints
         for item in chargepoints:
             point_x = int(4096 * (float(item.lon) - bbox[0]) / (bbox[2] - bbox[0]))
             point_y = int(4096 * (bbox[3] - float(item.lat)) / (bbox[3] - bbox[1]))

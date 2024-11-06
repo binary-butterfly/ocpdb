@@ -4,7 +4,7 @@ RUN apk update && \
     apk upgrade && \
     apk add bash
 
-# set environment variables
+# Set environment variables
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
