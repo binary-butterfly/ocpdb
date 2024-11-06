@@ -4,7 +4,7 @@ RUN apk update && \
     apk upgrade && \
     apk add bash
 
-# set environment variables
+# Set environment variables
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
@@ -12,6 +12,9 @@ RUN mkdir -p /app
 WORKDIR /app
 
 COPY requirements.txt requirements-dev.txt .
-RUN pip install -r requirements.txt -r requirements-dev.txt
+
+RUN apk add geos geos-dev alpine-sdk && \
+    pip install -r requirements.txt -r requirements-dev.txt && \
+    apk del alpine-sdk geos-dev
 
 EXPOSE 5000

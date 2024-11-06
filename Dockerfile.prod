@@ -1,14 +1,46 @@
-FROM python:3.11-alpine
+# Builder stage for compiling dependencies
+FROM python:3.11-alpine AS builder
 
-# set environment variables
+# Install geos-dev and alpine-sdk (which contains the compilers needed for building wheels)
+RUN apk update && \
+    apk upgrade && \
+    apk add geos-dev alpine-sdk
+
+# Set environment variables
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONUNBUFFERED 1
+
+# Create venv
+RUN python -m venv /opt/venv
+# Make sure to use the venv
+ENV PATH="/opt/venv/bin:$PATH"
+
+# Install dependencies to venv
+COPY requirements.txt .
+RUN pip install -r requirements.txt
+
+
+# Actual application runtime stage (without build dependencies)
+FROM python:3.11-alpine AS runtime
+
+# Install geos at system level (needed as a sub-dependency of mapbox-vector-tile)
+RUN apk update && \
+    apk upgrade && \
+    apk add geos
+
+# Set environment variables
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
 WORKDIR /app
 
-COPY requirements.txt .
-RUN pip install -r requirements.txt
+# Copy venv with installed dependencies from the builder stage
+COPY --from=builder /opt/venv /opt/venv
 
+# Make sure to use the venv
+ENV PATH="/opt/venv/bin:$PATH"
+
+# Copy application code
 COPY . /app
 
 EXPOSE 5000

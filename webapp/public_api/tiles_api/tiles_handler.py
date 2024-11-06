@@ -17,12 +17,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 import mercantile
-from vector_tile_base import VectorTile
+from mapbox_vector_tile import encode
 
 from webapp.public_api.base_handler import PublicApiBaseHandler
 from webapp.public_api.tiles_api.tiles_validators import TileFilterInput
 from webapp.repositories import LocationRepository
 
+RENDER_CHARGEPOINTS_MIN_ZOOM = 8
 
 class TilesHandler(PublicApiBaseHandler):
     location_repository: LocationRepository
@@ -32,35 +33,40 @@ class TilesHandler(PublicApiBaseHandler):
         self.location_repository = location_respository
 
     def generate_tile(self, x: int, y: int, z: int, tile_filter_input: TileFilterInput) -> bytes:
-        tile = VectorTile()
-        if z < 8:
-            tile.serialize()
+        # Don't render any chargepoints if zoomed out too far
+        if z < RENDER_CHARGEPOINTS_MIN_ZOOM:
+            return encode(layers=[])
 
-        bbox = mercantile.bounds(x, y, z)
+        # Fetch chargepoints in the tile's bounding box
+        bbox = mercantile.bounds((x, y, z))
         chargepoints = self.location_repository.fetch_locations_summary_by_bounds(
             bbox,
             filter_duplicates=tile_filter_input.filter_duplicates,
             static=tile_filter_input.static,
         )
 
-        layer = tile.add_layer('chargepoints', 1)
+        # Create layer dict
+        layer = {
+            'name': 'chargepoints',
+            'features': [],
+        }
+
+        # Add features for chargepoints
         for item in chargepoints:
-            feature = layer.add_point_feature()
-            feature.add_points(
-                [
-                    int(4096 * (float(item.lon) - bbox[0]) / (bbox[2] - bbox[0])),
-                    int(4096 * (bbox[3] - float(item.lat)) / (bbox[3] - bbox[1])),
-                ]
-            )
-            feature.id = item.id
-            feature.attributes = {
-                'id': item.id,
-                'name': item.name or item.address,
-                'c': item.chargepoint_count,
-                'ca': int(item.chargepoint_available_count),
-                'cu': int(item.chargepoint_unknown_count),
-                'cb': int(item.chargepoint_bike_count),
-                'cs': int(item.chargepoint_static_count),
+            point_x = int(4096 * (float(item.lon) - bbox[0]) / (bbox[2] - bbox[0]))
+            point_y = int(4096 * (bbox[3] - float(item.lat)) / (bbox[3] - bbox[1]))
+            feature = {
+                'geometry': f'POINT({point_x} {point_y})',
+                'properties': {
+                    'id': item.id,
+                    'name': item.name or item.address,
+                    'c': item.chargepoint_count,
+                    'ca': int(item.chargepoint_available_count),
+                    'cu': int(item.chargepoint_unknown_count),
+                    'cb': int(item.chargepoint_bike_count),
+                    'cs': int(item.chargepoint_static_count),
+                },
             }
-            feature.extend = 4096
-        return tile.serialize()
+            layer['features'].append(feature)
+
+        return encode(layers=[layer], default_options={'y_coord_down': True})
