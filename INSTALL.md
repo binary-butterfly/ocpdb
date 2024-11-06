@@ -3,14 +3,12 @@
 ## System requirements
 
 This application is a flask application with following requirements:
-* Python 3.7+
-* SQLAlchemy-compatible SQL-server (eg MariaDB)
+* Python 3.11+
+* SQLAlchemy-compatible SQL-server (e.g. MariaDB)
 * An AMQP-Queue (eg RabbitMQ)
 
 
-## Production version
-
-
+## Production version (legacy)
 
 1) Use `virtualenv -p python3 venv` to create a virtual environment
 2) Use `./venv/bin/pip install -r requirements.txt` to install required packages
@@ -20,7 +18,14 @@ This application is a flask application with following requirements:
 6) Use `./venv/bin/flask` to start downloads
 
 
-## Development version via docker
+## Production setup (via Docker)
+
+This is the recommended way of installation now.
+
+*TODO: add instructions here*
+
+
+## Development setup (via Docker)
 
 1) Use `make first-start` to create a dev environment
 2) Use `make` to start the container
