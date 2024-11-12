@@ -181,8 +181,8 @@ open-coverage-integration:
 
 .PHONY: lint-fix
 lint-fix:
-	$(FLASK_RUN) ruff check --fix ./webapp
+	$(FLASK_RUN) ruff check --fix ./webapp ./tests
 
 .PHONY: lint-check
 lint-check:
-	$(FLASK_RUN) ruff check ./webapp
+	$(FLASK_RUN) ruff check ./webapp ./tests
