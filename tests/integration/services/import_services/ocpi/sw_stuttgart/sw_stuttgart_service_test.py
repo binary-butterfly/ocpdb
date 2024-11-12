@@ -18,10 +18,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from decimal import Decimal
 from unittest.mock import ANY
 
+from tests.integration.services.import_services.ocpi.sw_stuttgart.sw_stuttgart_data import sw_stuttgart_response_json
 from webapp.dependencies import dependencies
 from webapp.models import Connector, Evse, Location
 from webapp.services.import_services.ocpi.sw_stuttgart import SWStuttgartImportService
-from tests.integration.services.import_services.ocpi.sw_stuttgart.sw_stuttgart_data import sw_stuttgart_response_json
 
 
 def test_sw_stuttgart_import(
