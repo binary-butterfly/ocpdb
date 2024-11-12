@@ -112,7 +112,7 @@ class RemoteHelper(RemoteHelperMethodMixin):
     ) -> Union[dict, list, bytes, None]:
         if remote_server_type:
             remote_server = self.config_helper.get('REMOTE_SERVERS')[remote_server_type]
-            if auth is None:
+            if auth is None and remote_server.user is not None:
                 auth = (remote_server.user, remote_server.password)
             if url is None:
                 url = remote_server.url
