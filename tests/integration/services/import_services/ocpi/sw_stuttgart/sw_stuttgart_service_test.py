@@ -16,9 +16,10 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 from decimal import Decimal
-from unittest.mock import ANY
+from unittest.mock import ANY, Mock
 
 from tests.integration.services.import_services.ocpi.sw_stuttgart.sw_stuttgart_data import sw_stuttgart_response_json
+from webapp.common import Logger
 from webapp.dependencies import dependencies
 from webapp.models import Connector, Evse, Location
 from webapp.services.import_services.ocpi.sw_stuttgart import SWStuttgartImportService
@@ -38,6 +39,9 @@ def test_sw_stuttgart_import(
     """
 
     sw_stuttgart_service: SWStuttgartImportService = dependencies.get_import_services().sw_stuttgart_import_service
+
+    # mock logger
+    sw_stuttgart_service.remote_helper.logger = Mock(Logger)
 
     locations_in_db_before = db.session.query(Location).count()
     evses_in_db_before = db.session.query(Evse).count()
