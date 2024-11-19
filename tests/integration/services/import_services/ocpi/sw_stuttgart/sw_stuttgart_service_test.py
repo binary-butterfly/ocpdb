@@ -84,11 +84,10 @@ def test_sw_stuttgart_import(
         'country': 'DE',
         'lat': Decimal('48.7774100'),
         'lon': Decimal('9.1762120'),
-        'directions': '[{"language": "DE", '
-                      '"text": "Die Ladestationen befinden sich in der Tiefgarage im 4. UG.  '
-                      'Bitte beachten Sie:  7 Ladestationen sind durchgehend verf\\u00fcgbar. '
-                      'Bei 3 Ladestationen sind die \\u00d6ffnungszeiten eingeschr\\u00e4nkt, '
-                      'genauere Infos finden Sie an der Beschilderung vor Ort."}]',
+        'directions': 'Die Ladestationen befinden sich in der Tiefgarage im 4. UG.  '
+                      'Bitte beachten Sie:  7 Ladestationen sind durchgehend verfügbar. '
+                      'Bei 3 Ladestationen sind die Öffnungszeiten eingeschränkt, '
+                      'genauere Infos finden Sie an der Beschilderung vor Ort.',
         'parking_type': None,
         'time_zone': 'Europe/Berlin',
         'last_updated': None,

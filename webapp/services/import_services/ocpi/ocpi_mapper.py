@@ -53,11 +53,18 @@ class OcpiMapper:
             evses=[],
         )
         # The 'directions' value in the input can be UnsetValue or a list of DisplayTextInput,
-        # which has to be serialized before it can be stored as a string.
+        # which has to be serialized or unwrapped before it can be stored as a string.
         if location_input.directions is not UnsetValue:
-            location_update.directions = json.dumps(location_input.directions, cls=DefaultJSONEncoder)
-        else:
-            location_update.directions = location_input.directions
+            for directions_displaytext in location_input.directions:
+                # We use the german text here (for now),
+                # because the only data source that uses this field
+                # (SW Stuttgart) only provides german text anyway.
+                if directions_displaytext.language == 'DE':
+                    location_update.directions = directions_displaytext.text
+                    break
+            else:
+                # Use serialized JSON as a fallback in case there are some values but none of them is german language
+                location_update.directions = json.dumps(location_input.directions, cls=DefaultJSONEncoder)
 
         for evse_input in location_input.evses:
             location_update.evses.append(self.map_evse(evse_input))
