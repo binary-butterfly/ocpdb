@@ -169,8 +169,8 @@ class Location(db.Model, BaseModel):
     ) -> dict:
         result = super().to_dict(fields, ignore)
 
-        # parse 'directions' from serialized JSON back into a list of dicts (unless it is an empty string anyway)
-        if 'directions' in result and not result['directions'] == '':
+        # Parse 'directions' from serialized JSON back into a list of dicts:
+        if 'directions' in result and result['directions'] is not None:
             result['directions']: list = json.loads(result['directions'])
 
         if 'geometry' in result:
