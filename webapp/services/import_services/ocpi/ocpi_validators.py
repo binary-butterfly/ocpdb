@@ -126,7 +126,11 @@ class GeoLocationInput(ValidataclassMixin):
 @validataclass
 class DisplayTextInput(ValidataclassMixin):
     language: str = StringValidator(min_length=2, max_length=2)
-    text: str = ReplacingStringValidator(mapping={'\r': '', '\n': ' ', '\xa0': ' '}, max_length=512)
+    text: str = ReplacingStringValidator(
+        mapping={'\r': '', '\n': ' ', '\xa0': ' '},
+        normalize_spaces=True,
+        max_length=512,
+    )
 
 
 @validataclass
