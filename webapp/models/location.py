@@ -108,7 +108,7 @@ class Location(db.Model, BaseModel):
         Index('uid', 'source'),
     )
 
-    uid: Mapped[str] = db.Column(db.String(255), index=True,nullable=False)  # OCHP: locationId   OCPI: id
+    uid: Mapped[str] = db.Column(db.String(255), index=True, nullable=False)  # OCHP: locationId   OCPI: id
     source: Mapped[str] = db.Column(db.String(64), index=True, nullable=False)
 
     evses: Mapped[List['Evse']] = db.relationship('Evse', back_populates='location', cascade='all, delete, delete-orphan')

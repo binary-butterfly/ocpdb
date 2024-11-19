@@ -48,7 +48,10 @@ class SWStuttgartImportService(BaseImportService):
                 path='/SW-Stuttgart',
             )
         except RemoteException as e:
-            self.logger.info('import-sw-stuttgart', f'sw_stuttgart request failed: {e.to_dict()}')
+            self.logger.info(
+                log_name='import-sw-stuttgart',
+                message=f'sw_stuttgart request failed: {e.to_dict()}',
+            )
             self.update_source(source, static_status=SourceStatus.FAILED, realtime_status=SourceStatus.FAILED)
             return
         static_error_count: int = 0
@@ -57,7 +60,10 @@ class SWStuttgartImportService(BaseImportService):
         try:
             input_data: OcpiInput = self.ocpi_validator.validate(input_dict)
         except ValidationError as e:
-            self.logger.info('import-sw-stuttgart', f'sw_stuttgart data {input_dict} has validation error: {e.to_dict()}')
+            self.logger.info(
+                log_name='import-sw-stuttgart',
+                message=f'sw_stuttgart data {input_dict} has validation error: {e.to_dict()}',
+            )
             self.update_source(source, static_status=SourceStatus.FAILED, realtime_status=SourceStatus.FAILED)
             return
 
@@ -67,8 +73,8 @@ class SWStuttgartImportService(BaseImportService):
                 location_input: SWStuttgartLocationInput = self.location_validator.validate(location_dict)
             except ValidationError as e:
                 self.logger.info(
-                    'import-sw-stuttgart',
-                    f'location {location_dict} has validation error: {e.to_dict()}',
+                    log_name='import-sw-stuttgart',
+                    message=f'location {location_dict} has validation error: {e.to_dict()}',
                 )
                 static_error_count += 1
                 realtime_error_count += 1
@@ -77,4 +83,8 @@ class SWStuttgartImportService(BaseImportService):
 
         self.save_location_updates(location_updates)
 
-        self.update_source(source=source, static_error_count=static_error_count, realtime_error_count=realtime_error_count)
+        self.update_source(
+            source=source,
+            static_error_count=static_error_count,
+            realtime_error_count=realtime_error_count,
+        )

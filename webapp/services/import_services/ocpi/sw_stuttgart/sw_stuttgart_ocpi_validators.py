@@ -62,7 +62,6 @@ class SWStuttgartEvseInput(EvseInput):
         min_length=1,
     ), DefaultUnset
 
-
     @staticmethod
     def __pre_validate__(input_data: dict) -> dict:
 
@@ -71,7 +70,6 @@ class SWStuttgartEvseInput(EvseInput):
             input_data['evse_id'] = input_data['id']
 
         return input_data
-
 
 
 @validataclass
