@@ -15,7 +15,7 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-
+import json
 from datetime import datetime
 from decimal import Decimal
 from enum import Enum
@@ -168,6 +168,10 @@ class Location(db.Model, BaseModel):
         transform_ocpi: bool = False,
     ) -> dict:
         result = super().to_dict(fields, ignore)
+
+        # parse 'directions' from serialized JSON back into a list of dicts (unless it is an empty string anyway)
+        if 'directions' in result and not result['directions'] == '':
+            result['directions']: list = json.loads(result['directions'])
 
         if 'geometry' in result:
             del result['geometry']
