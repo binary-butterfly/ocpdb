@@ -15,7 +15,7 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-
+import json
 from datetime import datetime
 from decimal import Decimal
 from enum import Enum
@@ -108,8 +108,7 @@ class Location(db.Model, BaseModel):
         Index('uid', 'source'),
     )
 
-    uid: Mapped[str] = db.Column(db.String(255), index=True,
-                              nullable=False)  # OCHP: locationId                      OCPI: id
+    uid: Mapped[str] = db.Column(db.String(255), index=True, nullable=False)  # OCHP: locationId   OCPI: id
     source: Mapped[str] = db.Column(db.String(64), index=True, nullable=False)
 
     evses: Mapped[List['Evse']] = db.relationship('Evse', back_populates='location', cascade='all, delete, delete-orphan')
@@ -148,8 +147,8 @@ class Location(db.Model, BaseModel):
     city: Mapped[str] = db.Column(db.String(255))  # OCHP: chargePointAddress.city         OCPI: city
     state: Mapped[str] = db.Column(db.String(255))  # OCPI: state
     country: Mapped[str] = db.Column(db.String(2))  # OCHP: chargePointAddress.country      OCPI: country_code
-    lat: Mapped[Decimal] = db.Column(db.Numeric(9, 7))  # OCHP: chargePointLocation.lat         OCPI: coordinates.latitude
-    lon: Mapped[Decimal] = db.Column(db.Numeric(10, 7))  # OCHP: chargePointLocation.lon         OCPI: coordinates.longitude
+    lat: Mapped[Decimal] = db.Column(db.Numeric(9, 7))  # OCHP: chargePointLocation.lat     OCPI: coordinates.latitude
+    lon: Mapped[Decimal] = db.Column(db.Numeric(10, 7))  # OCHP: chargePointLocation.lon    OCPI: coordinates.longitude
 
     directions: Mapped[str] = db.Column(db.Text)  # OCPI: directions
     parking_type: Mapped[ParkingType] = db.Column(db.Enum(ParkingType))
@@ -169,6 +168,10 @@ class Location(db.Model, BaseModel):
         transform_ocpi: bool = False,
     ) -> dict:
         result = super().to_dict(fields, ignore)
+
+        # Parse 'directions' from serialized JSON back into a list of dicts:
+        if 'directions' in result and result['directions'] is not None:
+            result['directions']: list = json.loads(result['directions'])
 
         if 'geometry' in result:
             del result['geometry']

@@ -137,6 +137,11 @@ services:
     volumes:
       - ./dev/test_services/mocked_stadtnavi:/app
 
+  mocked-sw-stuttgart:
+    <<: *mocked-service-defaults
+    volumes:
+      - ./dev/test_services/mocked_sw_stuttgart:/app
+
   mocked-giroe:
     <<: *mocked-service-defaults
     volumes:

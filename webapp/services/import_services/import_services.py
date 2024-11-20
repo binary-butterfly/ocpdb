@@ -26,6 +26,7 @@ from webapp.services.import_services.chargeit import ChargeitImportService
 from webapp.services.import_services.giroe import GiroeImportService
 from webapp.services.import_services.ochp.ochp_service import OchpImportService
 from webapp.services.import_services.ocpi.stadtnavi.stadtnavi_service import StadtnaviImportService
+from webapp.services.import_services.ocpi.sw_stuttgart.sw_stuttgart_service import SWStuttgartImportService
 
 
 class ImportServices(BaseService):
@@ -34,6 +35,7 @@ class ImportServices(BaseService):
     chargeit_import_service: ChargeitImportService
     giroe_import_service: GiroeImportService
     stadtnavi_import_service: StadtnaviImportService
+    sw_stuttgart_import_service: SWStuttgartImportService
 
     def __init__(
         self,
@@ -66,3 +68,4 @@ class ImportServices(BaseService):
         self.giroe_import_service = GiroeImportService(**kwargs, **default_dependencies)
         self.ochp_import_service = OchpImportService(**kwargs, **default_dependencies)
         self.stadtnavi_import_service = StadtnaviImportService(**kwargs, **default_dependencies)
+        self.sw_stuttgart_import_service = SWStuttgartImportService(**kwargs, **default_dependencies)

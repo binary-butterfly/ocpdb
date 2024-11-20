@@ -131,26 +131,49 @@ clean-all: docker-purge clean
 .PHONY: test
 test: test-unit
 
-# Run all test suites (unit and integration tests)
+# Run all test suites (unit and integration tests) in a separate environment
+# and generate combined coverage report in HTML format
 .PHONY: test-all
-test-all: test-unit test-integration
+test-all: config
+	# remove possibly leftover containers from previous integration test runs
+	$(TESTING_DOCKER_COMPOSE) down --remove-orphans --volumes
+	# run tests
+	$(TESTING_DOCKER_COMPOSE) run --rm flask python -m pytest tests/unit tests/integration \
+  		--cov=webapp --cov-report=html:reports/coverage_html/
+	$(TESTING_DOCKER_COMPOSE) down
+
 
 # Run unit tests only and generate coverage report in HTML format
 .PHONY: test-unit
 test-unit: config
-	$(FLASK_RUN) python -m pytest tests/unit --cov=webapp --cov-report=html
+	$(DOCKER_COMPOSE) run --rm -e COVERAGE_FILE=.coverage.unit_test flask python -m pytest \
+		tests/unit --cov=webapp --cov-report=html:reports/coverage_unit_html/
 
-# Run integration tests in a separate environment
+# Run integration tests in a separate environment and generate coverage report in HTML format
 .PHONY: test-integration
 test-integration: config
-	$(TESTING_DOCKER_COMPOSE) run --rm flask python -m pytest tests/integration
+	$(TESTING_DOCKER_COMPOSE) run --rm -e COVERAGE_FILE=.coverage.integration_test flask python -m pytest \
+		tests/integration --cov=webapp --cov-report=html:reports/coverage_integration_html/
 	$(TESTING_DOCKER_COMPOSE) down
 
-# Open coverage report in browser (determined by BROWSER env variable, defaults to firefox)
+# Open combined unit and integration test coverage report in browser
+# (determined by BROWSER env variable, defaults to firefox)
 .PHONY: open-coverage
 open-coverage:
-	@test -f ./reports/coverage_html/index.html || make test-unit
+	@test -f ./reports/coverage_html/index.html || make test-all
 	$(or $(BROWSER),firefox) ./reports/coverage_html/index.html
+
+# Open unit test coverage report in browser (determined by BROWSER env variable, defaults to firefox)
+.PHONY: open-coverage-unit
+open-coverage-unit:
+	@test -f ./reports/coverage_unit_html/index.html || make test-unit
+	$(or $(BROWSER),firefox) ./reports/coverage_unit_html/index.html
+
+# Open integration test coverage report in browser (determined by BROWSER env variable, defaults to firefox)
+.PHONY: open-coverage-integration
+open-coverage-integration:
+	@test -f ./reports/coverage_integration_html/index.html || make test-integration
+	$(or $(BROWSER),firefox) ./reports/coverage_integration_html/index.html
 
 
 # Linting
@@ -158,8 +181,8 @@ open-coverage:
 
 .PHONY: lint-fix
 lint-fix:
-	$(FLASK_RUN) ruff check --fix ./webapp
+	$(FLASK_RUN) ruff check --fix ./webapp ./tests
 
 .PHONY: lint-check
 lint-check:
-	$(FLASK_RUN) ruff check ./webapp
+	$(FLASK_RUN) ruff check ./webapp ./tests

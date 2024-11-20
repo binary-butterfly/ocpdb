@@ -39,6 +39,7 @@ from validataclass.validators import (
 )
 
 from webapp.common.validation import UnvalidatedDictValidator
+from webapp.common.validation.replacing_string_validator import ReplacingStringValidator
 from webapp.models.connector import ConnectorFormat, ConnectorType, PowerType
 from webapp.models.evse import Capability, EvseStatus, ParkingRestriction
 from webapp.models.image import ImageCategory
@@ -125,7 +126,11 @@ class GeoLocationInput(ValidataclassMixin):
 @validataclass
 class DisplayTextInput(ValidataclassMixin):
     language: str = StringValidator(min_length=2, max_length=2)
-    text: str = StringValidator(max_length=512)
+    text: str = ReplacingStringValidator(
+        mapping={'\r': '', '\n': ' ', '\xa0': ' '},
+        normalize_spaces=True,
+        max_length=512,
+    )
 
 
 @validataclass

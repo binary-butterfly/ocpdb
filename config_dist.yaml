@@ -12,6 +12,8 @@ MAIL_PASSWORD: 'your-password'
 REMOTE_SERVERS:
   STADTNAVI:
     url: 'https://api.dev.stadtnavi.eu'
+  SW_STUTTGART:
+    url: 'https://new-poi.chargecloud.de'
 
 SERVER_AUTH_USERS:
   # Test user for local development
