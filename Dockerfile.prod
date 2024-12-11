@@ -1,5 +1,5 @@
 # Builder stage for compiling dependencies
-FROM python:3.11.9-alpine3.20 AS builder
+FROM python:3.11-alpine3.20 AS builder
 
 # Install geos-dev and alpine-sdk (which contains the compilers needed for building wheels)
 RUN apk update && \
@@ -21,7 +21,7 @@ RUN pip install -r requirements.txt
 
 
 # Actual application runtime stage (without build dependencies)
-FROM python:3.11-alpine AS runtime
+FROM python:3.11-alpine3.20 AS runtime
 
 # Install geos at system level (needed as a sub-dependency of mapbox-vector-tile)
 RUN apk update && \

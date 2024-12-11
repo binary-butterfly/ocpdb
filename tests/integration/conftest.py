@@ -20,32 +20,34 @@ import pytest
 from sqlalchemy import create_engine
 
 from webapp import launch
+from webapp.common.flask_app import App
+from webapp.common.sqlalchemy import SQLAlchemy
 from webapp.extensions import db as flask_sqlalchemy
 
 
-@pytest.fixture(scope='session')
-def app():
+@pytest.fixture
+def app() -> App:
     test_app = launch()
     test_app.config.update(
         TESTING=True,
         DEBUG=True,
     )
+    with test_app.app_context():
+        yield test_app
 
-    yield test_app
 
+@pytest.fixture
+def db(app: App) -> SQLAlchemy:
+    # Create the database and the database tables
 
-@pytest.fixture(scope='session')
-def db(app):
-    with app.app_context():
-        # Create the database and the database tables
+    # db_path should be 'mysql+pymysql://root:root@mysql' if
+    # SQLALCHEMY_DATABASE_URI: 'mysql+pymysql://root:root@mysql/ocpdb' is set in test_config.yaml
+    db_path: str = app.config.get('SQLALCHEMY_DATABASE_URI')[:-6]
 
-        # db_path should be 'mysql+pymysql://root:root@mysql' if
-        # SQLALCHEMY_DATABASE_URI: 'mysql+pymysql://root:root@mysql/ocpdb' is set in test_config.yaml
-        db_path: str = app.config.get('SQLALCHEMY_DATABASE_URI')[:-6]
+    engine = create_engine(db_path)
+    connection = engine.connect()
+    connection.execute('DROP DATABASE IF EXISTS ocpdb;')
+    connection.execute('CREATE DATABASE IF NOT EXISTS ocpdb;')
+    flask_sqlalchemy.create_all()
 
-        engine = create_engine(db_path)
-        connection = engine.connect()
-        connection.execute('DROP DATABASE IF EXISTS ocpdb;')
-        connection.execute('CREATE DATABASE IF NOT EXISTS ocpdb;')
-        flask_sqlalchemy.create_all()
-        yield flask_sqlalchemy
+    yield flask_sqlalchemy

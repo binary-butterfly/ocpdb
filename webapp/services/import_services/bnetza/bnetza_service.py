@@ -92,7 +92,6 @@ class BnetzaImportService(BaseImportService):
             return
         worksheet = load_workbook(filename=BytesIO(data)).active
         self.load_and_save(source=source, worksheet=worksheet)
-        self.delete_import_files()
 
     def load_and_save_from_file(self, import_file_path: Path):
         source = self.get_source()
@@ -158,8 +157,3 @@ class BnetzaImportService(BaseImportService):
                 self.logger.info('import-bnetza', f'row {row_dict} is invalid: {e.to_dict()}')
                 static_error_count += 1
         return location_dict, static_error_count
-
-    def delete_import_files(self):
-        path = Path(self.config_helper.get('BNETZA_IMPORT_DIR'))
-        for item in path.iterdir():
-            item.unlink()

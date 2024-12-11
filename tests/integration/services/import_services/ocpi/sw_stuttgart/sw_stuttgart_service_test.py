@@ -15,21 +15,21 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
+
 from decimal import Decimal
 from unittest.mock import ANY, Mock
 
+from requests_mock import Mocker
+
 from tests.integration.services.import_services.ocpi.sw_stuttgart.sw_stuttgart_data import sw_stuttgart_response_json
-from webapp.common import Logger
+from webapp.common.logger import Logger
+from webapp.common.sqlalchemy import SQLAlchemy
 from webapp.dependencies import dependencies
 from webapp.models import Connector, Evse, Location
 from webapp.services.import_services.ocpi.sw_stuttgart import SWStuttgartImportService
 
 
-def test_sw_stuttgart_import(
-    app,
-    db,
-    requests_mock,
-):
+def test_sw_stuttgart_import(db: SQLAlchemy, requests_mock: Mocker) -> None:
     """
     Test for the SWStuttgartImportService.
 

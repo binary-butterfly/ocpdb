@@ -27,3 +27,5 @@ REMOTE_SERVERS:
     url: http://mocked-giroe:5000
     user: ocpdb
     password: test
+  BNETZA:
+    url: http://mocked-bnetza
