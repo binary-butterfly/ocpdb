@@ -1,5 +1,5 @@
 # Builder stage for compiling dependencies
-FROM python:3.11-alpine AS builder
+FROM python:3.11.9-alpine3.20 AS builder
 
 # Install geos-dev and alpine-sdk (which contains the compilers needed for building wheels)
 RUN apk update && \
