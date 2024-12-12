@@ -46,7 +46,7 @@ def test_bnetza_import(db: SQLAlchemy, requests_mock: Mocker) -> None:
 
     bnetza_file_path = Path(Path(__file__).parent, 'bnetza.xlsx')
     with bnetza_file_path.open('rb') as bnetza_file:
-        requests_mock.get('http://mocked-bnetza', content=bnetza_file.read())
+        requests_mock.get('mock://bnetza', content=bnetza_file.read())
 
     bnetza_import_service.load_and_save_from_web()
 

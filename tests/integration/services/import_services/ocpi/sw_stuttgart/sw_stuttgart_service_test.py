@@ -49,7 +49,7 @@ def test_sw_stuttgart_import(db: SQLAlchemy, requests_mock: Mocker) -> None:
 
     # define mocked response
     requests_mock.get(
-        'http://mocked-sw-stuttgart:5000/SW-Stuttgart',
+        'mock://sw-stuttgart',
         status_code=200,
         json=sw_stuttgart_response_json,
     )
