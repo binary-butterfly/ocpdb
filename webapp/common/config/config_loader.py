@@ -38,10 +38,12 @@ class ConfigLoader:
         app.config.from_prefixed_env('OCPDB')
 
         # load db credentials from env
-        if os.getenv('OCPDB_POSTGRES_USER') \
-                and os.getenv('OCPDB_POSTGRES_DB') \
-                and os.getenv('OCPDB_POSTGRES_PASSWORD') \
-                and os.getenv('OCPDB_POSTGRES_HOST'):
+        if (
+            os.getenv('OCPDB_POSTGRES_USER')
+            and os.getenv('OCPDB_POSTGRES_DB')
+            and os.getenv('OCPDB_POSTGRES_PASSWORD')
+            and os.getenv('OCPDB_POSTGRES_HOST')
+        ):
             app.config['SQLALCHEMY_DATABASE_URI'] = (
                 f'postgresql://{os.getenv("OCPDB_POSTGRES_USER")}:{os.getenv("OCPDB_POSTGRES_PASSWORD")}'
                 f'@{os.getenv("OCPDB_POSTGRES_HOST")}/{os.getenv("OCPDB_POSTGRES_DB")}'

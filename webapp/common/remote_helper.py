@@ -51,7 +51,6 @@ class RemoteServer:
 
 
 class RemoteHelperMethodMixin(ABC):
-
     @abstractmethod
     def request(self, **kwargs):
         pass

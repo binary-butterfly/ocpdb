@@ -63,10 +63,19 @@ class ConnectorType(Enum):
 
 
 ac_1_phase_connector_types = [
-    ConnectorType.DOMESTIC_A, ConnectorType.DOMESTIC_B, ConnectorType.DOMESTIC_C, ConnectorType.DOMESTIC_D,
-    ConnectorType.DOMESTIC_E, ConnectorType.DOMESTIC_F, ConnectorType.DOMESTIC_G, ConnectorType.DOMESTIC_H,
-    ConnectorType.DOMESTIC_I, ConnectorType.DOMESTIC_J, ConnectorType.DOMESTIC_K, ConnectorType.DOMESTIC_L,
-    ConnectorType.IEC_60309_2_single_16
+    ConnectorType.DOMESTIC_A,
+    ConnectorType.DOMESTIC_B,
+    ConnectorType.DOMESTIC_C,
+    ConnectorType.DOMESTIC_D,
+    ConnectorType.DOMESTIC_E,
+    ConnectorType.DOMESTIC_F,
+    ConnectorType.DOMESTIC_G,
+    ConnectorType.DOMESTIC_H,
+    ConnectorType.DOMESTIC_I,
+    ConnectorType.DOMESTIC_J,
+    ConnectorType.DOMESTIC_K,
+    ConnectorType.DOMESTIC_L,
+    ConnectorType.IEC_60309_2_single_16,
 ]
 
 
@@ -109,7 +118,9 @@ class Connector(db.Model, BaseModel):
     power_type: Mapped[PowerType] = db.Column(db.Enum(PowerType))  # OCHP: chargePointType             OCPI: power_type
     max_voltage: Mapped[int] = db.Column(db.Integer)  # OCHP: nominalVoltage              OCPI: max_voltage
     max_amperage: Mapped[int] = db.Column(db.Integer)  # OCPI: max_amperage
-    max_electric_power: Mapped[int] = db.Column(db.Integer)  # OCHP: maximumPower                OCPI: max_electric_power
+    max_electric_power: Mapped[int] = db.Column(
+        db.Integer
+    )  # OCHP: maximumPower                OCPI: max_electric_power
     last_updated: Mapped[datetime] = db.Column(UtcDateTime())
     terms_and_conditions: Mapped[str] = db.Column(db.String(255))  # OCPI: terms_and_conditions
 

@@ -51,7 +51,11 @@ class BaseUpdate:
     _object_keys = ()
 
     def to_dict(self) -> dict:
-        return {key: value for key, value in asdict(self).items() if value is not UnsetValue and key not in self._object_keys}
+        return {
+            key: value
+            for key, value in asdict(self).items()
+            if value is not UnsetValue and key not in self._object_keys
+        }
 
 
 @dataclass
@@ -66,7 +70,7 @@ class ImageUpdate(BaseUpdate):
 
 @dataclass
 class BusinessUpdate(BaseUpdate):
-    _object_keys = ('logo', )
+    _object_keys = ('logo',)
 
     logo: OptionalUnset[ImageUpdate] = UnsetValue
     name: OptionalUnset[str] = UnsetValue
@@ -145,7 +149,16 @@ class EvseUpdate(BaseUpdate):
 
 @dataclass
 class LocationUpdate(BaseUpdate):
-    _object_keys = ('evses', 'images', 'operator', 'suboperator', 'owner', 'exceptional_closings', 'exceptional_openings', 'regular_hours')
+    _object_keys = (
+        'evses',
+        'images',
+        'operator',
+        'suboperator',
+        'owner',
+        'exceptional_closings',
+        'exceptional_openings',
+        'regular_hours',
+    )
 
     uid: str
     source: str

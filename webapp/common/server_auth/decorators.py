@@ -33,6 +33,7 @@ def require_roles(*roles: ServerAuthRole, require_all: bool = False):
     Raises ServerApiMissingRoleException if the role requirements are not met (or ServerApiUnauthorizedException
     if the request is not authenticated at all).
     """
+
     def decorator(func):
         @functools.wraps(func)
         def wrapper(*args, **kwargs):
@@ -44,6 +45,7 @@ def require_roles(*roles: ServerAuthRole, require_all: bool = False):
             return func(*args, **kwargs)
 
         return wrapper
+
     return decorator
 
 

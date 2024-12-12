@@ -25,6 +25,7 @@ from webapp.repositories import LocationRepository
 
 RENDER_CHARGEPOINTS_MIN_ZOOM = 8
 
+
 class TilesHandler(PublicApiBaseHandler):
     location_repository: LocationRepository
 

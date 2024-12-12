@@ -114,9 +114,7 @@ class RestApiErrorHandler(BaseErrorHandler):
         """
         Handles uncaught NotImplementedError exceptions by converting them to a RestApiNotImplementedException.
         """
-        return self._handle_app_exception(
-            RestApiNotImplementedException(str(error) or 'Method not implemented.')
-        )
+        return self._handle_app_exception(RestApiNotImplementedException(str(error) or 'Method not implemented.'))
 
     def _handle_generic_exception(self, error: Exception):
         """

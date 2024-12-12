@@ -36,7 +36,14 @@ from webapp.repositories import (
 from webapp.repositories.business_repository import BusinessRepository
 from webapp.repositories.image_repository import ImageRepository
 from webapp.services.base_service import BaseService
-from webapp.services.import_services.models import ConnectorUpdate, EvseUpdate, ImageUpdate, LocationUpdate, RegularHoursUpdate, SourceInfo
+from webapp.services.import_services.models import (
+    ConnectorUpdate,
+    EvseUpdate,
+    ImageUpdate,
+    LocationUpdate,
+    RegularHoursUpdate,
+    SourceInfo,
+)
 
 
 class BaseImportService(BaseService, ABC):
@@ -107,7 +114,9 @@ class BaseImportService(BaseService, ABC):
         images_by_url: Optional[Dict[str, Image]] = None,
     ):
         try:
-            location = self.location_repository.fetch_location_by_uid(self.source_info.uid, location_update.uid, include_children=True)
+            location = self.location_repository.fetch_location_by_uid(
+                self.source_info.uid, location_update.uid, include_children=True
+            )
         except ObjectNotFoundException:
             location = Location()
         for key, value in location_update.to_dict().items():
@@ -147,7 +156,9 @@ class BaseImportService(BaseService, ABC):
 
         self.evse_repository.save_evse(evse)
 
-    def get_evse(self, evse_update: EvseUpdate, old_evse_by_uid: Dict[str, Evse], images_by_url: Optional[Dict[str, Image]]) -> Evse:
+    def get_evse(
+        self, evse_update: EvseUpdate, old_evse_by_uid: Dict[str, Evse], images_by_url: Optional[Dict[str, Image]]
+    ) -> Evse:
         evse = old_evse_by_uid.get(evse_update.uid, Evse())
 
         for key, value in evse_update.to_dict().items():
@@ -223,7 +234,6 @@ class BaseImportService(BaseService, ABC):
 
         new_images = []
         for image_update in image_updates:
-
             if image_update.external_url in old_images_by_url:
                 image = old_images_by_url[image_update.external_url]
 

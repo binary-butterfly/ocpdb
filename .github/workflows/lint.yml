@@ -31,7 +31,7 @@ jobs:
       run: pip install -r requirements.txt -r requirements-dev.txt
 
     - name: lint using ruff
-      # We could also use the official GitHub Actions integration.
-      # https://beta.ruff.rs/docs/usage/#github-action
-      # uses: chartboost/ruff-action@v1
-      run: ruff check --output-format github ./webapp ./tests
+      run: ruff check --output-format github ./webapp ./tests ./migrations
+
+    - name: lint using ruff
+      run: ruff format --check ./webapp ./tests ./migrations

@@ -27,7 +27,6 @@ from webapp.services.import_services.ocpi.ocpi_validators import LocationInput, 
 
 
 class StadtnaviImportService(BaseImportService):
-
     ocpi_validator = DataclassValidator(OcpiInput)
     location_validator = DataclassValidator(LocationInput)
     ocpi_mapper = OcpiMapper()
@@ -76,4 +75,8 @@ class StadtnaviImportService(BaseImportService):
 
         self.save_location_updates(location_updates)
 
-        self.update_source(source=source, static_error_count=static_error_count, realtime_error_count=realtime_error_count)
+        self.update_source(
+            source=source,
+            static_error_count=static_error_count,
+            realtime_error_count=realtime_error_count,
+        )

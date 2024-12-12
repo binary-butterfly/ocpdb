@@ -64,10 +64,9 @@ class Image(db.Model, BaseModel):
 
     @property
     def path_thumbnail(self):
-        return os.path.abspath(os.path.join(
-            current_app.config['DYNAMIC_IMAGE_DIR'],
-            '%s.thumb.%s' % (self.id, self.type)
-        ))
+        return os.path.abspath(
+            os.path.join(current_app.config['DYNAMIC_IMAGE_DIR'], '%s.thumb.%s' % (self.id, self.type)),
+        )
 
     def to_dict(self, fields: Optional[List[str]] = None, ignore: Optional[List[str]] = None) -> dict:
         result = super().to_dict(fields, ignore)

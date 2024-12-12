@@ -42,17 +42,13 @@ class Logger:
         file_name = os.path.join(self.config['LOG_DIR'], '%s.log' % log_name)
         file_handler = WatchedFileHandler(file_name)
         file_handler.setLevel(logging.INFO)
-        file_handler.setFormatter(logging.Formatter(
-            '%(asctime)s %(levelname)s: %(message)s ')
-        )
+        file_handler.setFormatter(logging.Formatter('%(asctime)s %(levelname)s: %(message)s '))
         logger.addHandler(file_handler)
 
         file_name = os.path.join(self.config['LOG_DIR'], '%s.err' % log_name)
         file_handler = WatchedFileHandler(file_name)
         file_handler.setLevel(logging.ERROR)
-        file_handler.setFormatter(logging.Formatter(
-            '%(asctime)s %(levelname)s: %(message)s ')
-        )
+        file_handler.setFormatter(logging.Formatter('%(asctime)s %(levelname)s: %(message)s '))
         logger.addHandler(file_handler)
 
         if self.config['DEBUG']:

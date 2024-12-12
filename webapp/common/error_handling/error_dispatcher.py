@@ -29,6 +29,7 @@ class ErrorDispatcher:
     Class that can be registered as the global error handler. Dispatches errors/exceptions to other error handlers
     (classes that implement BaseErrorHandler).
     """
+
     rest_api_error_handler: BaseErrorHandler
 
     def __init__(self, rest_api_error_handler: BaseErrorHandler):

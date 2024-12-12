@@ -97,8 +97,10 @@ class ExceptionalPeriodInput:
 @validataclass
 class RelatedResourceInput:
     uri: str = UrlValidator(max_length=255)
-    class_: List[OchpRelatedResourceType] \
-        = ListValidator(OchpEnumValidator(OchpRelatedResourceType)), DefaultFactory(lambda: [])
+    class_: List[OchpRelatedResourceType] = (
+        ListValidator(OchpEnumValidator(OchpRelatedResourceType)),
+        DefaultFactory(list),
+    )
 
 
 @validataclass
@@ -126,17 +128,25 @@ class AdditionalGeoPoint:
 
 @validataclass
 class OpeningTimesInput:
-    regularHours: Optional[List[RegularHoursInput]] = ListValidator(DataclassValidator(RegularHoursInput)), Default(None)
+    regularHours: Optional[List[RegularHoursInput]] = (
+        ListValidator(DataclassValidator(RegularHoursInput)),
+        Default(None),
+    )
     twentyfourseven: Optional[bool] = BooleanValidator(allow_strings=True), Default(None)
     closedCharging: bool = BooleanValidator(allow_strings=True)
-    exceptionalOpenings: List[ExceptionalPeriodInput] \
-        = ListValidator(DataclassValidator(ExceptionalPeriodInput)), DefaultFactory(lambda: [])
-    exceptionalClosings: List[ExceptionalPeriodInput] \
-        = ListValidator(DataclassValidator(ExceptionalPeriodInput)), DefaultFactory(lambda: [])
+    exceptionalOpenings: List[ExceptionalPeriodInput] = (
+        ListValidator(DataclassValidator(ExceptionalPeriodInput)),
+        DefaultFactory(list),
+    )
+    exceptionalClosings: List[ExceptionalPeriodInput] = (
+        ListValidator(DataclassValidator(ExceptionalPeriodInput)),
+        DefaultFactory(list),
+    )
 
     def __post_init__(self):
-        if (self.regularHours is None and self.twentyfourseven is None) \
-                or (self.regularHours is not None and self.twentyfourseven is not None):
+        if (self.regularHours is None and self.twentyfourseven is None) or (
+            self.regularHours is not None and self.twentyfourseven is not None
+        ):
             raise ValidationError(code='only one of regularHours and twentyfourseven must be set')
 
 
@@ -168,24 +178,32 @@ class ChargePointInput:
     timestamp: Optional[datetime] = OchpDateTimeValidator(), Default(None)
     locationName: str = StringValidator(max_length=100)
     locationNameLang: str = StringValidator(min_length=3, max_length=3)
-    images: List[ImageInput] = ListValidator(DataclassValidator(ImageInput)), DefaultFactory(lambda: [])
-    relatedResource: List[RelatedResourceInput] = ListValidator(DataclassValidator(RelatedResourceInput)), DefaultFactory(lambda: [])
+    images: List[ImageInput] = ListValidator(DataclassValidator(ImageInput)), DefaultFactory(list)
+    relatedResource: List[RelatedResourceInput] = (
+        ListValidator(DataclassValidator(RelatedResourceInput)),
+        DefaultFactory(list),
+    )
     chargePointAddress: AddressInput = DataclassValidator(AddressInput)
     chargePointLocation: GeoPointInput = DataclassValidator(GeoPointInput)
-    relatedLocation: Optional[List[AdditionalGeoPoint]] = ListValidator(DataclassValidator(AdditionalGeoPoint)), Default(None)
+    relatedLocation: Optional[List[AdditionalGeoPoint]] = (
+        ListValidator(DataclassValidator(AdditionalGeoPoint)),
+        Default(None),
+    )
     timeZone: str = StringValidator(max_length=255)
     openingTimes: Optional[OpeningTimesInput] = DataclassValidator(OpeningTimesInput), Default(None)
     status: Optional[OchpStaticStatus] = OchpEnumValidator(OchpStaticStatus), Default(None)
     statusSchedule: Optional[List[ScheduleInput]] = ListValidator(DataclassValidator(ScheduleInput)), Default(None)
     telephoneNumber: Optional[str] = StringValidator(max_length=20), Default(None)
     location: OchpLocationType = OchpEnumValidator(OchpLocationType)
-    parkingRestriction: List[OchpParkingRestrictionType] \
-        = ListValidator(OchpEnumValidator(OchpParkingRestrictionType)), DefaultFactory(lambda: [])
-    authMethods: List[OchpAuthMethodType] = ListValidator(OchpEnumValidator(OchpAuthMethodType)), DefaultFactory(lambda: [])
+    parkingRestriction: List[OchpParkingRestrictionType] = (
+        ListValidator(OchpEnumValidator(OchpParkingRestrictionType)),
+        DefaultFactory(list),
+    )
+    authMethods: List[OchpAuthMethodType] = ListValidator(OchpEnumValidator(OchpAuthMethodType)), DefaultFactory(list)
     connectors: List[ConnectorInput] = ListValidator(DataclassValidator(ConnectorInput), min_length=1)
     chargePointType: OchpChargePointType = OchpEnumValidator(OchpChargePointType)
     ratings: Optional[RatingsInput] = DataclassValidator(RatingsInput), Default(None)
-    userInterfaceLang: List[str] = ListValidator(StringValidator(min_length=3, max_length=3)), DefaultFactory(lambda: [])
+    userInterfaceLang: List[str] = ListValidator(StringValidator(min_length=3, max_length=3)), DefaultFactory(list)
     maxReservation: Optional[Decimal] = DecimalValidator(), Default(None)
 
 
@@ -197,10 +215,17 @@ class ChargePointStatusInput:
     ttl: Optional[datetime] = OchpDateTimeValidator(), Default(None)
 
     def __post_init__(self):
-        if self.major == OchpMajorStatus.available and self.minor not in [OchpMinorStatus.available, OchpMinorStatus.reserved]:
+        if self.major == OchpMajorStatus.available and self.minor not in [
+            OchpMinorStatus.available,
+            OchpMinorStatus.reserved,
+        ]:
             raise ValidationError(code='invalid_minor')
-        if self.major == OchpMajorStatus.available \
-                and self.minor in [OchpMinorStatus.charging, OchpMinorStatus.blocked, OchpMinorStatus.reserved, OchpMinorStatus.outoforder]:
+        if self.major == OchpMajorStatus.available and self.minor in [
+            OchpMinorStatus.charging,
+            OchpMinorStatus.blocked,
+            OchpMinorStatus.reserved,
+            OchpMinorStatus.outoforder,
+        ]:
             raise ValidationError(code='invalid_minor')
         if self.major == OchpMajorStatus.unknown and self.minor is not None:
             raise ValidationError(code='invalid_minor')

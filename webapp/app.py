@@ -73,9 +73,7 @@ def configure_error_handlers(app: App) -> None:
         'db_session': dependencies.get_db_session(),
         'debug': bool(app.config['DEBUG']),
     }
-    error_dispatcher = ErrorDispatcher(
-        RestApiErrorHandler(**error_handler_kwargs)
-    )
+    error_dispatcher = ErrorDispatcher(RestApiErrorHandler(**error_handler_kwargs))
 
     @app.errorhandler(Exception)
     def handle_exception(error: Exception):

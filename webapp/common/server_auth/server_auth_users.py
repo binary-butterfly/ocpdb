@@ -31,6 +31,7 @@ class ServerAuthRole(Enum):
     """
     Roles a server API user can have.
     """
+
     GIROE = 'giroe'
     BNETZA = 'bnetza'
 
@@ -40,6 +41,7 @@ class ServerAuthUser:
     """
     Dataclass representing a server API user. Has a username, password hash and a list of roles.
     """
+
     username: str
     password_hash: str
     roles: List[ServerAuthRole]
@@ -74,6 +76,7 @@ class ServerAuthDatabase:
     """
     Manages server API users. Wrapper around the SERVER_AUTH_USERS dictionary from the application config.
     """
+
     _users: Dict[str, ServerAuthUser]
 
     def __init__(self, *, server_auth_users: Dict[str, ServerAuthUser]):

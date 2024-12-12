@@ -42,7 +42,6 @@ class PubSubService(BaseService):
         self.pubsub_client = pubsub_client
         self.evse_repository = evse_repository
 
-
     def register(self):
         self.pubsub_client.register(
             PubSubStatusSubscriptionHandler(

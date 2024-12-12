@@ -46,5 +46,7 @@ class LocationSearchQuery(SortingMixin, OffsetPaginationMixin, BaseSearchQuery):
     limit: int = PaginationLimitValidator(optional=False, max_value=1000), Default(100)
 
     def __post_init__(self):
-        if (self.lat is not None or self.lon is not None or self.radius is not None) and not (self.lat and self.lon and self.radius):
+        if (self.lat is not None or self.lon is not None or self.radius is not None) and not (
+            self.lat and self.lon and self.radius
+        ):
             raise ValidationError(reason='lat, lon and radius have all to be set if one is set')

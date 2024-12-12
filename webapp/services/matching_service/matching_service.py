@@ -62,7 +62,9 @@ class MatchingService(BaseService):
             self._unset_location_relation(static_location)
             return
 
-        locations_by_factors = {self._match_location_pair(static_location, location): location for location in locations}
+        locations_by_factors = {
+            self._match_location_pair(static_location, location): location for location in locations
+        }
 
         # sort factors
         sorted_factors = sorted(locations_by_factors.keys(), reverse=True)
@@ -103,16 +105,18 @@ class MatchingService(BaseService):
         # operator ngram factor (if dynamic operator is existing)
         operator_factor = 1
         if dynamic_location.operator_id:
-            operator_factor = NGram.compare(static_location.operator.name.lower(), dynamic_location.operator.name.lower())
+            operator_factor = NGram.compare(
+                static_location.operator.name.lower(), dynamic_location.operator.name.lower()
+            )
 
         # evse count factor
         evse_count_factor = 1 - 0.4 * (
-                abs(len(static_location.evses) - len(dynamic_location.evses))
-                / (abs(len(static_location.evses) - len(dynamic_location.evses)) + 1)
+            abs(len(static_location.evses) - len(dynamic_location.evses))
+            / (abs(len(static_location.evses) - len(dynamic_location.evses)) + 1)
         )
 
         # weighting modifications
-        street_factor = street_factor ** 0.5
-        distance_factor = distance_factor ** 0.5
+        street_factor = street_factor**0.5
+        distance_factor = distance_factor**0.5
 
         return distance_factor * street_factor * operator_factor * evse_count_factor

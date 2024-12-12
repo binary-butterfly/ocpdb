@@ -132,8 +132,7 @@ class BnetzaImportService(BaseImportService):
         # there are 10 rows of explanation over the header, plus 1 line header -> we start at row 12
         for table_row in worksheet.iter_rows(min_row=12):
             row_dict = {
-                list(self.header_line.values())[i]: table_row[i].value
-                for i in range(0, len(self.header_line.keys()))
+                list(self.header_line.values())[i]: table_row[i].value for i in range(len(self.header_line.keys()))
             }
 
             # some postcodes are integer (why?! :( )

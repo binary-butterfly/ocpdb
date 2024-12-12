@@ -50,6 +50,7 @@ class LogErrorsCelery(Celery):
         class ContextTask(Task, ABC):
             def __init__(self):
                 from webapp.extensions import logger
+
                 self.logger = logger
 
             def __call__(self, *args, **kwargs):

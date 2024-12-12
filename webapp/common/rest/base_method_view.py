@@ -68,7 +68,12 @@ class BaseMethodView(MethodView):
         except ValidationError as e:
             raise InputValidationException('Validation errors in query parameters.', data=e.to_dict()) from e
 
-    def validate_request(self, validator: DataclassValidator[T_Dataclass], *, default: Any = UnsetParameter) -> T_Dataclass:
+    def validate_request(
+        self,
+        validator: DataclassValidator[T_Dataclass],
+        *,
+        default: Any = UnsetParameter,
+    ) -> T_Dataclass:
         """
         Gets the parsed JSON body from the current request and validates it using a `DataclassValidator`.
 

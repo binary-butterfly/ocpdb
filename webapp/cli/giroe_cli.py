@@ -32,29 +32,39 @@ giroe_cli = AppGroup('giroe')
 
 @giroe_cli.command('import', help='Giro-e: downloads and saves chargepoint updates')
 @click.option(
-    '-p', '--preset', 'preset',
+    '-p',
+    '--preset',
+    'preset',
     type=click.Choice(['daily', 'weekly']),
     help='preset for daily (last 36 hours) or weekly (last 10 days) sync',
 )
 @click.option(
-    '-cf', '--created-since', 'created_since',
+    '-cf',
+    '--created-since',
+    'created_since',
     type=click.DateTime(formats=['%Y-%m-%d', '%Y-%m-%dT%H:%M:%S']),
-    help='created since'
+    help='created since',
 )
 @click.option(
-    '-ct', '--created-until', 'created_until',
+    '-ct',
+    '--created-until',
+    'created_until',
     type=click.DateTime(formats=['%Y-%m-%d', '%Y-%m-%dT%H:%M:%S']),
-    help='created until'
+    help='created until',
 )
 @click.option(
-    '-cf', '--modified-since', 'modified_since',
+    '-cf',
+    '--modified-since',
+    'modified_since',
     type=click.DateTime(formats=['%Y-%m-%d', '%Y-%m-%dT%H:%M:%S']),
-    help='modified since'
+    help='modified since',
 )
 @click.option(
-    '-ct', '--modified-until', 'modified_until',
+    '-ct',
+    '--modified-until',
+    'modified_until',
     type=click.DateTime(formats=['%Y-%m-%d', '%Y-%m-%dT%H:%M:%S']),
-    help='modified until'
+    help='modified until',
 )
 @catch_exception
 def cli_download_and_save(
@@ -78,7 +88,6 @@ def cli_download_and_save(
         modified_since=modified_since,
         modified_until=modified_until,
     )
-
 
 
 @giroe_cli.command('set-connector-status', help='set connector status')

@@ -81,7 +81,7 @@ class Capability(Enum):
 evse_image = db.Table(
     'evse_image',
     db.Column('evse_id', db.BigInteger, db.ForeignKey('evse.id', use_alter=True), nullable=False),
-    db.Column('image_id', db.BigInteger, db.ForeignKey('image.id', use_alter=True), nullable=False)
+    db.Column('image_id', db.BigInteger, db.ForeignKey('image.id', use_alter=True), nullable=False),
 )
 
 
@@ -103,7 +103,11 @@ class Evse(db.Model, BaseModel):
     location_id: Mapped[int] = db.Column(db.BigInteger, db.ForeignKey('location.id', use_alter=True), nullable=False)
 
     uid: Mapped[str] = db.Column(db.String(64), nullable=False, index=True)
-    status: Mapped[EvseStatus] = db.Column(db.Enum(EvseStatus, name='EvseStatus'), default=EvseStatus.UNKNOWN, nullable=False)
+    status: Mapped[EvseStatus] = db.Column(
+        db.Enum(EvseStatus, name='EvseStatus'),
+        default=EvseStatus.UNKNOWN,
+        nullable=False,
+    )
 
     lat: Mapped[Decimal] = db.Column(db.Numeric(9, 7))
     lon: Mapped[Decimal] = db.Column(db.Numeric(10, 7))
@@ -111,15 +115,15 @@ class Evse(db.Model, BaseModel):
     floor_level: Mapped[str] = db.Column(db.String(16))
     physical_reference: Mapped[str] = db.Column(db.String(255))
     directions: Mapped[str] = db.Column(db.Text)
-    phone: Mapped[str] = db.Column(db.String(255))                       # OCHP: telephoneNumber
+    phone: Mapped[str] = db.Column(db.String(255))  # OCHP: telephoneNumber
 
-    parking_uid: Mapped[str] = db.Column(db.String(255))                 # OCHP: parkingSpot.parkingId
-    parking_floor_level: Mapped[str] = db.Column(db.String(255))         # OCHP: parkingSpot.floorlevel
-    parking_spot_number: Mapped[str] = db.Column(db.String(255))         # OCHP: parkingSpot.parkingSpotNumber
+    parking_uid: Mapped[str] = db.Column(db.String(255))  # OCHP: parkingSpot.parkingId
+    parking_floor_level: Mapped[str] = db.Column(db.String(255))  # OCHP: parkingSpot.floorlevel
+    parking_spot_number: Mapped[str] = db.Column(db.String(255))  # OCHP: parkingSpot.parkingSpotNumber
 
     last_updated: Mapped[datetime] = db.Column(UtcDateTime())
-    max_reservation: Mapped[float] = db.Column(db.Float)                 # OCHP maxReservation
-    _capabilities: Mapped[int] = db.Column('capabilities', db.Integer)   # OCPI: capability
+    max_reservation: Mapped[float] = db.Column(db.Float)  # OCHP maxReservation
+    _capabilities: Mapped[int] = db.Column('capabilities', db.Integer)  # OCPI: capability
     # OCHP: RestrictionType     OCPI: parking_restrictions
     _parking_restrictions: Mapped[int] = db.Column('parking_restrictions', db.Integer)
 
@@ -133,7 +137,7 @@ class Evse(db.Model, BaseModel):
             return []
         return sorted(
             [item for item in list(Capability) if (1 << list(Capability).index(item)) & self._capabilities],
-            key=lambda item: 1 << list(Capability).index(item)
+            key=lambda item: 1 << list(Capability).index(item),
         )
 
     def _set_capabilities(self, capabilities: List[Capability]) -> None:
@@ -141,22 +145,30 @@ class Evse(db.Model, BaseModel):
         for capability in capabilities:
             self._capabilities = self._capabilities | (1 << list(Capability).index(capability))
 
-    capabilities: List[Capability] = db.synonym('_capabilities', descriptor=property(_get_capabilities, _set_capabilities))
+    capabilities: List[Capability] = db.synonym(
+        '_capabilities',
+        descriptor=property(_get_capabilities, _set_capabilities),
+    )
 
     def _get_parking_restrictions(self) -> List[ParkingRestriction]:
         if self._parking_restrictions is None:
             return []
         return sorted(
-            [item for item in list(ParkingRestriction) if (1 << list(ParkingRestriction).index(item)) & self._parking_restrictions],
-            key=lambda item: 1 << list(ParkingRestriction).index(item)
+            [
+                item
+                for item in list(ParkingRestriction)
+                if (1 << list(ParkingRestriction).index(item)) & self._parking_restrictions
+            ],
+            key=lambda item: 1 << list(ParkingRestriction).index(item),
         )
 
     def _set_parking_restrictions(self, parking_restrictions: List[ParkingRestriction]) -> None:
         self._parking_restrictions = 0
         for parking_restriction in parking_restrictions:
-            self._parking_restrictions = self._parking_restrictions | (1 << list(ParkingRestriction).index(parking_restriction))
+            self._parking_restrictions = self._parking_restrictions | (
+                1 << list(ParkingRestriction).index(parking_restriction)
+            )
 
     parking_restrictions = db.synonym(
-        '_parking_restrictions',
-        descriptor=property(_get_parking_restrictions, _set_parking_restrictions)
+        '_parking_restrictions', descriptor=property(_get_parking_restrictions, _set_parking_restrictions)
     )

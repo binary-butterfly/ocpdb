@@ -28,6 +28,7 @@ class ReplacingStringValidator(StringValidator):
     If 'normalize_spaces=True' is given as a parameter, any number of consecutive spaces in the input
     (after replacing) will be reduced a single space.
     """
+
     mapping: dict[str, str]
     normalize_spaces: bool
 
@@ -44,6 +45,6 @@ class ReplacingStringValidator(StringValidator):
 
         if self.normalize_spaces:
             input_words: list[str] = input_data.split()  # removes any number of spaces between words
-            input_data = ' '.join(input_words) # adds just one space between words
+            input_data = ' '.join(input_words)  # adds just one space between words
 
         return super().validate(input_data, **kwargs)

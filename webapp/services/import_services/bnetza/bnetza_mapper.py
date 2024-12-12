@@ -26,7 +26,6 @@ from .bnetza_validators import BnetzaConnectorType, BnetzaRowInput
 
 
 class BnetzaMapper:
-
     def map_rows_to_location_update(self, location_uid: str, rows: List[BnetzaRowInput]) -> LocationUpdate:
         row = rows[0]
         address = row.address.strip().replace('  ', ' ')
@@ -70,26 +69,34 @@ class BnetzaMapper:
             if len(getattr(row, 'connector_%s_type' % inline_counter)) == 0:  # ignore empty connector type entries
                 continue
 
-            evse_updates.append(EvseUpdate(
-                uid=f'BNETZA*{location_uid}*{line}*{inline_counter}',
-                status=EvseStatus.STATIC,
-                connectors=self.map_row_to_connector(location_uid, row, line, inline_counter),
-                last_updated=row.launch_date,
-            ))
+            evse_updates.append(
+                EvseUpdate(
+                    uid=f'BNETZA*{location_uid}*{line}*{inline_counter}',
+                    status=EvseStatus.STATIC,
+                    connectors=self.map_row_to_connector(location_uid, row, line, inline_counter),
+                    last_updated=row.launch_date,
+                )
+            )
         return evse_updates
 
-    def map_row_to_connector(self, location_uid: str, row: BnetzaRowInput, line: int, inline_counter: int) -> List[ConnectorUpdate]:
+    def map_row_to_connector(
+        self, location_uid: str, row: BnetzaRowInput, line: int, inline_counter: int
+    ) -> List[ConnectorUpdate]:
         connectors = []
         for connector_counter in range(len(getattr(row, 'connector_%s_type' % inline_counter))):
             if getattr(row, 'connector_%s_power' % inline_counter) is None:  # should not happen, but it does happen ...
                 continue
             connector_type = getattr(row, 'connector_%s_type' % inline_counter)[connector_counter]
-            connectors.append(ConnectorUpdate(
-                uid='%s-%s-%s-%s' % (location_uid, line, inline_counter, connector_counter),
-                standard=self.map_connector_type(connector_type),
-                max_electric_power=self.map_max_electrical_power(row, inline_counter, connector_counter),
-                format=ConnectorFormat.CABLE if connector_type == BnetzaConnectorType.IEC_62196_T2_WIRED else ConnectorFormat.SOCKET,
-            ))
+            connectors.append(
+                ConnectorUpdate(
+                    uid='%s-%s-%s-%s' % (location_uid, line, inline_counter, connector_counter),
+                    standard=self.map_connector_type(connector_type),
+                    max_electric_power=self.map_max_electrical_power(row, inline_counter, connector_counter),
+                    format=ConnectorFormat.CABLE
+                    if connector_type == BnetzaConnectorType.IEC_62196_T2_WIRED
+                    else ConnectorFormat.SOCKET,
+                )
+            )
         return connectors
 
     def map_connector_type(self, bnetza_connector_type: BnetzaConnectorType) -> ConnectorType:
@@ -103,12 +110,15 @@ class BnetzaMapper:
             BnetzaConnectorType.IEC_62196_T2_WIRED: ConnectorType.IEC_62196_T2,
             BnetzaConnectorType.IEC_62196_T2_COMBO: ConnectorType.IEC_62196_T2_COMBO,
             BnetzaConnectorType.TESLA_S_1: ConnectorType.TESLA_S,
-            BnetzaConnectorType.TESLA_S_2: ConnectorType.TESLA_S  # map to TESLA S because no basis for decision
+            BnetzaConnectorType.TESLA_S_2: ConnectorType.TESLA_S,  # map to TESLA S because no basis for decision
         }.get(bnetza_connector_type, ConnectorType.IEC_62196_T2)
 
     def map_max_electrical_power(self, row: BnetzaRowInput, inline_counter: int, connector_counter: int) -> int:
         power = int(getattr(row, 'connector_%s_power' % inline_counter) * 1000)
         # there are several connectors where there's 22kW for SchuKo which is impossible, so we cap max power there
-        if power > 3700 and getattr(row, 'connector_%s_type' % inline_counter)[connector_counter] == BnetzaConnectorType.DOMESTIC_F:
+        if (
+            power > 3700
+            and getattr(row, 'connector_%s_type' % inline_counter)[connector_counter] == BnetzaConnectorType.DOMESTIC_F
+        ):
             return 3700
         return power

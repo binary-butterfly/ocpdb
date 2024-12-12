@@ -105,11 +105,16 @@ class ViewAllMethodView(BaseMethodView):
     @document(
         description='Get a list of Businesses',
         query=[
-            Parameter('sorted_by', schema=AnyOfField(allowed_values=['name', 'created', 'modified'], required=False, default='name')),
+            Parameter(
+                'sorted_by',
+                schema=AnyOfField(allowed_values=['name', 'created', 'modified'], required=False, default='name'),
+            ),
             Parameter('name', schema=StringField(required=False)),
             Parameter('limit', schema=IntegerField(maximum=1000, required=False, default=100)),
         ],
-        response=[Response(ResponseData(SchemaListReference('BusinessDetails'), ExampleListReference('BusinessDetails')))],
+        response=[
+            Response(ResponseData(SchemaListReference('BusinessDetails'), ExampleListReference('BusinessDetails'))),
+        ],
         components=[
             Schema('BusinessDetails', business_details_schema, business_details_example),
             Schema('Image', image_schema, image_example),

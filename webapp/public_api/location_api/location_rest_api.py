@@ -116,7 +116,10 @@ class LocationListMethodView(LocationBaseMethodView):
     @document(
         description='Get list of Locations',
         query=[
-            Parameter('sorted_by', schema=AnyOfField(allowed_values=['name', 'created', 'modified'], required=False, default='name')),
+            Parameter(
+                'sorted_by',
+                schema=AnyOfField(allowed_values=['name', 'created', 'modified'], required=False, default='name'),
+            ),
             Parameter('name', schema=StringField(required=False)),
             Parameter('source', schema=StringField(required=False), example='bnetza'),
             Parameter('postal_code', schema=StringField(required=False), example='59423'),

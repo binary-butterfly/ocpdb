@@ -25,7 +25,13 @@ from webapp.models.connector import ConnectorFormat, ConnectorType, PowerType
 from webapp.models.evse import Capability, EvseStatus, ParkingRestriction
 from webapp.models.image import ImageCategory
 from webapp.models.location import ParkingType
-from webapp.services.import_services.models import ConnectorUpdate, EvseUpdate, ImageUpdate, LocationUpdate, RegularHoursUpdate
+from webapp.services.import_services.models import (
+    ConnectorUpdate,
+    EvseUpdate,
+    ImageUpdate,
+    LocationUpdate,
+    RegularHoursUpdate,
+)
 
 from .ochp_models import (
     OchpAuthMethodType,
@@ -43,7 +49,6 @@ from .ochp_validators import ChargePointInput, ChargePointStatusInput, Connector
 
 
 class OchpMapper:
-
     @staticmethod
     def clean_list(items: List[Any]) -> List[Any]:
         return list({item for item in items if item is not None})
@@ -172,12 +177,14 @@ class OchpMapper:
         }.get(location_type)
 
     def map_chargepoint_to_location_update(self, charge_point_inputs: List[ChargePointInput]) -> LocationUpdate:
-
         # location data is all the same
         charge_point_input = charge_point_inputs[0]
 
         charge_point_address = charge_point_input.chargePointAddress.address.strip()
-        if charge_point_input.chargePointAddress.houseNumber is not None and charge_point_input.chargePointAddress.houseNumber != '0':
+        if (
+            charge_point_input.chargePointAddress.houseNumber is not None
+            and charge_point_input.chargePointAddress.houseNumber != '0'
+        ):
             charge_point_address += ' ' + charge_point_input.chargePointAddress.houseNumber.strip()
 
         location_update = LocationUpdate(
@@ -193,7 +200,10 @@ class OchpMapper:
             lon=charge_point_input.chargePointLocation.lon,
             time_zone=charge_point_input.timeZone,
             parking_type=self.map_ochp_location_type_to_parking_type(charge_point_input.location),
-            evses=[self.map_chargepoint_to_evse(single_charge_point_input) for single_charge_point_input in charge_point_inputs],
+            evses=[
+                self.map_chargepoint_to_evse(single_charge_point_input)
+                for single_charge_point_input in charge_point_inputs
+            ],
             # ignored: locationNameLang
             # ignored: relatedLocation
         )
@@ -204,11 +214,15 @@ class OchpMapper:
             elif charge_point_input.openingTimes.regularHours is not None:
                 location_update.regular_hours = []
                 for regular_hour_input in charge_point_input.openingTimes.regularHours:
-                    location_update.regular_hours.append(RegularHoursUpdate(
-                        weekday=regular_hour_input.weekday,
-                        period_begin=regular_hour_input.periodBegin.hour * 3600 + regular_hour_input.periodBegin.minute * 60,
-                        period_end=regular_hour_input.periodEnd.hour * 3600 + regular_hour_input.periodEnd.minute * 60,
-                    ))
+                    location_update.regular_hours.append(
+                        RegularHoursUpdate(
+                            weekday=regular_hour_input.weekday,
+                            period_begin=regular_hour_input.periodBegin.hour * 3600
+                            + regular_hour_input.periodBegin.minute * 60,
+                            period_end=regular_hour_input.periodEnd.hour * 3600
+                            + regular_hour_input.periodEnd.minute * 60,
+                        ),
+                    )
 
         # Images like logos can appear multiple times, so we group them
         # TODO: image deduplication beyond urls
@@ -229,7 +243,9 @@ class OchpMapper:
             last_updated=charge_point_input.timestamp or datetime.now(tz=timezone.utc),
             status=OchpMapper.map_ochp_static_status_to_evse_status(charge_point_input.status),
             phone=charge_point_input.telephoneNumber,
-            parking_restrictions=[self.map_parking_restriction(restriction) for restriction in charge_point_input.parkingRestriction],
+            parking_restrictions=[
+                self.map_parking_restriction(restriction) for restriction in charge_point_input.parkingRestriction
+            ],
             connectors=[],
             images=[],
         )

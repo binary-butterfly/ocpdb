@@ -21,7 +21,6 @@ from webapp.common.logger import Logger
 
 
 class BaseService:
-
     logger: Logger
     config_helper: ConfigHelper
 

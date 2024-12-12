@@ -15,6 +15,7 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
+
 import json
 
 from pycountry import countries
@@ -30,11 +31,16 @@ from webapp.services.import_services.models import (
     LocationUpdate,
     RegularHoursUpdate,
 )
-from webapp.services.import_services.ocpi.ocpi_validators import BusinessDetailsInput, ConnectorInput, EvseInput, ImageInput, LocationInput
+from webapp.services.import_services.ocpi.ocpi_validators import (
+    BusinessDetailsInput,
+    ConnectorInput,
+    EvseInput,
+    ImageInput,
+    LocationInput,
+)
 
 
 class OcpiMapper:
-
     def map_location(self, location_input: LocationInput, source: str) -> LocationUpdate:
         location_update = LocationUpdate(
             uid=location_input.id,
@@ -64,7 +70,11 @@ class OcpiMapper:
             if not getattr(location_input, business_type):
                 continue
 
-            setattr(location_update, business_type, self.map_business(business_input=getattr(location_input, business_type)))
+            setattr(
+                location_update,
+                business_type,
+                self.map_business(business_input=getattr(location_input, business_type)),
+            )
 
         if location_input.opening_times:
             location_update.twentyfourseven = location_input.opening_times.twentyfourseven
@@ -76,12 +86,16 @@ class OcpiMapper:
             if location_input.opening_times.exceptional_openings:
                 location_update.exceptional_openings = []
                 for exceptional_opening_input in location_input.opening_times.exceptional_openings:
-                    location_update.exceptional_openings.append(ExceptionalPeriodUpdate(**exceptional_opening_input.to_dict()))
+                    location_update.exceptional_openings.append(
+                        ExceptionalPeriodUpdate(**exceptional_opening_input.to_dict()),
+                    )
 
             if location_input.opening_times.exceptional_closings:
                 location_update.exceptional_closings = []
                 for exceptional_closings_input in location_input.opening_times.exceptional_closings:
-                    location_update.exceptional_closings.append(ExceptionalPeriodUpdate(**exceptional_closings_input.to_dict()))
+                    location_update.exceptional_closings.append(
+                        ExceptionalPeriodUpdate(**exceptional_closings_input.to_dict()),
+                    )
 
         return location_update
 

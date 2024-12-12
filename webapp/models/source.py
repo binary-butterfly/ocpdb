@@ -49,15 +49,26 @@ class Source(db.Model, BaseModel):
     attribution_contributor: Mapped[Optional[str]] = db.Column(db.String(256), nullable=True)
     attribution_url: Mapped[Optional[str]] = db.Column(db.String(256), nullable=True)
 
-    static_status: Mapped[SourceStatus] = db.Column(db.Enum(SourceStatus), nullable=False, default=SourceStatus.PROVISIONED)
-    realtime_status: Mapped[SourceStatus] = db.Column(db.Enum(SourceStatus), nullable=False, default=SourceStatus.PROVISIONED)
+    static_status: Mapped[SourceStatus] = db.Column(
+        db.Enum(SourceStatus),
+        nullable=False,
+        default=SourceStatus.PROVISIONED,
+    )
+    realtime_status: Mapped[SourceStatus] = db.Column(
+        db.Enum(SourceStatus),
+        nullable=False,
+        default=SourceStatus.PROVISIONED,
+    )
 
     static_error_count: Mapped[int] = db.Column(db.Integer(), nullable=False, default=0)
     realtime_error_count: Mapped[int] = db.Column(db.Integer(), nullable=False, default=0)
 
     @property
     def combined_status(self) -> SourceStatus:
-        if self.static_status != SourceStatus.ACTIVE or self.realtime_status in [SourceStatus.PROVISIONED, SourceStatus.DISABLED]:
+        if self.static_status != SourceStatus.ACTIVE or self.realtime_status in [
+            SourceStatus.PROVISIONED,
+            SourceStatus.DISABLED,
+        ]:
             return self.static_status
         return self.realtime_status
 

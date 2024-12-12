@@ -128,9 +128,10 @@ class RegularHours:
 @validataclass
 class Hours:
     twentyfourseven: bool = BooleanValidator()
-    regular_hours: OptionalUnsetNone[List[RegularHours]] = NoneableToUnsetValue(
-        ListValidator(DataclassValidator(RegularHours))
-    ), DefaultUnset()
+    regular_hours: OptionalUnsetNone[List[RegularHours]] = (
+        NoneableToUnsetValue(ListValidator(DataclassValidator(RegularHours))),
+        DefaultUnset(),
+    )
 
 
 @validataclass

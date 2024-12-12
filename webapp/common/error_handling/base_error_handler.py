@@ -29,6 +29,7 @@ class BaseErrorHandler:
     """
     Base class for error handlers.
     """
+
     # Mapping Exception->Callable
     _handlers: dict
 

@@ -70,11 +70,17 @@ class ChargeitImportService(BaseImportService):
             if not location_input.published:
                 continue
 
-            location_updates.append(self.chargit_mapper.map_location_to_location_update(
-                operator_input=input_data.operator,
-                location_input=location_input,
-            ))
+            location_updates.append(
+                self.chargit_mapper.map_location_to_location_update(
+                    operator_input=input_data.operator,
+                    location_input=location_input,
+                )
+            )
 
         self.save_location_updates(location_updates)
 
-        self.update_source(source=source, static_error_count=static_error_count, realtime_error_count=realtime_error_count)
+        self.update_source(
+            source=source,
+            static_error_count=static_error_count,
+            realtime_error_count=realtime_error_count,
+        )

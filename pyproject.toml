@@ -1,31 +1,73 @@
 [tool.ruff]
-exclude = [
-    "dev/*"
-]
 
 lint.select = [
-    "E", # pycodestyle errors
-    "W", # pycodestyle warnings
     "F", # pyflakes
-    "Q", # pydocstyle
     "I", # isort
-    "T", # mypy
-    "S", # flake8
-    "I", # isort
+    "S", # flake8-bandit
+    "ASYNC", # flake8-async
+    "ISC", # flake8-implicit-str-concat
+    "LOG", # flake8-logging
+    "INP", # flake8-no-pep420 (missing __init__.py)
+    "PIE", # flake8-pie
+    "T20", # flake8-print
+    "Q", # flake8-quotes
+    "TID", # flake8-tidy-imports
+    "FLY", # flynt (use f-string instead of static join)
 ]
 
-# Sadly, this sometimes means that intentional newlines get broken. Solution would be https://github.com/astral-sh/ruff/issues/8598
-line-length = 140
+# Enable preview rules since a lot of basic pycodestyle rules are in preview mode for some reason
+preview = true
 
-[tool.ruff.lint.pycodestyle]
-# Hard limit at 140 characters
-max-line-length = 140
+lint.ignore = [
+    "B008", # do not perform function calls in argument defaults
+    "C901", # too complex
+    "ISC001", # single-line-implicit-string-concatenation - conflicts with formatter
+]
+
+exclude = [
+    ".bzr",
+    ".direnv",
+    ".eggs",
+    ".git",
+    ".hg",
+    ".mypy_cache",
+    ".nox",
+    ".pants.d",
+    ".pytype",
+    ".ruff_cache",
+    ".svn",
+    ".tox",
+    ".venv",
+    "__pypackages__",
+    "_build",
+    "buck-out",
+    "build",
+    "dist",
+    "node_modules",
+    "venv",
+]
+
+line-length = 120
 
 [tool.ruff.lint.per-file-ignores]
 "__init__.py" = ["F401"]
-"tests/*" = ["S101", "S105", "S106"]
+"tests/*" = [
+    # Allow assert
+    "S101",
+    # Ignore unsafe practices like hardcoded passwords
+    "S101", "S105", "S106",
+    # Don't require __init__.py files
+    "INP",
+]
+"migrations/*" = [
+    # Don't require __init__.py files
+    "INP",
+]
 
 [tool.ruff.lint.flake8-quotes]
 inline-quotes = "single"
 multiline-quotes = "double"
 docstring-quotes = "double"
+
+[tool.ruff.format]
+quote-style = "single"

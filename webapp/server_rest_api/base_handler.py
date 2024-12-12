@@ -24,6 +24,7 @@ class ServerApiBaseHandler:
     """
     Base class for API handler classes (`auth.AuthHandler`, etc.)
     """
+
     logger: Logger
     config_helper: ConfigHelper
 

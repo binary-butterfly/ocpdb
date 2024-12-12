@@ -23,9 +23,9 @@ from lxml import etree
 
 
 def xml_to_dict(
-        tag: etree.Element,
-        ensure_array_keys: Optional[List[Tuple[str, str]]],
-        remote_type_tags: Optional[List[str]] = None,
+    tag: etree.Element,
+    ensure_array_keys: Optional[List[Tuple[str, str]]],
+    remote_type_tags: Optional[List[str]] = None,
 ) -> dict:
     tag_name = etree.QName(tag).localname
     tag_dict = {tag_name: {} if tag.attrib else None}

@@ -31,6 +31,7 @@ class AppException(Exception):
     "debug" attribute will ONLY be included in API responses when the application is in DEBUG mode, thus it may
     be filled with potentially sensitive and long data (like stack traces or object dumps).
     """
+
     code: str = 'unspecified_error'
     message: str = ''
     http_status: int = 500
