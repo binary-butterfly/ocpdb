@@ -40,7 +40,7 @@ def test_sw_stuttgart_import(db: SQLAlchemy, requests_mock: Mocker) -> None:
 
     sw_stuttgart_service: SWStuttgartImportService = dependencies.get_import_services().sw_stuttgart_import_service
 
-    # mock logger
+    # mock logger to prevent IO
     sw_stuttgart_service.remote_helper.logger = Mock(Logger)
 
     locations_in_db_before = db.session.query(Location).count()
@@ -49,7 +49,7 @@ def test_sw_stuttgart_import(db: SQLAlchemy, requests_mock: Mocker) -> None:
 
     # define mocked response
     requests_mock.get(
-        'mock://sw-stuttgart',
+        'mock://sw-stuttgart/SW-Stuttgart',
         status_code=200,
         json=sw_stuttgart_response_json,
     )
