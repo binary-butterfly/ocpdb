@@ -24,8 +24,8 @@ from requests_mock import Mocker
 
 from webapp.common.sqlalchemy import SQLAlchemy
 from webapp.dependencies import dependencies
-from webapp.models import Location, Evse, Connector
-from webapp.models.connector import ConnectorType, ConnectorFormat
+from webapp.models import Connector, Evse, Location
+from webapp.models.connector import ConnectorFormat, ConnectorType
 from webapp.models.evse import EvseStatus
 from webapp.services.import_services.bnetza import BnetzaImportService
 
