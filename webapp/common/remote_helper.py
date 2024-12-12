@@ -138,7 +138,7 @@ class RemoteHelper(RemoteHelperMethodMixin):
                     'application/pdf',
                     'vnd.openxmlformats-officedocument.spreadsheetml.sheet',
                 ]
-                if response.headers.get('Content-Type') in binary_mimetypes:
+                if raw or response.headers.get('Content-Type') in binary_mimetypes:
                     log_fragments.append(
                         f'<< binary data with mimetype {response.headers.get("Content-Type")} '
                         f'and length {response.headers.get("Content-Length", "unknown")} byte'

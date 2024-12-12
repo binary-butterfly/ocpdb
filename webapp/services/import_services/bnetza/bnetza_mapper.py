@@ -66,7 +66,7 @@ class BnetzaMapper:
         EVSEs anyway, so ...).
         """
         evse_updates = []
-        for inline_counter in range(1, 5):
+        for inline_counter in range(1, 7):
             if len(getattr(row, 'connector_%s_type' % inline_counter)) == 0:  # ignore empty connector type entries
                 continue
 

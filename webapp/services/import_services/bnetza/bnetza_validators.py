@@ -38,10 +38,11 @@ class BnetzaConnectorType(Enum):
     DOMESTIC_F = 'AC Schuko'
     IEC_60309_2_single_16 = 'AC CEE 3 polig'
     IEC_60309_2_three_any = 'AC CEE 5 polig'
-    IEC_62196_T1 = 'Steckdose Typ 1'
-    IEC_62196_T2 = 'AC Steckdose Typ 2'
-    IEC_62196_T2_WIRED = 'AC Kupplung Typ 2'
-    IEC_62196_T2_COMBO = 'DC Kupplung Combo'
+    IEC_62196_T1 = 'AC Typ 1 Steckdose'
+    IEC_62196_T2 = 'AC Typ 2 Steckdose'
+    IEC_62196_T1_WIRED = 'AC Typ 1 Fahrzeugkupplung'
+    IEC_62196_T2_WIRED = 'AC Typ 2 Fahrzeugkupplung'
+    IEC_62196_T2_COMBO = 'DC Fahrzeugkupplung Typ Combo 2 (CCS)'
     IEC_62196_T3A = 'Typ 3'
     TESLA_S_1 = 'Typ 2 / Tesla'
     TESLA_S_2 = 'Tesla'
@@ -57,7 +58,6 @@ class BnetzaRowInput:
     operator: str = PrintableStringValidator()
     address: str = PrintableStringValidator()
     housenumber: str = IntegerToStringValidator()
-    additional_address_data: str = IntegerToStringValidator()
     postcode: str = StringValidator()
     locality: str = StringValidator()
     land: str = StringValidator()
@@ -80,3 +80,9 @@ class BnetzaRowInput:
     connector_4_type: List[BnetzaConnectorType] = ListValidator(EnumValidator(BnetzaConnectorType))
     connector_4_power: Optional[float] = EmptystringToNoneable(CommaStringToDecimalValidator())
     connector_4_public_key: Optional[str] = EmptystringToNoneable(IntegerToStringValidator(multiline=True))
+    connector_5_type: List[BnetzaConnectorType] = ListValidator(EnumValidator(BnetzaConnectorType))
+    connector_5_power: Optional[float] = EmptystringToNoneable(CommaStringToDecimalValidator())
+    connector_5_public_key: Optional[str] = EmptystringToNoneable(IntegerToStringValidator(multiline=True))
+    connector_6_type: List[BnetzaConnectorType] = ListValidator(EnumValidator(BnetzaConnectorType))
+    connector_6_power: Optional[float] = EmptystringToNoneable(CommaStringToDecimalValidator())
+    connector_6_public_key: Optional[str] = EmptystringToNoneable(IntegerToStringValidator(multiline=True))

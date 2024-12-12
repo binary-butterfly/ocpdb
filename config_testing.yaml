@@ -12,18 +12,20 @@ OBJECT_ID_SECRET: secret
 
 REMOTE_SERVERS:
   LADENETZ:
-    url: http://mocked-ochp:5000
+    url: mock://ladenetz
     user: ocpdb
     password: test
   STADTNAVI:
-    url: http://mocked-stadtnavi:5000
+    url: mock://stadtnavi
   SW_STUTTGART:
-    url: http://mocked-sw-stuttgart:5000
+    url: mock://sw-stuttgart
   CHARGEIT:
-    url: http://mocked-chargeit:5000
+    url: mock://chargeit
     user: ocpdb
     password: test
   GIROE:
-    url: http://mocked-giroe:5000
+    url: mock://giro-e
     user: ocpdb
     password: test
+  BNETZA:
+    url: mock://bnetza

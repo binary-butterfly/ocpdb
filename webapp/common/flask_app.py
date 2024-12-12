@@ -1,6 +1,6 @@
 """
 Open ChargePoint DataBase OCPDB
-Copyright (C) 2021 binary butterfly GmbH
+Copyright (C) 2024 binary butterfly GmbH
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published by
@@ -16,10 +16,14 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from webapp.common.flask_app import App
+from flask import Flask
+
+from webapp.common.json import JSONProvider
 
 
-def test_start_app(app: App):
-    with app.test_client() as client:
-        response = client.get('/api/public/v1/businesses/1')
-        assert response
+class App(Flask):
+    """
+    Flask application for OCPDB.
+    """
+
+    json_provider_class = JSONProvider

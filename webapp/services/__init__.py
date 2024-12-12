@@ -15,11 +15,3 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-
-from webapp.common.flask_app import App
-
-
-def test_start_app(app: App):
-    with app.test_client() as client:
-        response = client.get('/api/public/v1/businesses/1')
-        assert response

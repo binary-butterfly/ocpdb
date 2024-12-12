@@ -15,21 +15,20 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
+
 from decimal import Decimal
-from unittest.mock import ANY, Mock
+from unittest.mock import ANY
+
+from requests_mock import Mocker
 
 from tests.integration.services.import_services.ocpi.sw_stuttgart.sw_stuttgart_data import sw_stuttgart_response_json
-from webapp.common import Logger
+from webapp.common.sqlalchemy import SQLAlchemy
 from webapp.dependencies import dependencies
 from webapp.models import Connector, Evse, Location
 from webapp.services.import_services.ocpi.sw_stuttgart import SWStuttgartImportService
 
 
-def test_sw_stuttgart_import(
-    app,
-    db,
-    requests_mock,
-):
+def test_sw_stuttgart_import(db: SQLAlchemy, requests_mock: Mocker) -> None:
     """
     Test for the SWStuttgartImportService.
 
@@ -40,16 +39,13 @@ def test_sw_stuttgart_import(
 
     sw_stuttgart_service: SWStuttgartImportService = dependencies.get_import_services().sw_stuttgart_import_service
 
-    # mock logger
-    sw_stuttgart_service.remote_helper.logger = Mock(Logger)
-
     locations_in_db_before = db.session.query(Location).count()
     evses_in_db_before = db.session.query(Evse).count()
     connectors_in_db_before = db.session.query(Connector).count()
 
     # define mocked response
     requests_mock.get(
-        'http://mocked-sw-stuttgart:5000/SW-Stuttgart',
+        'mock://sw-stuttgart/SW-Stuttgart',
         status_code=200,
         json=sw_stuttgart_response_json,
     )

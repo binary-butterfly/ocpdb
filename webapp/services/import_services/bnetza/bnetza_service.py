@@ -38,15 +38,16 @@ from .bnetza_validators import BnetzaRowInput
 class BnetzaImportService(BaseImportService):
     bnetza_mapper: BnetzaMapper = BnetzaMapper()
     row_validator: DataclassValidator[BnetzaRowInput] = DataclassValidator(BnetzaRowInput)
-    header_line = {
+    header_line: Dict[str, str] = {
         'Betreiber': 'operator',
+        'Anzeigename (Karte)': 'name_for_map',
         'Straße': 'address',
         'Hausnummer': 'housenumber',
         'Adresszusatz': 'additional_address_data',
         'Postleitzahl': 'postcode',
         'Ort': 'locality',
-        'Bundesland': 'land',
         'Kreis/kreisfreie Stadt': 'district',
+        'Bundesland': 'land',
         'Breitengrad': 'lat',
         'Längengrad': 'lon',
         'Inbetriebnahmedatum': 'launch_date',
@@ -65,6 +66,12 @@ class BnetzaImportService(BaseImportService):
         'Steckertypen4': 'connector_4_type',
         'P4 [kW]': 'connector_4_power',
         'Public Key4': 'connector_4_public_key',
+        'Steckertypen5': 'connector_5_type',
+        'P5 [kW]': 'connector_5_power',
+        'Public Key5': 'connector_5_public_key',
+        'Steckertypen6': 'connector_6_type',
+        'P6 [kW]': 'connector_6_power',
+        'Public Key6': 'connector_6_public_key',
     }
     source_info = SourceInfo(
         uid='bnetza',
@@ -96,7 +103,6 @@ class BnetzaImportService(BaseImportService):
             self.update_source(source, static_status=SourceStatus.FAILED)
             return
         self.load_and_save(source=source, worksheet=worksheet)
-        self.delete_import_files()
 
     def load_and_save(self, source: Source, worksheet: Worksheet):
         try:
@@ -134,7 +140,7 @@ class BnetzaImportService(BaseImportService):
             row_dict['postcode'] = str(row_dict['postcode'])
 
             # normalize connectors
-            for i in range(1, 5):
+            for i in range(1, 7):
                 connector_types = []
                 if row_dict[f'connector_{i}_type']:
                     for item in row_dict[f'connector_{i}_type'].replace(';', ',').split(','):
@@ -151,8 +157,3 @@ class BnetzaImportService(BaseImportService):
                 self.logger.info('import-bnetza', f'row {row_dict} is invalid: {e.to_dict()}')
                 static_error_count += 1
         return location_dict, static_error_count
-
-    def delete_import_files(self):
-        path = Path(self.config_helper.get('BNETZA_IMPORT_DIR'))
-        for item in path.iterdir():
-            item.unlink()

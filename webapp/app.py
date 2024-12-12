@@ -16,14 +16,13 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-
-from flask import Flask, request
+from flask import request
 
 from webapp.cli import register_cli_to_app
 from webapp.common.config import ConfigLoader
 from webapp.common.constants import BaseConfig
 from webapp.common.error_handling import ErrorDispatcher
-from webapp.common.json import JSONProvider
+from webapp.common.flask_app import App
 from webapp.common.rest import RestApiErrorHandler
 from webapp.dependencies import dependencies
 from webapp.extensions import celery, cors, db, logger, migrate, openapi
@@ -35,11 +34,7 @@ from webapp.server_rest_api import ServerRestApi
 __all__ = ['launch']
 
 
-class App(Flask):
-    json_provider_class = JSONProvider
-
-
-def launch():
+def launch() -> App:
     app = App(BaseConfig.PROJECT_NAME)
     configure_app(app)
     configure_extensions(app)
@@ -48,12 +43,12 @@ def launch():
     return app
 
 
-def configure_app(app):
+def configure_app(app: App) -> None:
     config_loader = ConfigLoader()
     config_loader.configure_app(app)
 
 
-def configure_extensions(app):
+def configure_extensions(app: App) -> None:
     logger.init_app(app)
     db.init_app(app)
     migrate.init_app(app, db)
@@ -62,7 +57,7 @@ def configure_extensions(app):
     openapi.init_app(app)
 
 
-def configure_blueprints(app):
+def configure_blueprints(app: App) -> None:
     app.register_blueprint(PublicApi())
     app.register_blueprint(FrontendBlueprint())
     app.register_blueprint(ServerRestApi())
@@ -70,7 +65,7 @@ def configure_blueprints(app):
     register_cli_to_app(app)
 
 
-def configure_error_handlers(app: Flask):
+def configure_error_handlers(app: App) -> None:
     # ErrorDispatcher: Class that passes errors either to FrontendErrorHandler (rendering error HTML pages) or
     # to RestApiErrorHandler (returning JSON responses) depending on the request path.
     error_handler_kwargs = {
