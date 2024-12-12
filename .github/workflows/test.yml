@@ -40,6 +40,9 @@ jobs:
     - name: run pytest unit
       run: python -m pytest tests/unit
 
+    - name: make logs dir writable for local user
+      run: chmod 777 logs
+
     - name: run pytest integration
       env:
         DOCKER_LOCAL_USER: 1000:1000

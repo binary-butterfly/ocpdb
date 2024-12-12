@@ -18,11 +18,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from decimal import Decimal
 from pathlib import Path
-from unittest.mock import ANY, Mock
+from unittest.mock import ANY
 
 from requests_mock import Mocker
 
-from webapp.common.logger import Logger
 from webapp.common.sqlalchemy import SQLAlchemy
 from webapp.dependencies import dependencies
 from webapp.models import Connector, Evse, Location
@@ -48,9 +47,6 @@ def test_bnetza_import(db: SQLAlchemy, requests_mock: Mocker) -> None:
     bnetza_file_path = Path(Path(__file__).parent, 'bnetza.xlsx')
     with bnetza_file_path.open('rb') as bnetza_file:
         requests_mock.get('mock://bnetza', content=bnetza_file.read())
-
-    # mock logger to prevent IO
-    bnetza_import_service.remote_helper.logger = Mock(Logger)
 
     bnetza_import_service.load_and_save_from_web()
 
