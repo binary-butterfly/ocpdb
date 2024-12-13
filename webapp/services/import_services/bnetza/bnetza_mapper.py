@@ -80,7 +80,11 @@ class BnetzaMapper:
         return evse_updates
 
     def map_row_to_connector(
-        self, location_uid: str, row: BnetzaRowInput, line: int, inline_counter: int
+        self,
+        location_uid: str,
+        row: BnetzaRowInput,
+        line: int,
+        inline_counter: int,
     ) -> List[ConnectorUpdate]:
         connectors = []
         for connector_counter in range(len(getattr(row, 'connector_%s_type' % inline_counter))):

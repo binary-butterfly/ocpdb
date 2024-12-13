@@ -115,7 +115,9 @@ class BaseImportService(BaseService, ABC):
     ):
         try:
             location = self.location_repository.fetch_location_by_uid(
-                self.source_info.uid, location_update.uid, include_children=True
+                self.source_info.uid,
+                location_update.uid,
+                include_children=True,
             )
         except ObjectNotFoundException:
             location = Location()
@@ -157,7 +159,10 @@ class BaseImportService(BaseService, ABC):
         self.evse_repository.save_evse(evse)
 
     def get_evse(
-        self, evse_update: EvseUpdate, old_evse_by_uid: Dict[str, Evse], images_by_url: Optional[Dict[str, Image]]
+        self,
+        evse_update: EvseUpdate,
+        old_evse_by_uid: Dict[str, Evse],
+        images_by_url: Optional[Dict[str, Image]],
     ) -> Evse:
         evse = old_evse_by_uid.get(evse_update.uid, Evse())
 
