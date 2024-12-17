@@ -40,7 +40,7 @@ def launch() -> App:
     configure_extensions(app)
     configure_blueprints(app)
     configure_error_handlers(app)
-    configure_periodic_tasks(app)
+    configure_periodic_tasks()
     return app
 
 
@@ -84,6 +84,6 @@ def configure_error_handlers(app: App) -> None:
 
 
 @celery.on_after_configure.connect
-def configure_periodic_tasks(app, **kwargs):
+def configure_periodic_tasks(**kwargs):
     task_runner = dependencies.get_generic_import_runner()
     task_runner.start()

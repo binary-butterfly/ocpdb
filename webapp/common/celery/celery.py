@@ -28,7 +28,8 @@ from webapp.common.json import DefaultJSONEncoder
 
 
 class CeleryState:
-    """Remembers the configuration for the (celery, app) tuple. Modeled from SQLAlchemy."""
+    """
+    RRemembers the configuration for the (celery, app) tuple. Modeled from SQLAlchemy."""
 
     celery: Celery
     app: Flask
@@ -39,7 +40,8 @@ class CeleryState:
 
 
 class LogErrorsCelery(Celery):
-    """Celery extension for Flask applications.
+    """
+    Celery extension for Flask applications.
 
     Involves a hack to allow views and tests importing the celery instance from extensions.py to access the regular
     Celery instance methods. This is done by subclassing celery.Celery and overwriting celery._state._register_app()
@@ -58,7 +60,8 @@ class LogErrorsCelery(Celery):
     original_register_app: Callable
 
     def __init__(self):
-        """If app argument provided then initialize celery using application config values.
+        """
+        If app argument provided then initialize celery using application config values.
 
         If no app argument provided you should do initialization later with init_app method.
 
@@ -70,11 +73,13 @@ class LogErrorsCelery(Celery):
         super().__init__()
 
     def init_app(self, app: Flask):
-        # register custom encoder, so Enumerations do not make json.dump exceptions
-        # In some tutorials they recommend registering an own ContentType when setting encoders because if you set
-        # content_type = application/json you will overwrite the old encoder. But if we just want another encoder, this
-        # is exactly what we want. We tested this, but if something breaks some time later this might be a place to
-        # start.
+        """
+        register custom encoder, so Enumerations do not make json.dump exceptions
+        In some tutorials they recommend registering an own ContentType when setting encoders because if you set
+        content_type = application/json you will overwrite the old encoder. But if we just want another encoder, this
+        is exactly what we want. We tested this, but if something breaks some time later this might be a place to
+        start.
+        """
         register(
             'extended_json',
             lambda obj: json.dumps(obj, cls=DefaultJSONEncoder),
