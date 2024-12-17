@@ -21,7 +21,7 @@ from decimal import Decimal
 from typing import List
 
 from validataclass.dataclasses import DefaultUnset, ValidataclassMixin, validataclass
-from validataclass.helpers import OptionalUnset
+from validataclass.helpers import OptionalUnset, UnsetValueType
 from validataclass.validators import (
     BooleanValidator,
     DataclassValidator,
@@ -32,6 +32,7 @@ from validataclass.validators import (
     FloatValidator,
     IntegerValidator,
     ListValidator,
+    Noneable,
     StringValidator,
     TimeFormat,
     TimeValidator,
@@ -210,9 +211,9 @@ class EvseInput(ValidataclassMixin):
     )
     capabilities: OptionalUnset[List[Capability]] = ListValidator(EnumValidator(Capability)), DefaultUnset
     connectors: List[ConnectorInput] = ListValidator(DataclassValidator(ConnectorInput), min_length=1), DefaultUnset
-    floor_level: OptionalUnset[str] = StringValidator(max_length=4), DefaultUnset
+    floor_level: str | None | UnsetValueType = Noneable(StringValidator(max_length=4)), DefaultUnset
     coordinates: OptionalUnset[GeoLocationInput] = DataclassValidator(GeoLocationInput), DefaultUnset
-    physical_reference: OptionalUnset[str] = StringValidator(max_length=16), DefaultUnset
+    physical_reference: str | None | UnsetValueType = Noneable(StringValidator(max_length=16)), DefaultUnset
     directions: OptionalUnset[List[DisplayTextInput]] = (
         ListValidator(DataclassValidator(DisplayTextInput)),
         DefaultUnset,

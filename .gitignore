@@ -9,6 +9,7 @@ http-client.env.json
 /Makefile.env
 /docker-compose_local.yml
 /docker-compose.override.yml
+/celerybeat-schedule
 
 /venv
 /.venv

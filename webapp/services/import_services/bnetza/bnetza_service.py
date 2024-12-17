@@ -21,6 +21,7 @@ from io import BytesIO
 from pathlib import Path
 from typing import Dict, List, Tuple
 
+from celery.schedules import crontab
 from openpyxl import load_workbook
 from openpyxl.utils.exceptions import InvalidFileException
 from openpyxl.worksheet.worksheet import Worksheet
@@ -36,6 +37,8 @@ from .bnetza_validators import BnetzaRowInput
 
 
 class BnetzaImportService(BaseImportService):
+    schedule = crontab(day_of_month='1')
+
     bnetza_mapper: BnetzaMapper = BnetzaMapper()
     row_validator: DataclassValidator[BnetzaRowInput] = DataclassValidator(BnetzaRowInput)
     header_line: Dict[str, str] = {

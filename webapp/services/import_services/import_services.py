@@ -27,6 +27,7 @@ from webapp.repositories import (
 from webapp.repositories.business_repository import BusinessRepository
 from webapp.repositories.image_repository import ImageRepository
 from webapp.services.base_service import BaseService
+from webapp.services.import_services.base_import_service import BaseImportService
 from webapp.services.import_services.bnetza import BnetzaImportService
 from webapp.services.import_services.chargeit import ChargeitImportService
 from webapp.services.import_services.giroe import GiroeImportService
@@ -42,6 +43,8 @@ class ImportServices(BaseService):
     giroe_import_service: GiroeImportService
     stadtnavi_import_service: StadtnaviImportService
     sw_stuttgart_import_service: SWStuttgartImportService
+
+    importer_by_uid: dict[str, BaseImportService]
 
     def __init__(
         self,
@@ -75,3 +78,12 @@ class ImportServices(BaseService):
         self.ochp_import_service = OchpImportService(**kwargs, **default_dependencies)
         self.stadtnavi_import_service = StadtnaviImportService(**kwargs, **default_dependencies)
         self.sw_stuttgart_import_service = SWStuttgartImportService(**kwargs, **default_dependencies)
+
+        self.importer_by_uid = {
+            self.bnetza_import_service.source_info.uid: self.bnetza_import_service,
+            self.chargeit_import_service.source_info.uid: self.chargeit_import_service,
+            self.giroe_import_service.source_info.uid: self.giroe_import_service,
+            self.ochp_import_service.source_info.uid: self.ochp_import_service,
+            self.stadtnavi_import_service.source_info.uid: self.stadtnavi_import_service,
+            self.sw_stuttgart_import_service.source_info.uid: self.sw_stuttgart_import_service,
+        }

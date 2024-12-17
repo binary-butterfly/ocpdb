@@ -20,6 +20,7 @@ from abc import ABC, abstractmethod
 from datetime import datetime, timezone
 from typing import Dict, List, Optional, Union
 
+from celery.schedules import crontab
 from validataclass.helpers import OptionalUnset, UnsetValue
 
 from webapp.common.remote_helper import RemoteHelper
@@ -56,6 +57,8 @@ class BaseImportService(BaseService, ABC):
     business_repository: BusinessRepository
     image_repository: ImageRepository
     option_repository: OptionRepository
+
+    schedule: crontab | None = None
 
     @property
     @abstractmethod

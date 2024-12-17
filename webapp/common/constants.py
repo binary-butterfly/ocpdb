@@ -66,3 +66,7 @@ class BaseConfig:
     ]
 
     MATCHING_FACTOR_THRESHOLD = 0.25
+
+    AUTO_FETCH_SOURCES: list[str] = []
+    STATIC_PULL_HOUR = 1
+    REALTIME_PULL_FREQUENCY = 60

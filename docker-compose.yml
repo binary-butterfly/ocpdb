@@ -52,6 +52,10 @@ services:
     <<: *flask-defaults
     command: ["python3", "run_celery_dev.py"]
 
+  worker-heartbeat:
+    <<: *flask-defaults
+    command: ["python3", "run_celery_heartbeat_dev.py"]
+
   mysql:
     image: mariadb
     volumes:

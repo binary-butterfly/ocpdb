@@ -38,6 +38,7 @@ from webapp.repositories import (
     SourceRepository,
 )
 from webapp.services.import_services import ImportServices
+from webapp.services.import_services.generic_import_runner import GenericImportRunner
 from webapp.services.matching_service import MatchingService
 
 if TYPE_CHECKING:
@@ -205,6 +206,13 @@ class Dependencies:
     def get_pubsub_client(self) -> PubSubClient:
         return PubSubClient(
             redis_url=self.get_config_helper().get('REDIS_PUB_SUB_URL'),
+        )
+
+    @cache_dependency
+    def get_generic_import_runner(self) -> GenericImportRunner:
+        return GenericImportRunner(
+            **self.get_base_service_dependencies(),
+            import_services=self.get_import_services(),
         )
 
 
