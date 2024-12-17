@@ -85,6 +85,9 @@ class BnetzaImportService(BaseImportService):
         has_realtime_data=False,
     )
 
+    def fetch_static_data(self):
+        self.load_and_save_from_web()
+
     def load_and_save_from_web(self):
         source = self.get_source()
         try:
