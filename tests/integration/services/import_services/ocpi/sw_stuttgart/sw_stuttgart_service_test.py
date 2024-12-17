@@ -82,18 +82,18 @@ def test_sw_stuttgart_import(db: SQLAlchemy, requests_mock: Mocker) -> None:
         'lon': Decimal('9.1762120'),
         'directions': [
             {
-              'language': 'DE',
-              'text': 'Die Ladestationen befinden sich in der Tiefgarage im 4. UG. '
-                      'Bitte beachten Sie: 7 Ladestationen sind durchgehend verfügbar. '
-                      'Bei 3 Ladestationen sind die Öffnungszeiten eingeschränkt, '
-                      'genauere Infos finden Sie an der Beschilderung vor Ort.',
+                'language': 'DE',
+                'text': 'Die Ladestationen befinden sich in der Tiefgarage im 4. UG. '
+                'Bitte beachten Sie: 7 Ladestationen sind durchgehend verfügbar. '
+                'Bei 3 Ladestationen sind die Öffnungszeiten eingeschränkt, '
+                'genauere Infos finden Sie an der Beschilderung vor Ort.',
             },
         ],
         'parking_type': None,
         'time_zone': 'Europe/Berlin',
         'last_updated': None,
         'terms_and_conditions': None,
-        'twentyfourseven': True
+        'twentyfourseven': True,
     }
     assert len(sample_location.evses) == 10
     assert sample_location.operator.to_dict() == {
@@ -102,5 +102,5 @@ def test_sw_stuttgart_import(db: SQLAlchemy, requests_mock: Mocker) -> None:
         'modified': ANY,
         'logo_id': None,
         'name': 'Stadtwerke Stuttgart GmbH',
-        'website': None
+        'website': None,
     }

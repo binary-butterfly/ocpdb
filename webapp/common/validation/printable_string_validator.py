@@ -23,8 +23,6 @@ from validataclass.validators import StringValidator
 
 class PrintableStringValidator(StringValidator):
     def validate(self, input_data: Any, **kwargs) -> Optional[Any]:
-
         self._ensure_type(input_data, str)
 
         return super().validate(input_data=repr(input_data)[1:-1])
-

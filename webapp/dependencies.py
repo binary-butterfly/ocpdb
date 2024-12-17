@@ -85,6 +85,7 @@ class Dependencies:
     def get_logger(self) -> 'Logger':
         # Late import (don't initialize all the extensions unless needed)
         from webapp.extensions import logger
+
         return logger
 
     @cache_dependency
@@ -114,6 +115,7 @@ class Dependencies:
     def get_server_auth_helper(self) -> 'ServerAuthHelper':
         # Avoid import loops ...
         from webapp.common.server_auth import ServerAuthDatabase, ServerAuthHelper
+
         server_auth_users = ServerAuthDatabase.create_from_config(current_app.config)
         return ServerAuthHelper(
             server_auth_users=server_auth_users,
@@ -125,6 +127,7 @@ class Dependencies:
     def get_db_session(self) -> Session:
         # Late import (don't initialize all the extensions unless needed)
         from webapp.extensions import db
+
         return db.session
 
     # Repositories

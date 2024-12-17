@@ -1,6 +1,6 @@
 """
 Open ChargePoint DataBase OCPDB
-Copyright (C) 2023 binary butterfly GmbH
+Copyright (C) 2024 binary butterfly GmbH
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published by
@@ -15,13 +15,3 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-
-from pathlib import Path
-
-from webapp.dependencies import dependencies
-from webapp.extensions import celery
-
-
-@celery.task
-def bnetza_import_by_file(import_file_path: str):
-    dependencies.get_import_services().bnetza_import_service.load_and_save_from_file(Path(import_file_path))

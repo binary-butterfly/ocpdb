@@ -16,18 +16,17 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-
 from copy import copy
 
 from webapp.common.unset_parameter import UnsetParameter, UnsetParameterType
 
 
 class UnsetParameterTest:
-    """ Tests for the UnsetParameter sentinel object and its type UnsetParameterType. """
+    """Tests for the UnsetParameter sentinel object and its type UnsetParameterType."""
 
     @staticmethod
     def test_unset_parameter():
-        """ Test UnsetParameter and its magic methods. """
+        """Test UnsetParameter and its magic methods."""
         assert type(UnsetParameter) is UnsetParameterType
         assert repr(UnsetParameter) == 'UnsetParameter'
         assert str(UnsetParameter) == '<UnsetParameter>'
@@ -35,7 +34,7 @@ class UnsetParameterTest:
 
     @staticmethod
     def test_unset_parameter_unique():
-        """ Test that UnsetParameter is a unique sentinel object, i.e. all UnsetParameter values are the same. """
+        """Test that UnsetParameter is a unique sentinel object, i.e. all UnsetParameter values are the same."""
         unset_parameter1 = UnsetParameter
         unset_parameter2 = copy(unset_parameter1)
         unset_parameter3 = UnsetParameterType()

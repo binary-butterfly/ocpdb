@@ -15,6 +15,7 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
+
 import json
 from datetime import datetime
 from decimal import Decimal
@@ -98,20 +99,22 @@ class TokenType(Enum):
 location_image = db.Table(
     'location_image',
     db.Column('location_id', db.BigInteger, db.ForeignKey('location.id', use_alter=True), nullable=False),
-    db.Column('image_id', db.BigInteger, db.ForeignKey('image.id', use_alter=True), nullable=False)
+    db.Column('image_id', db.BigInteger, db.ForeignKey('image.id', use_alter=True), nullable=False),
 )
 
 
 class Location(db.Model, BaseModel):
     __tablename__ = 'location'
-    __table_args__ = (
-        Index('uid', 'source'),
-    )
+    __table_args__ = (Index('uid', 'source'),)
 
     uid: Mapped[str] = db.Column(db.String(255), index=True, nullable=False)  # OCHP: locationId   OCPI: id
     source: Mapped[str] = db.Column(db.String(64), index=True, nullable=False)
 
-    evses: Mapped[List['Evse']] = db.relationship('Evse', back_populates='location', cascade='all, delete, delete-orphan')
+    evses: Mapped[List['Evse']] = db.relationship(
+        'Evse',
+        back_populates='location',
+        cascade='all, delete, delete-orphan',
+    )
     images: Mapped[List['Image']] = db.relationship('Image', secondary=location_image)
 
     exceptional_openings: Mapped[List['ExceptionalOpeningPeriod']] = db.relationship(
@@ -157,7 +160,8 @@ class Location(db.Model, BaseModel):
     last_updated: Mapped[datetime] = db.Column(UtcDateTime())  # OCHP: timestamp
 
     terms_and_conditions: Mapped[str] = db.Column(db.String(255))  # OCPI: terms_and_conditions
-    twentyfourseven: Mapped[bool] = db.Column(db.Boolean)  # OCHP: openingTimes.twentyfourseven    OCPI: opening_times.twentyfourseven
+    # OCHP: openingTimes.twentyfourseven    OCPI: opening_times.twentyfourseven
+    twentyfourseven: Mapped[bool] = db.Column(db.Boolean)
 
     geometry = db.Column(Point(), nullable=False)
 
@@ -184,10 +188,7 @@ class Location(db.Model, BaseModel):
             if self.twentyfourseven is not None:
                 result['opening_times'] = {'twentyfourseven': self.twentyfourseven}
 
-            result['coordinates'] = {
-                'lat': self.lat,
-                'lon': self.lon
-            }
+            result['coordinates'] = {'lat': self.lat, 'lon': self.lon}
         return result
 
 
@@ -198,10 +199,12 @@ def set_geometry(mapper, connection, location):
     lon_history = db.inspect(location).attrs.lon.history
 
     # just update when there are changes in lat or lon
-    if (lat_history[0] and len(lat_history[0])) \
-            or (lat_history[2] and len(lat_history[2])) \
-            or (lon_history[0] and len(lon_history[0])) \
-            or (lon_history[2] and len(lon_history[2])):
+    if (
+        (lat_history[0] and len(lat_history[0]))
+        or (lat_history[2] and len(lat_history[2]))
+        or (lon_history[0] and len(lon_history[0]))
+        or (lon_history[2] and len(lon_history[2]))
+    ):
         if connection.dialect.name == 'postgresql':
             location.geometry = func.ST_SetSRID(func.ST_MakePoint(float(location.lon), float(location.lat)), 4326)
         else:

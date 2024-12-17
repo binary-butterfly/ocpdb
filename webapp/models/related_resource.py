@@ -51,8 +51,7 @@ class RelatedResource(db.Model, BaseModel):
         if not self._types:
             return []
         return sorted(
-            [item for item in list(RelatedResourceType) if item.value & self._types],
-            key=lambda item: item.value
+            [item for item in list(RelatedResourceType) if item.value & self._types], key=lambda item: item.value
         )
 
     def _set_types(self, types: List[RelatedResourceType]) -> None:

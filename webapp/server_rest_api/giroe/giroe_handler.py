@@ -29,12 +29,12 @@ class GiroeHandler(ServerApiBaseHandler):
     giroe_import_service: GiroeImportService
 
     def __init__(
-            self,
-            *args,
-            location_repository: LocationRepository,
-            evse_repository: EvseRepository,
-            giroe_import_service: GiroeImportService,
-            **kwargs,
+        self,
+        *args,
+        location_repository: LocationRepository,
+        evse_repository: EvseRepository,
+        giroe_import_service: GiroeImportService,
+        **kwargs,
     ):
         super().__init__(*args, **kwargs)
         self.location_repository = location_repository
@@ -42,7 +42,6 @@ class GiroeHandler(ServerApiBaseHandler):
         self.giroe_import_service = giroe_import_service
 
     def handle_put_location(self, location_id: int, location_input: LocationInput):
-
         location_uid = self.giroe_import_service.giroe_mapper.hash_object_id('location', location_id)
 
         try:

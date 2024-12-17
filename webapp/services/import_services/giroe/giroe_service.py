@@ -25,8 +25,8 @@ from validataclass.validators import DataclassValidator
 from webapp.common.remote_helper import RemoteException, RemoteServerType
 from webapp.models.source import SourceStatus
 from webapp.services.import_services.base_import_service import BaseImportService, SourceInfo
+from webapp.services.import_services.models import LocationUpdate
 
-from ..models import LocationUpdate
 from .giroe_mapper import GiroeMapper
 from .giroe_validator import LocationInput, LocationListInput
 

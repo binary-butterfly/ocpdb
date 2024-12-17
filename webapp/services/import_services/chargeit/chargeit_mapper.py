@@ -29,7 +29,11 @@ from .chargeit_validators import CircuitInput, CircuitStatus, LocationInput, Ope
 
 
 class ChargeitMapper:
-    def map_location_to_location_update(self, operator_input: OperatorInput, location_input: LocationInput) -> LocationUpdate:
+    def map_location_to_location_update(
+        self,
+        operator_input: OperatorInput,
+        location_input: LocationInput,
+    ) -> LocationUpdate:
         # TODO: regular hours
         return LocationUpdate(
             source='chargeit',
@@ -52,12 +56,14 @@ class ChargeitMapper:
             uid=circuit_input.evseId,
             status=self.map_status(circuit_input.status),
             last_updated=datetime.now(tz=timezone.utc),
-            connectors=[ConnectorUpdate(
-                uid=str(circuit_input._id),
-                max_electric_power=circuit_input.max_electric_power,
-                format=self.map_format(circuit_input.plug),
-                standard=self.map_standard(circuit_input.plug),
-            )],
+            connectors=[
+                ConnectorUpdate(
+                    uid=str(circuit_input._id),
+                    max_electric_power=circuit_input.max_electric_power,
+                    format=self.map_format(circuit_input.plug),
+                    standard=self.map_standard(circuit_input.plug),
+                ),
+            ],
         )
 
     @staticmethod
@@ -67,12 +73,10 @@ class ChargeitMapper:
             CircuitStatus.CHARGING: EvseStatus.CHARGING,
             CircuitStatus.STATE_CHARGING_PLUG_REMOVE: EvseStatus.CHARGING,
             CircuitStatus.CHARGING_PAUSE: EvseStatus.CHARGING,
-
             CircuitStatus.OCPP_AVAILABLE: EvseStatus.AVAILABLE,
             CircuitStatus.OCPP_UNAVAILABLE: EvseStatus.INOPERATIVE,
             CircuitStatus.OCPP_FAULTED: EvseStatus.OUTOFORDER,
             CircuitStatus.OCPP_OCCUPIED: EvseStatus.BLOCKED,
-
             CircuitStatus.OCPP16_AVAILABLE: EvseStatus.AVAILABLE,
             CircuitStatus.OCPP16_PREPARING: EvseStatus.CHARGING,
             CircuitStatus.OCPP16_CHARGING: EvseStatus.CHARGING,

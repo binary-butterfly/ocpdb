@@ -42,7 +42,6 @@ class BusinessRepository(BaseRepository[Business]):
         return self._search_and_paginate(query, search_query)
 
     def fetch_business_by_name(self, name: str) -> Business:
-
         result = self.session.query(Business).filter(Business.name == name).first()
 
         if result is None:

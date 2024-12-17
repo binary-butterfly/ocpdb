@@ -57,11 +57,14 @@ class ConnectorInput(ValidataclassMixin):
     max_electric_power: OptionalUnset[int] = IntegerValidator(), DefaultUnset
     tariff_ids: OptionalUnset[List[str]] = ListValidator(StringValidator(max_length=36)), DefaultUnset
     terms_and_conditions: OptionalUnset[str] = UrlValidator(max_length=255), DefaultUnset
-    last_updated: OptionalUnset[datetime] = DateTimeValidator(
-        DateTimeFormat.LOCAL_OR_UTC,
-        local_timezone=timezone.utc,
-        target_timezone=timezone.utc,
-    ), DefaultUnset
+    last_updated: OptionalUnset[datetime] = (
+        DateTimeValidator(
+            DateTimeFormat.LOCAL_OR_UTC,
+            local_timezone=timezone.utc,
+            target_timezone=timezone.utc,
+        ),
+        DefaultUnset,
+    )
 
 
 @validataclass
@@ -79,11 +82,14 @@ class RegularHoursInput(ValidataclassMixin):
 
 @validataclass
 class ExceptionalPeriodInput(ValidataclassMixin):
-    period_begin: datetime = DateTimeValidator(
-        DateTimeFormat.LOCAL_OR_UTC,
-        local_timezone=timezone.utc,
-        target_timezone=timezone.utc,
-    ), DefaultUnset
+    period_begin: datetime = (
+        DateTimeValidator(
+            DateTimeFormat.LOCAL_OR_UTC,
+            local_timezone=timezone.utc,
+            target_timezone=timezone.utc,
+        ),
+        DefaultUnset,
+    )
     period_end: datetime = DateTimeValidator(
         DateTimeFormat.LOCAL_OR_UTC,
         local_timezone=timezone.utc,
@@ -94,12 +100,18 @@ class ExceptionalPeriodInput(ValidataclassMixin):
 @validataclass
 class HoursInput(ValidataclassMixin):
     twentyfourseven: bool = BooleanValidator()
-    regular_hours: OptionalUnset[List[RegularHoursInput]] \
-        = ListValidator(DataclassValidator(RegularHoursInput)), DefaultUnset
-    exceptional_openings: OptionalUnset[List[ExceptionalPeriodInput]] \
-        = ListValidator(DataclassValidator(ExceptionalPeriodInput)), DefaultUnset
-    exceptional_closings: OptionalUnset[List[ExceptionalPeriodInput]] \
-        = ListValidator(DataclassValidator(ExceptionalPeriodInput)), DefaultUnset
+    regular_hours: OptionalUnset[List[RegularHoursInput]] = (
+        ListValidator(DataclassValidator(RegularHoursInput)),
+        DefaultUnset,
+    )
+    exceptional_openings: OptionalUnset[List[ExceptionalPeriodInput]] = (
+        ListValidator(DataclassValidator(ExceptionalPeriodInput)),
+        DefaultUnset,
+    )
+    exceptional_closings: OptionalUnset[List[ExceptionalPeriodInput]] = (
+        ListValidator(DataclassValidator(ExceptionalPeriodInput)),
+        DefaultUnset,
+    )
 
 
 @validataclass
@@ -109,11 +121,14 @@ class StatusScheduleInput(ValidataclassMixin):
         local_timezone=timezone.utc,
         target_timezone=timezone.utc,
     )
-    period_end: OptionalUnset[datetime] = DateTimeValidator(
-        DateTimeFormat.LOCAL_OR_UTC,
-        local_timezone=timezone.utc,
-        target_timezone=timezone.utc,
-    ), DefaultUnset
+    period_end: OptionalUnset[datetime] = (
+        DateTimeValidator(
+            DateTimeFormat.LOCAL_OR_UTC,
+            local_timezone=timezone.utc,
+            target_timezone=timezone.utc,
+        ),
+        DefaultUnset,
+    )
     status: EvseStatus = EnumValidator(EvseStatus)
 
 
@@ -172,9 +187,14 @@ class EnvironmentalImpactInput(ValidataclassMixin):
 @validataclass
 class EnergyMixInput(ValidataclassMixin):
     is_green_energy: bool = BooleanValidator()
-    energy_sources: OptionalUnset[List[EnergySourceInput]] = ListValidator(DataclassValidator(EnergySourceInput)), DefaultUnset
-    environ_impact: OptionalUnset[List[EnvironmentalImpactInput]] \
-        = ListValidator(DataclassValidator(EnvironmentalImpactInput)), DefaultUnset
+    energy_sources: OptionalUnset[List[EnergySourceInput]] = (
+        ListValidator(DataclassValidator(EnergySourceInput)),
+        DefaultUnset,
+    )
+    environ_impact: OptionalUnset[List[EnvironmentalImpactInput]] = (
+        ListValidator(DataclassValidator(EnvironmentalImpactInput)),
+        DefaultUnset,
+    )
     supplier_name: OptionalUnset[str] = StringValidator(max_length=64), DefaultUnset
     energy_product_name: OptionalUnset[str] = StringValidator(max_length=64), DefaultUnset
 
@@ -184,20 +204,32 @@ class EvseInput(ValidataclassMixin):
     id: str = StringValidator(max_length=36)
     evse_id: str = StringValidator(max_length=36)
     status: EvseStatus = EnumValidator(EvseStatus)
-    status_schedule: OptionalUnset[List[StatusScheduleInput]] = ListValidator(DataclassValidator(StatusScheduleInput)), DefaultUnset
+    status_schedule: OptionalUnset[List[StatusScheduleInput]] = (
+        ListValidator(DataclassValidator(StatusScheduleInput)),
+        DefaultUnset,
+    )
     capabilities: OptionalUnset[List[Capability]] = ListValidator(EnumValidator(Capability)), DefaultUnset
     connectors: List[ConnectorInput] = ListValidator(DataclassValidator(ConnectorInput), min_length=1), DefaultUnset
     floor_level: OptionalUnset[str] = StringValidator(max_length=4), DefaultUnset
     coordinates: OptionalUnset[GeoLocationInput] = DataclassValidator(GeoLocationInput), DefaultUnset
     physical_reference: OptionalUnset[str] = StringValidator(max_length=16), DefaultUnset
-    directions: OptionalUnset[List[DisplayTextInput]] = ListValidator(DataclassValidator(DisplayTextInput)), DefaultUnset
-    parking_restrictions: OptionalUnset[List[ParkingRestriction]] = ListValidator(EnumValidator(ParkingRestriction)), DefaultUnset
+    directions: OptionalUnset[List[DisplayTextInput]] = (
+        ListValidator(DataclassValidator(DisplayTextInput)),
+        DefaultUnset,
+    )
+    parking_restrictions: OptionalUnset[List[ParkingRestriction]] = (
+        ListValidator(EnumValidator(ParkingRestriction)),
+        DefaultUnset,
+    )
     images: OptionalUnset[List[ImageInput]] = ListValidator(DataclassValidator(ImageInput)), DefaultUnset
-    last_updated: OptionalUnset[datetime] = DateTimeValidator(
-        DateTimeFormat.LOCAL_OR_UTC,
-        local_timezone=timezone.utc,
-        target_timezone=timezone.utc,
-    ), DefaultUnset
+    last_updated: OptionalUnset[datetime] = (
+        DateTimeValidator(
+            DateTimeFormat.LOCAL_OR_UTC,
+            local_timezone=timezone.utc,
+            target_timezone=timezone.utc,
+        ),
+        DefaultUnset,
+    )
 
 
 @validataclass
@@ -210,11 +242,16 @@ class LocationInput(ValidataclassMixin):
     state: OptionalUnset[str] = StringValidator(max_length=20), DefaultUnset
     country: str = StringValidator(min_length=3, max_length=3)
     coordinates: GeoLocationInput = DataclassValidator(GeoLocationInput)
-    related_locations: OptionalUnset[List[AdditionalGeoLocationInput]]\
-        = ListValidator(DataclassValidator(AdditionalGeoLocationInput)), DefaultUnset
+    related_locations: OptionalUnset[List[AdditionalGeoLocationInput]] = (
+        ListValidator(DataclassValidator(AdditionalGeoLocationInput)),
+        DefaultUnset,
+    )
     parking_type: OptionalUnset[ParkingType] = EnumValidator(ParkingType), DefaultUnset
     evses: OptionalUnset[List[EvseInput]] = ListValidator(DataclassValidator(EvseInput)), DefaultUnset
-    directions: OptionalUnset[List[DisplayTextInput]] = ListValidator(DataclassValidator(DisplayTextInput)), DefaultUnset
+    directions: OptionalUnset[List[DisplayTextInput]] = (
+        ListValidator(DataclassValidator(DisplayTextInput)),
+        DefaultUnset,
+    )
     operator: OptionalUnset[BusinessDetailsInput] = DataclassValidator(BusinessDetailsInput), DefaultUnset
     suboperator: OptionalUnset[BusinessDetailsInput] = DataclassValidator(BusinessDetailsInput), DefaultUnset
     owner: OptionalUnset[BusinessDetailsInput] = DataclassValidator(BusinessDetailsInput), DefaultUnset
@@ -224,11 +261,14 @@ class LocationInput(ValidataclassMixin):
     charging_when_closed: OptionalUnset[bool] = BooleanValidator(), DefaultUnset
     images: OptionalUnset[List[ImageInput]] = ListValidator(DataclassValidator(ImageInput)), DefaultUnset
     energy_mix: OptionalUnset[EnergyMixInput] = DataclassValidator(EnergyMixInput), DefaultUnset
-    last_updated: OptionalUnset[datetime] = DateTimeValidator(
-        DateTimeFormat.LOCAL_OR_UTC,
-        local_timezone=timezone.utc,
-        target_timezone=timezone.utc,
-    ), DefaultUnset
+    last_updated: OptionalUnset[datetime] = (
+        DateTimeValidator(
+            DateTimeFormat.LOCAL_OR_UTC,
+            local_timezone=timezone.utc,
+            target_timezone=timezone.utc,
+        ),
+        DefaultUnset,
+    )
 
 
 @validataclass

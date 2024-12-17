@@ -15,6 +15,7 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
+
 from decimal import Decimal
 
 import pytest
@@ -29,6 +30,7 @@ class TestingImportService(BaseImportService):
     """
     Minimal version of a BaseImportService subclass for testing puroposes
     """
+
     @property
     def source_info(self) -> SourceInfo:
         return SourceInfo(uid='test_source_uid', name='test_source', public_url='test_url', has_realtime_data=None)
@@ -50,14 +52,12 @@ def testing_import_service():
 
 
 def test_save_location_updates_simple(db, testing_import_service: BaseImportService):
-    testing_import_service.save_location_updates(
-        [
-            LocationUpdate(
-                uid='test',
-                source='test',
-                lat=Decimal('2.0'),
-                lon=Decimal('2.0'),
-            )
-        ]
-    )
+    testing_import_service.save_location_updates([
+        LocationUpdate(
+            uid='test',
+            source='test',
+            lat=Decimal('2.0'),
+            lon=Decimal('2.0'),
+        )
+    ])
     assert db.session.query(Location).count() == 1

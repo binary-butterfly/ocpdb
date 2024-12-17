@@ -26,6 +26,7 @@ class SQLAlchemy(BaseSQLAlchemy):
     """
     Custom app-specific extension of the `SQLAlchemy` class from Flask-SQLAlchemy.
     """
+
     # Naming convention for automatic naming of constraints
     _naming_convention = {
         'ix': 'ix_%(column_0_label)s',

@@ -45,11 +45,13 @@ class EvseRepository(BaseRepository[Evse]):
         return result
 
     def fetch_by_uid(self, source: str, uid: str) -> Evse:
-        items = self.session.query(Evse) \
-            .filter(Evse.uid == uid) \
-            .join(Location, Location.id == Evse.location_id) \
-            .filter(Location.source == source) \
+        items = (
+            self.session.query(Evse)
+            .filter(Evse.uid == uid)
+            .join(Location, Location.id == Evse.location_id)
+            .filter(Location.source == source)
             .all()
+        )
 
         if len(items) == 0:
             raise ObjectNotFoundException(message=f'evse with uid {uid} and source {source} not found')
@@ -78,14 +80,10 @@ class EvseRepository(BaseRepository[Evse]):
             self.session.commit()
 
     def delete_evse_by_ids(self, evse_ids: List[int]):
-        self.session.query(Evse) \
-            .filter(Evse.id.in_(evse_ids)) \
-            .delete(synchronize_session=False)
+        self.session.query(Evse).filter(Evse.id.in_(evse_ids)).delete(synchronize_session=False)
 
     def delete_evse_by_id(self, evse_id: int):
-        self.session.query(Evse) \
-            .filter(id=evse_id) \
-            .delete(synchronize_session=False)
+        self.session.query(Evse).filter(id=evse_id).delete(synchronize_session=False)
 
     def fetch_evse_status_summary(self) -> List[EvseStatusSummary]:
         items = (

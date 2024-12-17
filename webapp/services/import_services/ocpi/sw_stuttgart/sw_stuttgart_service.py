@@ -28,7 +28,6 @@ from webapp.services.import_services.ocpi.sw_stuttgart.sw_stuttgart_ocpi_validat
 
 
 class SWStuttgartImportService(BaseImportService):
-
     ocpi_validator = DataclassValidator(OcpiInput)
     location_validator = DataclassValidator(SWStuttgartLocationInput)
     ocpi_mapper = OcpiMapper()

@@ -22,5 +22,5 @@ from sqlalchemy import func
 
 class Query(BaseQuery):
     def count_items(self):
-        count_query = (self.statement.with_only_columns([func.count()]).order_by(None))
+        count_query = self.statement.with_only_columns([func.count()]).order_by(None)
         return self.session.execute(count_query).scalar()

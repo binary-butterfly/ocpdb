@@ -15,6 +15,7 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
+
 from datetime import datetime
 from typing import List, Optional
 
@@ -89,7 +90,11 @@ class OchpApiClient:
         input_xml = self.ochp_request(
             path='/live/ochp/v1.4',
             request_data=em.GetStatusRequest(
-                *([] if last_update is None else [em.startDateTime(em.DateTime(last_update.strftime('%Y-%m-%dT%H:%M:%SZ')))]),
+                *(
+                    []
+                    if last_update is None
+                    else [em.startDateTime(em.DateTime(last_update.strftime('%Y-%m-%dT%H:%M:%SZ')))]
+                ),
             ),
             action='http://ochp.e-clearing.net/service/GetStatus',
         )
@@ -142,8 +147,8 @@ class OchpApiClient:
             em_user.Username(self.config_helper.get('REMOTE_SERVERS')[RemoteServerType.LADENETZ].user),
             em_user.Password(
                 self.config_helper.get('REMOTE_SERVERS')[RemoteServerType.LADENETZ].password,
-                Type='http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0#PasswordText'
-            )
+                Type='http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0#PasswordText',
+            ),
         )
         username_token.attrib['{%s}Id' % nsmap_user['wsu']] = 'UsernameToken-1'
 

@@ -35,22 +35,20 @@ class ConnectorRepository(BaseRepository[Connector]):
         return result
 
     def fetch_connectors_by_ids(self, connector_ids: List[int]) -> List[Connector]:
-        return self.session.query(Connector)\
-            .filter(Connector.id.in_(connector_ids))\
-            .all()
+        return self.session.query(Connector).filter(Connector.id.in_(connector_ids)).all()
 
     def fetch_connectors_by_evse_ids(self, evse_ids: List[int]) -> List[Connector]:
-        return self.session.query(Connector)\
-            .filter(Connector.chargepoint_id.in_(evse_ids))\
-            .all()
+        return self.session.query(Connector).filter(Connector.chargepoint_id.in_(evse_ids)).all()
 
     def fetch_by_uid(self, source: str, connector_uid: str) -> Connector:
-        result = self.session.query(Connector)\
-            .filter(Connector.uid == connector_uid)\
-            .join(Evse, Evse.id == Connector.evse_id)\
-            .join(Location, Location.id == Evse.location_id)\
-            .filter(Location.source == source)\
+        result = (
+            self.session.query(Connector)
+            .filter(Connector.uid == connector_uid)
+            .join(Evse, Evse.id == Connector.evse_id)
+            .join(Location, Location.id == Evse.location_id)
+            .filter(Location.source == source)
             .first()
+        )
 
         if result is None:
             raise ObjectNotFoundException(message=f'connector with uid {connector_uid} and source {source} not found')
@@ -58,11 +56,7 @@ class ConnectorRepository(BaseRepository[Connector]):
         return result
 
     def delete_connector_by_id(self, connector_ids: List[int]):
-        self.session.query(Connector)\
-            .filter(Connector.id.in_(connector_ids))\
-            .delete(synchronize_session=False)
+        self.session.query(Connector).filter(Connector.id.in_(connector_ids)).delete(synchronize_session=False)
 
     def delete_connector_by_ids(self, connector_id: int):
-        self.session.query(Connector)\
-            .filter(Connector.id == connector_id)\
-            .delete(synchronize_session=False)
+        self.session.query(Connector).filter(Connector.id == connector_id).delete(synchronize_session=False)

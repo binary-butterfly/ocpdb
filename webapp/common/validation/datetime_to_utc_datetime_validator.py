@@ -24,10 +24,7 @@ from validataclass.validators import Validator
 
 
 class DateTimeToUtcDateTimeValidator(Validator):
-
     def validate(self, input_data: Any, **kwargs) -> datetime:
-
         self._ensure_type(input_data, datetime)
 
         return pytz.timezone('Europe/Berlin').localize(input_data).astimezone(pytz.UTC)
-

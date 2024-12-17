@@ -67,8 +67,16 @@ class TilesMethodView(BaseMethodView):
             Parameter('z', schema=int, example=1),
         ],
         query=[
-            Parameter('static', schema=BooleanField(), description='if set show just static (true) or just dynamic (false) locations'),
-            Parameter('filter_duplicates', schema=BooleanField(), description='filters matched static-dynamic-duplicates'),
+            Parameter(
+                'static',
+                schema=BooleanField(),
+                description='if set show just static (true) or just dynamic (false) locations',
+            ),
+            Parameter(
+                'filter_duplicates',
+                schema=BooleanField(),
+                description='filters matched static-dynamic-duplicates',
+            ),
         ],
         response=[Response(ResponseData(mimetype='application/x-protobuf'), description='Tile in protobuf format.')],
     )

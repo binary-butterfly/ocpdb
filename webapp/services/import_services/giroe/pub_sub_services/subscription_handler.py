@@ -79,7 +79,7 @@ class PubSubStatusSubscriptionHandler(PubSubSubscriber):
 
         self.logger.info(
             'import-giroe',
-            f'evse {object_uid} got status update from {evse.status.name} to {evse_status.name}'
+            f'evse {object_uid} got status update from {evse.status.name} to {evse_status.name}',
         )
 
         evse.status = evse_status

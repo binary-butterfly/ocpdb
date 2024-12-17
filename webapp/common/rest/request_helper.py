@@ -30,6 +30,7 @@ class RequestHelper:
     """
     Helper class that wraps the Flask request object.
     """
+
     request: Request
 
     def __init__(self, request: Optional[Request] = None):

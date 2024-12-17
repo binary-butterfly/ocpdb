@@ -155,7 +155,6 @@ class PrometheusHandler:
             help='EVSEs with status INOPERATIVE, OUTOFORDER, REMOVED, PLANNED, BLOCKED, UNKNOWN',
             type=MetricType.gauge,
             identifier='app_ocpdb_evse_status_error',
-
         )
         evse_error_states = [
             EvseStatus.INOPERATIVE,

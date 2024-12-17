@@ -101,17 +101,21 @@ class LocationRepository(BaseRepository[Location]):
         if filter_duplicates:
             additional_where += 'AND location.dynamic_location_id IS NULL'
 
-        query = "" \
-                "SELECT location.id, location.lat, location.lon, location.name, location.address, " \
-                "  COUNT(evse.id) as chargepoint_count, " \
-                "  SUM(CASE WHEN evse.status = 'AVAILABLE' THEN 1 ELSE 0 END) as chargepoint_available_count, " \
-                "  SUM(CASE WHEN evse.status = 'UNKNOWN' THEN 1 ELSE 0 END) as chargepoint_unknown_count, " \
-                "  SUM(CASE WHEN evse.status = 'STATIC' THEN 1 ELSE 0 END) as chargepoint_static_count, " \
-                "  SUM(CASE WHEN evse.parking_restrictions & 64 = 64 THEN 1 ELSE 0 END) as chargepoint_bike_count " \
-                "FROM location " \
-                "LEFT JOIN evse ON evse.location_id = location.id "
+        query = (
+            'SELECT location.id, location.lat, location.lon, location.name, location.address, '
+            '  COUNT(evse.id) as chargepoint_count, '
+            "  SUM(CASE WHEN evse.status = 'AVAILABLE' THEN 1 ELSE 0 END) as chargepoint_available_count, "
+            "  SUM(CASE WHEN evse.status = 'UNKNOWN' THEN 1 ELSE 0 END) as chargepoint_unknown_count, "
+            "  SUM(CASE WHEN evse.status = 'STATIC' THEN 1 ELSE 0 END) as chargepoint_static_count, "
+            '  SUM(CASE WHEN evse.parking_restrictions & 64 = 64 THEN 1 ELSE 0 END) as chargepoint_bike_count '
+            'FROM location '
+            'LEFT JOIN evse ON evse.location_id = location.id '
+        )
         if self.session.connection().dialect.name == 'postgresql':
-            query += f'WHERE ST_Contains(ST_MakeEnvelope({self._get_postgre_envelope_bounds(bbox)}, 4326), location.geometry)'
+            query += (
+                f'WHERE ST_Contains(ST_MakeEnvelope({self._get_postgre_envelope_bounds(bbox)}, '
+                f'4326), location.geometry)'
+            )
         else:
             query += f"WHERE MBRContains(GeomFromText('{self._get_linestring_bounds(bbox)}'), location.geometry) "
 
@@ -125,24 +129,29 @@ class LocationRepository(BaseRepository[Location]):
         if self.session.connection().dialect.name == 'postgresql':
             locations = locations.filter(
                 func.ST_Contains(
-                    func.ST_MakeEnvelope(self._get_postgre_envelope_bounds(bbox), 4326),
-                    Location.geometry
+                    func.ST_MakeEnvelope(self._get_postgre_envelope_bounds(bbox), 4326), Location.geometry
                 ),
             )
         else:
-            locations = locations.filter(func.MBRContains(func.GeomFromText(self._get_linestring_bounds(bbox)), Location.geometry))
+            locations = locations.filter(
+                func.MBRContains(func.GeomFromText(self._get_linestring_bounds(bbox)), Location.geometry),
+            )
 
         return locations.filter(Location.source != 'bnetza').all()
 
     @staticmethod
     def _get_linestring_bounds(bbox: LngLatBbox):
-        return f'LINESTRING({bbox[0] - (0.5 * (bbox[2] - bbox[0]))} {bbox[1] - (0.5 * (bbox[3] - bbox[1]))}, ' \
-               f'{bbox[2] + (0.5 * (bbox[2] - bbox[0]))} {bbox[3] + (0.5 * (bbox[3] - bbox[1]))})'
+        return (
+            f'LINESTRING({bbox[0] - (0.5 * (bbox[2] - bbox[0]))} {bbox[1] - (0.5 * (bbox[3] - bbox[1]))}, '
+            f'{bbox[2] + (0.5 * (bbox[2] - bbox[0]))} {bbox[3] + (0.5 * (bbox[3] - bbox[1]))})'
+        )
 
     @staticmethod
     def _get_postgre_envelope_bounds(bbox: LngLatBbox):
-        return f'{bbox[0] - (0.5 * (bbox[2] - bbox[0]))}, {bbox[1] - (0.5 * (bbox[3] - bbox[1]))}, ' \
-               f'{bbox[2] + (0.5 * (bbox[2] - bbox[0]))}, {bbox[3] + (0.5 * (bbox[3] - bbox[1]))}'
+        return (
+            f'{bbox[0] - (0.5 * (bbox[2] - bbox[0]))}, {bbox[1] - (0.5 * (bbox[3] - bbox[1]))}, '
+            f'{bbox[2] + (0.5 * (bbox[2] - bbox[0]))}, {bbox[3] + (0.5 * (bbox[3] - bbox[1]))}'
+        )
 
     def delete_location(self, location: Location, *, commit: bool = True):
         self.session.delete(location)

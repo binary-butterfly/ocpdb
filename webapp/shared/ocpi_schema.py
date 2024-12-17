@@ -130,7 +130,10 @@ display_text_schema = JsonSchema(
     title='DisplayText',
     properties={
         'language': StringField(minLength=2, maxLength=2, description='Language Code ISO 639-1.'),
-        'text': StringField(maxLength=512, description='Text to be displayed to a end user. No markup, html etc. allowed.'),
+        'text': StringField(
+            maxLength=512,
+            description='Text to be displayed to a end user. No markup, html etc. allowed.',
+        ),
     },
 )
 
@@ -142,7 +145,9 @@ energy_mix_schema = JsonSchema(
     title='EnergyMix',
     description='This type is used to specify the energy mix and environmental impact of the supplied energy at a location or in a tariff.',
     properties={
-        'is_green_energy': BooleanField(description='True if 100% from regenerative sources. (CO2 and nuclear waste is zero)'),
+        'is_green_energy': BooleanField(
+            description='True if 100% from regenerative sources. (CO2 and nuclear waste is zero)',
+        ),
         'energy_sources': ArrayField(
             items=Reference(obj='EnergySource'),
             required=False,
@@ -187,7 +192,10 @@ environmental_impact_schema = JsonSchema(
     title='EnvironmentalImpact',
     description='Amount of waste produced/emitted per kWh.',
     properties={
-        'category': EnumField(enum=EnvironmentalImpactCategory, description='The environmental impact category of this value.'),
+        'category': EnumField(
+            enum=EnvironmentalImpactCategory,
+            description='The environmental impact category of this value.',
+        ),
         'amount': NumericField(description='Amount of this portion in g/kWh.'),
     },
 )
@@ -234,7 +242,11 @@ evse_schema = JsonSchema(
             required=False,
             description='List of functionalities that the EVSE is capable of.',
         ),
-        'connectors': ArrayField(items=Reference(obj='Connector'), minItems=1, description='List of available connectors on the EVSE.'),
+        'connectors': ArrayField(
+            items=Reference(obj='Connector'),
+            minItems=1,
+            description='List of available connectors on the EVSE.',
+        ),
         'floor_level': StringField(
             maxLength=4,
             description='Level on which the Charge Point is located (in garage buildings) in the locally displayed numbering scheme.',
@@ -261,7 +273,9 @@ evse_schema = JsonSchema(
             required=False,
             description='Links to images related to the EVSE such as photos or logos.',
         ),
-        'last_updated': DateTimeField(description='Timestamp when this EVSE or one of its Connectors was last updated (or created).'),
+        'last_updated': DateTimeField(
+            description='Timestamp when this EVSE or one of its Connectors was last updated (or created).',
+        ),
     },
 )
 
@@ -273,8 +287,12 @@ exceptional_period_schema = JsonSchema(
     title='ExceptionalPeriod',
     description='Specifies one exceptional period for opening or access hours.',
     properties={
-        'period_begin': DateTimeField(description='Begin of the exception. In UTC, time_zone field can be used to convert to local time.'),
-        'period_end': DateTimeField(description='End of the exception. In UTC, time_zone field can be used to convert to local time.'),
+        'period_begin': DateTimeField(
+            description='Begin of the exception. In UTC, time_zone field can be used to convert to local time.',
+        ),
+        'period_end': DateTimeField(
+            description='End of the exception. In UTC, time_zone field can be used to convert to local time.',
+        ),
     },
 )
 
@@ -309,7 +327,9 @@ hours_schema = JsonSchema(
     title='Hours',
     description='Opening and access hours of the location.',
     properties={
-        'twentyfourseven': BooleanField(description='True to represent 24 hours a day and 7 days a week, except the given exceptions.'),
+        'twentyfourseven': BooleanField(
+            description='True to represent 24 hours a day and 7 days a week, except the given exceptions.',
+        ),
         'regular_hours': ArrayField(
             items=Reference(obj='RegularHours'),
             required=False,
@@ -350,7 +370,10 @@ image_schema = JsonSchema(
     'same orientation as the original.',
     properties={
         'url': UriField(description='URL from where the image data can be fetched through a web browser.'),
-        'thumbnail': UriField(required=False, description='URL from where a thumbnail of the image can be fetched through a webbrowser.'),
+        'thumbnail': UriField(
+            required=False,
+            description='URL from where a thumbnail of the image can be fetched through a webbrowser.',
+        ),
         'category': EnumField(enum=ImageCategory, description='Describes what the image is used for.'),
         'type': StringField(maxLength=4, description='Image type like: gif, jpeg, png, svg.'),
         'width': IntegerField(minimum=0, maximum=99999, description='Width of the full scale image.'),
@@ -408,8 +431,16 @@ location_schema = JsonSchema(
             description='Postal code of the location, may only be omitted when the location has no postal code: in some countries charging '
             'locations at highways don’t have postal codes.',
         ),
-        'state': StringField(maxLength=20, required=False, description='State or province of the location, only to be used when relevant.'),
-        'country': StringField(minLength=3, maxLength=3, description='ISO 3166-1 alpha-3 code for the country of this location.'),
+        'state': StringField(
+            maxLength=20,
+            required=False,
+            description='State or province of the location, only to be used when relevant.',
+        ),
+        'country': StringField(
+            minLength=3,
+            maxLength=3,
+            description='ISO 3166-1 alpha-3 code for the country of this location.',
+        ),
         'coordinates': Reference(obj='GeoLocation', description='Coordinates of the location.'),
         'related_locations': ArrayField(
             items=Reference(obj='AdditionalGeoLocation'),
@@ -421,7 +452,11 @@ location_schema = JsonSchema(
             required=False,
             description='The general type of parking at the charge point location.',
         ),
-        'evses': ArrayField(items=Reference(obj='EVSE'), required=False, description='List of EVSEs that belong to this Location.'),
+        'evses': ArrayField(
+            items=Reference(obj='EVSE'),
+            required=False,
+            description='List of EVSEs that belong to this Location.',
+        ),
         'directions': ArrayField(
             items=Reference(obj='DisplayText'),
             required=False,
@@ -433,7 +468,11 @@ location_schema = JsonSchema(
             description='Information of the operator. When not specified, the information retrieved from the Credentials module, selected '
             'by the country_code and party_id of this Location, should be used instead.',
         ),
-        'sub_operator': Reference(obj='BusinessDetails', required=False, description='Information of the suboperator if available.'),
+        'sub_operator': Reference(
+            obj='BusinessDetails',
+            required=False,
+            description='Information of the suboperator if available.',
+        ),
         'owner': Reference(obj='BusinessDetails', required=False, description='Information of the owner if available.'),
         'facilities': ArrayField(
             items=EnumField(enum=Facility),
@@ -461,7 +500,11 @@ location_schema = JsonSchema(
             required=False,
             description='Links to images related to the location such as photos or logos.',
         ),
-        'energy_mix': Reference(obj='EnergyMix', required=False, description='Details on the energy supplied at this location.'),
+        'energy_mix': Reference(
+            obj='EnergyMix',
+            required=False,
+            description='Details on the energy supplied at this location.',
+        ),
         'last_updated': DateTimeField(
             description='Timestamp when this Location or one of its EVSEs or Connectors were last updated (or created).',
         ),
@@ -482,7 +525,11 @@ publish_token_type_schema = JsonSchema(
     'fields SHALL be set: uid, visual_number, or group_id. When uid is set, type SHALL also be set. When visual_number is '
     'set, issuer SHALL also be set.',
     properties={
-        'uid': StringField(maxLength=36, required=False, description='Unique ID by which this Token can be identified.'),
+        'uid': StringField(
+            maxLength=36,
+            required=False,
+            description='Unique ID by which this Token can be identified.',
+        ),
         'type': EnumField(enum=TokenType, required=False, description='Type of the token.'),
         'visual_number': StringField(
             maxLength=64,
@@ -511,7 +558,11 @@ regular_hours_schema = JsonSchema(
     title='RegularHours',
     description='Regular recurring operation or access hours.',
     properties={
-        'weekday': IntegerField(minimum=1, maximum=7, description='Number of day in the week, from Monday (1) till Sunday (7)'),
+        'weekday': IntegerField(
+            minimum=1,
+            maximum=7,
+            description='Number of day in the week, from Monday (1) till Sunday (7)',
+        ),
         'period_begin': RegexpField(
             pattern='([0-1][0-9]|2[0-3]):[0-5][0-9]',
             description='Begin of the regular period, in local time, given in hours and minutes. Must be in 24h format with leading zeros. '

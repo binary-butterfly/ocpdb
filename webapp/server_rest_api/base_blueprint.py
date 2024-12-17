@@ -23,7 +23,6 @@ from webapp.dependencies import dependencies
 
 
 class ServerApiBaseBlueprint(BaseBlueprint):
-
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 

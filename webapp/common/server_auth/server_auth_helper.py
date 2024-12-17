@@ -28,6 +28,7 @@ class ServerAuthHelper:
     """
     Helper class for server API authentication via Basic Auth.
     """
+
     server_auth_users: ServerAuthDatabase
     context_helper: ContextHelper
 
