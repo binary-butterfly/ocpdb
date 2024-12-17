@@ -63,7 +63,7 @@ class LogErrorsCelery(Celery):
         """
         If app argument provided then initialize celery using application config values.
 
-        If no app argument provided you should do initialization later with init_app method.
+        If no app argument is provided you should do initialization later with init_app method.
 
         Keyword arguments:
         app -- Flask application instance.
