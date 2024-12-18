@@ -39,6 +39,9 @@ class SWStuttgartImportService(BaseImportService):
         has_realtime_data=True,
     )
 
+    def fetch_realtime_data(self):
+        self.download_and_save()
+
     def download_and_save(self):
         source = self.get_source()
         try:

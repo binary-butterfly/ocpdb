@@ -1,6 +1,6 @@
 """
 Open ChargePoint DataBase OCPDB
-Copyright (C) 2021 binary butterfly GmbH
+Copyright (C) 2024 binary butterfly GmbH
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published by
@@ -16,30 +16,16 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from typing import TYPE_CHECKING, Any, Optional
-
-from flask import Config
-
-if TYPE_CHECKING:
-    from webapp.common.flask_app import App
+from flask_failsafe import failsafe
+from werkzeug._reloader import run_with_reloader
 
 
-class ConfigHelper:
-    """
-    Helper class that wraps the application config.
-    """
+@failsafe
+def run():
+    from webapp.entry_point_celery import celery
 
-    app: 'App'
+    celery.start(argv=['--quiet', 'beat'])
 
-    def __init__(self, app: Optional['App'] = None):
-        if app is not None:
-            self.init_app(app)
 
-    def init_app(self, app: 'App'):
-        self.app = app
-
-    def get_config(self) -> Config:
-        return self.app.config
-
-    def get(self, key: str, default: Any = None) -> Any:
-        return self.app.config.get(key, default)
+if __name__ == '__main__':
+    run_with_reloader(run)

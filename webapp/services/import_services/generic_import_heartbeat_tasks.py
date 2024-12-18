@@ -1,6 +1,6 @@
 """
 Open ChargePoint DataBase OCPDB
-Copyright (C) 2021 binary butterfly GmbH
+Copyright (C) 2024 binary butterfly GmbH
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published by
@@ -16,30 +16,20 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from typing import TYPE_CHECKING, Any, Optional
-
-from flask import Config
-
-if TYPE_CHECKING:
-    from webapp.common.flask_app import App
+from webapp.extensions import celery
 
 
-class ConfigHelper:
-    """
-    Helper class that wraps the application config.
-    """
+@celery.task()
+def static_import_task(source: str):
+    from webapp.dependencies import dependencies
 
-    app: 'App'
+    import_services = dependencies.get_import_services()
+    import_services.importer_by_uid[source].fetch_static_data()
 
-    def __init__(self, app: Optional['App'] = None):
-        if app is not None:
-            self.init_app(app)
 
-    def init_app(self, app: 'App'):
-        self.app = app
+@celery.task()
+def realtime_import_task(source: str):
+    from webapp.dependencies import dependencies
 
-    def get_config(self) -> Config:
-        return self.app.config
-
-    def get(self, key: str, default: Any = None) -> Any:
-        return self.app.config.get(key, default)
+    import_services = dependencies.get_import_services()
+    import_services.importer_by_uid[source].fetch_realtime_data()

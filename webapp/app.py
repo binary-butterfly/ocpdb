@@ -40,6 +40,7 @@ def launch() -> App:
     configure_extensions(app)
     configure_blueprints(app)
     configure_error_handlers(app)
+    configure_periodic_tasks()
     return app
 
 
@@ -55,6 +56,8 @@ def configure_extensions(app: App) -> None:
     celery.init_app(app)
     cors.init_app(app)
     openapi.init_app(app)
+
+    dependencies.get_config_helper().init_app(app)
 
 
 def configure_blueprints(app: App) -> None:
@@ -78,3 +81,9 @@ def configure_error_handlers(app: App) -> None:
     @app.errorhandler(Exception)
     def handle_exception(error: Exception):
         return error_dispatcher.dispatch_error(error, request)
+
+
+@celery.on_after_configure.connect
+def configure_periodic_tasks(**kwargs):
+    task_runner = dependencies.get_generic_import_runner()
+    task_runner.start()
