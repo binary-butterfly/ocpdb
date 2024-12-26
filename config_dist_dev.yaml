@@ -39,3 +39,6 @@ REMOTE_SERVERS:
     url: http://localhost:5000
     user: bnetza
     password: test
+
+AUTO_FETCH_SOURCES:
+  - sw_stuttgart

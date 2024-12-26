@@ -23,5 +23,4 @@ SERVER_AUTH_USERS:
       - bnetza
 
 AUTO_FETCH_SOURCES:
-  - bnetza
-  - sw-stuttgart
+  - sw_stuttgart
