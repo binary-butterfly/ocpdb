@@ -23,6 +23,7 @@ from .chargeit_cli import chargeit_cli
 from .giroe_cli import giroe_cli
 from .match_cli import match_cli
 from .ochp_cli import ochp_cli
+from .source_cli import source_cli
 from .stadtnavi_cli import stadtnavi_cli
 from .sw_stuttgart_cli import sw_stuttgart_cli
 
@@ -35,3 +36,4 @@ def register_cli_to_app(app: Flask):
     app.cli.add_command(ochp_cli)
     app.cli.add_command(stadtnavi_cli)
     app.cli.add_command(sw_stuttgart_cli)
+    app.cli.add_command(source_cli)

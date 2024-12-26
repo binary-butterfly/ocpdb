@@ -87,3 +87,28 @@ class ImportServices(BaseService):
             self.stadtnavi_import_service.source_info.uid: self.stadtnavi_import_service,
             self.sw_stuttgart_import_service.source_info.uid: self.sw_stuttgart_import_service,
         }
+
+    def fetch_sources(self) -> None:
+        """
+        Fetch all sources enabled via AUTO_FETCH_SOURCES by fetching static and realtime data
+        """
+        for source_uid in self.importer_by_uid.keys():
+            if source_uid not in self.config_helper.get('AUTO_FETCH_SOURCES', []):
+                continue
+
+            self.fetch_source(source_uid)
+
+    def fetch_source(self, source_uid: str) -> None:
+        """
+        Fetches static and realtime data for a specific source uid.
+        """
+        if 'source_uid' not in self.importer_by_uid:
+            raise Exception('Unknown source UID')
+
+        importer_service = self.importer_by_uid[source_uid]
+
+        if hasattr(importer_service, 'fetch_static_data'):
+            importer_service.fetch_static_data()
+
+        if hasattr(importer_service, 'fetch_realtime_data'):
+            importer_service.fetch_realtime_data()

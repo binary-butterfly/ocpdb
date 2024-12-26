@@ -1,5 +1,14 @@
 # Changelog
 
+## Version 1.2.1
+
+Released 2024-12-26
+
+### Features
+
+* [Provides an abstract command line interface for data sources](https://github.com/binary-butterfly/ocpdb/pull/75)
+
+
 ## Version 1.2.0
 
 Released 2024-12-19
