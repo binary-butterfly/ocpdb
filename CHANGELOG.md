@@ -1,5 +1,14 @@
 # Changelog
 
+## Version 1.2.2
+
+Released 2024-12-31
+
+### Features
+
+* [Fixes an issue with default minute value at crontab](https://github.com/binary-butterfly/ocpdb/pull/76)
+
+
 ## Version 1.2.1
 
 Released 2024-12-26
