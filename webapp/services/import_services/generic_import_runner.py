@@ -48,7 +48,10 @@ class GenericImportRunner:
 
             if hasattr(importer_service, 'fetch_static_data'):
                 if importer_service.schedule is None:
-                    schedule = crontab(hour=str(self.config_helper.get('STATIC_PULL_HOUR', 1)))
+                    schedule = crontab(
+                        minute=str(self.config_helper.get('STATIC_PULL_MINUTE', 0)),
+                        hour=str(self.config_helper.get('STATIC_PULL_HOUR', 1)),
+                    )
                 else:
                     schedule = importer_service.schedule
 
