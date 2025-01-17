@@ -22,7 +22,7 @@ http-client.env.json
 /static/images/dynamic/*.svg
 
 /reports
-/.coverage
+/.coverage*
 /htmlcov
 /.ruff_cache
 /.mypy_cache

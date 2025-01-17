@@ -48,6 +48,8 @@ class SWStuttgartConnectorInput(ConnectorInput):
             input_data['max_voltage'] = input_data['voltage']
         if 'ampere' in input_data.keys() and 'max_amperage' not in input_data.keys():
             input_data['max_amperage'] = input_data['ampere']
+        if 'max_power' in input_data.keys() and 'max_electric_power' not in input_data.keys():
+            input_data['max_electric_power'] = input_data['max_power'] * 1000
 
         return input_data
 
