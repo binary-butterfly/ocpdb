@@ -1,5 +1,14 @@
 # Changelog
 
+## Version 1.2.3
+
+Released 2025-01-21
+
+### Features
+
+* [sw_stuttgart: add max_electric_power and mapping docs](https://github.com/binary-butterfly/ocpdb/pull/80)
+
+
 ## Version 1.2.2
 
 Released 2024-12-31
