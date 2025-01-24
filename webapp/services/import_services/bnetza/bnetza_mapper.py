@@ -40,7 +40,7 @@ class BnetzaMapper:
             city=row.locality.strip(),
             lat=row.lat,
             lon=row.lon,
-            country='DE',
+            country='DEU',
             last_updated=row.launch_date,
             evses=[],
         )

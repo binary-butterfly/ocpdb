@@ -44,7 +44,7 @@ class ChargeitMapper:
             city=location_input.address.city,
             lat=Decimal(location_input.lat),
             lon=Decimal(location_input.lon),
-            country='DE',
+            country='DEU',
             last_updated=datetime.now(tz=timezone.utc),
             twentyfourseven=UnsetValue if location_input.hours is UnsetValue else location_input.hours.twentyfourseven,
             operator=BusinessUpdate(name=operator_input.operatorName),

@@ -18,7 +18,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import json
 
-from pycountry import countries
 from validataclass.helpers import UnsetValue
 
 from webapp.common.json import DefaultJSONEncoder
@@ -50,7 +49,7 @@ class OcpiMapper:
             postal_code=location_input.postal_code,
             city=location_input.city,
             state=location_input.state,
-            country=countries.get(alpha_3=location_input.country).alpha_2,
+            country=location_input.country,
             lat=location_input.coordinates.latitude,
             lon=location_input.coordinates.longitude,
             parking_type=location_input.parking_type,

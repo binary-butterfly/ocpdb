@@ -23,7 +23,7 @@ value.
 | distance_in_m | integer as string                 | 1           |                        |                                                                         |
 | operator      | StadtwerkeStuttgartBusiness       | 1           | location.operator      |                                                                         |
 | opening_times | StadtwerkeStuttgartOpeningTimes   | 1           | location.opening_times |                                                                         |
-| owner         | StadtwerkeStuttgartBusiness       | ?           | location.operator      | Always null in our dataset                                              |
+| owner         | StadtwerkeStuttgartBusiness       | ?           | location.owner         | Always null in our dataset                                              |
 | roaming       | boolean                           | 1           |                        |                                                                         |
 
 

@@ -19,7 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from datetime import datetime
 from decimal import Decimal
 from enum import Enum
-from typing import TYPE_CHECKING, List
+from typing import TYPE_CHECKING
 
 from sqlalchemy_utc import UtcDateTime
 
@@ -88,12 +88,12 @@ evse_image = db.Table(
 class Evse(db.Model, BaseModel):
     __tablename__ = 'evse'
 
-    connectors: Mapped[List['Connector']] = db.relationship(
+    connectors: Mapped[list['Connector']] = db.relationship(
         'Connector',
         back_populates='evse',
         cascade='all, delete, delete-orphan',
     )
-    images: Mapped[List['Image']] = db.relationship('Image', secondary=evse_image)
+    images: Mapped[list['Image']] = db.relationship('Image', secondary=evse_image)
     related_resources: Mapped['RelatedResource'] = db.relationship(
         'RelatedResource',
         back_populates='evse',
@@ -132,7 +132,7 @@ class Evse(db.Model, BaseModel):
     # status_schedule TODO
     # user_interface_lang TODO                              # OCHP userInterfaceLang
 
-    def _get_capabilities(self) -> List[Capability]:
+    def _get_capabilities(self) -> list[Capability]:
         if self._capabilities is None:
             return []
         return sorted(
@@ -140,17 +140,17 @@ class Evse(db.Model, BaseModel):
             key=lambda item: 1 << list(Capability).index(item),
         )
 
-    def _set_capabilities(self, capabilities: List[Capability]) -> None:
+    def _set_capabilities(self, capabilities: list[Capability]) -> None:
         self._capabilities = 0
         for capability in capabilities:
             self._capabilities = self._capabilities | (1 << list(Capability).index(capability))
 
-    capabilities: List[Capability] = db.synonym(
+    capabilities: list[Capability] = db.synonym(
         '_capabilities',
         descriptor=property(_get_capabilities, _set_capabilities),
     )
 
-    def _get_parking_restrictions(self) -> List[ParkingRestriction]:
+    def _get_parking_restrictions(self) -> list[ParkingRestriction]:
         if self._parking_restrictions is None:
             return []
         return sorted(
@@ -162,7 +162,7 @@ class Evse(db.Model, BaseModel):
             key=lambda item: 1 << list(ParkingRestriction).index(item),
         )
 
-    def _set_parking_restrictions(self, parking_restrictions: List[ParkingRestriction]) -> None:
+    def _set_parking_restrictions(self, parking_restrictions: list[ParkingRestriction]) -> None:
         self._parking_restrictions = 0
         for parking_restriction in parking_restrictions:
             self._parking_restrictions = self._parking_restrictions | (
@@ -170,5 +170,18 @@ class Evse(db.Model, BaseModel):
             )
 
     parking_restrictions = db.synonym(
-        '_parking_restrictions', descriptor=property(_get_parking_restrictions, _set_parking_restrictions)
+        '_parking_restrictions',
+        descriptor=property(_get_parking_restrictions, _set_parking_restrictions),
     )
+
+    def to_dict(
+        self,
+        fields: list[str] | None = None,
+        ignore: list[str] | None = None,
+        transform_ocpi: bool = False,
+    ) -> dict:
+        result = super().to_dict(fields, ignore)
+
+        result['evse_id'] = self.uid
+
+        return result

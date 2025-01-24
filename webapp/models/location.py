@@ -149,7 +149,7 @@ class Location(db.Model, BaseModel):
     postal_code: Mapped[str] = db.Column(db.String(255))  # OCHP: chargePointAddress.zipCode      OCPI: postal_code
     city: Mapped[str] = db.Column(db.String(255))  # OCHP: chargePointAddress.city         OCPI: city
     state: Mapped[str] = db.Column(db.String(255))  # OCPI: state
-    country: Mapped[str] = db.Column(db.String(2))  # OCHP: chargePointAddress.country      OCPI: country_code
+    country: Mapped[str] = db.Column(db.String(3))  # OCHP: chargePointAddress.country      OCPI: country
     lat: Mapped[Decimal] = db.Column(db.Numeric(9, 7))  # OCHP: chargePointLocation.lat     OCPI: coordinates.latitude
     lon: Mapped[Decimal] = db.Column(db.Numeric(10, 7))  # OCHP: chargePointLocation.lon    OCPI: coordinates.longitude
 
@@ -188,7 +188,13 @@ class Location(db.Model, BaseModel):
             if self.twentyfourseven is not None:
                 result['opening_times'] = {'twentyfourseven': self.twentyfourseven}
 
-            result['coordinates'] = {'lat': self.lat, 'lon': self.lon}
+            result['coordinates'] = {
+                'lat': self.lat,  # TODO: remove this after migration period
+                'lon': self.lon,  # TODO: remove this after migration period
+                'latitude': self.lat,
+                'longitude': self.lon,
+            }
+
         return result
 
 
