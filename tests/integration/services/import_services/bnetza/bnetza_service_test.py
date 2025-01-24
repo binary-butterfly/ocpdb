@@ -92,6 +92,7 @@ def test_bnetza_import(db: SQLAlchemy, requests_mock: Mocker) -> None:
         'modified': ANY,
         'location_id': 1,
         'uid': 'BNETZA*81d943a159d326f16932*0*1',
+        'evse_id': 'BNETZA*81d943a159d326f16932*0*1',
         'status': EvseStatus.STATIC,
         'lat': None,
         'lon': None,
