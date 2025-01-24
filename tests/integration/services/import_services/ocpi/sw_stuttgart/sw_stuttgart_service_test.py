@@ -77,7 +77,7 @@ def test_sw_stuttgart_import(db: SQLAlchemy, requests_mock: Mocker) -> None:
         'postal_code': '70173',
         'city': 'Stuttgart',
         'state': None,
-        'country': 'DE',
+        'country': 'DEU',
         'lat': Decimal('48.7774100'),
         'lon': Decimal('9.1762120'),
         'directions': [

@@ -72,7 +72,7 @@ def test_bnetza_import(db: SQLAlchemy, requests_mock: Mocker) -> None:
         'postal_code': '72535',
         'city': 'Heroldstatt',
         'state': None,
-        'country': 'DE',
+        'country': 'DEU',
         'lat': Decimal('48.4423980'),
         'lon': Decimal('9.6590750'),
         'directions': None,
