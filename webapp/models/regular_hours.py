@@ -16,7 +16,7 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from typing import TYPE_CHECKING, List, Optional
+from typing import TYPE_CHECKING
 
 from webapp.common.sqlalchemy import Mapped
 from webapp.extensions import db
@@ -37,14 +37,13 @@ class RegularHours(db.Model, BaseModel):
     period_begin: Mapped[int] = db.Column(db.Integer, nullable=False)
     period_end: Mapped[int] = db.Column(db.Integer, nullable=False)
 
-    def to_dict(
-        self,
-        fields: Optional[List[str]] = None,
-        ignore: Optional[List[str]] = None,
-        transform_ocpi: bool = False,
-    ) -> dict:
-        result = super().to_dict(fields, ignore)
-        if transform_ocpi:
-            result['period_begin'] = '%02d:%02d' % (self.period_begin // 3600, self.period_begin % 60 // 60)
-            result['period_end'] = '%02d:%02d' % (self.period_end // 3600, self.period_end % 60 // 60)
+    def to_dict(self, *args, ignore: list[str] | None = None, **kwargs) -> dict:
+        ignore = ignore or []
+        ignore += ['location_id', 'id', 'created', 'modified']
+
+        result = super().to_dict(*args, ignore=ignore, **kwargs)
+
+        result['period_begin'] = '%02d:%02d' % (self.period_begin // 3600, self.period_begin % 60 // 60)
+        result['period_end'] = '%02d:%02d' % (self.period_end // 3600, self.period_end % 60 // 60)
+
         return result

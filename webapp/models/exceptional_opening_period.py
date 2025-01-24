@@ -37,3 +37,11 @@ class ExceptionalOpeningPeriod(db.Model, BaseModel):
     location_id: Mapped[int] = db.Column(db.BigInteger, db.ForeignKey('location.id', use_alter=True), nullable=False)
     period_begin: Mapped[datetime] = db.Column(UtcDateTime(), nullable=False)
     period_end: Mapped[datetime] = db.Column(UtcDateTime(), nullable=False)
+
+    def to_dict(self, *args, ignore: list[str] | None = None, **kwargs) -> dict:
+        ignore = ignore or []
+        ignore += ['id', 'created', 'modified']
+
+        result = super().to_dict(*args, ignore, **kwargs)
+
+        return result

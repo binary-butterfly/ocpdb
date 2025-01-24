@@ -63,23 +63,20 @@ def test_sw_stuttgart_import(db: SQLAlchemy, requests_mock: Mocker) -> None:
     assert sample_location is not None
     assert sample_location.to_dict() == {
         'id': ANY,
-        'created': ANY,
-        'modified': ANY,
-        'uid': '2185120',
+        'original_id': '2185120',
         'source': 'sw_stuttgart',
-        'operator_id': ANY,
-        'suboperator_id': None,
-        'owner_id': None,
-        'dynamic_location_id': None,
-        'dynamic_location_probability': None,
         'name': 'B+B Tiefgarage / Kronprinzstr. 6 / 4. UG',
         'address': 'Kronprinzstr. 6 / 4. UG',
         'postal_code': '70173',
         'city': 'Stuttgart',
         'state': None,
         'country': 'DEU',
-        'lat': Decimal('48.7774100'),
-        'lon': Decimal('9.1762120'),
+        'coordinates': {
+            'lat': Decimal('48.7774100'),
+            'lon': Decimal('9.1762120'),
+            'latitude': Decimal('48.7774100'),
+            'longitude': Decimal('9.1762120'),
+        },
         'directions': [
             {
                 'language': 'DE',
@@ -89,11 +86,11 @@ def test_sw_stuttgart_import(db: SQLAlchemy, requests_mock: Mocker) -> None:
                 'genauere Infos finden Sie an der Beschilderung vor Ort.',
             },
         ],
+        'opening_times': {'twentyfourseven': True},
         'parking_type': None,
         'time_zone': 'Europe/Berlin',
         'last_updated': None,
         'terms_and_conditions': None,
-        'twentyfourseven': True,
     }
     assert len(sample_location.evses) == 10
     assert sample_location.operator.to_dict() == {

@@ -16,13 +16,16 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+import json
 from datetime import datetime
 from decimal import Decimal
 from enum import Enum
 from typing import TYPE_CHECKING
 
+from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy_utc import UtcDateTime
 
+from webapp.common.json import DefaultJSONEncoder
 from webapp.common.sqlalchemy import Mapped
 from webapp.extensions import db
 
@@ -103,6 +106,7 @@ class Evse(db.Model, BaseModel):
     location_id: Mapped[int] = db.Column(db.BigInteger, db.ForeignKey('location.id', use_alter=True), nullable=False)
 
     uid: Mapped[str] = db.Column(db.String(64), nullable=False, index=True)
+    evse_id: Mapped[str | None] = db.Column(db.String(64), nullable=True, index=True)
     status: Mapped[EvseStatus] = db.Column(
         db.Enum(EvseStatus, name='EvseStatus'),
         default=EvseStatus.UNKNOWN,
@@ -114,7 +118,7 @@ class Evse(db.Model, BaseModel):
 
     floor_level: Mapped[str] = db.Column(db.String(16))
     physical_reference: Mapped[str] = db.Column(db.String(255))
-    directions: Mapped[str] = db.Column(db.Text)
+    _directions: Mapped[str | None] = db.Column('directions', db.Text, nullable=True)
     phone: Mapped[str] = db.Column(db.String(255))  # OCHP: telephoneNumber
 
     parking_uid: Mapped[str] = db.Column(db.String(255))  # OCHP: parkingSpot.parkingId
@@ -132,7 +136,8 @@ class Evse(db.Model, BaseModel):
     # status_schedule TODO
     # user_interface_lang TODO                              # OCHP userInterfaceLang
 
-    def _get_capabilities(self) -> list[Capability]:
+    @hybrid_property
+    def capabilities(self) -> list[Capability]:
         if self._capabilities is None:
             return []
         return sorted(
@@ -140,17 +145,14 @@ class Evse(db.Model, BaseModel):
             key=lambda item: 1 << list(Capability).index(item),
         )
 
-    def _set_capabilities(self, capabilities: list[Capability]) -> None:
+    @capabilities.setter
+    def capabilities(self, capabilities: list[Capability]) -> None:
         self._capabilities = 0
         for capability in capabilities:
             self._capabilities = self._capabilities | (1 << list(Capability).index(capability))
 
-    capabilities: list[Capability] = db.synonym(
-        '_capabilities',
-        descriptor=property(_get_capabilities, _set_capabilities),
-    )
-
-    def _get_parking_restrictions(self) -> list[ParkingRestriction]:
+    @hybrid_property
+    def parking_restrictions(self) -> list[ParkingRestriction]:
         if self._parking_restrictions is None:
             return []
         return sorted(
@@ -162,26 +164,42 @@ class Evse(db.Model, BaseModel):
             key=lambda item: 1 << list(ParkingRestriction).index(item),
         )
 
-    def _set_parking_restrictions(self, parking_restrictions: list[ParkingRestriction]) -> None:
+    @parking_restrictions.setter
+    def parking_restrictions(self, parking_restrictions: list[ParkingRestriction]) -> None:
         self._parking_restrictions = 0
         for parking_restriction in parking_restrictions:
             self._parking_restrictions = self._parking_restrictions | (
                 1 << list(ParkingRestriction).index(parking_restriction)
             )
 
-    parking_restrictions = db.synonym(
-        '_parking_restrictions',
-        descriptor=property(_get_parking_restrictions, _set_parking_restrictions),
-    )
+    @hybrid_property
+    def directions(self) -> list[dict[str, str]] | None:
+        if self._directions is None:
+            return None
 
-    def to_dict(
-        self,
-        fields: list[str] | None = None,
-        ignore: list[str] | None = None,
-        transform_ocpi: bool = False,
-    ) -> dict:
-        result = super().to_dict(fields, ignore)
+        return json.loads(self._directions)
 
-        result['evse_id'] = self.uid
+    @directions.setter
+    def directions(self, directions: list[dict[str, str]] | None) -> None:
+        if directions is None:
+            self._directions = None
+            return
+        self._directions = json.dumps(directions, cls=DefaultJSONEncoder)
+
+    def to_dict(self, *args, ignore: list[str] | None = None, strict: bool = False, **kwargs) -> dict:
+        ignore = ignore or []
+        ignore += ['external_id', 'giroe_id', 'location_id', 'created', 'modified', 'id', 'lat', 'lon']
+
+        result = super().to_dict(*args, ignore=ignore, **kwargs)
+
+        result['uid'] = str(self.id)
+        if not strict:
+            result['original_uid'] = self.uid
+
+        if self.lat is not None and self.lon is not None:
+            result['coordinates'] = {
+                'latitude': self.lat,
+                'longitude': self.lon,
+            }
 
         return result

@@ -57,45 +57,36 @@ def test_bnetza_import(db: SQLAlchemy, requests_mock: Mocker) -> None:
     location = db.session.query(Location).first()
 
     assert location.to_dict() == {
-        'id': 1,
-        'created': ANY,
-        'modified': ANY,
-        'uid': '81d943a159d326f16932',
+        'id': '1',
+        'original_id': '81d943a159d326f16932',
         'source': 'bnetza',
-        'operator_id': 1,
-        'suboperator_id': None,
-        'owner_id': None,
-        'dynamic_location_id': None,
-        'dynamic_location_probability': None,
         'name': None,
         'address': 'Ennabeurer Weg',
         'postal_code': '72535',
         'city': 'Heroldstatt',
         'state': None,
         'country': 'DEU',
-        'lat': Decimal('48.4423980'),
-        'lon': Decimal('9.6590750'),
+        'coordinates': {
+            'lat': Decimal('48.4423980'),
+            'lon': Decimal('9.6590750'),
+            'latitude': Decimal('48.4423980'),
+            'longitude': Decimal('9.6590750'),
+        },
         'directions': None,
         'parking_type': None,
         'time_zone': None,
         'last_updated': ANY,
         'terms_and_conditions': None,
-        'twentyfourseven': None,
     }
 
     evses = db.session.query(Evse).filter(Evse.location_id == 1).all()
 
     assert len(evses)
     assert evses[0].to_dict() == {
-        'id': 1,
-        'created': ANY,
-        'modified': ANY,
-        'location_id': 1,
-        'uid': 'BNETZA*81d943a159d326f16932*0*1',
+        'uid': '1',
+        'original_uid': 'BNETZA*81d943a159d326f16932*0*1',
         'evse_id': 'BNETZA*81d943a159d326f16932*0*1',
         'status': EvseStatus.STATIC,
-        'lat': None,
-        'lon': None,
         'floor_level': None,
         'physical_reference': None,
         'directions': None,
@@ -115,11 +106,8 @@ def test_bnetza_import(db: SQLAlchemy, requests_mock: Mocker) -> None:
     assert len(connectors) == 1
 
     assert connectors[0].to_dict() == {
-        'id': 1,
-        'created': ANY,
-        'modified': ANY,
-        'evse_id': 1,
-        'uid': '81d943a159d326f16932-0-1-0',
+        'id': '1',
+        'original_id': '81d943a159d326f16932-0-1-0',
         'standard': ConnectorType.IEC_62196_T2,
         'format': ConnectorFormat.SOCKET,
         'power_type': None,

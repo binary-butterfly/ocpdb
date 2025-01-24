@@ -114,6 +114,7 @@ class EvseUpdate(BaseUpdate):
     _object_keys = ('connectors', 'images', 'related_resource')
 
     uid: str
+    evse_id: str
 
     connectors: OptionalUnset[List[ConnectorUpdate]] = UnsetValue
     images: OptionalUnset[List[ImageUpdate]] = UnsetValue

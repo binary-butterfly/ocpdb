@@ -19,6 +19,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from enum import Enum
 from typing import TYPE_CHECKING, List
 
+from sqlalchemy.ext.hybrid import hybrid_property
+
 from webapp.common.sqlalchemy import Mapped
 from webapp.extensions import db
 
@@ -47,16 +49,24 @@ class RelatedResource(db.Model, BaseModel):
     url: Mapped[str] = db.Column(db.String(255))
     _types: Mapped[int] = db.Column('types', db.Integer)
 
-    def _get_types(self) -> List[RelatedResourceType]:
+    @hybrid_property
+    def types(self) -> List[RelatedResourceType]:
         if not self._types:
             return []
         return sorted(
             [item for item in list(RelatedResourceType) if item.value & self._types], key=lambda item: item.value
         )
 
-    def _set_types(self, types: List[RelatedResourceType]) -> None:
+    @types.setter
+    def types(self, types: List[RelatedResourceType]) -> None:
         self._types = 0
-        for type in types:
-            self._types = self._types | type.value
+        for _type in types:
+            self._types = self._types | _type.value
 
-    types = db.synonym('_types', descriptor=property(_get_types, _set_types))
+    def to_dict(self, *args, ignore: list[str] | None = None, **kwargs) -> dict:
+        ignore = ignore or []
+        ignore += ['id', 'created', 'modified', 'evse_id']
+
+        result = super().to_dict(*args, ignore, **kwargs)
+
+        return result

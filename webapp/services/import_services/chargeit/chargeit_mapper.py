@@ -54,6 +54,7 @@ class ChargeitMapper:
     def map_circuit_to_evse_update(self, circuit_input: CircuitInput) -> EvseUpdate:
         return EvseUpdate(
             uid=circuit_input.evseId,
+            evse_id=circuit_input.evseId,
             status=self.map_status(circuit_input.status),
             last_updated=datetime.now(tz=timezone.utc),
             connectors=[

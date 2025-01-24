@@ -238,6 +238,7 @@ class OchpMapper:
     def map_chargepoint_to_evse(self, charge_point_input: ChargePointInput) -> EvseUpdate:
         evse_update = EvseUpdate(
             uid=charge_point_input.evseId,
+            evse_id=charge_point_input.evseId,
             last_updated=charge_point_input.timestamp or datetime.now(tz=timezone.utc),
             status=OchpMapper.map_ochp_static_status_to_evse_status(charge_point_input.status),
             phone=charge_point_input.telephoneNumber,
@@ -260,6 +261,7 @@ class OchpMapper:
     def map_evse_status_to_update(self, evse_status: ChargePointStatusInput) -> EvseUpdate:
         evse_update = EvseUpdate(
             uid=evse_status.evseId,
+            evse_id=evse_status.evseId,
             last_updated=evse_status.ttl,
         )
 

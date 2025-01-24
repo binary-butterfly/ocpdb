@@ -16,11 +16,6 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-import json
-
-from validataclass.helpers import UnsetValue
-
-from webapp.common.json import DefaultJSONEncoder
 from webapp.services.import_services.models import (
     BusinessUpdate,
     ConnectorUpdate,
@@ -54,13 +49,10 @@ class OcpiMapper:
             lon=location_input.coordinates.longitude,
             parking_type=location_input.parking_type,
             time_zone=location_input.time_zone,
+            directions=location_input.directions,
             last_updated=location_input.last_updated,
             evses=[],
         )
-        # The 'directions' value in the input can be UnsetValue or a list of DisplayTextInput,
-        # which has to be serialized to JSON before it can be stored as a string.
-        if location_input.directions is not UnsetValue:
-            location_update.directions = json.dumps(location_input.directions, cls=DefaultJSONEncoder)
 
         for evse_input in location_input.evses:
             location_update.evses.append(self.map_evse(evse_input))
@@ -101,6 +93,7 @@ class OcpiMapper:
     def map_evse(self, evse_input: EvseInput) -> EvseUpdate:
         evse_update = EvseUpdate(
             uid=evse_input.evse_id,
+            evse_id=evse_input.evse_id,
             status=evse_input.status,
             floor_level=evse_input.floor_level,
             physical_reference=evse_input.physical_reference,

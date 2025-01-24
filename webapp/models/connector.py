@@ -147,3 +147,17 @@ class Connector(db.Model, BaseModel):
             if not self.max_voltage:
                 self.max_voltage = 400
             self.max_amperage = int(round(self.max_electric_power / self.max_voltage / sqrt(3)))
+
+    def to_dict(self, *args, strict: bool = False, ignore: list[str] | None = None, **kwargs) -> dict:
+        ignore = ignore or []
+        ignore += ['uid', 'created', 'modified', 'evse_id']
+
+        result = super().to_dict(*args, ignore=ignore, **kwargs)
+
+        # OCPI id has to be a string
+        result['id'] = str(self.id)
+
+        if not strict:
+            result['original_id'] = self.uid
+
+        return result

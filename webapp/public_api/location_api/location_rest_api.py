@@ -29,7 +29,7 @@ from flask_openapi.decorator import (
     SchemaReference,
     document,
 )
-from flask_openapi.schema import AnyOfField, IntegerField, NumericField, StringField
+from flask_openapi.schema import AnyOfField, BooleanField, IntegerField, NumericField, StringField
 from validataclass.validators import DataclassValidator
 
 from webapp.common.rest import BaseMethodView
@@ -142,6 +142,11 @@ class LocationListMethodView(LocationBaseMethodView):
                 description='In meter. Radius, lat and lon always have to be set together.',
             ),
             Parameter('limit', schema=IntegerField(maximum=1000, required=False, default=100)),
+            Parameter(
+                'strict',
+                schema=BooleanField(),
+                description='If set to true, all additional fields will be omitted for full OCPI compatibility.',
+            ),
         ],
         response=[Response(ResponseData(SchemaListReference('Location'), ExampleListReference('Location')))],
         components=[
@@ -165,7 +170,10 @@ class LocationListMethodView(LocationBaseMethodView):
     @cross_origin()
     def get(self):
         search_query = self.validate_query_args(self.search_query_validator)
-        locations = self.location_handler.get_locations(search_query)
+        locations = self.location_handler.get_locations(
+            search_query,
+            strict=self.request_helper.get_query_args().get('strict') == 'true',
+        )
         return self.jsonify_paginated_response(locations, search_query)
 
 

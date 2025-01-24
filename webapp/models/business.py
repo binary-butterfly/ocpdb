@@ -34,3 +34,9 @@ class Business(db.Model, BaseModel):
     logo_id: Mapped[int] = db.Column(db.BigInteger, db.ForeignKey('image.id', use_alter=True), nullable=True)
     name: Mapped[str] = db.Column(db.String(255), index=True, nullable=False)
     website: Mapped[str] = db.Column(db.String(255))
+
+    def to_dict(self, *args, ignore: list[str] | None = None, **kwargs) -> dict:
+        ignore = ignore or []
+        ignore += ['logo_id', 'id', 'created', 'modified']
+
+        return super().to_dict(*args, **kwargs)

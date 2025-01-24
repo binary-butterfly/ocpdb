@@ -20,11 +20,13 @@ import json
 from datetime import datetime
 from decimal import Decimal
 from enum import Enum
-from typing import TYPE_CHECKING, List, Optional
+from typing import TYPE_CHECKING, List
 
 from sqlalchemy import Index, event, func
+from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy_utc import UtcDateTime
 
+from webapp.common.json import DefaultJSONEncoder
 from webapp.common.sqlalchemy import Mapped
 from webapp.extensions import db
 
@@ -153,7 +155,7 @@ class Location(db.Model, BaseModel):
     lat: Mapped[Decimal] = db.Column(db.Numeric(9, 7))  # OCHP: chargePointLocation.lat     OCPI: coordinates.latitude
     lon: Mapped[Decimal] = db.Column(db.Numeric(10, 7))  # OCHP: chargePointLocation.lon    OCPI: coordinates.longitude
 
-    directions: Mapped[str] = db.Column(db.Text)  # OCPI: directions
+    _directions: Mapped[str | None] = db.Column('directions', db.Text, nullable=True)  # OCPI: directions
     parking_type: Mapped[ParkingType] = db.Column(db.Enum(ParkingType))
     time_zone: Mapped[str] = db.Column(db.String(32))  # OCHP: timeZone                        OCPI: time_zone
 
@@ -165,35 +167,65 @@ class Location(db.Model, BaseModel):
 
     geometry = db.Column(Point(), nullable=False)
 
-    def to_dict(
-        self,
-        fields: Optional[List[str]] = None,
-        ignore: Optional[List[str]] = None,
-        transform_ocpi: bool = False,
-    ) -> dict:
-        result = super().to_dict(fields, ignore)
+    @hybrid_property
+    def directions(self) -> list[dict[str, str]] | None:
+        if self._directions is None:
+            return None
 
-        # Parse 'directions' from serialized JSON back into a list of dicts:
-        if 'directions' in result and result['directions'] is not None:
-            result['directions']: list = json.loads(result['directions'])
+        return json.loads(self._directions)
 
-        if 'geometry' in result:
-            del result['geometry']
+    @directions.setter
+    def directions(self, directions: list[dict[str, str]] | None) -> None:
+        if directions is None:
+            self._directions = None
+            return
+        self._directions = json.dumps(directions, cls=DefaultJSONEncoder)
 
-        if transform_ocpi:
-            del result['lat']
-            del result['lon']
-            del result['twentyfourseven']
+    def to_dict(self, *args, strict: bool = False, ignore: List[str] | None = None, **kwargs) -> dict:
+        ignore = ignore or []
 
-            if self.twentyfourseven is not None:
-                result['opening_times'] = {'twentyfourseven': self.twentyfourseven}
+        ignore += [
+            'id',
+            'uid',
+            'giroe_id',
+            'source',
+            'operator_id',
+            'owner_id',
+            'suboperator_id',
+            'created',
+            'modified',
+            'geometry',
+            'lat',
+            'lon',
+            'twentyfourseven',
+            'directions',
+            'created',
+            'modified',
+            'dynamic_location_id',
+            'dynamic_location_probability',
+        ]
 
-            result['coordinates'] = {
-                'lat': self.lat,  # TODO: remove this after migration period
-                'lon': self.lon,  # TODO: remove this after migration period
-                'latitude': self.lat,
-                'longitude': self.lon,
-            }
+        result = super().to_dict(ignore=ignore, **kwargs)
+
+        # OCPI id has to be a string
+        result['id'] = str(self.id)
+
+        if not strict:
+            result['original_id'] = self.uid
+            result['source'] = self.source
+
+        # Additional fields which are not automatically in our result
+        result['directions'] = self.directions
+
+        if self.twentyfourseven is not None:
+            result['opening_times'] = {'twentyfourseven': self.twentyfourseven}
+
+        result['coordinates'] = {
+            'lat': self.lat,  # TODO: remove this after migration period
+            'lon': self.lon,  # TODO: remove this after migration period
+            'latitude': self.lat,
+            'longitude': self.lon,
+        }
 
         return result
 
