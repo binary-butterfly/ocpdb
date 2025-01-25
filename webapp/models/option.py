@@ -25,8 +25,9 @@ from .base import BaseModel
 class Option(db.Model, BaseModel):
     __tablename__ = 'option'
 
-    key: Mapped[str] = db.Column(db.String(128), index=True)
-    type: Mapped[str] = db.Column(
+    key: Mapped[str | None] = db.Column(db.String(128), index=True, nullable=True)
+    type: Mapped[str | None] = db.Column(
         db.Enum('string', 'date', 'datetime', 'integer', 'decimal', 'dict', 'list', name='OptionType'),
+        nullable=True,
     )
-    value: Mapped[str] = db.Column(db.Text)
+    value: Mapped[str | None] = db.Column(db.Text, nullable=True)

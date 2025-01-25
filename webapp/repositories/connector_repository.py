@@ -37,9 +37,6 @@ class ConnectorRepository(BaseRepository[Connector]):
     def fetch_connectors_by_ids(self, connector_ids: List[int]) -> List[Connector]:
         return self.session.query(Connector).filter(Connector.id.in_(connector_ids)).all()
 
-    def fetch_connectors_by_evse_ids(self, evse_ids: List[int]) -> List[Connector]:
-        return self.session.query(Connector).filter(Connector.chargepoint_id.in_(evse_ids)).all()
-
     def fetch_by_uid(self, source: str, connector_uid: str) -> Connector:
         result = (
             self.session.query(Connector)

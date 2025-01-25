@@ -20,6 +20,7 @@ from hashlib import sha256
 from math import sqrt
 
 from butterfly_pubsub.giroe import ChargeConnectorStatus
+from pycountry import countries
 
 from webapp.common.config import ConfigHelper
 from webapp.models.connector import PowerType
@@ -51,7 +52,7 @@ class GiroeMapper:
             address=location_data.address,
             city=location_data.locality,
             postal_code=location_data.postalcode,
-            country=location_data.country,
+            country=countries.get(alpha_2=location_data.country).alpha_3,
             lat=location_data.lat,
             lon=location_data.lon,
             last_updated=location_data.modified,

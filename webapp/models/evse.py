@@ -16,13 +16,16 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+import json
 from datetime import datetime
 from decimal import Decimal
 from enum import Enum
-from typing import TYPE_CHECKING, List
+from typing import TYPE_CHECKING
 
+from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy_utc import UtcDateTime
 
+from webapp.common.json import DefaultJSONEncoder
 from webapp.common.sqlalchemy import Mapped
 from webapp.extensions import db
 
@@ -88,51 +91,55 @@ evse_image = db.Table(
 class Evse(db.Model, BaseModel):
     __tablename__ = 'evse'
 
-    connectors: Mapped[List['Connector']] = db.relationship(
+    connectors: Mapped[list['Connector']] = db.relationship(
         'Connector',
         back_populates='evse',
         cascade='all, delete, delete-orphan',
     )
-    images: Mapped[List['Image']] = db.relationship('Image', secondary=evse_image)
+    images: Mapped[list['Image']] = db.relationship('Image', secondary=evse_image)
     related_resources: Mapped['RelatedResource'] = db.relationship(
         'RelatedResource',
         back_populates='evse',
         cascade='all, delete, delete-orphan',
     )
     location: Mapped['Location'] = db.relationship('Location', back_populates='evses')
+
     location_id: Mapped[int] = db.Column(db.BigInteger, db.ForeignKey('location.id', use_alter=True), nullable=False)
 
     uid: Mapped[str] = db.Column(db.String(64), nullable=False, index=True)
+    evse_id: Mapped[str | None] = db.Column(db.String(64), nullable=True, index=True)
     status: Mapped[EvseStatus] = db.Column(
         db.Enum(EvseStatus, name='EvseStatus'),
         default=EvseStatus.UNKNOWN,
         nullable=False,
     )
 
-    lat: Mapped[Decimal] = db.Column(db.Numeric(9, 7))
-    lon: Mapped[Decimal] = db.Column(db.Numeric(10, 7))
+    lat: Mapped[Decimal | None] = db.Column(db.Numeric(9, 7), nullable=True)
+    lon: Mapped[Decimal | None] = db.Column(db.Numeric(10, 7), nullable=True)
 
-    floor_level: Mapped[str] = db.Column(db.String(16))
-    physical_reference: Mapped[str] = db.Column(db.String(255))
-    directions: Mapped[str] = db.Column(db.Text)
-    phone: Mapped[str] = db.Column(db.String(255))  # OCHP: telephoneNumber
+    floor_level: Mapped[str | None] = db.Column(db.String(16), nullable=True)
+    physical_reference: Mapped[str | None] = db.Column(db.String(255), nullable=True)
+    _directions: Mapped[str | None] = db.Column('directions', db.Text, nullable=True)
+    phone: Mapped[str | None] = db.Column(db.String(255), nullable=True)  # OCHP: telephoneNumber
 
-    parking_uid: Mapped[str] = db.Column(db.String(255))  # OCHP: parkingSpot.parkingId
-    parking_floor_level: Mapped[str] = db.Column(db.String(255))  # OCHP: parkingSpot.floorlevel
-    parking_spot_number: Mapped[str] = db.Column(db.String(255))  # OCHP: parkingSpot.parkingSpotNumber
+    parking_uid: Mapped[str | None] = db.Column(db.String(255), nullable=True)  # OCHP: parkingSpot.parkingId
+    parking_floor_level: Mapped[str | None] = db.Column(db.String(255), nullable=True)  # OCHP: parkingSpot.floorlevel
+    # OCHP: parkingSpot.parkingSpotNumber
+    parking_spot_number: Mapped[str | None] = db.Column(db.String(255), nullable=True)
 
-    last_updated: Mapped[datetime] = db.Column(UtcDateTime())
-    max_reservation: Mapped[float] = db.Column(db.Float)  # OCHP maxReservation
-    _capabilities: Mapped[int] = db.Column('capabilities', db.Integer)  # OCPI: capability
+    last_updated: Mapped[datetime | None] = db.Column(UtcDateTime(), nullable=True)
+    max_reservation: Mapped[float | None] = db.Column(db.Float, nullable=True)  # OCHP maxReservation
+    _capabilities: Mapped[int | None] = db.Column('capabilities', db.Integer, nullable=True)  # OCPI: capability
     # OCHP: RestrictionType     OCPI: parking_restrictions
-    _parking_restrictions: Mapped[int] = db.Column('parking_restrictions', db.Integer)
+    _parking_restrictions: Mapped[int | None] = db.Column('parking_restrictions', db.Integer, nullable=True)
 
-    terms_and_conditions: Mapped[str] = db.Column(db.String(255))  # OCPI: terms_and_conditions
+    terms_and_conditions: Mapped[str | None] = db.Column(db.String(255), nullable=True)  # OCPI: terms_and_conditions
 
     # status_schedule TODO
     # user_interface_lang TODO                              # OCHP userInterfaceLang
 
-    def _get_capabilities(self) -> List[Capability]:
+    @hybrid_property
+    def capabilities(self) -> list[Capability]:
         if self._capabilities is None:
             return []
         return sorted(
@@ -140,17 +147,14 @@ class Evse(db.Model, BaseModel):
             key=lambda item: 1 << list(Capability).index(item),
         )
 
-    def _set_capabilities(self, capabilities: List[Capability]) -> None:
+    @capabilities.setter
+    def capabilities(self, capabilities: list[Capability]) -> None:
         self._capabilities = 0
         for capability in capabilities:
             self._capabilities = self._capabilities | (1 << list(Capability).index(capability))
 
-    capabilities: List[Capability] = db.synonym(
-        '_capabilities',
-        descriptor=property(_get_capabilities, _set_capabilities),
-    )
-
-    def _get_parking_restrictions(self) -> List[ParkingRestriction]:
+    @hybrid_property
+    def parking_restrictions(self) -> list[ParkingRestriction]:
         if self._parking_restrictions is None:
             return []
         return sorted(
@@ -162,13 +166,60 @@ class Evse(db.Model, BaseModel):
             key=lambda item: 1 << list(ParkingRestriction).index(item),
         )
 
-    def _set_parking_restrictions(self, parking_restrictions: List[ParkingRestriction]) -> None:
+    @parking_restrictions.setter
+    def parking_restrictions(self, parking_restrictions: list[ParkingRestriction]) -> None:
         self._parking_restrictions = 0
         for parking_restriction in parking_restrictions:
             self._parking_restrictions = self._parking_restrictions | (
                 1 << list(ParkingRestriction).index(parking_restriction)
             )
 
-    parking_restrictions = db.synonym(
-        '_parking_restrictions', descriptor=property(_get_parking_restrictions, _set_parking_restrictions)
-    )
+    @hybrid_property
+    def directions(self) -> list[dict[str, str]] | None:
+        if self._directions is None:
+            return None
+
+        return json.loads(self._directions)
+
+    @directions.setter
+    def directions(self, directions: list[dict[str, str]] | None) -> None:
+        if directions is None:
+            self._directions = None
+            return
+        self._directions = json.dumps(directions, cls=DefaultJSONEncoder)
+
+    def to_dict(self, *args, ignore: list[str] | None = None, strict: bool = False, **kwargs) -> dict:
+        ignore = ignore or []
+        ignore += [
+            'external_id',
+            'giroe_id',
+            'location_id',
+            'created',
+            'modified',
+            'id',
+            'lat',
+            'lon',
+            'parking_spot_number',
+            'parking_floor_level',
+            'parking_uid',
+            'phone',
+        ]
+
+        result = super().to_dict(*args, ignore=ignore, **kwargs)
+
+        result['uid'] = str(self.id)
+
+        if not strict:
+            result['original_uid'] = self.uid
+            result['parking_spot_number'] = self.parking_spot_number
+            result['parking_floor_level'] = self.parking_floor_level
+            result['parking_uid'] = self.parking_uid
+            result['phone'] = self.phone
+
+        if self.lat is not None and self.lon is not None:
+            result['coordinates'] = {
+                'latitude': self.lat,
+                'longitude': self.lon,
+            }
+
+        return result

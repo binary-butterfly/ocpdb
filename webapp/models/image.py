@@ -19,7 +19,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import os
 from datetime import datetime
 from enum import Enum
-from typing import List, Optional
 
 from flask import current_app
 from sqlalchemy_utc import UtcDateTime
@@ -43,12 +42,12 @@ class ImageCategory(Enum):
 class Image(db.Model, BaseModel):
     __tablename__ = 'image'
 
-    external_url: Mapped[str] = db.Column(db.String(255), index=True)
-    type: Mapped[str] = db.Column(db.String(4))
-    category: Mapped[ImageCategory] = db.Column(db.Enum(ImageCategory))
-    width: Mapped[int] = db.Column(db.Integer)
-    height: Mapped[int] = db.Column(db.Integer)
-    last_download: Mapped[datetime] = db.Column(UtcDateTime(timezone=True))
+    external_url: Mapped[str | None] = db.Column(db.String(255), index=True, nullable=True)
+    type: Mapped[str | None] = db.Column(db.String(4), nullable=True)
+    category: Mapped[ImageCategory | None] = db.Column(db.Enum(ImageCategory), nullable=True)
+    width: Mapped[int | None] = db.Column(db.Integer, nullable=True)
+    height: Mapped[int | None] = db.Column(db.Integer, nullable=True)
+    last_download: Mapped[datetime | None] = db.Column(UtcDateTime(timezone=True), nullable=True)
 
     @property
     def url(self):
@@ -68,9 +67,18 @@ class Image(db.Model, BaseModel):
             os.path.join(current_app.config['DYNAMIC_IMAGE_DIR'], '%s.thumb.%s' % (self.id, self.type)),
         )
 
-    def to_dict(self, fields: Optional[List[str]] = None, ignore: Optional[List[str]] = None) -> dict:
-        result = super().to_dict(fields, ignore)
+    def to_dict(self, *args, strict: bool = False, ignore: list[str] | None = None, **kwargs) -> dict:
+        ignore = ignore or []
+        ignore += ['id', 'created', 'modified', 'external_url', 'last_download']
+
+        result = super().to_dict(*args, ignore, **kwargs)
+
         result['url'] = self.url
+
+        if not strict:
+            result['original_url'] = self.external_url
+            result['last_download'] = self.last_download
+
         return result
 
 

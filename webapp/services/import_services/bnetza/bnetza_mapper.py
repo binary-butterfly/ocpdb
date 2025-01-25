@@ -40,7 +40,7 @@ class BnetzaMapper:
             city=row.locality.strip(),
             lat=row.lat,
             lon=row.lon,
-            country='DE',
+            country='DEU',
             last_updated=row.launch_date,
             evses=[],
         )
@@ -68,10 +68,11 @@ class BnetzaMapper:
         for inline_counter in range(1, 7):
             if len(getattr(row, 'connector_%s_type' % inline_counter)) == 0:  # ignore empty connector type entries
                 continue
-
+            uid = f'BNETZA*{location_uid}*{line}*{inline_counter}'
             evse_updates.append(
                 EvseUpdate(
-                    uid=f'BNETZA*{location_uid}*{line}*{inline_counter}',
+                    uid=uid,
+                    evse_id=uid,
                     status=EvseStatus.STATIC,
                     connectors=self.map_row_to_connector(location_uid, row, line, inline_counter),
                     last_updated=row.launch_date,

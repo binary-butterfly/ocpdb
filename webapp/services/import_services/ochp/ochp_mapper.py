@@ -19,8 +19,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from datetime import datetime, timezone
 from typing import Any, Dict, List
 
-from pycountry import countries
-
 from webapp.models.connector import ConnectorFormat, ConnectorType, PowerType
 from webapp.models.evse import Capability, EvseStatus, ParkingRestriction
 from webapp.models.image import ImageCategory
@@ -195,7 +193,7 @@ class OchpMapper:
             address=charge_point_address.strip().replace('  ', ' '),
             postal_code=charge_point_input.chargePointAddress.zipCode,
             city=charge_point_input.chargePointAddress.city,
-            country=countries.get(alpha_3=charge_point_input.chargePointAddress.country).alpha_2,
+            country=charge_point_input.chargePointAddress.country,
             lat=charge_point_input.chargePointLocation.lat,
             lon=charge_point_input.chargePointLocation.lon,
             time_zone=charge_point_input.timeZone,
@@ -240,6 +238,7 @@ class OchpMapper:
     def map_chargepoint_to_evse(self, charge_point_input: ChargePointInput) -> EvseUpdate:
         evse_update = EvseUpdate(
             uid=charge_point_input.evseId,
+            evse_id=charge_point_input.evseId,
             last_updated=charge_point_input.timestamp or datetime.now(tz=timezone.utc),
             status=OchpMapper.map_ochp_static_status_to_evse_status(charge_point_input.status),
             phone=charge_point_input.telephoneNumber,
@@ -262,6 +261,7 @@ class OchpMapper:
     def map_evse_status_to_update(self, evse_status: ChargePointStatusInput) -> EvseUpdate:
         evse_update = EvseUpdate(
             uid=evse_status.evseId,
+            evse_id=evse_status.evseId,
             last_updated=evse_status.ttl,
         )
 

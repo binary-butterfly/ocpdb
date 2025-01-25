@@ -18,7 +18,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from datetime import datetime
 from enum import Enum
-from typing import Optional
 
 from sqlalchemy_utc import UtcDateTime
 
@@ -39,15 +38,15 @@ class Source(db.Model, BaseModel):
     __tablename__ = 'source'
 
     uid: Mapped[str] = db.Column(db.String(256), nullable=False, index=True, unique=True)
-    name: Mapped[str] = db.Column(db.String(256), nullable=True)
-    public_url: Mapped[Optional[str]] = db.Column(db.String(4096), nullable=True)
+    name: Mapped[str | None] = db.Column(db.String(256), nullable=True)
+    public_url: Mapped[str | None] = db.Column(db.String(4096), nullable=True)
 
-    static_data_updated_at: Mapped[Optional[datetime]] = db.Column(UtcDateTime(), nullable=True)
-    realtime_data_updated_at: Mapped[Optional[datetime]] = db.Column(UtcDateTime(), nullable=True)
+    static_data_updated_at: Mapped[datetime | None] = db.Column(UtcDateTime(), nullable=True)
+    realtime_data_updated_at: Mapped[datetime | None] = db.Column(UtcDateTime(), nullable=True)
 
-    attribution_license: Mapped[Optional[str]] = db.Column(db.Text(), nullable=True)
-    attribution_contributor: Mapped[Optional[str]] = db.Column(db.String(256), nullable=True)
-    attribution_url: Mapped[Optional[str]] = db.Column(db.String(256), nullable=True)
+    attribution_license: Mapped[str | None] = db.Column(db.Text(), nullable=True)
+    attribution_contributor: Mapped[str | None] = db.Column(db.String(256), nullable=True)
+    attribution_url: Mapped[str | None] = db.Column(db.String(256), nullable=True)
 
     static_status: Mapped[SourceStatus] = db.Column(
         db.Enum(SourceStatus),
