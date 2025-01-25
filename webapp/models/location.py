@@ -221,11 +221,14 @@ class Location(db.Model, BaseModel):
             result['opening_times'] = {'twentyfourseven': self.twentyfourseven}
 
         result['coordinates'] = {
-            'lat': self.lat,  # TODO: remove this after migration period
-            'lon': self.lon,  # TODO: remove this after migration period
             'latitude': self.lat,
             'longitude': self.lon,
         }
+
+        # TODO: remove this after migration period
+        if not strict:
+            result['coordinates']['lat'] = self.lat
+            result['coordinates']['lon'] = self.lon
 
         return result
 
