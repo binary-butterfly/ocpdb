@@ -138,7 +138,7 @@ test-all: config
 	# remove possibly leftover containers from previous integration test runs
 	$(TESTING_DOCKER_COMPOSE) down --remove-orphans --volumes
 	# run tests
-	$(TESTING_DOCKER_COMPOSE) run --rm flask CONFIG_FILE=config_testing.yaml python -m pytest tests/unit \
+	$(TESTING_DOCKER_COMPOSE) run --rm -e CONFIG_FILE=config_testing.yaml flask python -m pytest tests/unit \
 		tests/integration --cov=webapp --cov-report=html:reports/coverage_html/
 	$(TESTING_DOCKER_COMPOSE) down
 
@@ -146,13 +146,13 @@ test-all: config
 # Run unit tests only and generate coverage report in HTML format
 .PHONY: test-unit
 test-unit: config
-	$(DOCKER_COMPOSE) run --rm -e COVERAGE_FILE=.coverage.unit_test CONFIG_FILE=config_testing.yaml flask \
+	$(DOCKER_COMPOSE) run --rm -e COVERAGE_FILE=.coverage.unit_test -e CONFIG_FILE=config_testing.yaml flask \
 	python -m pytest tests/unit --cov=webapp --cov-report=html:reports/coverage_unit_html/
 
 # Run integration tests in a separate environment and generate coverage report in HTML format
 .PHONY: test-integration
 test-integration: config
-	$(TESTING_DOCKER_COMPOSE) run --rm -e COVERAGE_FILE=.coverage.integration_test CONFIG_FILE=config_testing.yaml
+	$(TESTING_DOCKER_COMPOSE) run --rm -e COVERAGE_FILE=.coverage.integration_test -e CONFIG_FILE=config_testing.yaml \
 	flask python -m pytest tests/integration --cov=webapp --cov-report=html:reports/coverage_integration_html/
 	$(TESTING_DOCKER_COMPOSE) down
 

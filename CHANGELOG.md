@@ -1,5 +1,17 @@
 # Changelog
 
+## Version 1.3.0
+
+Released 2025-01-25
+
+In this release, the OCPDB gets closer to the OCPI data model, which includes typing fixes as well as
+the intruction of a strict mode, which filters all non-OCPI-compliant fields.
+
+### Features
+
+* [Mitigate OCPI compatibility issues](https://github.com/binary-butterfly/ocpdb/pull/82)
+
+
 ## Version 1.2.3
 
 Released 2025-01-21

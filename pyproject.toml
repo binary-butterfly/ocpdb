@@ -1,3 +1,36 @@
+[tool.pytest.ini_options]
+minversion = 6.0
+addopts = """
+    -ra
+    --import-mode=importlib
+"""
+
+python_files = [
+    "test_*.py",
+    "*_test.py",
+    "*Test.py"
+]
+
+python_classes = ["*Test"]
+
+testpaths = [
+    "tests/unit",
+    "tests/integration"
+]
+
+# Ignore DeprecationWarnings in external libraries (because we can't do anything about them)
+filterwarnings = [
+    "error",
+    "ignore::DeprecationWarning:dns.*",
+    "ignore::DeprecationWarning:kombu.*",
+    "ignore::DeprecationWarning:.*blinker.*",
+    "ignore::DeprecationWarning:.*pyparsing.*",
+    "ignore::DeprecationWarning:.*celery.*",
+    "ignore::DeprecationWarning:.*flask.testing",
+    "ignore::DeprecationWarning:.*werkzeug.urls.*",
+]
+
+
 [tool.ruff]
 
 lint.select = [
