@@ -46,8 +46,8 @@ class RelatedResource(db.Model, BaseModel):
     evse: Mapped['Evse'] = db.relationship('Evse', back_populates='related_resources')
     evse_id: Mapped[int] = db.Column(db.BigInteger, db.ForeignKey('evse.id', use_alter=True), nullable=False)
 
-    url: Mapped[str] = db.Column(db.String(255))
-    _types: Mapped[int] = db.Column('types', db.Integer)
+    url: Mapped[str | None] = db.Column(db.String(255), nullable=True)
+    _types: Mapped[int | None] = db.Column('types', db.Integer, nullable=True)
 
     @hybrid_property
     def types(self) -> List[RelatedResourceType]:

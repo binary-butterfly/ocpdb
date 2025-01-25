@@ -42,12 +42,12 @@ class ImageCategory(Enum):
 class Image(db.Model, BaseModel):
     __tablename__ = 'image'
 
-    external_url: Mapped[str] = db.Column(db.String(255), index=True)
-    type: Mapped[str] = db.Column(db.String(4))
-    category: Mapped[ImageCategory] = db.Column(db.Enum(ImageCategory))
-    width: Mapped[int] = db.Column(db.Integer)
-    height: Mapped[int] = db.Column(db.Integer)
-    last_download: Mapped[datetime] = db.Column(UtcDateTime(timezone=True))
+    external_url: Mapped[str | None] = db.Column(db.String(255), index=True, nullable=True)
+    type: Mapped[str | None] = db.Column(db.String(4), nullable=True)
+    category: Mapped[ImageCategory | None] = db.Column(db.Enum(ImageCategory), nullable=True)
+    width: Mapped[int | None] = db.Column(db.Integer, nullable=True)
+    height: Mapped[int | None] = db.Column(db.Integer, nullable=True)
+    last_download: Mapped[datetime | None] = db.Column(UtcDateTime(timezone=True), nullable=True)
 
     @property
     def url(self):

@@ -103,6 +103,7 @@ class Evse(db.Model, BaseModel):
         cascade='all, delete, delete-orphan',
     )
     location: Mapped['Location'] = db.relationship('Location', back_populates='evses')
+
     location_id: Mapped[int] = db.Column(db.BigInteger, db.ForeignKey('location.id', use_alter=True), nullable=False)
 
     uid: Mapped[str] = db.Column(db.String(64), nullable=False, index=True)
@@ -113,25 +114,26 @@ class Evse(db.Model, BaseModel):
         nullable=False,
     )
 
-    lat: Mapped[Decimal] = db.Column(db.Numeric(9, 7))
-    lon: Mapped[Decimal] = db.Column(db.Numeric(10, 7))
+    lat: Mapped[Decimal | None] = db.Column(db.Numeric(9, 7), nullable=True)
+    lon: Mapped[Decimal | None] = db.Column(db.Numeric(10, 7), nullable=True)
 
-    floor_level: Mapped[str] = db.Column(db.String(16))
-    physical_reference: Mapped[str] = db.Column(db.String(255))
+    floor_level: Mapped[str | None] = db.Column(db.String(16), nullable=True)
+    physical_reference: Mapped[str | None] = db.Column(db.String(255), nullable=True)
     _directions: Mapped[str | None] = db.Column('directions', db.Text, nullable=True)
-    phone: Mapped[str] = db.Column(db.String(255))  # OCHP: telephoneNumber
+    phone: Mapped[str | None] = db.Column(db.String(255), nullable=True)  # OCHP: telephoneNumber
 
-    parking_uid: Mapped[str] = db.Column(db.String(255))  # OCHP: parkingSpot.parkingId
-    parking_floor_level: Mapped[str] = db.Column(db.String(255))  # OCHP: parkingSpot.floorlevel
-    parking_spot_number: Mapped[str] = db.Column(db.String(255))  # OCHP: parkingSpot.parkingSpotNumber
+    parking_uid: Mapped[str | None] = db.Column(db.String(255), nullable=True)  # OCHP: parkingSpot.parkingId
+    parking_floor_level: Mapped[str | None] = db.Column(db.String(255), nullable=True)  # OCHP: parkingSpot.floorlevel
+    # OCHP: parkingSpot.parkingSpotNumber
+    parking_spot_number: Mapped[str | None] = db.Column(db.String(255), nullable=True)
 
-    last_updated: Mapped[datetime] = db.Column(UtcDateTime())
-    max_reservation: Mapped[float] = db.Column(db.Float)  # OCHP maxReservation
-    _capabilities: Mapped[int] = db.Column('capabilities', db.Integer)  # OCPI: capability
+    last_updated: Mapped[datetime | None] = db.Column(UtcDateTime(), nullable=True)
+    max_reservation: Mapped[float | None] = db.Column(db.Float, nullable=True)  # OCHP maxReservation
+    _capabilities: Mapped[int | None] = db.Column('capabilities', db.Integer, nullable=True)  # OCPI: capability
     # OCHP: RestrictionType     OCPI: parking_restrictions
-    _parking_restrictions: Mapped[int] = db.Column('parking_restrictions', db.Integer)
+    _parking_restrictions: Mapped[int | None] = db.Column('parking_restrictions', db.Integer, nullable=True)
 
-    terms_and_conditions: Mapped[str] = db.Column(db.String(255))  # OCPI: terms_and_conditions
+    terms_and_conditions: Mapped[str | None] = db.Column(db.String(255), nullable=True)  # OCPI: terms_and_conditions
 
     # status_schedule TODO
     # user_interface_lang TODO                              # OCHP userInterfaceLang
@@ -188,13 +190,31 @@ class Evse(db.Model, BaseModel):
 
     def to_dict(self, *args, ignore: list[str] | None = None, strict: bool = False, **kwargs) -> dict:
         ignore = ignore or []
-        ignore += ['external_id', 'giroe_id', 'location_id', 'created', 'modified', 'id', 'lat', 'lon']
+        ignore += [
+            'external_id',
+            'giroe_id',
+            'location_id',
+            'created',
+            'modified',
+            'id',
+            'lat',
+            'lon',
+            'parking_spot_number',
+            'parking_floor_level',
+            'parking_uid',
+            'phone',
+        ]
 
         result = super().to_dict(*args, ignore=ignore, **kwargs)
 
         result['uid'] = str(self.id)
+
         if not strict:
             result['original_uid'] = self.uid
+            result['parking_spot_number'] = self.parking_spot_number
+            result['parking_floor_level'] = self.parking_floor_level
+            result['parking_uid'] = self.parking_uid
+            result['phone'] = self.phone
 
         if self.lat is not None and self.lon is not None:
             result['coordinates'] = {

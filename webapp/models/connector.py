@@ -113,15 +113,16 @@ class Connector(db.Model, BaseModel):
     evse_id: Mapped[int] = db.Column(db.BigInteger, db.ForeignKey('evse.id', use_alter=True), nullable=False)
 
     uid: Mapped[str] = db.Column(db.String(64), nullable=False, index=True)  # OCPI: id
-    standard: Mapped[ConnectorType] = db.Column(db.Enum(ConnectorType))
-    format: Mapped[ConnectorFormat] = db.Column(db.Enum(ConnectorFormat))
-    power_type: Mapped[PowerType] = db.Column(db.Enum(PowerType))  # OCHP: chargePointType             OCPI: power_type
-    max_voltage: Mapped[int] = db.Column(db.Integer)  # OCHP: nominalVoltage              OCPI: max_voltage
-    max_amperage: Mapped[int] = db.Column(db.Integer)  # OCPI: max_amperage
-    # OCHP: maximumPower                OCPI: max_electric_power
-    max_electric_power: Mapped[int] = db.Column(db.Integer)
-    last_updated: Mapped[datetime] = db.Column(UtcDateTime())
-    terms_and_conditions: Mapped[str] = db.Column(db.String(255))  # OCPI: terms_and_conditions
+    standard: Mapped[ConnectorType | None] = db.Column(db.Enum(ConnectorType), nullable=True)
+    format: Mapped[ConnectorFormat | None] = db.Column(db.Enum(ConnectorFormat), nullable=True)
+    # OCHP: chargePointType, OCPI: power_type
+    power_type: Mapped[PowerType | None] = db.Column(db.Enum(PowerType), nullable=True)
+    max_voltage: Mapped[int | None] = db.Column(db.Integer, nullable=True)  # OCHP: nominalVoltage, OCPI: max_voltage
+    max_amperage: Mapped[int | None] = db.Column(db.Integer, nullable=True)  # OCPI: max_amperage
+    # OCHP: maximumPower, OCPI: max_electric_power
+    max_electric_power: Mapped[int | None] = db.Column(db.Integer, nullable=True)
+    last_updated: Mapped[datetime | None] = db.Column(UtcDateTime(), nullable=True)
+    terms_and_conditions: Mapped[str | None] = db.Column(db.String(255), nullable=True)  # OCPI: terms_and_conditions
 
     # tariff_ids TODO
 
