@@ -1,4 +1,4 @@
-"""extend-country
+"""extend-country-code-fix-evse-id
 
 Revision ID: 1b51f332b7db
 Revises: 9cc76344f215
@@ -23,6 +23,10 @@ def upgrade():
             'country', existing_type=sa.String(length=2), type_=sa.String(length=3), existing_nullable=True
         )
 
+    with op.batch_alter_table('evse', schema=None) as batch_op:
+        batch_op.add_column(sa.Column('evse_id', sa.String(length=64), nullable=True))
+        batch_op.create_index(batch_op.f('ix_evse_evse_id'), ['evse_id'], unique=False)
+
     with op.batch_alter_table('source', schema=None) as batch_op:
         batch_op.drop_index('ix_source_uid')
         batch_op.create_index(batch_op.f('ix_source_uid'), ['uid'], unique=True)
@@ -35,6 +39,10 @@ def downgrade():
     with op.batch_alter_table('source', schema=None) as batch_op:
         batch_op.drop_index(batch_op.f('ix_source_uid'))
         batch_op.create_index('ix_source_uid', ['uid'], unique=False)
+
+    with op.batch_alter_table('evse', schema=None) as batch_op:
+        batch_op.drop_index(batch_op.f('ix_evse_evse_id'))
+        batch_op.drop_column('evse_id')
 
     with op.batch_alter_table('location', schema=None) as batch_op:
         batch_op.alter_column(
