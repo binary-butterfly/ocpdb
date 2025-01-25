@@ -38,7 +38,7 @@ jobs:
       run: cp config_testing.yaml config.yaml
 
     - name: run pytest unit
-      run: python -m pytest tests/unit
+      run: python -m pytest -o cache_dir=/tmp tests/unit
 
     - name: make logs dir writable for local user
       run: chmod 777 logs
@@ -46,4 +46,4 @@ jobs:
     - name: run pytest integration
       env:
         DOCKER_LOCAL_USER: 1000:1000
-      run: docker compose run --rm flask python -m pytest tests/integration
+      run: docker compose run --rm flask python -m pytest -o cache_dir=/tmp tests/integration
