@@ -1,7 +1,8 @@
 # Stadtwerke Stuttgart Mapping
 
 This documents the input data model from Stadtwerke Stuttgart and the mapping to
-[OCPI 2.2.1 Locations / EVSEs / Connectors](https://github.com/ocpi/ocpi/blob/release-2.2.1-bugfixes/mod_locations.asciidoc#131-location-object).
+[OCPI 2.2.1 Locations / EVSEs / Connectors](https://github.com/ocpi/ocpi/blob/release-2.2.1-bugfixes/mod_locations.asciidoc#131-location-object). It is an extension to the `_general.md`, for global mapping 
+decisions, please have a look at the general document.
 
 Stadtwerke Stuttgart data uses some fields from OCPI, but adds several further fields. It also supports `null` as unset
 value.
