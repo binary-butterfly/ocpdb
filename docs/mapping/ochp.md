@@ -15,17 +15,17 @@ only, realtime information is transported using the `EvseStatusType`.
 | Field               | Type                    | Cardinality | Mapping                                     | Comment |
 |---------------------|-------------------------|-------------|---------------------------------------------|---------|
 | evseId              | EvseId                  | 1           | evse.uid and evse.evse_id                   |         |
-| locationId          | string (15)             | 1           | location.id                                 |         |
+| locationId          | string (15)             | 1           | location.uid                                |         |
 | timestamp           | DateTimeType            | ?           | location.last_updated and evse.last_updated |         |
 | locationName        | string (100)            | 1           | location.name                               |         |
 | locationNameLang    | string (3)              | 1           |                                             |         |
-| images              | EvseImageUrlType        | *           | .                                           |         |
+| images              | EvseImageUrlType        | *           |                                             |         |
 | relatedResource     | RelatedResourceType     | *           |                                             |         |
 | chargePointAddress  | AddressType             | 1           |                                             |         |
 | chargePointLocation | GeoPointType            | 1           |                                             |         |
 | relatedLocation     | AdditionalGeoPointType  | ?           |                                             |         |
 | timeZone            | string (255)            | ?           | location.time_zone                          |         |
-| openingTimes        | HoursType               | 1           |                                             |         |
+| openingTimes        | [HoursType](#HoursType) | 1           |                                             |         |
 | status              | ChargePointStatusType   | ?           | evse.status                                 |         |
 | statusSchedule      | ChargePointScheduleType | *           |                                             |         |
 | telephoneNumber     | string(19)              | ?           |                                             |         |
@@ -57,14 +57,15 @@ The `ChargePointStatusType` is *not* a realtime status, so it will be ignored as
 
 OCHP `GeneralLocationType` maps to OCPI `ParkingType`.
 
-| Key         | Mapping     |
-|-------------|-------------|
-| evonly      | EV_ONLY     |
-| plugged     | PLUGGED     |
-| disabled    | DISABLED    |
-| customers   | CUSTOMERS   |
-| motorcycles | MOTORCYCLES |
-| carsharing  | CARSHARING  |
+| Key                | Mapping            |
+|--------------------|--------------------|
+| on-street          | ON_STREET          |
+| parking-garage     | PARKING_GARAGE     |
+| underground-garage | UNDERGROUND_GARAGE |
+| parking-lot        | PARKING_LOT        |
+| private            | PRIVATE            |
+| other              |                    |
+| unknown            |                    |
 
 
 ## EvseImageUrlType
@@ -113,6 +114,23 @@ OCHP `ImageClass` maps to OCPI `ImageCategory`
 |---------|------------|-------------|--------------------------------|---------|
 | lat     | string(10) | 1           | location.coordinates.latitude  |         |
 | lon     | string(11) | 1           | location.coordinates.longitude |         |
+
+
+## HoursType
+
+| Field           | Type             | Cardinality | Mapping                                | Comment |
+|-----------------|------------------|-------------|----------------------------------------|---------|
+| twentyfourseven | bool             | 1           | location.opening_times.twentyfourseven |         |
+| regularHours    | RegularHoursType | 1           | location.opening_times.twentyfourseven |         |
+
+
+## RegularHoursType
+
+| Field       | Type          | Cardinality | Mapping                                           | Comment |
+|-------------|---------------|-------------|---------------------------------------------------|---------|
+| weekday     | integer       | 1           | location.opening_times.regular_hours.weekday      |         |
+| periodBegin | string (time) | 1           | location.opening_times.regular_hours.period_begin |         |
+| periodEnd   | string (time) | 1           | location.opening_times.regular_hours.period_end   |         |
 
 
 ## ConnectorType
