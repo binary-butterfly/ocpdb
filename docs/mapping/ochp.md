@@ -6,38 +6,39 @@ This documents the mapping between [OCHP 1.4 ChargePointInfo / ](https://github.
 OCHP will be used by any operator at the LISY platform from Ladenetz, which uses eClearing for centralized operations
 like getting charge infrastructure data.
 
+
 # ChargePointInfo
 
 The OCPI `Location` and `EVSE` at OCHP is combined at one object, `ChargePointInfo`, which is basically a
 denormalized `EVSE`, where the `locationId` acts as a grouping identifier. `ChargePointInfo` contains static information
 only, realtime information is transported using the `EvseStatusType`.
 
-| Field               | Type                    | Cardinality | Mapping                                     | Comment |
-|---------------------|-------------------------|-------------|---------------------------------------------|---------|
-| evseId              | EvseId                  | 1           | evse.uid and evse.evse_id                   |         |
-| locationId          | string (15)             | 1           | location.uid                                |         |
-| timestamp           | DateTimeType            | ?           | location.last_updated and evse.last_updated |         |
-| locationName        | string (100)            | 1           | location.name                               |         |
-| locationNameLang    | string (3)              | 1           |                                             |         |
-| images              | EvseImageUrlType        | *           |                                             |         |
-| relatedResource     | RelatedResourceType     | *           |                                             |         |
-| chargePointAddress  | AddressType             | 1           |                                             |         |
-| chargePointLocation | GeoPointType            | 1           |                                             |         |
-| relatedLocation     | AdditionalGeoPointType  | ?           |                                             |         |
-| timeZone            | string (255)            | ?           | location.time_zone                          |         |
-| openingTimes        | [HoursType](#HoursType) | 1           |                                             |         |
-| status              | ChargePointStatusType   | ?           | evse.status                                 |         |
-| statusSchedule      | ChargePointScheduleType | *           |                                             |         |
-| telephoneNumber     | string(19)              | ?           |                                             |         |
-| location            | GeneralLocationType     | 1           | location.parking_type                       |         |
-| parkingSpot         | ParkingSpotInfo         | *           |                                             |         |
-| restriction         | RestrictionType         | *           |                                             |         |
-| authMethods         | AuthMethodType          | +           |                                             |         |
-| connectors          | ConnectorType           | +           |                                             |         |
-| chargePointType     | string(2)               | 1           |                                             |         |
-| ratings             | RatingsType             | ?           |                                             |         |
-| userInterfaceLang   | string(3)               | *           |                                             |         |
-| maxReservation      | float                   | ?           |                                             |         |
+| Field               | Type                                            | Cardinality | Mapping                                                             | Comment |
+|---------------------|-------------------------------------------------|-------------|---------------------------------------------------------------------|---------|
+| evseId              | string (48)                                     | 1           | evse.uid and evse.evse_id                                           |         |
+| locationId          | string (15)                                     | 1           | location.uid                                                        |         |
+| timestamp           | string (datetime)                               | ?           | location.last_updated (last one will be used) and evse.last_updated |         |
+| locationName        | string (100)                                    | 1           | location.name                                                       |         |
+| locationNameLang    | string (3)                                      | 1           |                                                                     |         |
+| images              | [EvseImageUrlType](#EvseImageUrlType)           | *           |                                                                     |         |
+| relatedResource     | RelatedResourceType                             | *           |                                                                     |         |
+| chargePointAddress  | [AddressType](#AddressType)                     | 1           |                                                                     |         |
+| chargePointLocation | [GeoPointType](#GeoPointType)                   | 1           |                                                                     |         |
+| relatedLocation     | AdditionalGeoPointType                          | ?           |                                                                     |         |
+| timeZone            | string (255)                                    | ?           | location.time_zone                                                  |         |
+| openingTimes        | [HoursType](#HoursType)                         | 1           |                                                                     |         |
+| status              | [ChargePointStatusType](#ChargePointStatusType) | ?           | evse.status                                                         |         |
+| statusSchedule      | ChargePointScheduleType                         | *           |                                                                     |         |
+| telephoneNumber     | string (19)                                     | ?           |                                                                     |         |
+| location            | [GeneralLocationType](#GeneralLocationType)     | 1           | location.parking_type                                               |         |
+| parkingSpot         | ParkingSpotInfo                                 | *           |                                                                     |         |
+| restriction         | RestrictionType                                 | *           |                                                                     |         |
+| authMethods         | AuthMethodType                                  | +           |                                                                     |         |
+| connectors          | [ConnectorType](#ConnectorType)                 | +           |                                                                     |         |
+| chargePointType     | string (2)                                      | 1           |                                                                     |         |
+| ratings             | RatingsType                                     | ?           |                                                                     |         |
+| userInterfaceLang   | string (3)                                      | *           |                                                                     |         |
+| maxReservation      | float                                           | ?           |                                                                     |         |
 
 
 ### ChargePointStatusType
@@ -70,14 +71,14 @@ OCHP `GeneralLocationType` maps to OCPI `ParkingType`.
 
 ## EvseImageUrlType
 
-| Field       | Type          | Cardinality | Mapping         | Comment                                    |
-|-------------|---------------|-------------|-----------------|--------------------------------------------|
-| uri         | string(255)   | 1           | image.url       | Will be downloaded and delivered by OCPDB. |
-| thumbUri    | string(255)   | ?           | image.thumbnail | Will be downloaded and delivered by OCPDB. |
-| class       | ImageClass    | 1           | image.category  |                                            |
-| type        | string(4)     | 1           | image.type      |                                            |
-| width       | int(5)        | ?           | image.width     |                                            |
-| height      | int(5)        | ?           | image.height    |                                            |
+| Field       | Type                      | Cardinality | Mapping         | Comment                                    |
+|-------------|---------------------------|-------------|-----------------|--------------------------------------------|
+| uri         | string(255)               | 1           | image.url       | Will be downloaded and delivered by OCPDB. |
+| thumbUri    | string(255)               | ?           | image.thumbnail | Will be downloaded and delivered by OCPDB. |
+| class       | [ImageClass](#ImageClass) | 1           | image.category  |                                            |
+| type        | string(4)                 | 1           | image.type      |                                            |
+| width       | int(5)                    | ?           | image.width     |                                            |
+| height      | int(5)                    | ?           | image.height    |                                            |
 
 
 ### ImageClass
@@ -147,12 +148,12 @@ OCHP `ImageClass` maps to OCPI `ImageCategory`
 The `EvseStatusType` is the OCHP object for realtime data. The status is split up into `major` and `minor`. If `minor`
 is set, the minor status is used, otherwise the major status is used.
 
-| Field  | Type         | Cardinality | Mapping           | Comment |
-|--------|--------------|-------------|-------------------|---------|
-| evseId | EvseId       | 1           |                   |         |
-| major  | MajorType    | 1           | evse.status       |         |
-| minor  | MinorType    | ?           | evse.status       |         |
-| ttl    | DateTimeType | ?           | evse.last_updated |         |
+| Field  | Type                    | Cardinality | Mapping           | Comment |
+|--------|-------------------------|-------------|-------------------|---------|
+| evseId | string (48)             | 1           |                   |         |
+| major  | [MajorType](#MajorType) | 1           | evse.status       |         |
+| minor  | [MinorType](#MinorType) | ?           | evse.status       |         |
+| ttl    | string (datetime)       | ?           | evse.last_updated |         |
 
 
 ### MajorType
