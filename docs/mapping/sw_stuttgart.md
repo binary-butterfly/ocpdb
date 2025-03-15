@@ -11,7 +11,7 @@ value.
 
 | Field         | Type                              | Cardinality | Mapping                | Comment                                                                 |
 |---------------|-----------------------------------|-------------|------------------------|-------------------------------------------------------------------------|
-| id            | string                            | 1           | location.original_id   |                                                                         |
+| id            | string                            | 1           | location.id            |                                                                         |
 | name          | string                            | 1           | location.name          |                                                                         |
 | status        | StadtwerkeStuttgartLocationStatus | 1           |                        |                                                                         |
 | address       | string                            | 1           | location.address       |                                                                         |
@@ -67,7 +67,7 @@ In our example data, no other opening time representation then `twentyfourseven:
 
 | Field                          | Type                           | Cardinality | Mapping                 |
 |--------------------------------|--------------------------------|-------------|-------------------------|
-| uid                            | string                         | 1           | location.original_uid   |
+| uid                            | string                         | 1           | evse.uid                |
 | id                             | string                         | 1           | evse.evse_id            |
 | status                         | EvseStatus                     | 1           | evse.status             |
 | reservable                     | boolean                        | 1           |                         |
@@ -95,7 +95,7 @@ In our example data, no other value then `four_wheeled` is set.
 
 | Field        | Type               | Cardinality | Mapping                      | Comment                                             |
 |--------------|--------------------|-------------|------------------------------|-----------------------------------------------------|
-| id           | string             | 1           | connector.original_id        |                                                     |
+| id           | string             | 1           | connector.id                 |                                                     |
 | status       | EvseStatus         | 1           |                              |                                                     |
 | standard     | ConnectorStandard  | 1           | connector.standard           |                                                     |
 | format       | ConnectorFormat    | 1           | connector.format             |                                                     |
