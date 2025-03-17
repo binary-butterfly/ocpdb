@@ -93,7 +93,7 @@ As there is no unique identifier for `connector.id`, `connector.id` will be set 
 | Field       | Type    | Cardinality | Mapping                | Comment |
 |-------------|---------|-------------|------------------------|---------|
 | companyName | string  | 1           | location.operator.name |         |
-| displayName | string  | 1           |                        |         |
+| displayName | string  | ?           |                        |         |
 
 
 ## ChargingStationStatus
@@ -145,7 +145,7 @@ As there is no unique identifier for `connector.id`, `connector.id` will be set 
 
 | Field                | Type                    | Cardinality | Mapping      | Comment |
 |----------------------|-------------------------|-------------|--------------|---------|
-| evse_id              | string                  | 1           | evse.evse_id |         |
+| evse_id              | string                  | ?           | evse.evse_id |         |
 | public_key_available | bool                    | 1           |              |         |
 | public_key           | string                  | 1           |              |         |
 | connectors           | [Connector](#Connector) | *           |              |         |
