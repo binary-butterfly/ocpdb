@@ -98,9 +98,9 @@ As there is no unique identifier for `connector.id`, `connector.id` will be set 
 
 ## ChargingStationStatus
 
-| Field       | Type              | Cardinality | Mapping     | Comment |
-|-------------|-------------------|-------------|-------------|---------|
-| operational | OperationalStatus | 1           | evse.status |         |
+| Field       | Type                                    | Cardinality | Mapping     | Comment |
+|-------------|-----------------------------------------|-------------|-------------|---------|
+| operational | [OperationalStatus](#OperationalStatus) | 1           | evse.status |         |
 
 
 ### OperationalStatus
