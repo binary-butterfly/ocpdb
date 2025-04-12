@@ -16,10 +16,10 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from .base_repository import ObjectNotFoundException
 from .business_repository import BusinessRepository
 from .connector_repository import ConnectorRepository
 from .evse_repository import EvseRepository
+from .exceptions import ObjectNotFoundException
 from .image_repository import ImageRepository
 from .location_repository import LocationRepository
 from .option_repository import OptionRepository

@@ -16,10 +16,8 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from typing import List, Optional
-
 from mercantile import LngLatBbox
-from sqlalchemy import func
+from sqlalchemy import func, text
 from sqlalchemy.orm import joinedload, selectinload
 from validataclass_search_queries.pagination import PaginatedResult
 from validataclass_search_queries.search_queries import BaseSearchQuery
@@ -27,24 +25,25 @@ from validataclass_search_queries.search_queries import BaseSearchQuery
 from webapp.common.sqlalchemy import Query
 from webapp.models import Business, Evse, Location
 
-from .base_repository import BaseRepository, ObjectNotFoundException
+from .base_repository import BaseRepository
+from .exceptions import ObjectNotFoundException
 
 
 class LocationRepository(BaseRepository[Location]):
     model_cls = Location
 
-    def fetch_locations_by_source(self, source: str, include_children: bool = True) -> List[Location]:
-        locations = self.session.query(Location)
+    def fetch_locations_by_source(self, source: str, include_children: bool = True) -> list[Location]:
+        query = self.session.query(Location)
 
         if include_children:
-            locations = locations.options([
+            query = query.options(
                 selectinload(Location.evses).selectinload(Evse.connectors),
                 selectinload(Location.operator),
-            ])
+            )
 
-        return locations.filter(Location.source == source).all()
+        return query.filter(Location.source == source).all()
 
-    def fetch_location_ids_by_source(self, source: str) -> List[int]:
+    def fetch_location_ids_by_source(self, source: str) -> list[int]:
         items = self.session.query(Location.id).filter(Location.source == source).all()
 
         return [item.id for item in items]
@@ -53,10 +52,10 @@ class LocationRepository(BaseRepository[Location]):
         location = self.session.query(Location)
 
         if include_children:
-            location = location.options([
+            location = location.options(
                 selectinload(Location.evses).selectinload(Evse.connectors),
                 selectinload(Location.operator),
-            ])
+            )
 
         location = location.get(location_id)
 
@@ -66,33 +65,29 @@ class LocationRepository(BaseRepository[Location]):
         return location
 
     def fetch_location_by_uid(self, source: str, location_uid: str, *, include_children: bool = False) -> Location:
-        location = self.session.query(Location)
+        query = self.session.query(Location)
+
         if include_children:
-            location = location.options([
+            query = query.options(
                 selectinload(Location.evses).selectinload(Evse.connectors),
                 selectinload(Location.operator).selectinload(Business.logo),
                 selectinload(Location.suboperator).selectinload(Business.logo),
                 selectinload(Location.owner).selectinload(Business.logo),
                 selectinload(Location.images),
                 selectinload(Location.evses).selectinload(Evse.images),
-            ])
+            )
 
-        location = location.filter(Location.uid == location_uid).first()
+        location = query.filter(Location.uid == location_uid).first()
 
-        if location is None:
-            raise ObjectNotFoundException(message=f'location with uid {location_uid} and source {source} not found')
-
-        return location
+        return self._or_raise(location, f'location with uid {location_uid} and source {source} not found')
 
     def save_location(self, location: Location, *, commit: bool = True):
-        self.session.add(location)
-        if commit:
-            self.session.commit()
+        self._save_resources(location, commit=commit)
 
     def fetch_locations_summary_by_bounds(
         self,
         bbox: LngLatBbox,
-        static: Optional[bool] = None,
+        static: bool | None = None,
         filter_duplicates: bool = True,
     ) -> list:
         additional_where = ''
@@ -121,9 +116,9 @@ class LocationRepository(BaseRepository[Location]):
 
         query += f'{additional_where} GROUP BY location.id'
 
-        return list(self.session.execute(query))
+        return list(self.session.execute(text(query)))
 
-    def fetch_locations_by_bounds(self, bbox: LngLatBbox) -> List[Location]:
+    def fetch_locations_by_bounds(self, bbox: LngLatBbox) -> list[Location]:
         locations = self.session.query(Location)
 
         if self.session.connection().dialect.name == 'postgresql':
@@ -158,7 +153,7 @@ class LocationRepository(BaseRepository[Location]):
         if commit:
             self.session.commit()
 
-    def fetch_locations(self, search_query: Optional[BaseSearchQuery] = None) -> PaginatedResult[Location]:
+    def fetch_locations(self, search_query: BaseSearchQuery | None = None) -> PaginatedResult[Location]:
         options = [
             selectinload(Location.images),
             selectinload(Location.evses).selectinload(Evse.connectors),
@@ -175,7 +170,7 @@ class LocationRepository(BaseRepository[Location]):
         query = self.session.query(Location).options(*options)
         return self._search_and_paginate(query, search_query)
 
-    def _filter_by_search_query(self, query: Query, search_query: Optional[BaseSearchQuery]) -> Query:
+    def _filter_by_search_query(self, query: Query, search_query: BaseSearchQuery | None) -> Query:
         if search_query is None:
             return query
 

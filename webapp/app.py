@@ -34,9 +34,9 @@ from webapp.server_rest_api import ServerRestApi
 __all__ = ['launch']
 
 
-def launch() -> App:
+def launch(config_overrides: dict | None = None) -> App:
     app = App(BaseConfig.PROJECT_NAME)
-    configure_app(app)
+    configure_app(app, config_overrides)
     configure_extensions(app)
     configure_blueprints(app)
     configure_error_handlers(app)
@@ -44,9 +44,9 @@ def launch() -> App:
     return app
 
 
-def configure_app(app: App) -> None:
+def configure_app(app: App, config_overrides: dict | None = None) -> None:
     config_loader = ConfigLoader()
-    config_loader.configure_app(app)
+    config_loader.configure_app(app, config_overrides)
 
 
 def configure_extensions(app: App) -> None:

@@ -1,6 +1,6 @@
 """
 Open ChargePoint DataBase OCPDB
-Copyright (C) 2021 binary butterfly GmbH
+Copyright (C) 2025 binary butterfly GmbH
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published by
@@ -16,19 +16,24 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from sqlalchemy import Enum as SqlalchemyEnum
-from sqlalchemy import String, Text
+from sqlalchemy import BigInteger, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column
 
-from .base import BaseModel
+from webapp.extensions import db
 
 
-class Option(BaseModel):
-    __tablename__ = 'option'
+class LocationImageAssociation(db.Model):
+    __tablename__ = 'location_image'
 
-    key: Mapped[str | None] = mapped_column(String(128), index=True, nullable=True)
-    type: Mapped[str | None] = mapped_column(
-        SqlalchemyEnum('string', 'date', 'datetime', 'integer', 'decimal', 'dict', 'list', name='OptionType'),
-        nullable=True,
+    location_id: Mapped[int] = mapped_column(
+        BigInteger,
+        ForeignKey('location.id'),
+        primary_key=True,
+        nullable=False,
     )
-    value: Mapped[str | None] = mapped_column(Text, nullable=True)
+    image_id: Mapped[int] = mapped_column(
+        BigInteger,
+        ForeignKey('image.id'),
+        primary_key=True,
+        nullable=False,
+    )

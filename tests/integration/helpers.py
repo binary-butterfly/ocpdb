@@ -1,6 +1,6 @@
 """
 Open ChargePoint DataBase OCPDB
-Copyright (C) 2021 binary butterfly GmbH
+Copyright (C) 2025 binary butterfly GmbH
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published by
@@ -16,10 +16,19 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from webapp.common.flask_app import App
+from sqlalchemy import text
+
+from webapp.common.sqlalchemy import SQLAlchemy
 
 
-def test_start_app(app: App):
-    with app.test_client() as client:
-        response = client.get('/api/public/v1/businesses/1')
-        assert response
+def empty_all_tables(db: SQLAlchemy) -> None:
+    """
+    empty all tables in the database
+    (this is much faster than completely deleting the database and creating a new one)
+    """
+    db.session.close()
+    with db.engine.connect() as connection:
+        connection.execute(text('SET FOREIGN_KEY_CHECKS=0;'))
+        for table_name in db.metadata.tables.keys():
+            connection.execute(text(f'TRUNCATE `{table_name}`;'))
+        connection.execute(text('SET FOREIGN_KEY_CHECKS=1;'))

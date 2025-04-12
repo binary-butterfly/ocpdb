@@ -17,31 +17,34 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 from datetime import datetime, timezone
-from typing import List, Optional
 
+from sqlalchemy import BigInteger
+from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy.types import UserDefinedType
 from sqlalchemy_utc import UtcDateTime
 
-from webapp.common.sqlalchemy import Mapped
 from webapp.extensions import db
 
 
-class BaseModel:
+class BaseModel(db.Model):
+    __abstract__ = True
     __table_args__ = {
         'mysql_charset': 'utf8mb4',
         'mysql_collate': 'utf8mb4_unicode_ci',
     }
 
-    id: Mapped[int] = db.Column(db.BigInteger, primary_key=True)
-    created: Mapped[datetime] = db.Column(UtcDateTime(), nullable=False, default=lambda: datetime.now(tz=timezone.utc))
-    modified: Mapped[datetime] = db.Column(
+    id: Mapped[int] = mapped_column(BigInteger, primary_key=True, nullable=False)
+    created: Mapped[datetime] = mapped_column(
+        UtcDateTime(), nullable=False, default=lambda: datetime.now(tz=timezone.utc)
+    )
+    modified: Mapped[datetime] = mapped_column(
         UtcDateTime(),
         nullable=False,
         default=datetime.now(tz=timezone.utc),
         onupdate=datetime.now(tz=timezone.utc),
     )
 
-    def to_dict(self, fields: Optional[List[str]] = None, ignore: Optional[List[str]] = None) -> dict:
+    def to_dict(self, fields: list[str] | None = None, ignore: list[str] | None = None) -> dict:
         result = {}
         for field in self.metadata.tables[self.__tablename__].c.keys():
             if fields is not None and field not in fields:

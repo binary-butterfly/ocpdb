@@ -27,7 +27,7 @@ from webapp.common.remote_helper import RemoteServer, RemoteServerType
 
 class ConfigLoader:
     @staticmethod
-    def configure_app(app: Flask) -> None:
+    def configure_app(app: Flask, config_overrides: None = None) -> None:
         """
         Initializes the app config with default values and loads the actual config from a YAML file.
         """
@@ -64,6 +64,9 @@ class ConfigLoader:
             )
             for key, server in app.config['REMOTE_SERVERS'].items()
         }
+
+        if config_overrides is not None:
+            app.config.update(config_overrides)
 
         # Ensure that important config values are set
         config_check = [key for key in app.config['ENFORCE_CONFIG_VALUES'] if key not in app.config]

@@ -18,8 +18,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from typing import TYPE_CHECKING, Optional
 
-from webapp.common.sqlalchemy import Mapped
-from webapp.extensions import db
+from sqlalchemy import BigInteger, ForeignKey, String
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from .base import BaseModel
 
@@ -27,15 +27,15 @@ if TYPE_CHECKING:
     from .image import Image
 
 
-class Business(db.Model, BaseModel):
+class Business(BaseModel):
     __tablename__ = 'business'
 
-    logo: Mapped[Optional['Image']] = db.relationship('Image', uselist=False)
+    logo: Mapped[Optional['Image']] = relationship('Image', uselist=False)
 
-    logo_id: Mapped[int | None] = db.Column(db.BigInteger, db.ForeignKey('image.id', use_alter=True), nullable=True)
+    logo_id: Mapped[int | None] = mapped_column(BigInteger, ForeignKey('image.id', use_alter=True), nullable=True)
 
-    name: Mapped[str] = db.Column(db.String(255), index=True, nullable=False)
-    website: Mapped[str | None] = db.Column(db.String(255), nullable=True)
+    name: Mapped[str] = mapped_column(String(255), index=True, nullable=False)
+    website: Mapped[str | None] = mapped_column(String(255), nullable=True)
 
     def to_dict(self, *args, ignore: list[str] | None = None, **kwargs) -> dict:
         ignore = ignore or []

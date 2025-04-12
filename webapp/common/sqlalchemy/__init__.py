@@ -18,4 +18,3 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from .query import Query
 from .sqlalchemy import SQLAlchemy
-from .typing import Mapped

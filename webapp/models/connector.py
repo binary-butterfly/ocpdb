@@ -21,10 +21,10 @@ from enum import Enum
 from math import sqrt
 from typing import TYPE_CHECKING
 
+from sqlalchemy import BigInteger, ForeignKey, Integer, String
+from sqlalchemy import Enum as SqlalchemyEnum
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy_utc import UtcDateTime
-
-from webapp.common.sqlalchemy import Mapped
-from webapp.extensions import db
 
 from .base import BaseModel
 
@@ -106,23 +106,23 @@ class PowerType(Enum):
     DC = 'DC'
 
 
-class Connector(db.Model, BaseModel):
+class Connector(BaseModel):
     __tablename__ = 'connector'
 
-    evse: Mapped['Evse'] = db.relationship('Evse', back_populates='connectors')
-    evse_id: Mapped[int] = db.Column(db.BigInteger, db.ForeignKey('evse.id', use_alter=True), nullable=False)
+    evse: Mapped['Evse'] = relationship('Evse', back_populates='connectors')
+    evse_id: Mapped[int] = mapped_column(BigInteger, ForeignKey('evse.id', use_alter=True), nullable=False)
 
-    uid: Mapped[str] = db.Column(db.String(64), nullable=False, index=True)  # OCPI: id
-    standard: Mapped[ConnectorType | None] = db.Column(db.Enum(ConnectorType), nullable=True)
-    format: Mapped[ConnectorFormat | None] = db.Column(db.Enum(ConnectorFormat), nullable=True)
+    uid: Mapped[str] = mapped_column(String(64), nullable=False, index=True)  # OCPI: id
+    standard: Mapped[ConnectorType | None] = mapped_column(SqlalchemyEnum(ConnectorType), nullable=True)
+    format: Mapped[ConnectorFormat | None] = mapped_column(SqlalchemyEnum(ConnectorFormat), nullable=True)
     # OCHP: chargePointType, OCPI: power_type
-    power_type: Mapped[PowerType | None] = db.Column(db.Enum(PowerType), nullable=True)
-    max_voltage: Mapped[int | None] = db.Column(db.Integer, nullable=True)  # OCHP: nominalVoltage, OCPI: max_voltage
-    max_amperage: Mapped[int | None] = db.Column(db.Integer, nullable=True)  # OCPI: max_amperage
+    power_type: Mapped[PowerType | None] = mapped_column(SqlalchemyEnum(PowerType), nullable=True)
+    max_voltage: Mapped[int | None] = mapped_column(Integer, nullable=True)  # OCHP: nominalVoltage, OCPI: max_voltage
+    max_amperage: Mapped[int | None] = mapped_column(Integer, nullable=True)  # OCPI: max_amperage
     # OCHP: maximumPower, OCPI: max_electric_power
-    max_electric_power: Mapped[int | None] = db.Column(db.Integer, nullable=True)
-    last_updated: Mapped[datetime | None] = db.Column(UtcDateTime(), nullable=True)
-    terms_and_conditions: Mapped[str | None] = db.Column(db.String(255), nullable=True)  # OCPI: terms_and_conditions
+    max_electric_power: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    last_updated: Mapped[datetime | None] = mapped_column(UtcDateTime(), nullable=True)
+    terms_and_conditions: Mapped[str | None] = mapped_column(String(255), nullable=True)  # OCPI: terms_and_conditions
 
     # tariff_ids TODO
 

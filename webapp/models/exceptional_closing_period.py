@@ -19,24 +19,24 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from datetime import datetime
 from typing import TYPE_CHECKING
 
+from sqlalchemy import BigInteger, ForeignKey
+from sqlalchemy.orm import Mapped, relationship
 from sqlalchemy_utc import UtcDateTime
 
-from webapp.common.sqlalchemy import Mapped
-from webapp.extensions import db
-
 from .base import BaseModel
+from .connector import mapped_column
 
 if TYPE_CHECKING:
     from .location import Location
 
 
-class ExceptionalClosingPeriod(db.Model, BaseModel):
+class ExceptionalClosingPeriod(BaseModel):
     __tablename__ = 'exceptional_closing_period'
 
-    location: Mapped['Location'] = db.relationship('Location', back_populates='exceptional_closings')
-    location_id: Mapped[int] = db.Column(db.BigInteger, db.ForeignKey('location.id', use_alter=True), nullable=False)
-    period_begin: Mapped[datetime] = db.Column(UtcDateTime(), nullable=False)
-    period_end: Mapped[datetime] = db.Column(UtcDateTime(), nullable=False)
+    location: Mapped['Location'] = relationship('Location', back_populates='exceptional_closings')
+    location_id: Mapped[int] = mapped_column(BigInteger, ForeignKey('location.id', use_alter=True), nullable=False)
+    period_begin: Mapped[datetime] = mapped_column(UtcDateTime(), nullable=False)
+    period_end: Mapped[datetime] = mapped_column(UtcDateTime(), nullable=False)
 
     def to_dict(self, *args, ignore: list[str] | None = None, **kwargs) -> dict:
         ignore = ignore or []

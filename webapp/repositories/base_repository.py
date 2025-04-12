@@ -19,28 +19,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from abc import ABC, abstractmethod
 from typing import Any, Generic, Optional, Type, TypeVar
 
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, scoped_session
 from validataclass_search_queries.repositories import SearchQueryRepositoryMixin
 
-from webapp.common.error_handling.exceptions import AppException
-from webapp.extensions import db
 from webapp.models.base import BaseModel
+from webapp.repositories.exceptions import ObjectNotFoundException
 
 T_Model = TypeVar('T_Model', bound=BaseModel)
-
-
-class InconsistentDataException(AppException):
-    code = 'inconsistent_data'
-
-
-class ObjectNotFoundException(AppException):
-    """
-    The requested object was not found or is out of scope.
-    This exception may be extended (e.g. UserNotFoundException) for specific object types if needed.
-    """
-
-    code = 'not_found'
-    http_status = 404
 
 
 class BaseRepository(SearchQueryRepositoryMixin[T_Model], Generic[T_Model], ABC):
@@ -51,11 +36,36 @@ class BaseRepository(SearchQueryRepositoryMixin[T_Model], Generic[T_Model], ABC)
 
     session: Session
 
-    def __init__(self, session: Optional[Session] = None) -> None:
-        self.session = db.session if session is None else session
+    def __init__(self, session: scoped_session) -> None:
+        self.session = session
 
     def exists(self, obj, field, value):
         return self.session.query(obj).filter(**{field: value}).count() > 0
+
+    def fetch_resource_by_id(
+        self,
+        resource_id: int,
+        *,
+        load_options: list | None = None,
+        resource_name: str | None = None,
+    ) -> T_Model:
+        """
+        Fetch a resource by its ID.
+        Raises ObjectNotFoundException if the resource does not exist or is out of scope.
+        """
+        load_options = load_options or []
+
+        resource = (
+            self.session.query(self.model_cls)
+            .options(*load_options)
+            .filter(self.model_cls.id == resource_id)
+            .one_or_none()
+        )
+
+        return self._or_raise(
+            resource,
+            f'{resource_name or self.model_cls.__name__} with ID {resource_id} was not found.',
+        )
 
     @staticmethod
     def _or_raise(

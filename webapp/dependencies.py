@@ -21,7 +21,7 @@ from typing import TYPE_CHECKING, Callable
 
 from butterfly_pubsub.sync import PubSubClient
 from flask import current_app
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import scoped_session
 
 from webapp.common.celery import CeleryHelper
 from webapp.common.config import ConfigHelper
@@ -125,7 +125,7 @@ class Dependencies:
 
     # Database
     @cache_dependency
-    def get_db_session(self) -> Session:
+    def get_db_session(self) -> scoped_session:
         # Late import (don't initialize all the extensions unless needed)
         from webapp.extensions import db
 
