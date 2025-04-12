@@ -41,6 +41,7 @@ class RemoteServerType(Enum):
     OCHP_ALBWERK = 'OCHP_ALBWERK'
     STADTNAVI = 'STADTNAVI'
     SW_STUTTGART = 'SW_STUTTGART'
+    PFORZHEIM = 'PFORZHEIM'
 
 
 @dataclass

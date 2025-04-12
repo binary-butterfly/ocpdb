@@ -73,7 +73,7 @@ class BaseOchpImportService(BaseImportService, ABC):
                 ochp_chargepoint: ChargePointInput = self.charge_point_validator.validate(ochp_chargepoint_dict)
             except ValidationError as e:
                 self.logger.info(
-                    'import-ochp',
+                    f'import-{self.source_info.uid}',
                     f'evse status {ochp_chargepoint_dict} has validation error: {e.to_dict()}',
                 )
                 static_error_count += 1
@@ -85,7 +85,12 @@ class BaseOchpImportService(BaseImportService, ABC):
 
         location_updates = []
         for ochp_chargepoints in chargepoints_by_location.values():
-            location_updates.append(self.ochp_mapper.map_chargepoint_to_location_update(ochp_chargepoints))
+            location_updates.append(
+                self.ochp_mapper.map_chargepoint_to_location_update(
+                    source_uid=self.source_info.uid,
+                    charge_point_inputs=ochp_chargepoints,
+                ),
+            )
 
         self.save_location_updates(location_updates)
 
@@ -106,7 +111,10 @@ class BaseOchpImportService(BaseImportService, ABC):
                 last_update=None if full_sync is True else source.realtime_data_updated_at,
             )
         except (ValidationError, RemoteException) as e:
-            self.logger.info('import-ochp', f'ochp realtime data has error: {e.to_dict()}')
+            self.logger.info(
+                f'import-{self.source_info.uid}',
+                f'ochp realtime data has error: {e.to_dict()}',
+            )
             self.update_source(source, realtime_status=SourceStatus.FAILED)
             return
 
@@ -119,7 +127,7 @@ class BaseOchpImportService(BaseImportService, ABC):
                 )
             except ValidationError as e:
                 self.logger.info(
-                    'import-ochp',
+                    f'import-{self.source_info.uid}',
                     f'evse status {evse_status_dict} has validation error: {e.to_dict()}',
                 )
                 realtime_error_count += 1

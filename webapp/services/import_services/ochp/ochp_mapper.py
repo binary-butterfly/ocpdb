@@ -174,7 +174,11 @@ class OchpMapper:
             OchpLocationType.private: ParkingType.PRIVATE,
         }.get(location_type)
 
-    def map_chargepoint_to_location_update(self, charge_point_inputs: List[ChargePointInput]) -> LocationUpdate:
+    def map_chargepoint_to_location_update(
+        self,
+        source_uid: str,
+        charge_point_inputs: List[ChargePointInput],
+    ) -> LocationUpdate:
         # location data is all the same
         charge_point_input = charge_point_inputs[0]
 
@@ -186,7 +190,7 @@ class OchpMapper:
             charge_point_address += ' ' + charge_point_input.chargePointAddress.houseNumber.strip()
 
         location_update = LocationUpdate(
-            source='ochp',
+            source=source_uid,
             uid=charge_point_input.locationId,
             last_updated=charge_point_input.timestamp or datetime.now(tz=timezone.utc),
             name=charge_point_input.locationName,
