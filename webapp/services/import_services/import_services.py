@@ -33,8 +33,9 @@ from webapp.services.import_services.chargeit import ChargeitImportService
 from webapp.services.import_services.giroe import GiroeImportService
 from webapp.services.import_services.ochp.albwerk import AlbwerkOchpImportService
 from webapp.services.import_services.ochp.ladenetz import LadenetzOchpImportService
+from webapp.services.import_services.ocpi.chargecloud.pforzheim import PforzheimImportService
+from webapp.services.import_services.ocpi.chargecloud.sw_stuttgart import SWStuttgartImportService
 from webapp.services.import_services.ocpi.stadtnavi.stadtnavi_service import StadtnaviImportService
-from webapp.services.import_services.ocpi.sw_stuttgart.sw_stuttgart_service import SWStuttgartImportService
 
 
 class ImportServices(BaseService):
@@ -46,6 +47,7 @@ class ImportServices(BaseService):
     giroe_import_service: GiroeImportService
     stadtnavi_import_service: StadtnaviImportService
     sw_stuttgart_import_service: SWStuttgartImportService
+    pforzheim_import_service: PforzheimImportService
 
     importer_by_uid: dict[str, BaseImportService]
 
@@ -82,6 +84,7 @@ class ImportServices(BaseService):
         self.ladenetz_ochp_import_service = LadenetzOchpImportService(**kwargs, **default_dependencies)
         self.stadtnavi_import_service = StadtnaviImportService(**kwargs, **default_dependencies)
         self.sw_stuttgart_import_service = SWStuttgartImportService(**kwargs, **default_dependencies)
+        self.pforzheim_import_service = PforzheimImportService(**kwargs, **default_dependencies)
 
         self.importer_by_uid = {
             self.bnetza_import_service.source_info.uid: self.bnetza_import_service,
@@ -91,6 +94,7 @@ class ImportServices(BaseService):
             self.ladenetz_ochp_import_service.source_info.uid: self.ladenetz_ochp_import_service,
             self.stadtnavi_import_service.source_info.uid: self.stadtnavi_import_service,
             self.sw_stuttgart_import_service.source_info.uid: self.sw_stuttgart_import_service,
+            self.pforzheim_import_service.source_info.uid: self.pforzheim_import_service,
         }
 
     def fetch_sources(self) -> None:

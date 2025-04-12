@@ -16,28 +16,31 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+from abc import ABC, abstractmethod
+
 from validataclass.exceptions import ValidationError
 from validataclass.validators import DataclassValidator
 
 from webapp.common.remote_helper import RemoteException, RemoteServerType
 from webapp.models.source import SourceStatus
-from webapp.services.import_services.base_import_service import BaseImportService, SourceInfo
+from webapp.services.import_services.base_import_service import BaseImportService
 from webapp.services.import_services.ocpi.ocpi_mapper import OcpiMapper
 from webapp.services.import_services.ocpi.ocpi_validators import OcpiInput
-from webapp.services.import_services.ocpi.sw_stuttgart.sw_stuttgart_ocpi_validators import SWStuttgartLocationInput
+
+from .chargecloud_validators import ChargecloudLocationInput
 
 
-class SWStuttgartImportService(BaseImportService):
+class ChargecloudBaseImportService(BaseImportService, ABC):
     ocpi_validator = DataclassValidator(OcpiInput)
-    location_validator = DataclassValidator(SWStuttgartLocationInput)
+    location_validator = DataclassValidator(ChargecloudLocationInput)
     ocpi_mapper = OcpiMapper()
 
-    source_info = SourceInfo(
-        uid='sw_stuttgart',
-        name='Stadtwerke Stuttgart',
-        public_url='https://new-poi.chargecloud.de/SW-Stuttgart',
-        has_realtime_data=True,
-    )
+    @property
+    @abstractmethod
+    def remote_server_type(self) -> RemoteServerType: ...
+
+    def fetch_static_data(self):
+        self.download_and_save()
 
     def fetch_realtime_data(self):
         self.download_and_save()
@@ -46,13 +49,12 @@ class SWStuttgartImportService(BaseImportService):
         source = self.get_source()
         try:
             input_dict = self.remote_helper.get(
-                remote_server_type=RemoteServerType.SW_STUTTGART,
-                path='/SW-Stuttgart',
+                remote_server_type=self.remote_server_type,
             )
         except RemoteException as e:
             self.logger.info(
-                log_name='import-sw-stuttgart',
-                message=f'sw_stuttgart request failed: {e.to_dict()}',
+                log_name=f'import-{self.source_info.uid}',
+                message=f'request failed: {e.to_dict()}',
             )
             self.update_source(source, static_status=SourceStatus.FAILED, realtime_status=SourceStatus.FAILED)
             return
@@ -63,8 +65,8 @@ class SWStuttgartImportService(BaseImportService):
             input_data: OcpiInput = self.ocpi_validator.validate(input_dict)
         except ValidationError as e:
             self.logger.info(
-                log_name='import-sw-stuttgart',
-                message=f'sw_stuttgart data {input_dict} has validation error: {e.to_dict()}',
+                log_name=f'import-{self.source_info.uid}',
+                message=f'data {input_dict} has validation error: {e.to_dict()}',
             )
             self.update_source(source, static_status=SourceStatus.FAILED, realtime_status=SourceStatus.FAILED)
             return
@@ -72,10 +74,10 @@ class SWStuttgartImportService(BaseImportService):
         location_updates = []
         for location_dict in input_data.data:
             try:
-                location_input: SWStuttgartLocationInput = self.location_validator.validate(location_dict)
+                location_input: ChargecloudLocationInput = self.location_validator.validate(location_dict)
             except ValidationError as e:
                 self.logger.info(
-                    log_name='import-sw-stuttgart',
+                    log_name=f'import-{self.source_info.uid}',
                     message=f'location {location_dict} has validation error: {e.to_dict()}',
                 )
                 static_error_count += 1
