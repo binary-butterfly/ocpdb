@@ -22,14 +22,16 @@ from decimal import Decimal
 from enum import Enum
 from typing import TYPE_CHECKING
 
+from sqlalchemy import BigInteger, Float, ForeignKey, Integer, Numeric, String, Text
+from sqlalchemy import Enum as SqlalchemyEnum
 from sqlalchemy.ext.hybrid import hybrid_property
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy_utc import UtcDateTime
 
 from webapp.common.json import DefaultJSONEncoder
-from webapp.common.sqlalchemy import Mapped
-from webapp.extensions import db
 
 from .base import BaseModel
+from .evse_image import EvseImageAssociation
 
 if TYPE_CHECKING:
     from .connector import Connector
@@ -81,59 +83,56 @@ class Capability(Enum):
     DIRECT_REMOTE = 'DIRECT_REMOTE'
 
 
-evse_image = db.Table(
-    'evse_image',
-    db.Column('evse_id', db.BigInteger, db.ForeignKey('evse.id', use_alter=True), nullable=False),
-    db.Column('image_id', db.BigInteger, db.ForeignKey('image.id', use_alter=True), nullable=False),
-)
-
-
-class Evse(db.Model, BaseModel):
+class Evse(BaseModel):
     __tablename__ = 'evse'
 
-    connectors: Mapped[list['Connector']] = db.relationship(
+    connectors: Mapped[list['Connector']] = relationship(
         'Connector',
         back_populates='evse',
         cascade='all, delete, delete-orphan',
     )
-    images: Mapped[list['Image']] = db.relationship('Image', secondary=evse_image)
-    related_resources: Mapped['RelatedResource'] = db.relationship(
+    images: Mapped[list['Image']] = relationship(
+        'Image',
+        secondary=EvseImageAssociation.__table__,
+        back_populates='evses',
+    )
+    related_resources: Mapped['RelatedResource'] = relationship(
         'RelatedResource',
         back_populates='evse',
         cascade='all, delete, delete-orphan',
     )
-    location: Mapped['Location'] = db.relationship('Location', back_populates='evses')
+    location: Mapped['Location'] = relationship('Location', back_populates='evses')
 
-    location_id: Mapped[int] = db.Column(db.BigInteger, db.ForeignKey('location.id', use_alter=True), nullable=False)
+    location_id: Mapped[int] = mapped_column(BigInteger, ForeignKey('location.id', use_alter=True), nullable=False)
 
-    uid: Mapped[str] = db.Column(db.String(64), nullable=False, index=True)
-    evse_id: Mapped[str | None] = db.Column(db.String(64), nullable=True, index=True)
-    status: Mapped[EvseStatus] = db.Column(
-        db.Enum(EvseStatus, name='EvseStatus'),
+    uid: Mapped[str] = mapped_column(String(64), nullable=False, index=True)
+    evse_id: Mapped[str | None] = mapped_column(String(64), nullable=True, index=True)
+    status: Mapped[EvseStatus] = mapped_column(
+        SqlalchemyEnum(EvseStatus, name='EvseStatus'),
         default=EvseStatus.UNKNOWN,
         nullable=False,
     )
 
-    lat: Mapped[Decimal | None] = db.Column(db.Numeric(9, 7), nullable=True)
-    lon: Mapped[Decimal | None] = db.Column(db.Numeric(10, 7), nullable=True)
+    lat: Mapped[Decimal | None] = mapped_column(Numeric(9, 7), nullable=True)
+    lon: Mapped[Decimal | None] = mapped_column(Numeric(10, 7), nullable=True)
 
-    floor_level: Mapped[str | None] = db.Column(db.String(16), nullable=True)
-    physical_reference: Mapped[str | None] = db.Column(db.String(255), nullable=True)
-    _directions: Mapped[str | None] = db.Column('directions', db.Text, nullable=True)
-    phone: Mapped[str | None] = db.Column(db.String(255), nullable=True)  # OCHP: telephoneNumber
+    floor_level: Mapped[str | None] = mapped_column(String(16), nullable=True)
+    physical_reference: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    _directions: Mapped[str | None] = mapped_column('directions', Text, nullable=True)
+    phone: Mapped[str | None] = mapped_column(String(255), nullable=True)  # OCHP: telephoneNumber
 
-    parking_uid: Mapped[str | None] = db.Column(db.String(255), nullable=True)  # OCHP: parkingSpot.parkingId
-    parking_floor_level: Mapped[str | None] = db.Column(db.String(255), nullable=True)  # OCHP: parkingSpot.floorlevel
+    parking_uid: Mapped[str | None] = mapped_column(String(255), nullable=True)  # OCHP: parkingSpot.parkingId
+    parking_floor_level: Mapped[str | None] = mapped_column(String(255), nullable=True)  # OCHP: parkingSpot.floorlevel
     # OCHP: parkingSpot.parkingSpotNumber
-    parking_spot_number: Mapped[str | None] = db.Column(db.String(255), nullable=True)
+    parking_spot_number: Mapped[str | None] = mapped_column(String(255), nullable=True)
 
-    last_updated: Mapped[datetime | None] = db.Column(UtcDateTime(), nullable=True)
-    max_reservation: Mapped[float | None] = db.Column(db.Float, nullable=True)  # OCHP maxReservation
-    _capabilities: Mapped[int | None] = db.Column('capabilities', db.Integer, nullable=True)  # OCPI: capability
+    last_updated: Mapped[datetime | None] = mapped_column(UtcDateTime(), nullable=True)
+    max_reservation: Mapped[float | None] = mapped_column(Float, nullable=True)  # OCHP maxReservation
+    _capabilities: Mapped[int | None] = mapped_column('capabilities', Integer, nullable=True)  # OCPI: capability
     # OCHP: RestrictionType     OCPI: parking_restrictions
-    _parking_restrictions: Mapped[int | None] = db.Column('parking_restrictions', db.Integer, nullable=True)
+    _parking_restrictions: Mapped[int | None] = mapped_column('parking_restrictions', Integer, nullable=True)
 
-    terms_and_conditions: Mapped[str | None] = db.Column(db.String(255), nullable=True)  # OCPI: terms_and_conditions
+    terms_and_conditions: Mapped[str | None] = mapped_column(String(255), nullable=True)  # OCPI: terms_and_conditions
 
     # status_schedule TODO
     # user_interface_lang TODO                              # OCHP userInterfaceLang

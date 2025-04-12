@@ -20,8 +20,6 @@ x-flask-defaults: &flask-defaults
   environment:
     # Set this variable in .env to start the app with a different config file (default: config.yaml)
     CONFIG_FILE:
-    # TODO: This should be removed at some point and the app should be made SQLAlchemy 2.0 compatible!
-    SQLALCHEMY_SILENCE_UBER_WARNING: 1
     OCPDB_POSTGRES_DB: ocpdb
     OCPDB_POSTGRES_USER: ocpdb
     OCPDB_POSTGRES_PASSWORD: admin
@@ -71,7 +69,7 @@ services:
       retries: 20
 
   postgre:
-    image: postgis/postgis
+    image: postgis/postgis:15-3.5-alpine
     volumes:
       - postgres:/var/lib/postgresql/data/
     environment:

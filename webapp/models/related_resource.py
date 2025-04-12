@@ -17,12 +17,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 from enum import Enum
-from typing import TYPE_CHECKING, List
+from typing import TYPE_CHECKING
 
+from sqlalchemy import BigInteger, ForeignKey, Integer, String
 from sqlalchemy.ext.hybrid import hybrid_property
-
-from webapp.common.sqlalchemy import Mapped
-from webapp.extensions import db
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from .base import BaseModel
 
@@ -40,17 +39,17 @@ class RelatedResourceType(Enum):
     OPENING_TIMES = 'OPENING_TIMES'
 
 
-class RelatedResource(db.Model, BaseModel):
+class RelatedResource(BaseModel):
     __tablename__ = 'related_resource'
 
-    evse: Mapped['Evse'] = db.relationship('Evse', back_populates='related_resources')
-    evse_id: Mapped[int] = db.Column(db.BigInteger, db.ForeignKey('evse.id', use_alter=True), nullable=False)
+    evse: Mapped['Evse'] = relationship('Evse', back_populates='related_resources')
+    evse_id: Mapped[int] = mapped_column(BigInteger, ForeignKey('evse.id', use_alter=True), nullable=False)
 
-    url: Mapped[str | None] = db.Column(db.String(255), nullable=True)
-    _types: Mapped[int | None] = db.Column('types', db.Integer, nullable=True)
+    url: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    _types: Mapped[int | None] = mapped_column('types', Integer, nullable=True)
 
     @hybrid_property
-    def types(self) -> List[RelatedResourceType]:
+    def types(self) -> list[RelatedResourceType]:
         if not self._types:
             return []
         return sorted(
@@ -58,7 +57,7 @@ class RelatedResource(db.Model, BaseModel):
         )
 
     @types.setter
-    def types(self, types: List[RelatedResourceType]) -> None:
+    def types(self, types: list[RelatedResourceType]) -> None:
         self._types = 0
         for _type in types:
             self._types = self._types | _type.value

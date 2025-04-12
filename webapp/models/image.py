@@ -19,14 +19,21 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 from flask import current_app
+from sqlalchemy import Enum as SqlalchemyEnum
+from sqlalchemy import Integer, String
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy_utc import UtcDateTime
 
-from webapp.common.sqlalchemy import Mapped
-from webapp.extensions import db
-
 from .base import BaseModel
+from .evse_image import EvseImageAssociation
+from .location_image import LocationImageAssociation
+
+if TYPE_CHECKING:
+    from .evse import Evse
+    from .location import Location
 
 
 class ImageCategory(Enum):
@@ -39,15 +46,26 @@ class ImageCategory(Enum):
     OWNER = 'OWNER'
 
 
-class Image(db.Model, BaseModel):
+class Image(BaseModel):
     __tablename__ = 'image'
 
-    external_url: Mapped[str | None] = db.Column(db.String(255), index=True, nullable=True)
-    type: Mapped[str | None] = db.Column(db.String(4), nullable=True)
-    category: Mapped[ImageCategory | None] = db.Column(db.Enum(ImageCategory), nullable=True)
-    width: Mapped[int | None] = db.Column(db.Integer, nullable=True)
-    height: Mapped[int | None] = db.Column(db.Integer, nullable=True)
-    last_download: Mapped[datetime | None] = db.Column(UtcDateTime(timezone=True), nullable=True)
+    evses: Mapped[list['Evse']] = relationship(
+        'Evse',
+        secondary=EvseImageAssociation.__table__,
+        back_populates='images',
+    )
+    locations: Mapped[list['Location']] = relationship(
+        'Location',
+        secondary=LocationImageAssociation.__table__,
+        back_populates='images',
+    )
+
+    external_url: Mapped[str | None] = mapped_column(String(255), index=True, nullable=True)
+    type: Mapped[str | None] = mapped_column(String(4), nullable=True)
+    category: Mapped[ImageCategory | None] = mapped_column(SqlalchemyEnum(ImageCategory), nullable=True)
+    width: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    height: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    last_download: Mapped[datetime | None] = mapped_column(UtcDateTime(), nullable=True)
 
     @property
     def url(self) -> str:
@@ -62,7 +80,7 @@ class Image(db.Model, BaseModel):
         return f'{current_app.config["PROJECT_URL"]}/static/images/dynamic/{self.id}.thumb.{self.type}'
 
     @property
-    def path_thumbnail(self):
+    def path_thumbnail(self) -> Path:
         return Path(current_app.config['DYNAMIC_IMAGE_DIR'], f'{self.id}.thumb.{self.type}')
 
     def to_dict(self, *args, strict: bool = False, ignore: list[str] | None = None, **kwargs) -> dict:
@@ -78,12 +96,3 @@ class Image(db.Model, BaseModel):
             result['last_download'] = self.last_download
 
         return result
-
-
-# TODO: use this for UPDATE checks
-# @event.listens_for(Image, 'before_insert')
-# @event.listens_for(Image, 'before_update')
-# def set_geometry(mapper, connection, image):
-#    state = db.inspect(image)
-#    for attr in state.attrs:
-#      print(state.get_history(attr.key, True))

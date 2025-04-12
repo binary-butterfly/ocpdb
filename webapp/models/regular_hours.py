@@ -18,8 +18,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from typing import TYPE_CHECKING
 
-from webapp.common.sqlalchemy import Mapped
-from webapp.extensions import db
+from sqlalchemy import BigInteger, ForeignKey, Integer, SmallInteger
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from .base import BaseModel
 
@@ -27,15 +27,15 @@ if TYPE_CHECKING:
     from .location import Location
 
 
-class RegularHours(db.Model, BaseModel):
+class RegularHours(BaseModel):
     __tablename__ = 'regular_hours'
 
-    location: Mapped['Location'] = db.relationship('Location', back_populates='regular_hours')
-    location_id = db.Column(db.BigInteger, db.ForeignKey('location.id', use_alter=True), nullable=False)
+    location: Mapped['Location'] = relationship('Location', back_populates='regular_hours')
+    location_id = mapped_column(BigInteger, ForeignKey('location.id', use_alter=True), nullable=False)
 
-    weekday: Mapped[int] = db.Column(db.SmallInteger, nullable=False)
-    period_begin: Mapped[int] = db.Column(db.Integer, nullable=False)
-    period_end: Mapped[int] = db.Column(db.Integer, nullable=False)
+    weekday: Mapped[int] = mapped_column(SmallInteger, nullable=False)
+    period_begin: Mapped[int] = mapped_column(Integer, nullable=False)
+    period_end: Mapped[int] = mapped_column(Integer, nullable=False)
 
     def to_dict(self, *args, ignore: list[str] | None = None, **kwargs) -> dict:
         ignore = ignore or []

@@ -19,10 +19,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from datetime import datetime
 from enum import Enum
 
+from sqlalchemy import Enum as SqlalchemyEnum
+from sqlalchemy import Integer, String, Text
+from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy_utc import UtcDateTime
-
-from webapp.common.sqlalchemy import Mapped
-from webapp.extensions import db
 
 from .base import BaseModel
 
@@ -34,33 +34,33 @@ class SourceStatus(Enum):
     PROVISIONED = 'PROVISIONED'
 
 
-class Source(db.Model, BaseModel):
+class Source(BaseModel):
     __tablename__ = 'source'
 
-    uid: Mapped[str] = db.Column(db.String(256), nullable=False, index=True, unique=True)
-    name: Mapped[str | None] = db.Column(db.String(256), nullable=True)
-    public_url: Mapped[str | None] = db.Column(db.String(4096), nullable=True)
+    uid: Mapped[str] = mapped_column(String(256), nullable=False, index=True, unique=True)
+    name: Mapped[str | None] = mapped_column(String(256), nullable=True)
+    public_url: Mapped[str | None] = mapped_column(String(4096), nullable=True)
 
-    static_data_updated_at: Mapped[datetime | None] = db.Column(UtcDateTime(), nullable=True)
-    realtime_data_updated_at: Mapped[datetime | None] = db.Column(UtcDateTime(), nullable=True)
+    static_data_updated_at: Mapped[datetime | None] = mapped_column(UtcDateTime(), nullable=True)
+    realtime_data_updated_at: Mapped[datetime | None] = mapped_column(UtcDateTime(), nullable=True)
 
-    attribution_license: Mapped[str | None] = db.Column(db.Text(), nullable=True)
-    attribution_contributor: Mapped[str | None] = db.Column(db.String(256), nullable=True)
-    attribution_url: Mapped[str | None] = db.Column(db.String(256), nullable=True)
+    attribution_license: Mapped[str | None] = mapped_column(Text, nullable=True)
+    attribution_contributor: Mapped[str | None] = mapped_column(String(256), nullable=True)
+    attribution_url: Mapped[str | None] = mapped_column(String(256), nullable=True)
 
-    static_status: Mapped[SourceStatus] = db.Column(
-        db.Enum(SourceStatus),
+    static_status: Mapped[SourceStatus] = mapped_column(
+        SqlalchemyEnum(SourceStatus),
         nullable=False,
         default=SourceStatus.PROVISIONED,
     )
-    realtime_status: Mapped[SourceStatus] = db.Column(
-        db.Enum(SourceStatus),
+    realtime_status: Mapped[SourceStatus] = mapped_column(
+        SqlalchemyEnum(SourceStatus),
         nullable=False,
         default=SourceStatus.PROVISIONED,
     )
 
-    static_error_count: Mapped[int] = db.Column(db.Integer(), nullable=False, default=0)
-    realtime_error_count: Mapped[int] = db.Column(db.Integer(), nullable=False, default=0)
+    static_error_count: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    realtime_error_count: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
 
     @property
     def combined_status(self) -> SourceStatus:

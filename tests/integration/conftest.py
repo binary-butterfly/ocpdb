@@ -16,38 +16,51 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-import pytest
-from sqlalchemy import create_engine
+import re
+from typing import Generator
 
+import pytest
+from sqlalchemy import create_engine, text
+
+from tests.integration.helpers import empty_all_tables
 from webapp import launch
 from webapp.common.flask_app import App
 from webapp.common.sqlalchemy import SQLAlchemy
 from webapp.extensions import db as flask_sqlalchemy
 
 
-@pytest.fixture
-def app() -> App:
-    test_app = launch()
-    test_app.config.update(
-        TESTING=True,
-        DEBUG=True,
+@pytest.fixture(scope='session')
+def flask_app() -> Generator[App, None, None]:
+    app = launch(
+        config_overrides={
+            'TESTING': True,
+            'DEBUG': True,
+        }
     )
-    with test_app.app_context():
-        yield test_app
 
-
-@pytest.fixture
-def db(app: App) -> SQLAlchemy:
     # Create the database and the database tables
-
     # db_path should be 'mysql+pymysql://root:root@mysql' if
-    # SQLALCHEMY_DATABASE_URI: 'mysql+pymysql://root:root@mysql/ocpdb' is set in test_config.yaml
-    db_path: str = app.config.get('SQLALCHEMY_DATABASE_URI')[:-6]
+    # SQLALCHEMY_DATABASE_URI: 'mysql+pymysql://root:root@mysql/backend?charset=utf8mb4' is set in test_config.yaml
+    db_path: str = re.sub(r'/[^/]+$', '', app.config.get('SQLALCHEMY_DATABASE_URI'))
 
     engine = create_engine(db_path)
-    connection = engine.connect()
-    connection.execute('DROP DATABASE IF EXISTS ocpdb;')
-    connection.execute('CREATE DATABASE IF NOT EXISTS ocpdb;')
-    flask_sqlalchemy.create_all()
+
+    # We use DROP + CREATE here because it's faster and more reliable in case of foreign keys
+    with engine.connect() as connection:
+        connection.execute(text('DROP DATABASE IF EXISTS `post-salad-backend`;'))
+        connection.execute(text('CREATE DATABASE IF NOT EXISTS `post-salad-backend`;'))
+
+    with app.app_context():
+        flask_sqlalchemy.create_all()
+
+        yield app  # type: ignore
+
+
+@pytest.fixture
+def db(flask_app: App) -> Generator[SQLAlchemy, None, None]:
+    """
+    Yields the database as a function-scoped fixture with freshly emptied tables.
+    """
+    empty_all_tables(db=flask_sqlalchemy)
 
     yield flask_sqlalchemy

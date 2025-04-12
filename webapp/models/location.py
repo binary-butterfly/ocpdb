@@ -22,15 +22,30 @@ from decimal import Decimal
 from enum import Enum
 from typing import TYPE_CHECKING, Optional
 
-from sqlalchemy import Index, event, func
+from sqlalchemy import (
+    BigInteger,
+    Boolean,
+    Float,
+    ForeignKey,
+    Index,
+    Numeric,
+    String,
+    Text,
+    event,
+    func,
+)
+from sqlalchemy import (
+    Enum as SqlalchemyEnum,
+)
 from sqlalchemy.ext.hybrid import hybrid_property
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy_utc import UtcDateTime
 
 from webapp.common.json import DefaultJSONEncoder
-from webapp.common.sqlalchemy import Mapped
 from webapp.extensions import db
 
 from .base import BaseModel, Point
+from .location_image import LocationImageAssociation
 
 if TYPE_CHECKING:
     from .business import Business
@@ -98,87 +113,88 @@ class TokenType(Enum):
     RFID = 'RFID'
 
 
-location_image = db.Table(
-    'location_image',
-    db.Column('location_id', db.BigInteger, db.ForeignKey('location.id', use_alter=True), nullable=False),
-    db.Column('image_id', db.BigInteger, db.ForeignKey('image.id', use_alter=True), nullable=False),
-)
-
-
-class Location(db.Model, BaseModel):
+class Location(BaseModel):
     __tablename__ = 'location'
     __table_args__ = (Index('uid', 'source'),)
 
-    evses: Mapped[list['Evse']] = db.relationship(
+    evses: Mapped[list['Evse']] = relationship(
         'Evse',
         back_populates='location',
         cascade='all, delete, delete-orphan',
     )
-    images: Mapped[list['Image']] = db.relationship('Image', secondary=location_image)
+    images: Mapped[list['Image']] = relationship(
+        'Image',
+        secondary=LocationImageAssociation.__table__,
+        back_populates='locations',
+    )
 
-    exceptional_openings: Mapped[list['ExceptionalOpeningPeriod']] = db.relationship(
+    exceptional_openings: Mapped[list['ExceptionalOpeningPeriod']] = relationship(
         'ExceptionalOpeningPeriod',
         back_populates='location',
         cascade='all, delete, delete-orphan',
     )
-    exceptional_closings: Mapped[list['ExceptionalClosingPeriod']] = db.relationship(
+    exceptional_closings: Mapped[list['ExceptionalClosingPeriod']] = relationship(
         'ExceptionalClosingPeriod',
         back_populates='location',
         cascade='all, delete, delete-orphan',
     )
-    regular_hours: Mapped[list['RegularHours']] = db.relationship(
+    regular_hours: Mapped[list['RegularHours']] = relationship(
         'RegularHours',
         back_populates='location',
         cascade='all, delete, delete-orphan',
     )
 
-    operator_id: Mapped[int | None] = db.Column(
-        db.BigInteger,
-        db.ForeignKey('business.id', use_alter=True),
+    operator_id: Mapped[int | None] = mapped_column(
+        BigInteger,
+        ForeignKey('business.id', use_alter=True),
         nullable=True,
     )
-    suboperator_id: Mapped[int | None] = db.Column(
-        db.BigInteger,
-        db.ForeignKey('business.id', use_alter=True),
+    suboperator_id: Mapped[int | None] = mapped_column(
+        BigInteger,
+        ForeignKey('business.id', use_alter=True),
         nullable=True,
     )
-    owner_id: Mapped[int | None] = db.Column(db.BigInteger, db.ForeignKey('business.id', use_alter=True), nullable=True)
+    owner_id: Mapped[int | None] = mapped_column(
+        BigInteger,
+        ForeignKey('business.id', use_alter=True),
+        nullable=True,
+    )
 
-    operator: Mapped[Optional['Business']] = db.relationship('Business', foreign_keys=[operator_id])
-    suboperator: Mapped[Optional['Business']] = db.relationship('Business', foreign_keys=[suboperator_id])
-    owner: Mapped[Optional['Business']] = db.relationship('Business', foreign_keys=[owner_id])
+    operator: Mapped[Optional['Business']] = relationship('Business', foreign_keys=[operator_id])
+    suboperator: Mapped[Optional['Business']] = relationship('Business', foreign_keys=[suboperator_id])
+    owner: Mapped[Optional['Business']] = relationship('Business', foreign_keys=[owner_id])
 
-    uid: Mapped[str] = db.Column(db.String(255), index=True, nullable=False)  # OCHP: locationId   OCPI: id
-    source: Mapped[str] = db.Column(db.String(64), index=True, nullable=False)
+    uid: Mapped[str] = mapped_column(String(255), index=True, nullable=False)  # OCHP: locationId   OCPI: id
+    source: Mapped[str] = mapped_column(String(64), index=True, nullable=False)
 
-    dynamic_location_id: Mapped[int] = db.Column(db.BigInteger)  # TODO: relation?
-    dynamic_location_probability: Mapped[int] = db.Column(db.Float)
+    dynamic_location_id: Mapped[int | None] = mapped_column(BigInteger, nullable=True)
+    dynamic_location_probability: Mapped[float | None] = mapped_column(Float, nullable=True)
 
-    name: Mapped[str | None] = db.Column(db.String(255), nullable=True)  # OCHP: locationName, OCPI: name
+    name: Mapped[str | None] = mapped_column(String(255), nullable=True)  # OCHP: locationName, OCPI: name
     # OCHP: chargePointAddress.address, OCPI: address
-    address: Mapped[str | None] = db.Column(db.String(255), nullable=True)
+    address: Mapped[str | None] = mapped_column(String(255), nullable=True)
     # OCHP: chargePointAddress.zipCode, OCPI: postal_code
-    postal_code: Mapped[str | None] = db.Column(db.String(255), nullable=True)
-    city: Mapped[str | None] = db.Column(db.String(255), nullable=True)  # OCHP: chargePointAddress.city, OCPI: city
-    state: Mapped[str | None] = db.Column(db.String(255), nullable=True)  # OCPI: state
+    postal_code: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    city: Mapped[str | None] = mapped_column(String(255), nullable=True)  # OCHP: chargePointAddress.city, OCPI: city
+    state: Mapped[str | None] = mapped_column(String(255), nullable=True)  # OCPI: state
     # OCHP: chargePointAddress.country, OCPI: country
-    country: Mapped[str | None] = db.Column(db.String(3), nullable=True)
+    country: Mapped[str | None] = mapped_column(String(3), nullable=True)
     # OCHP: chargePointLocation.lat, OCPI: coordinates.latitude
-    lat: Mapped[Decimal | None] = db.Column(db.Numeric(9, 7), nullable=True)
+    lat: Mapped[Decimal | None] = mapped_column(Numeric(9, 7), nullable=True)
     # OCHP: chargePointLocation.lon, OCPI: coordinates.longitude
-    lon: Mapped[Decimal | None] = db.Column(db.Numeric(10, 7), nullable=True)
+    lon: Mapped[Decimal | None] = mapped_column(Numeric(10, 7), nullable=True)
 
-    _directions: Mapped[str | None] = db.Column('directions', db.Text, nullable=True)  # OCPI: directions
-    parking_type: Mapped[ParkingType | None] = db.Column(db.Enum(ParkingType), nullable=True)
-    time_zone: Mapped[str | None] = db.Column(db.String(32), nullable=True)  # OCHP: timeZone, OCPI: time_zone
+    _directions: Mapped[str | None] = mapped_column('directions', Text, nullable=True)  # OCPI: directions
+    parking_type: Mapped[ParkingType | None] = mapped_column(SqlalchemyEnum(ParkingType), nullable=True)
+    time_zone: Mapped[str | None] = mapped_column(String(32), nullable=True)  # OCHP: timeZone, OCPI: time_zone
 
-    last_updated: Mapped[datetime | None] = db.Column(UtcDateTime(), nullable=True)  # OCHP: timestamp
+    last_updated: Mapped[datetime | None] = mapped_column(UtcDateTime(), nullable=True)  # OCHP: timestamp
 
-    terms_and_conditions: Mapped[str | None] = db.Column(db.String(255), nullable=True)  # OCPI: terms_and_conditions
+    terms_and_conditions: Mapped[str | None] = mapped_column(String(255), nullable=True)  # OCPI: terms_and_conditions
     # OCHP: openingTimes.twentyfourseven    OCPI: opening_times.twentyfourseven
-    twentyfourseven: Mapped[bool | None] = db.Column(db.Boolean, nullable=True)
+    twentyfourseven: Mapped[bool | None] = mapped_column(Boolean, nullable=True)
 
-    geometry: Mapped[Point] = db.Column(Point(), nullable=False)
+    geometry: Mapped[Point] = mapped_column(Point(), nullable=False)
 
     @hybrid_property
     def directions(self) -> list[dict[str, str]] | None:

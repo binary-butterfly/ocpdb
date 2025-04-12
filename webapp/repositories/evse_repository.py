@@ -17,12 +17,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 from dataclasses import dataclass
-from typing import List, Tuple
 
 from webapp.models import Evse, Location
 from webapp.models.evse import EvseStatus
 
-from .base_repository import BaseRepository, InconsistentDataException, ObjectNotFoundException
+from .base_repository import BaseRepository
+from .exceptions import InconsistentDataException, ObjectNotFoundException
 
 
 @dataclass
@@ -61,38 +61,30 @@ class EvseRepository(BaseRepository[Evse]):
 
         return items[0]
 
-    def fetch_evse_by_location_id(self, location_id: int) -> List[Evse]:
-        return self.session.query(Evse).filter(Evse.location_id == location_id)
+    def fetch_evse_by_location_id(self, location_id: int) -> list[Evse]:
+        return self.session.query(Evse).filter(Evse.location_id == location_id).all()
 
-    def fetch_evse_uids(self) -> List[str]:
+    def fetch_evse_uids(self) -> list[str]:
         items = self.session.query(Evse.uid).all()
 
         return [item.uid for item in items]
 
-    def fetch_extended_evse_uids(self) -> List[Tuple[str, int]]:
+    def fetch_extended_evse_uids(self) -> list[tuple[str, int]]:
         items = self.session.query(Evse.uid, Evse.location_id).all()
 
         return [(item.uid, item.location_id) for item in items]
 
     def save_evse(self, evse: Evse, *, commit: bool = True):
-        self.session.add(evse)
-        if commit:
-            self.session.commit()
+        self._save_resources(evse, commit=commit)
 
-    def delete_evse_by_ids(self, evse_ids: List[int]):
-        self.session.query(Evse).filter(Evse.id.in_(evse_ids)).delete(synchronize_session=False)
-
-    def delete_evse_by_id(self, evse_id: int):
-        self.session.query(Evse).filter(id=evse_id).delete(synchronize_session=False)
-
-    def fetch_evse_status_summary(self) -> List[EvseStatusSummary]:
+    def fetch_evse_status_summary(self) -> list[EvseStatusSummary]:
         items = (
             self.session.query(Evse.uid.label('evse'), Evse.status, Location.uid.label('location'), Location.source)
             .filter(Evse.status != EvseStatus.STATIC)
             .join(Evse.location)
             .all()
         )
-        result: List[EvseStatusSummary] = []
+        result: list[EvseStatusSummary] = []
         for item in items:
             result.append(EvseStatusSummary(**dict(item)))
 

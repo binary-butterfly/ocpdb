@@ -16,25 +16,18 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from typing import List
-
 from webapp.models import Connector, Evse, Location
 
-from .base_repository import BaseRepository, ObjectNotFoundException
+from .base_repository import BaseRepository
 
 
 class ConnectorRepository(BaseRepository[Connector]):
     model_cls = Connector
 
     def fetch_by_id(self, connector_id: int) -> Connector:
-        result = self.session.query(Connector).get(connector_id)
+        return self.fetch_resource_by_id(connector_id)
 
-        if result is None:
-            raise ObjectNotFoundException(f'connector with id {connector_id} not found')
-
-        return result
-
-    def fetch_connectors_by_ids(self, connector_ids: List[int]) -> List[Connector]:
+    def fetch_connectors_by_ids(self, connector_ids: list[int]) -> list[Connector]:
         return self.session.query(Connector).filter(Connector.id.in_(connector_ids)).all()
 
     def fetch_by_uid(self, source: str, connector_uid: str) -> Connector:
@@ -47,13 +40,4 @@ class ConnectorRepository(BaseRepository[Connector]):
             .first()
         )
 
-        if result is None:
-            raise ObjectNotFoundException(message=f'connector with uid {connector_uid} and source {source} not found')
-
-        return result
-
-    def delete_connector_by_id(self, connector_ids: List[int]):
-        self.session.query(Connector).filter(Connector.id.in_(connector_ids)).delete(synchronize_session=False)
-
-    def delete_connector_by_ids(self, connector_id: int):
-        self.session.query(Connector).filter(Connector.id == connector_id).delete(synchronize_session=False)
+        return self._or_raise(result, f'connector with uid {connector_uid} and source {source} not found')
