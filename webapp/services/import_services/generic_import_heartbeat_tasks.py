@@ -17,6 +17,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 from webapp.extensions import celery
+from webapp.services.import_services import ImageImportService, ImportServices
 
 
 @celery.task()
@@ -31,5 +32,13 @@ def static_import_task(source: str):
 def realtime_import_task(source: str):
     from webapp.dependencies import dependencies
 
-    import_services = dependencies.get_import_services()
+    import_services: ImportServices = dependencies.get_import_services()
     import_services.importer_by_uid[source].fetch_realtime_data()
+
+
+@celery.task()
+def image_import_task():
+    from webapp.dependencies import dependencies
+
+    image_import_services: ImageImportService = dependencies.get_image_import_services()
+    image_import_services.fetch_images()
