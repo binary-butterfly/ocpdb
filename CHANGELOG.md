@@ -1,5 +1,16 @@
 # Changelog
 
+## Version 1.4.0
+
+Released 2025-04-12
+
+In this release, we migrated to SQLAlchemy2 and add two new data sources.
+
+* [SQLAlchemy2 migration](https://github.com/binary-butterfly/ocpdb/pull/95)
+* [Support Albwerk](https://github.com/binary-butterfly/ocpdb/pull/94)
+* [Support Pforzheim](https://github.com/binary-butterfly/ocpdb/pull/96)
+
+
 ## Version 1.3.0
 
 Released 2025-01-25
