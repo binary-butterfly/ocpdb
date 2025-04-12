@@ -1,6 +1,6 @@
 """
 Open ChargePoint DataBase OCPDB
-Copyright (C) 2021 binary butterfly GmbH
+Copyright (C) 2025 binary butterfly GmbH
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published by
@@ -16,5 +16,17 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from .image_import_service import ImageImportService
-from .import_services import ImportServices
+from webapp.common.remote_helper import RemoteServerType
+from webapp.services.import_services.models import SourceInfo
+from webapp.services.import_services.ochp.base_ochp_service import BaseOchpImportService
+
+
+class LadenetzOchpImportService(BaseOchpImportService):
+    remote_server_type = RemoteServerType.OCHP_LADENETZ
+
+    source_info = SourceInfo(
+        uid='ochp_ladenetz',
+        name='Ladenetz',
+        public_url='https://ladenetz.de',
+        has_realtime_data=True,
+    )

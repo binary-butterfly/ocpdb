@@ -24,16 +24,15 @@ from lxml.etree import XMLSyntaxError
 from validataclass.exceptions import ValidationError
 from validataclass.validators import DataclassValidator
 
-from webapp.common.config import ConfigHelper
-from webapp.common.remote_helper import RemoteHelper, RemoteServerType
+from webapp.common.remote_helper import RemoteHelper, RemoteServer
 
 from .ochp_helper import xml_to_dict
 from .ochp_validators import GetChargePointListInput, GetStatusEnvelopeInput
 
 
 class OchpApiClient:
-    config_helper: ConfigHelper
     remote_helper: RemoteHelper
+    remote_server: RemoteServer
     request_nsmap = {
         'soapenv': 'http://schemas.xmlsoap.org/soap/envelope/',
         'ns': 'http://ochp.eu/1.4',
@@ -41,9 +40,9 @@ class OchpApiClient:
     get_charge_point_list_validator = DataclassValidator(GetChargePointListInput)
     get_status_validator = DataclassValidator(GetStatusEnvelopeInput)
 
-    def __init__(self, config_helper: ConfigHelper, remote_helper: RemoteHelper):
-        self.config_helper = config_helper
+    def __init__(self, remote_helper: RemoteHelper, remote_server: RemoteServer):
         self.remote_helper = remote_helper
+        self.remote_server = remote_server
 
     def download_base_data(self) -> List[dict]:
         em = builder.ElementMaker(namespace=self.request_nsmap['ns'], nsmap=self.request_nsmap)
@@ -109,7 +108,7 @@ class OchpApiClient:
 
         return input_data.Envelope.Body.GetStatusResponse.evse
 
-    def ochp_request(self, path: str, request_data: etree, action: str) -> etree.Element:
+    def ochp_request(self, path: str, request_data: etree.Element, action: str) -> etree.Element:
         request_nsmap = {
             'soapenv': 'http://schemas.xmlsoap.org/soap/envelope/',
             'ns': 'http://ochp.eu/1.4',
@@ -120,7 +119,7 @@ class OchpApiClient:
             em.Body(request_data),
         )
         result = self.remote_helper.post(
-            url=self.config_helper.get('REMOTE_SERVERS')[RemoteServerType.LADENETZ].url,
+            url=self.remote_server.url,
             path=path,
             data=etree.tostring(request_xml).decode(),
             headers={'content-type': 'text/xml', 'SOAPAction': action},
@@ -131,7 +130,7 @@ class OchpApiClient:
         except XMLSyntaxError:
             raise ValidationError(code='invalid_xml', reason='Invalid XML')
 
-    def get_security_header(self):
+    def get_security_header(self) -> etree.Element:
         nsmap_sec = {
             'wsse': 'http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd',
             **self.request_nsmap,
@@ -144,9 +143,9 @@ class OchpApiClient:
         em_user = builder.ElementMaker(namespace=nsmap_user['wsse'], nsmap=nsmap_user)
 
         username_token = em_user.UsernameToken(
-            em_user.Username(self.config_helper.get('REMOTE_SERVERS')[RemoteServerType.LADENETZ].user),
+            em_user.Username(self.remote_server.user),
             em_user.Password(
-                self.config_helper.get('REMOTE_SERVERS')[RemoteServerType.LADENETZ].password,
+                self.remote_server.password,
                 Type='http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0#PasswordText',
             ),
         )

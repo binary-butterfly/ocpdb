@@ -37,7 +37,7 @@ from webapp.repositories import (
     OptionRepository,
     SourceRepository,
 )
-from webapp.services.import_services import ImportServices
+from webapp.services.import_services import ImageImportService, ImportServices
 from webapp.services.import_services.generic_import_runner import GenericImportRunner
 from webapp.services.matching_service import MatchingService
 
@@ -193,6 +193,13 @@ class Dependencies:
             business_repository=self.get_business_repository(),
             image_repository=self.get_image_repository(),
             option_repository=self.get_option_repository(),
+        )
+
+    @cache_dependency
+    def get_image_import_service(self) -> ImageImportService:
+        return ImageImportService(
+            **self.get_base_service_dependencies(),
+            image_repository=self.get_image_repository(),
         )
 
     @cache_dependency

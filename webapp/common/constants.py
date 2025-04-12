@@ -69,4 +69,9 @@ class BaseConfig:
 
     AUTO_FETCH_SOURCES: list[str] = []
     STATIC_PULL_HOUR = 1
+    STATIC_PULL_MINUTE = 0
     REALTIME_PULL_FREQUENCY = 60  # In seconds
+    IMAGE_PULL_HOUR = 4
+    IMAGE_PULL_MINUTE = 0
+
+    IMAGE_IMPORT_REQUEST_DELAY = 0.1  # Delay time between two requests, in seconds

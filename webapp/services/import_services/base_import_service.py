@@ -295,10 +295,12 @@ class BaseImportService(BaseService, ABC):
     def update_source(
         self,
         source: Source,
-        static_error_count: Optional[int] = None,
-        realtime_error_count: Optional[int] = None,
-        static_status: Optional[SourceStatus] = None,
-        realtime_status: Optional[SourceStatus] = None,
+        static_error_count: int | None = None,
+        realtime_error_count: int | None = None,
+        static_status: SourceStatus | None = None,
+        static_data_updated_at: datetime | None = None,
+        realtime_status: SourceStatus | None = None,
+        realtime_data_updated_at: datetime | None = None,
     ):
         for key, value in self.source_info.to_dict().items():
             setattr(source, key, value)
@@ -309,11 +311,11 @@ class BaseImportService(BaseService, ABC):
             source.realtime_status = realtime_status
 
         if static_error_count is not None:
-            source.static_data_updated_at = datetime.now(tz=timezone.utc)
+            source.static_data_updated_at = static_data_updated_at or datetime.now(tz=timezone.utc)
             source.static_error_count = static_error_count
             source.static_status = SourceStatus.ACTIVE
         if realtime_error_count is not None:
-            source.realtime_data_updated_at = datetime.now(tz=timezone.utc)
+            source.realtime_data_updated_at = realtime_data_updated_at or datetime.now(tz=timezone.utc)
             source.realtime_error_count = realtime_error_count
             if source.static_status == SourceStatus.ACTIVE:
                 source.realtime_status = SourceStatus.ACTIVE

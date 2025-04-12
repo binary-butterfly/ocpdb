@@ -16,9 +16,9 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-import os
 from datetime import datetime
 from enum import Enum
+from pathlib import Path
 
 from flask import current_app
 from sqlalchemy_utc import UtcDateTime
@@ -50,22 +50,20 @@ class Image(db.Model, BaseModel):
     last_download: Mapped[datetime | None] = db.Column(UtcDateTime(timezone=True), nullable=True)
 
     @property
-    def url(self):
-        return '%s/static/images/dynamic/%s.%s' % (current_app.config['PROJECT_URL'], self.id, self.type)
+    def url(self) -> str:
+        return f'{current_app.config["PROJECT_URL"]}/static/images/dynamic/{self.id}.{self.type}'
 
     @property
-    def path(self):
-        return os.path.abspath(os.path.join(current_app.config['DYNAMIC_IMAGE_DIR'], '%s.%s' % (self.id, self.type)))
+    def path(self) -> Path:
+        return Path(current_app.config['DYNAMIC_IMAGE_DIR'], f'{self.id}.{self.type}')
 
     @property
-    def url_thumbnail(self):
-        return '%s/static/images/dynamic/%s.thumb.%s' % (current_app.config['PROJECT_URL'], self.id, self.type)
+    def url_thumbnail(self) -> str:
+        return f'{current_app.config["PROJECT_URL"]}/static/images/dynamic/{self.id}.thumb.{self.type}'
 
     @property
     def path_thumbnail(self):
-        return os.path.abspath(
-            os.path.join(current_app.config['DYNAMIC_IMAGE_DIR'], '%s.thumb.%s' % (self.id, self.type)),
-        )
+        return Path(current_app.config['DYNAMIC_IMAGE_DIR'], f'{self.id}.thumb.{self.type}')
 
     def to_dict(self, *args, strict: bool = False, ignore: list[str] | None = None, **kwargs) -> dict:
         ignore = ignore or []

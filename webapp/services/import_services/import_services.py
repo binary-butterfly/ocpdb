@@ -31,14 +31,17 @@ from webapp.services.import_services.base_import_service import BaseImportServic
 from webapp.services.import_services.bnetza import BnetzaImportService
 from webapp.services.import_services.chargeit import ChargeitImportService
 from webapp.services.import_services.giroe import GiroeImportService
-from webapp.services.import_services.ochp.ochp_service import OchpImportService
+from webapp.services.import_services.ochp.albwerk import AlbwerkOchpImportService
+from webapp.services.import_services.ochp.ladenetz import LadenetzOchpImportService
 from webapp.services.import_services.ocpi.stadtnavi.stadtnavi_service import StadtnaviImportService
 from webapp.services.import_services.ocpi.sw_stuttgart.sw_stuttgart_service import SWStuttgartImportService
 
 
 class ImportServices(BaseService):
     bnetza_import_service: BnetzaImportService
-    ochp_import_service: OchpImportService
+    albwerk_ochp_import_service: AlbwerkOchpImportService
+    ladenetz_ochp_import_service: LadenetzOchpImportService
+
     chargeit_import_service: ChargeitImportService
     giroe_import_service: GiroeImportService
     stadtnavi_import_service: StadtnaviImportService
@@ -75,7 +78,8 @@ class ImportServices(BaseService):
         self.bnetza_import_service = BnetzaImportService(**kwargs, **default_dependencies)
         self.chargeit_import_service = ChargeitImportService(**kwargs, **default_dependencies)
         self.giroe_import_service = GiroeImportService(**kwargs, **default_dependencies)
-        self.ochp_import_service = OchpImportService(**kwargs, **default_dependencies)
+        self.albwerk_ochp_import_service = AlbwerkOchpImportService(**kwargs, **default_dependencies)
+        self.ladenetz_ochp_import_service = LadenetzOchpImportService(**kwargs, **default_dependencies)
         self.stadtnavi_import_service = StadtnaviImportService(**kwargs, **default_dependencies)
         self.sw_stuttgart_import_service = SWStuttgartImportService(**kwargs, **default_dependencies)
 
@@ -83,7 +87,8 @@ class ImportServices(BaseService):
             self.bnetza_import_service.source_info.uid: self.bnetza_import_service,
             self.chargeit_import_service.source_info.uid: self.chargeit_import_service,
             self.giroe_import_service.source_info.uid: self.giroe_import_service,
-            self.ochp_import_service.source_info.uid: self.ochp_import_service,
+            self.albwerk_ochp_import_service.source_info.uid: self.albwerk_ochp_import_service,
+            self.ladenetz_ochp_import_service.source_info.uid: self.ladenetz_ochp_import_service,
             self.stadtnavi_import_service.source_info.uid: self.stadtnavi_import_service,
             self.sw_stuttgart_import_service.source_info.uid: self.sw_stuttgart_import_service,
         }

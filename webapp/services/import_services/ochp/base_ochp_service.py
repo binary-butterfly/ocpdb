@@ -16,42 +16,48 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+from abc import ABC, abstractmethod
+from datetime import datetime, timezone
 from typing import Dict, List
 
 from validataclass.exceptions import ValidationError
 from validataclass.validators import DataclassValidator
 
-from webapp.common.remote_helper import RemoteException
+from webapp.common.remote_helper import RemoteException, RemoteServer, RemoteServerType
 from webapp.models.source import SourceStatus
-from webapp.services.import_services.base_import_service import BaseImportService, SourceInfo
+from webapp.services.import_services.base_import_service import BaseImportService
 
 from .ochp_api_client import OchpApiClient
 from .ochp_mapper import OchpMapper
 from .ochp_validators import ChargePointInput, ChargePointStatusInput
 
 
-class OchpImportService(BaseImportService):
+class BaseOchpImportService(BaseImportService, ABC):
     ochp_api_client: OchpApiClient
+    remote_server: RemoteServer
+
     charge_point_validator = DataclassValidator(ChargePointInput)
     charge_point_status_validator = DataclassValidator(ChargePointStatusInput)
 
-    ochp_mapper = OchpMapper()
+    ochp_mapper: OchpMapper
 
-    source_info = SourceInfo(
-        uid='ochp',
-        name='Ladenetz',
-        public_url='https://ladenetz.de',
-        has_realtime_data=True,
-    )
+    @property
+    @abstractmethod
+    def remote_server_type(self) -> RemoteServerType:
+        pass
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.ochp_mapper = OchpMapper()
+        if self.remote_server_type not in self.config_helper.get('REMOTE_SERVERS'):
+            return
+        self.remote_server = self.config_helper.get('REMOTE_SERVERS')[self.remote_server_type]
         self.ochp_api_client = OchpApiClient(
             remote_helper=self.remote_helper,
-            config_helper=self.config_helper,
+            remote_server=self.remote_server,
         )
 
-    def base_load_and_save(self):
+    def fetch_static_data(self):
         source = self.get_source()
         static_error_count = 0
 
@@ -72,6 +78,7 @@ class OchpImportService(BaseImportService):
                 )
                 static_error_count += 1
                 continue
+
             if ochp_chargepoint.locationId not in chargepoints_by_location.keys():
                 chargepoints_by_location[ochp_chargepoint.locationId] = []
             chargepoints_by_location[ochp_chargepoint.locationId].append(ochp_chargepoint)
@@ -84,11 +91,15 @@ class OchpImportService(BaseImportService):
 
         self.update_source(source=source, static_error_count=static_error_count)
 
-    def live_load_and_save(self, full_sync: bool = False):
+        # Do a full realtime sync for an initial set of status data
+        self.fetch_realtime_data(full_sync=True)
+
+    def fetch_realtime_data(self, full_sync: bool = False):
         source = self.get_source()
         if source.static_status == SourceStatus.FAILED:
             return
         realtime_error_count = 0
+        realtime_data_updated_at = datetime.now(timezone.utc)
 
         try:
             evse_status_dicts = self.ochp_api_client.download_live_data(
@@ -98,6 +109,7 @@ class OchpImportService(BaseImportService):
             self.logger.info('import-ochp', f'ochp realtime data has error: {e.to_dict()}')
             self.update_source(source, realtime_status=SourceStatus.FAILED)
             return
+
         evse_updates = []
 
         for evse_status_dict in evse_status_dicts:
@@ -112,9 +124,15 @@ class OchpImportService(BaseImportService):
                 )
                 realtime_error_count += 1
                 continue
+
             evse_update = self.ochp_mapper.map_evse_status_to_update(evse_status_input)
+
             evse_updates.append(evse_update)
 
         self.save_evse_updates(evse_updates)
 
-        self.update_source(source=source, realtime_error_count=realtime_error_count)
+        self.update_source(
+            source=source,
+            realtime_error_count=realtime_error_count,
+            realtime_data_updated_at=realtime_data_updated_at,
+        )

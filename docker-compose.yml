@@ -108,6 +108,7 @@ services:
 
   rabbitmq:
     image: rabbitmq:latest
+    user: rabbitmq
     environment:
       # Disable spammy logging
       RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS: '-rabbit log [{console,[{level,warning}]}]'
