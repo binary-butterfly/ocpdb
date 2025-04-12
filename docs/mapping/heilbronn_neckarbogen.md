@@ -14,7 +14,6 @@ Global / generated values:
 
 ## ChargePoint
 
-
 | Field                  | Type                                          | Cardinality | Mapping           | Comment |
 |------------------------|-----------------------------------------------|-------------|-------------------|---------|
 | attributes             | [ChargepointAttribute](#ChargepointAttribute) | *           |                   |         |
@@ -28,7 +27,6 @@ Global / generated values:
 | postalAddress          | [PostalAddress](#PostalAddress)               | 1           |                   |         |
 | roamingChargingStation | boolean                                       | 1           |                   |         |
 | tenant                 | [Tenant](#Tenant)                             | 1           | location.operator |         |
-|
 
 
 ## ChargepointAttribute
