@@ -72,6 +72,7 @@ class GiroeMapper:
     def map_station_connector_to_evse_connector(self, station_input: StationInput, connector_input: ConnectorInput):
         return EvseUpdate(
             uid=connector_input.uid,
+            evse_id=connector_input.uid,
             status=self.map_charge_connector_status_to_evse_status(connector_input.status),
             capabilities=[
                 Capability.UNLOCK_CAPABLE,

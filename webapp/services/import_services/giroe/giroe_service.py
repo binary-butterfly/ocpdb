@@ -16,8 +16,7 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from datetime import datetime
-from typing import List, Optional
+from datetime import datetime, timezone
 
 from validataclass.exceptions import ValidationError
 from validataclass.validators import DataclassValidator
@@ -25,16 +24,17 @@ from validataclass.validators import DataclassValidator
 from webapp.common.remote_helper import RemoteException, RemoteServerType
 from webapp.models.source import SourceStatus
 from webapp.services.import_services.base_import_service import BaseImportService, SourceInfo
-from webapp.services.import_services.models import LocationUpdate
+from webapp.services.import_services.models import EvseUpdate, LocationUpdate
 
 from .giroe_mapper import GiroeMapper
-from .giroe_validator import LocationInput, LocationListInput
+from .giroe_validator import ConnectorInput, ItemListInput, LocationInput
 
 
 class GiroeImportService(BaseImportService):
     giroe_mapper: GiroeMapper
-    location_list_validator = DataclassValidator(LocationListInput)
+    item_list_validator = DataclassValidator(ItemListInput)
     location_validator = DataclassValidator(LocationInput)
+    connector_validator = DataclassValidator(ConnectorInput)
 
     source_info = SourceInfo(
         uid='giroe',
@@ -47,16 +47,11 @@ class GiroeImportService(BaseImportService):
         super().__init__(*args, **kwargs)
         self.giroe_mapper = GiroeMapper(config_helper=self.config_helper)
 
-    def download_and_save(
-        self,
-        created_since: Optional[datetime] = None,
-        created_until: Optional[datetime] = None,
-        modified_since: Optional[datetime] = None,
-        modified_until: Optional[datetime] = None,
-    ):
+    def fetch_static_data(self):
         source = self.get_source()
-        location_updates: List[LocationUpdate] = []
+        location_updates: list[LocationUpdate] = []
         static_error_count = 0
+        static_data_updated_at = datetime.now(timezone.utc)
 
         try:
             location_list_data = self.remote_helper.get(
@@ -64,19 +59,16 @@ class GiroeImportService(BaseImportService):
                 path='/api/server/v1/charge-locations',
                 params={
                     'technical_backend': 'tcc',
-                    **({} if created_since is None else {'created_since': created_since}),
-                    **({} if created_until is None else {'created_until': created_until}),
-                    **({} if modified_since is None else {'modified_since': modified_since}),
-                    **({} if modified_until is None else {'modified_until': modified_until}),
+                    'public': True,
                 },
             )
-            location_list_input: LocationListInput = self.location_list_validator.validate(location_list_data)
+            location_list_input: ItemListInput = self.item_list_validator.validate(location_list_data)
         except (ValidationError, RemoteException) as e:
             self.logger.info('import-giro-e', f'giro-e static data has error: {e.to_dict()}')
             self.update_source(source, static_status=SourceStatus.FAILED)
             return
 
-        location_dicts: List[dict] = location_list_input.items
+        location_dicts: list[dict] = location_list_input.items
 
         while location_list_input.next_path:
             try:
@@ -84,7 +76,7 @@ class GiroeImportService(BaseImportService):
                     remote_server_type=RemoteServerType.GIROE,
                     path=location_list_input.next_path,
                 )
-                location_list_input: LocationListInput = self.location_list_validator.validate(location_list_data)
+                location_list_input: ItemListInput = self.item_list_validator.validate(location_list_data)
                 location_dicts += location_list_input.items
             except (ValidationError, RemoteException) as e:
                 self.logger.info('import-giro-e', f'giro-e static data has error: {e.to_dict()}')
@@ -102,11 +94,84 @@ class GiroeImportService(BaseImportService):
                 static_error_count += 1
                 continue
 
-            if not location_input.public:
-                continue
-
             location_updates.append(self.giroe_mapper.map_location_input_to_update(location_input))
 
         self.save_location_updates(location_updates)
 
-        self.update_source(source=source, static_error_count=static_error_count)
+        self.update_source(
+            source=source,
+            static_status=SourceStatus.ACTIVE,
+            static_error_count=static_error_count,
+            static_data_updated_at=static_data_updated_at,
+        )
+
+    def fetch_realtime_data(self):
+        source = self.get_source()
+        # Don't fetch realtime updates if there is no static data
+        if source.static_status != SourceStatus.ACTIVE:
+            return
+
+        evse_updates: list[EvseUpdate] = []
+        realtime_error_count = 0
+        realtime_data_updated_at = datetime.now(timezone.utc)
+
+        params = {
+            'technical_backend': 'tcc',
+            'public': True,
+        }
+        if source.realtime_data_updated_at:
+            params['modified_since'] = source.realtime_data_updated_at.isoformat()
+        try:
+            connector_list_data = self.remote_helper.get(
+                remote_server_type=RemoteServerType.GIROE,
+                path='/api/server/v1/charge-connectors',
+                params=params,
+            )
+            connector_list_input: ItemListInput = self.item_list_validator.validate(connector_list_data)
+        except (ValidationError, RemoteException) as e:
+            self.logger.info('import-giro-e', f'giro-e realtime data has error: {e.to_dict()}')
+            self.update_source(source, realtime_status=SourceStatus.FAILED)
+            return
+
+        connector_dicts: list[dict] = connector_list_input.items
+
+        while connector_list_input.next_path:
+            try:
+                connector_list_data = self.remote_helper.get(
+                    remote_server_type=RemoteServerType.GIROE,
+                    path=connector_list_input.next_path,
+                )
+                connector_list_input: ItemListInput = self.item_list_validator.validate(connector_list_data)
+                connector_dicts += connector_list_input.items
+            except (ValidationError, RemoteException) as e:
+                self.logger.info('import-giro-e', f'giro-e realtime data has error: {e.to_dict()}')
+                self.update_source(source, realtime_status=SourceStatus.FAILED)
+                return
+
+        for connector_dict in connector_dicts:
+            try:
+                connector_input: ConnectorInput = self.connector_validator.validate(connector_dict)
+            except ValidationError as e:
+                self.logger.info(
+                    'import-giro-e',
+                    f'connector {connector_dict} has validation error: {e.to_dict()}',
+                )
+                realtime_error_count += 1
+                continue
+
+            evse_updates.append(
+                EvseUpdate(
+                    uid=connector_input.uid,
+                    evse_id=connector_input.uid,
+                    last_updated=connector_input.modified,
+                ),
+            )
+
+        self.save_evse_updates(evse_updates)
+
+        self.update_source(
+            source=source,
+            realtime_status=SourceStatus.ACTIVE,
+            realtime_error_count=realtime_error_count,
+            realtime_data_updated_at=realtime_data_updated_at,
+        )
