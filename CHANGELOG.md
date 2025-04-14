@@ -1,5 +1,14 @@
 # Changelog
 
+## Version 1.4.1
+
+Released 2025-04-14
+
+### Fixes
+
+* [Fix Giro-e import / make it work with new hearbeat system](https://github.com/binary-butterfly/ocpdb/pull/98)
+
+
 ## Version 1.4.0
 
 Released 2025-04-12
