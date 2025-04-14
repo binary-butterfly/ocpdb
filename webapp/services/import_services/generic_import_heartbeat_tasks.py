@@ -40,5 +40,5 @@ def realtime_import_task(source: str):
 def image_import_task():
     from webapp.dependencies import dependencies
 
-    image_import_services: ImageImportService = dependencies.get_image_import_services()
+    image_import_services: ImageImportService = dependencies.get_image_import_service()
     image_import_services.fetch_images()

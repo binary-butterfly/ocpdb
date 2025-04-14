@@ -97,6 +97,6 @@ class LocationInput:
 
 
 @validataclass
-class LocationListInput:
+class ItemListInput:
     items: List[dict] = ListValidator(UnvalidatedDictValidator())
     next_path: Optional[str] = StringValidator(), Default(None)
