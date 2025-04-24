@@ -1,7 +1,7 @@
 PROJECT_URL: 'http://localhost:5000'
 SECRET_KEY: 'random-key'
 
-SQLALCHEMY_DATABASE_URI: 'mysql+pymysql://root:root@mysql/ocpdb'
+SQLALCHEMY_DATABASE_URI: 'postgresql://ocpdb:development@postgre/ocpdb'
 CELERY_BROKER_URL: 'amqp://rabbitmq'
 
 ADMINS: ['your-admin-email@binary-butterfly.de']
@@ -22,5 +22,4 @@ SERVER_AUTH_USERS:
     roles:
       - bnetza
 
-AUTO_FETCH_SOURCES:
-  - sw_stuttgart
+AUTO_FETCH_SOURCES: []

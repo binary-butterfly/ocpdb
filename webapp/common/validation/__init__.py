@@ -17,6 +17,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 from .comma_string_to_decimal_validator import CommaStringToDecimalValidator
+from .date_validator import ParsedDateValidator
 from .datetime_to_utc_datetime_validator import DateTimeToUtcDateTimeValidator
 from .emptystring_to_noneable import EmptystringToNoneable
 from .integer_to_string_validator import IntegerToStringValidator

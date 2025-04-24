@@ -16,4 +16,5 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from .bnetza_service import BnetzaImportService
+from .bnetza_api_service import BnetzaApiImportService
+from .bnetza_excel_service import BnetzaExcelImportService

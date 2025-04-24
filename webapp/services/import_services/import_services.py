@@ -28,7 +28,7 @@ from webapp.repositories.business_repository import BusinessRepository
 from webapp.repositories.image_repository import ImageRepository
 from webapp.services.base_service import BaseService
 from webapp.services.import_services.base_import_service import BaseImportService
-from webapp.services.import_services.bnetza import BnetzaImportService
+from webapp.services.import_services.bnetza import BnetzaApiImportService, BnetzaExcelImportService
 from webapp.services.import_services.chargeit import ChargeitImportService
 from webapp.services.import_services.giroe import GiroeImportService
 from webapp.services.import_services.ochp.albwerk import AlbwerkOchpImportService
@@ -39,7 +39,8 @@ from webapp.services.import_services.ocpi.stadtnavi.stadtnavi_service import Sta
 
 
 class ImportServices(BaseService):
-    bnetza_import_service: BnetzaImportService
+    bnetza_excel_import_service: BnetzaExcelImportService
+    bnetza_api_import_service: BnetzaApiImportService
     albwerk_ochp_import_service: AlbwerkOchpImportService
     ladenetz_ochp_import_service: LadenetzOchpImportService
 
@@ -77,7 +78,8 @@ class ImportServices(BaseService):
             'remote_helper': remote_helper,
         }
 
-        self.bnetza_import_service = BnetzaImportService(**kwargs, **default_dependencies)
+        self.bnetza_api_import_service = BnetzaApiImportService(**kwargs, **default_dependencies)
+        self.bnetza_excel_import_service = BnetzaExcelImportService(**kwargs, **default_dependencies)
         self.chargeit_import_service = ChargeitImportService(**kwargs, **default_dependencies)
         self.giroe_import_service = GiroeImportService(**kwargs, **default_dependencies)
         self.albwerk_ochp_import_service = AlbwerkOchpImportService(**kwargs, **default_dependencies)
@@ -87,7 +89,8 @@ class ImportServices(BaseService):
         self.pforzheim_import_service = PforzheimImportService(**kwargs, **default_dependencies)
 
         self.importer_by_uid = {
-            self.bnetza_import_service.source_info.uid: self.bnetza_import_service,
+            self.bnetza_api_import_service.source_info.uid: self.bnetza_api_import_service,
+            self.bnetza_excel_import_service.source_info.uid: self.bnetza_excel_import_service,
             self.chargeit_import_service.source_info.uid: self.chargeit_import_service,
             self.giroe_import_service.source_info.uid: self.giroe_import_service,
             self.albwerk_ochp_import_service.source_info.uid: self.albwerk_ochp_import_service,

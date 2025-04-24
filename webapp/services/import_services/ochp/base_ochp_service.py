@@ -49,13 +49,16 @@ class BaseOchpImportService(BaseImportService, ABC):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.ochp_mapper = OchpMapper()
-        if self.remote_server_type not in self.config_helper.get('REMOTE_SERVERS'):
-            return
-        self.remote_server = self.config_helper.get('REMOTE_SERVERS')[self.remote_server_type]
+
         self.ochp_api_client = OchpApiClient(
             remote_helper=self.remote_helper,
-            remote_server=self.remote_server,
+            remote_server_type=self.remote_server_type,
+            config_helper=self.config_helper,
         )
+
+    @property
+    def remote_server(self) -> RemoteServer:
+        return self.config_helper.get('REMOTE_SERVERS')[self.remote_server_type]
 
     def fetch_static_data(self):
         source = self.get_source()
