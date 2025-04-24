@@ -16,6 +16,7 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+import os
 from typing import Generator
 
 import pytest
@@ -28,6 +29,9 @@ from webapp.extensions import db as flask_sqlalchemy
 
 @pytest.fixture
 def flask_app() -> Generator[App, None, None]:
+    # Load default development config instead of config.yaml for testing to avoid issues with local setups
+    os.environ['CONFIG_FILE'] = os.environ.get('TEST_CONFIG_FILE', 'config_dist_dev.yaml')
+
     app = launch(
         config_overrides={
             'TESTING': True,
