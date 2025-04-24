@@ -53,7 +53,7 @@ jobs:
       TZ: Europe/Berlin
 
     services:
-      postgresql:
+      postgre:
         image: postgis/postgis:15-3.5-alpine
         env:
           POSTGRES_USER: ocpdb
