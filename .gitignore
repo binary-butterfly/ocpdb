@@ -1,7 +1,6 @@
 *.py[cod]
 .idea
 /.pytest_cache
-!/**/.gitkeep
 
 /config.yaml
 http-client.env.json
