@@ -16,12 +16,15 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+import logging
 import os
 import sys
 import traceback
 from functools import wraps
 
-from webapp.extensions import logger
+from webapp.common.logging.models import LogMessageType
+
+logger = logging.getLogger(__name__)
 
 
 def catch_exception(func):
@@ -32,7 +35,13 @@ def catch_exception(func):
         except Exception as e:
             # catch error just if we don't have a TTY = started by cron
             if os.isatty(sys.stdin.fileno()):
-                raise
-            logger.error('cli', '%s' % e, traceback.format_exc())
+                raise e
+
+            logger.error(
+                f'{e}: {traceback.format_exc()}',
+                extra={'attributes': {'type': LogMessageType.EXCEPTION}},
+            )
+
+            return None
 
     return with_catch_exception

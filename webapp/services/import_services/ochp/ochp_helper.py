@@ -17,15 +17,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 from collections import defaultdict
-from typing import List, Optional, Tuple
 
 from lxml import etree
 
 
 def xml_to_dict(
     tag: etree.Element,
-    ensure_array_keys: Optional[List[Tuple[str, str]]],
-    remote_type_tags: Optional[List[str]] = None,
+    ensure_array_keys: list[tuple[str, str]] | None,
+    remote_type_tags: list[str] | None = None,
 ) -> dict:
     tag_name = etree.QName(tag).localname
     tag_dict = {tag_name: {} if tag.attrib else None}

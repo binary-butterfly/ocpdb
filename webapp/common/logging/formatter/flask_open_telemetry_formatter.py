@@ -1,6 +1,6 @@
 """
 Open ChargePoint DataBase OCPDB
-Copyright (C) 2021 binary butterfly GmbH
+Copyright (C) 2025 binary butterfly GmbH
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published by
@@ -16,10 +16,8 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from .comma_string_to_decimal_validator import CommaStringToDecimalValidator
-from .date_validator import ParsedDateValidator
-from .datetime_to_utc_datetime_validator import DateTimeToUtcDateTimeValidator
-from .emptystring_to_noneable import EmptystringToNoneable
-from .integer_to_string_validator import IntegerToStringValidator
-from .nonable_to_unset import NoneableToUnsetValue
-from .printable_string_validator import PrintableStringValidator
+from .flask_attributes_mixin import FlaskAttributesMixin
+from .open_telemetry_formatter import OpenTelemetryFormatter
+
+
+class FlaskOpenTelemetryFormatter(FlaskAttributesMixin, OpenTelemetryFormatter): ...

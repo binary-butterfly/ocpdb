@@ -16,13 +16,19 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+import logging
+
 from butterfly_pubsub.sync import PubSubClient
 
+from webapp.common.contexts import TelemetryContext
+from webapp.common.logging.models import LogMessageType
 from webapp.models.source import SourceStatus
 from webapp.repositories import EvseRepository, ObjectNotFoundException, SourceRepository
 from webapp.services.base_service import BaseService
 
 from .subscription_handler import PubSubStatusSubscriptionHandler
+
+logger = logging.getLogger(__name__)
 
 
 class PubSubService(BaseService):
@@ -45,21 +51,27 @@ class PubSubService(BaseService):
     def register(self):
         self.pubsub_client.register(
             PubSubStatusSubscriptionHandler(
-                logger=self.logger,
                 config_helper=self.config_helper,
                 evse_repository=self.evse_repository,
             ),
         )
 
     def listen_for_updates(self):
+        self.context_helper.set_telemetry_context(TelemetryContext.SOURCE, 'giroe')
         try:
             source = self.source_repository.fetch_source_by_uid('giroe')
         except ObjectNotFoundException:
-            self.logger.warn('import-giroe', 'You cannot use the pubsub service before importing static data')
+            logger.error(
+                'You cannot use the pubsub service before importing static data',
+                extra={'attributes': {'type': LogMessageType.IMPORT_SOURCE}},
+            )
             return
 
         if source.static_status != SourceStatus.ACTIVE:
-            self.logger.warn('import-giroe', f'Wrong source status {source.static_status} for importing realtime data')
+            logger.error(
+                f'Wrong source status {source.static_status} for importing realtime data',
+                extra={'attributes': {'type': LogMessageType.IMPORT_SOURCE}},
+            )
             return
 
         # Set source realtime status active

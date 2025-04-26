@@ -16,8 +16,6 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from typing import Optional
-
 from validataclass_search_queries.pagination import PaginatedResult
 
 from webapp.models import Business
@@ -37,7 +35,7 @@ class BusinessHandler(PublicApiBaseHandler):
         business = self.business_repository.fetch_by_id(business_id)
         return self._map_business_to_ocpi(business)
 
-    def search_businesses(self, search_query: Optional[BusinessSearchQuery] = None) -> PaginatedResult[dict]:
+    def search_businesses(self, search_query: BusinessSearchQuery | None = None) -> PaginatedResult[dict]:
         businesses = self.business_repository.fetch_businesses(search_query)
 
         return businesses.map(lambda business: self._map_business_to_ocpi(business))

@@ -16,10 +16,11 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+import logging
+from datetime import datetime, timezone
 from hashlib import sha256
 from io import BytesIO
 from pathlib import Path
-from typing import Dict, List, Tuple
 
 from celery.schedules import crontab
 from openpyxl import load_workbook
@@ -28,6 +29,8 @@ from openpyxl.worksheet.worksheet import Worksheet
 from validataclass.exceptions import ValidationError
 from validataclass.validators import DataclassValidator
 
+from webapp.common.contexts import TelemetryContext
+from webapp.common.logging.models import LogMessageType
 from webapp.common.remote_helper import RemoteException, RemoteServerType
 from webapp.models.source import Source, SourceStatus
 from webapp.services.import_services.base_import_service import BaseImportService, SourceInfo
@@ -35,13 +38,15 @@ from webapp.services.import_services.base_import_service import BaseImportServic
 from .bnetza_excel_mapper import BnetzaExcelMapper
 from .bnetza_excel_validators import BnetzaRowInput
 
+logger = logging.getLogger(__name__)
+
 
 class BnetzaExcelImportService(BaseImportService):
     schedule = crontab(day_of_month='1')
 
     bnetza_mapper: BnetzaExcelMapper = BnetzaExcelMapper()
     row_validator: DataclassValidator[BnetzaRowInput] = DataclassValidator(BnetzaRowInput)
-    header_line: Dict[str, str] = {
+    header_line: dict[str, str] = {
         'Betreiber': 'operator',
         'Anzeigename (Karte)': 'name_for_map',
         'Straße': 'address',
@@ -90,32 +95,49 @@ class BnetzaExcelImportService(BaseImportService):
 
     def load_and_save_from_web(self):
         source = self.get_source()
+        static_data_updated_at = datetime.now(tz=timezone.utc)
+
         try:
             data = self.remote_helper.get(remote_server_type=RemoteServerType.BNETZA, raw=True)
         except RemoteException as e:
-            self.logger.info('import-bnetza-excel', f'bnetza request failed: {e.to_dict()}')
+            logger.error(
+                f'bnetza request failed: {e.to_dict()}',
+                extra={'attributes': {'type': LogMessageType.IMPORT_SOURCE}},
+            )
             self.update_source(source, static_status=SourceStatus.FAILED)
             return
+
         worksheet = load_workbook(filename=BytesIO(data)).active
-        self.load_and_save(source=source, worksheet=worksheet)
+        self.load_and_save(source=source, worksheet=worksheet, static_data_updated_at=static_data_updated_at)
 
     def load_and_save_from_file(self, import_file_path: Path):
         source = self.get_source()
+        static_data_updated_at = datetime.now(tz=timezone.utc)
 
         try:
             worksheet = load_workbook(filename=import_file_path).active
         except InvalidFileException:
-            self.logger.info('import-bnetza-excel', f'bnetza file {import_file_path} loading failed')
+            logger.error(
+                f'bnetza file {import_file_path} loading failed',
+                extra={'attributes': {'type': LogMessageType.IMPORT_SOURCE}},
+            )
             self.update_source(source, static_status=SourceStatus.FAILED)
             return
-        self.load_and_save(source=source, worksheet=worksheet)
 
-    def load_and_save(self, source: Source, worksheet: Worksheet):
+        self.load_and_save(source=source, worksheet=worksheet, static_data_updated_at=static_data_updated_at)
+
+    def load_and_save(self, source: Source, worksheet: Worksheet, static_data_updated_at: datetime):
         try:
             self.check_mapping(worksheet[11])
         except ValidationError as e:
-            self.logger.info('import-bnetza-excel', f'bnetza data has validation error: {e.to_dict()}')
-            self.update_source(source, static_status=SourceStatus.FAILED)
+            logger.error(
+                f'bnetza data has validation error: {e.to_dict()}',
+                extra={'attributes': {'type': LogMessageType.IMPORT_SOURCE}},
+            )
+            self.update_source(
+                source=source,
+                static_status=SourceStatus.FAILED,
+            )
             return
 
         rows_by_location_uid, static_error_count = self.get_rows_by_location_uid(worksheet=worksheet)
@@ -126,13 +148,18 @@ class BnetzaExcelImportService(BaseImportService):
 
         self.save_location_updates(location_updates)
 
-        self.update_source(source=source, static_error_count=static_error_count)
+        self.update_source(
+            source=source,
+            static_error_count=static_error_count,
+            static_status=SourceStatus.ACTIVE,
+            static_data_updated_at=static_data_updated_at,
+        )
 
-    def check_mapping(self, row: Tuple):
+    def check_mapping(self, row: tuple) -> None:
         if list(self.header_line.keys()) != [cell.value for cell in row]:
             raise ValidationError(reason='invalid xlsx header')
 
-    def get_rows_by_location_uid(self, worksheet: Worksheet) -> Tuple[Dict[str, List[BnetzaRowInput]], int]:
+    def get_rows_by_location_uid(self, worksheet: Worksheet) -> tuple[dict[str, list[BnetzaRowInput]], int]:
         location_dict = {}
         static_error_count = 0
         # there are 10 rows of explanation over the header, plus 1 line header -> we start at row 12
@@ -159,6 +186,15 @@ class BnetzaExcelImportService(BaseImportService):
                     location_dict[geo_hash] = []
                 location_dict[geo_hash].append(row)
             except ValidationError as e:
-                self.logger.info('import-bnetza-excel', f'row {row_dict} is invalid: {e.to_dict()}')
+                logger.warning(
+                    f'row {row_dict} is invalid: {e.to_dict()}',
+                    extra={
+                        'attributes': {
+                            'type': LogMessageType.IMPORT_LOCATION,
+                            TelemetryContext.LOCATION: row_dict.get('id'),
+                        },
+                    },
+                )
                 static_error_count += 1
+
         return location_dict, static_error_count

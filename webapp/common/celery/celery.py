@@ -17,6 +17,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 import json
+import logging
 from abc import ABC
 from typing import Callable
 
@@ -25,6 +26,9 @@ from flask import Flask
 from kombu.serialization import register
 
 from webapp.common.json import DefaultJSONEncoder
+from webapp.common.logging.models import LogMessageType
+
+logger = logging.getLogger(__name__)
 
 
 class CeleryState:
@@ -117,12 +121,9 @@ class LogErrorsCelery(Celery):
 
             def on_failure(self, exc, _task_id, _args, _kwargs, exc_info):
                 with app.app_context():
-                    # late import to avoid import loops
-                    from webapp.dependencies import dependencies
-
-                    dependencies.get_logger().critical(
-                        'celery',
+                    logger.error(
                         f'{str(exc).strip()}: {str(exc_info).strip()}',
+                        extra={'attributes': {'type': LogMessageType.EXCEPTION}},
                     )
 
         ContextTask.abstract = True

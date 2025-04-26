@@ -18,11 +18,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from datetime import time
 from enum import Enum
-from typing import List
 
 from validataclass.dataclasses import Default, DefaultUnset, validataclass
 from validataclass.helpers import OptionalUnsetNone
 from validataclass.validators import (
+    AnythingValidator,
     BooleanValidator,
     DataclassValidator,
     EnumValidator,
@@ -35,7 +35,7 @@ from validataclass.validators import (
     TimeValidator,
 )
 
-from webapp.common.validation import NoneableToUnsetValue, UnvalidatedDictValidator
+from webapp.common.validation import NoneableToUnsetValue
 
 
 class Plug(Enum):
@@ -128,7 +128,7 @@ class RegularHours:
 @validataclass
 class Hours:
     twentyfourseven: bool = BooleanValidator()
-    regular_hours: OptionalUnsetNone[List[RegularHours]] = (
+    regular_hours: OptionalUnsetNone[list[RegularHours]] = (
         NoneableToUnsetValue(ListValidator(DataclassValidator(RegularHours))),
         DefaultUnset(),
     )
@@ -145,7 +145,7 @@ class AddressInput:
 class LocationInput:
     name: str = StringValidator()
     serviceTag: str = StringValidator()
-    circuits: List[CircuitInput] = ListValidator(DataclassValidator(CircuitInput))
+    circuits: list[CircuitInput] = ListValidator(DataclassValidator(CircuitInput))
     description: OptionalUnsetNone[str] = Noneable(StringValidator(multiline=True)), Default(None)
     address: AddressInput = DataclassValidator(AddressInput)
     shortcode: str = StringValidator()
@@ -167,7 +167,7 @@ class OperatorInput:
     amountIdentifications: int = IntegerValidator()
     amountUsers: int = IntegerValidator()
     # just check if it's a dict, validating single locations will be done on dataset level in order to catch exceptions on dataset level
-    operatorPlaces: List[dict] = ListValidator(UnvalidatedDictValidator())
+    operatorPlaces: list[dict] = ListValidator(AnythingValidator(allowed_types=dict))
 
 
 @validataclass

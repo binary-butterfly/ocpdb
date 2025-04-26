@@ -1,6 +1,6 @@
 """
 Open ChargePoint DataBase OCPDB
-Copyright (C) 2021 binary butterfly GmbH
+Copyright (C) 2025 binary butterfly GmbH
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published by
@@ -16,15 +16,10 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from flask.cli import AppGroup
-
-from webapp.common.error_handling import catch_exception
-from webapp.dependencies import dependencies
-
-chargeit_cli = AppGroup('chargeit')
+from logging.handlers import QueueListener
 
 
-@chargeit_cli.command('import', help='ChargeIT: downloads and saves chargepoint updates')
-@catch_exception
-def cli_download_and_save():
-    dependencies.get_import_services().chargeit_import_service.download_and_save()
+class AutostartQueueListener(QueueListener):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.start()

@@ -35,8 +35,10 @@ class BaseConfig:
     PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir))
     LOG_DIR = os.path.abspath(os.path.join(PROJECT_ROOT, os.pardir, 'logs'))
     TESTS_DIR = os.path.abspath(os.path.join(PROJECT_ROOT, os.pardir, 'tests'))
-    DYNAMIC_IMAGE_DIR = os.path.abspath(os.path.join(PROJECT_ROOT, os.pardir, 'static', 'images', 'dynamic'))
+    DYNAMIC_IMAGE_DIR = os.path.abspath(os.path.join(PROJECT_ROOT, os.pardir, 'data', 'images'))
     BNETZA_IMPORT_DIR = os.path.abspath(os.path.join(PROJECT_ROOT, os.pardir, 'temp', 'bnetza_import'))
+
+    PUBLIC_IMAGE_PATH = '/data/images'
 
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SQLALCHEMY_ECHO = False
@@ -75,3 +77,26 @@ class BaseConfig:
     IMAGE_PULL_MINUTE = 0
 
     IMAGE_IMPORT_REQUEST_DELAY = 0.1  # Delay time between two requests, in seconds
+
+    LOGGING = {
+        'version': 1,
+        'formatters': {
+            'human_readable': {
+                'format': '%(asctime)s %(levelname)s: %(message)s',
+            },
+        },
+        'handlers': {
+            'split_log_file': {
+                'class': 'webapp.common.logging.split_log_file_handler.SplitLogFileHandler',
+                'level': 'INFO',
+                'formatter': 'human_readable',
+                'log_path': '/app/logs',
+            },
+        },
+        'loggers': {
+            'webapp': {
+                'level': 'INFO',
+                'handlers': ['split_log_file'],
+            },
+        },
+    }

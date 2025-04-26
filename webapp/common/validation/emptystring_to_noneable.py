@@ -16,13 +16,13 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from typing import Any, Optional
+from typing import Any
 
 from validataclass.validators import Noneable
 
 
 class EmptystringToNoneable(Noneable):
-    def validate(self, input_data: Any, **kwargs) -> Optional[Any]:
+    def validate(self, input_data: Any, **kwargs) -> Any:
         if input_data == '':
             input_data = None
         return super().validate(input_data=input_data)

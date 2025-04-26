@@ -16,14 +16,19 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+import logging
+
 from validataclass.exceptions import ValidationError
 from validataclass.validators import DataclassValidator
 
+from webapp.common.logging.models import LogMessageType
 from webapp.common.remote_helper import RemoteException, RemoteServerType
 from webapp.models.source import SourceStatus
 from webapp.services.import_services.base_import_service import BaseImportService, SourceInfo
 from webapp.services.import_services.ocpi.ocpi_mapper import OcpiMapper
 from webapp.services.import_services.ocpi.ocpi_validators import LocationInput, OcpiInput
+
+logger = logging.getLogger(__name__)
 
 
 class StadtnaviImportService(BaseImportService):
@@ -38,6 +43,12 @@ class StadtnaviImportService(BaseImportService):
         has_realtime_data=True,
     )
 
+    def fetch_static_data(self):
+        self.download_and_save()
+
+    def fetch_realtime_data(self):
+        self.download_and_save()
+
     def download_and_save(self):
         source = self.get_source()
         try:
@@ -46,7 +57,10 @@ class StadtnaviImportService(BaseImportService):
                 path='/herrenberg/charging-stations/charging-stations-ocpi.json',
             )
         except RemoteException as e:
-            self.logger.info('import-stadtnavi', f'stadtnavi request failed: {e.to_dict()}')
+            logger.error(
+                f'stadtnavi request failed: {e.to_dict()}',
+                extra={'attributes': {'type': LogMessageType.IMPORT_SOURCE}},
+            )
             self.update_source(source, static_status=SourceStatus.FAILED, realtime_status=SourceStatus.FAILED)
             return
         static_error_count: int = 0
@@ -55,7 +69,10 @@ class StadtnaviImportService(BaseImportService):
         try:
             input_data: OcpiInput = self.ocpi_validator.validate(input_dict)
         except ValidationError as e:
-            self.logger.info('import-stadtnavi', f'stadtnavi data {input_dict} has validation error: {e.to_dict()}')
+            logger.error(
+                f'stadtnavi data {input_dict} has validation error: {e.to_dict()}',
+                extra={'attributes': {'type': LogMessageType.IMPORT_SOURCE}},
+            )
             self.update_source(source, static_status=SourceStatus.FAILED, realtime_status=SourceStatus.FAILED)
             return
 
@@ -64,9 +81,9 @@ class StadtnaviImportService(BaseImportService):
             try:
                 location_input: LocationInput = self.location_validator.validate(location_dict)
             except ValidationError as e:
-                self.logger.info(
-                    'import-stadtnavi',
+                logger.warning(
                     f'location {location_dict} has validation error: {e.to_dict()}',
+                    extra={'attributes': {'type': LogMessageType.IMPORT_LOCATION}},
                 )
                 static_error_count += 1
                 realtime_error_count += 1

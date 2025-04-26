@@ -17,7 +17,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 from datetime import datetime
-from typing import List, Optional
 
 from lxml import builder, etree
 from lxml.etree import XMLSyntaxError
@@ -52,7 +51,7 @@ class OchpApiClient:
     def remote_server(self) -> RemoteServer:
         return self.config_helper.get('REMOTE_SERVERS')[self.remote_server_type]
 
-    def download_base_data(self) -> List[dict]:
+    def download_base_data(self) -> list[dict]:
         em = builder.ElementMaker(namespace=self.request_nsmap['ns'], nsmap=self.request_nsmap)
         input_xml = self.ochp_request(
             path='/service/ochp/v1.4',
@@ -92,7 +91,7 @@ class OchpApiClient:
 
         return result.Envelope.Body.GetChargePointListResponse.chargePointInfoArray
 
-    def download_live_data(self, last_update: Optional[datetime] = None) -> List[dict]:
+    def download_live_data(self, last_update: datetime | None = None) -> list[dict]:
         em = builder.ElementMaker(namespace=self.request_nsmap['ns'], nsmap=self.request_nsmap)
         input_xml = self.ochp_request(
             path='/live/ochp/v1.4',
