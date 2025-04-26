@@ -24,16 +24,11 @@ def config_helper_mock():
 
 
 @pytest.fixture
-def logger_mock():
-    return Mock(webapp.common.logger.Logger)
-
-
-@pytest.fixture
 def business_query_mock():
     return Mock(BusinessSearchQuery(name='EN'))
 
 
-def test_business_handler_get_business_by_id(business_repository_mock, logger_mock, config_helper_mock):
+def test_business_handler_get_business_by_id(business_repository_mock, config_helper_mock):
     business = Business()
     business.id = 1
     business.name = 'test'
@@ -41,7 +36,6 @@ def test_business_handler_get_business_by_id(business_repository_mock, logger_mo
     business_repository_mock.fetch_by_id.return_value = business
     handler = BusinessHandler(
         business_repository=business_repository_mock,
-        logger=logger_mock,
         config_helper=config_helper_mock,
     )
     assert handler.get_business_by_id(1) == {'id': 1, 'name': 'test'}

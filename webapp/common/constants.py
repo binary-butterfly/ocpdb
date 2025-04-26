@@ -80,23 +80,4 @@ class BaseConfig:
 
     LOGGING = {
         'version': 1,
-        'formatters': {
-            'human_readable': {
-                'format': '%(asctime)s %(levelname)s: %(message)s',
-            },
-        },
-        'handlers': {
-            'split_log_file': {
-                'class': 'webapp.common.logging.split_log_file_handler.SplitLogFileHandler',
-                'level': 'INFO',
-                'formatter': 'human_readable',
-                'log_path': '/app/logs',
-            },
-        },
-        'loggers': {
-            'webapp': {
-                'level': 'INFO',
-                'handlers': ['split_log_file'],
-            },
-        },
     }
