@@ -16,13 +16,11 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from typing import Optional
-
 from validataclass.dataclasses import Default, validataclass
 from validataclass.validators import BooleanValidator
 
 
 @validataclass
 class TileFilterInput:
-    static: Optional[bool] = BooleanValidator(allow_strings=True), Default(None)
+    static: bool | None = BooleanValidator(allow_strings=True), Default(None)
     filter_duplicates: bool = BooleanValidator(allow_strings=True), Default(True)

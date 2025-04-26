@@ -17,13 +17,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 from webapp.common.config import ConfigHelper
-from webapp.common.logger import Logger
+from webapp.common.contexts import ContextHelper
 
 
 class BaseService:
-    logger: Logger
     config_helper: ConfigHelper
+    context_helper: ContextHelper
 
-    def __init__(self, logger: Logger, config_helper: ConfigHelper):
-        self.logger = logger
+    def __init__(self, config_helper: ConfigHelper, context_helper: ContextHelper):
         self.config_helper = config_helper
+        self.context_helper = context_helper

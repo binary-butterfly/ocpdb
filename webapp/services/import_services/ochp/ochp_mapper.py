@@ -17,7 +17,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 from datetime import datetime, timezone
-from typing import Any, Dict, List
+from typing import Any
 
 from webapp.models.connector import ConnectorFormat, ConnectorType, PowerType
 from webapp.models.evse import Capability, EvseStatus, ParkingRestriction
@@ -48,7 +48,7 @@ from .ochp_validators import ChargePointInput, ChargePointStatusInput, Connector
 
 class OchpMapper:
     @staticmethod
-    def clean_list(items: List[Any]) -> List[Any]:
+    def clean_list(items: list[Any]) -> list[Any]:
         return list({item for item in items if item is not None})
 
     @staticmethod
@@ -177,7 +177,7 @@ class OchpMapper:
     def map_chargepoint_to_location_update(
         self,
         source_uid: str,
-        charge_point_inputs: List[ChargePointInput],
+        charge_point_inputs: list[ChargePointInput],
     ) -> LocationUpdate:
         # location data is all the same
         charge_point_input = charge_point_inputs[0]
@@ -228,7 +228,7 @@ class OchpMapper:
 
         # Images like logos can appear multiple times, so we group them
         # TODO: image deduplication beyond urls
-        images_by_url: Dict[str, ImageUpdate] = {}
+        images_by_url: dict[str, ImageUpdate] = {}
         for charge_point_input in charge_point_inputs:
             for image_input in charge_point_input.images:
                 if image_input.uri in images_by_url:

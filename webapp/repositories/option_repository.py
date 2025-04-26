@@ -19,7 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import json
 from datetime import datetime
 from decimal import Decimal
-from typing import Any, Optional
+from typing import Any
 
 import pytz
 
@@ -31,13 +31,13 @@ from .base_repository import BaseRepository
 class OptionRepository(BaseRepository[Option]):
     model_cls = Option
 
-    def get(self, key, default: Optional[Any] = None) -> Any:
+    def get(self, key, default: Any = None) -> Any:
         option = self.session.query(Option).filter_by(key=key).first()
         if not option:
             return default
         return self.get_output_value(option)
 
-    def get_output_value(self, option: Optional[Option]) -> Any:
+    def get_output_value(self, option: Option | None) -> Any:
         if not option:
             return None
         if not option.type or option.type == 'string':

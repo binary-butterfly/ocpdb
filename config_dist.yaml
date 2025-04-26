@@ -23,3 +23,47 @@ SERVER_AUTH_USERS:
       - bnetza
 
 AUTO_FETCH_SOURCES: []
+
+# This is a template. You can rename it to the config value LOGGING and adapt it to your needs.
+LOGGING_TEMPLATE:
+  version: 1
+  formatters:
+    open_telemetry:
+      (): webapp.common.logging.formatter.flask_open_telemetry_formatter.FlaskOpenTelemetryFormatter
+      prefix: ocpdb
+      service_name: OCPDB
+    human_readable:
+      format: '%(asctime)s %(levelname)s: %(message)s'
+  handlers:
+    console_stdout:
+      class: logging.StreamHandler
+      level: INFO
+      formatter: open_telemetry
+      stream: ext://sys.stdout
+    console_stderr:
+      class: logging.StreamHandler
+      level: ERROR
+      formatter: open_telemetry
+      stream: ext://sys.stderr
+    split_log_file:
+      class: webapp.common.logging.split_log_file_handler.SplitLogFileHandler
+      level: INFO
+      log_path: /app/logs
+      formatter: human_readable
+    open_telemetry_queue:
+      class: logging.handlers.QueueHandler
+      listener: webapp.common.logging.autostart_queue_listener.AutostartQueueListener
+      queue: queue.Queue
+      handlers:
+        - open_telemetry_push
+      level: INFO
+      formatter: open_telemetry
+    open_telemetry_push:
+      class: webapp.common.logging.http_json_post_handler.HttpPostJsonHandler
+      url: http://mocked-loki:5000/otel
+      level: INFO
+  loggers:
+    webapp:
+      level: INFO
+      handlers:
+        - split_log_file

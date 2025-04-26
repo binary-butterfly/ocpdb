@@ -16,7 +16,12 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+from logging.config import dictConfig
+
 from flask import request
+from flask_cors import CORS
+from flask_migrate import Migrate
+from flask_openapi import FlaskOpenapi
 
 from webapp.cli import register_cli_to_app
 from webapp.common.config import ConfigLoader
@@ -25,7 +30,7 @@ from webapp.common.error_handling import ErrorDispatcher
 from webapp.common.flask_app import App
 from webapp.common.rest import RestApiErrorHandler
 from webapp.dependencies import dependencies
-from webapp.extensions import celery, cors, db, logger, migrate, openapi
+from webapp.extensions import celery, db
 from webapp.frontend import FrontendBlueprint
 from webapp.prometheus_api import PrometheusRestApi
 from webapp.public_api import PublicApi
@@ -48,14 +53,16 @@ def configure_app(app: App, config_overrides: dict | None = None) -> None:
     config_loader = ConfigLoader()
     config_loader.configure_app(app, config_overrides)
 
+    dictConfig(app.config['LOGGING'])
+
 
 def configure_extensions(app: App) -> None:
-    logger.init_app(app)
     db.init_app(app)
-    migrate.init_app(app, db)
+    Migrate().init_app(app, db)
     celery.init_app(app)
-    cors.init_app(app)
-    openapi.init_app(app)
+
+    CORS().init_app(app)
+    FlaskOpenapi().init_app(app)
 
     dependencies.get_config_helper().init_app(app)
 
@@ -72,7 +79,6 @@ def configure_error_handlers(app: App) -> None:
     # ErrorDispatcher: Class that passes errors either to FrontendErrorHandler (rendering error HTML pages) or
     # to RestApiErrorHandler (returning JSON responses) depending on the request path.
     error_handler_kwargs = {
-        'logger': dependencies.get_logger(),
         'db_session': dependencies.get_db_session(),
         'debug': bool(app.config['DEBUG']),
     }

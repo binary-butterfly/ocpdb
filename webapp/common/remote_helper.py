@@ -17,11 +17,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 import json
+import logging
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from enum import Enum
 from json.decoder import JSONDecodeError
-from typing import Optional, Tuple, Union
 
 from requests import request
 from requests.exceptions import ConnectionError, Timeout
@@ -30,7 +30,9 @@ from urllib3.exceptions import NewConnectionError
 from webapp.common.config import ConfigHelper
 from webapp.common.error_handling.exceptions import AppException
 from webapp.common.json import DefaultJSONEncoder
-from webapp.common.logger import Logger
+from webapp.common.logging.models import LogMessageType
+
+logger = logging.getLogger(__name__)
 
 
 class RemoteServerType(Enum):
@@ -47,9 +49,9 @@ class RemoteServerType(Enum):
 @dataclass
 class RemoteServer:
     url: str
-    user: Optional[str] = None
-    password: Optional[str] = None
-    cert: Optional[str] = None
+    user: str | None = None
+    password: str | None = None
+    cert: str | None = None
 
 
 class RemoteHelperMethodMixin(ABC):
@@ -76,9 +78,9 @@ class RemoteHelperMethodMixin(ABC):
 class RemoteException(AppException):
     url: str
     code = 'remote_exception'
-    http_status: Optional[int] = None
+    http_status: int | None = None
 
-    def __init__(self, *args, url: str, http_status: Optional[int] = None, **kwargs):
+    def __init__(self, *args, url: str, http_status: int | None = None, **kwargs):
         super().__init__(*args, **kwargs)
         self.url = url
         self.http_status = http_status
@@ -92,25 +94,23 @@ class RemoteException(AppException):
 
 class RemoteHelper(RemoteHelperMethodMixin):
     config_helper: ConfigHelper
-    logger: Logger
 
-    def __init__(self, config_helper: ConfigHelper, logger: Logger):
+    def __init__(self, config_helper: ConfigHelper):
         self.config_helper = config_helper
-        self.logger = logger
 
     def request(
         self,
         method: str,
-        remote_server_type: Optional[RemoteServerType] = None,
-        url: Optional[str] = None,
-        path: Optional[str] = None,
-        auth: Optional[Tuple[str, str]] = None,
-        params: Optional[dict] = None,
-        data: Optional[dict] = None,
-        headers: Optional[dict] = None,
-        ignore_404: Optional[bool] = False,
-        raw: Optional[bool] = False,
-    ) -> Union[dict, list, bytes, None]:
+        remote_server_type: RemoteServerType | None = None,
+        url: str | None = None,
+        path: str | None = None,
+        auth: tuple[str, str] | None = None,
+        params: dict | None = None,
+        data: dict | None = None,
+        headers: dict | None = None,
+        ignore_404: bool | None = False,
+        raw: bool | None = False,
+    ) -> dict | list | bytes | None:
         if remote_server_type:
             remote_server = self.config_helper.get('REMOTE_SERVERS')[remote_server_type]
             if auth is None and remote_server.user is not None:
@@ -146,7 +146,11 @@ class RemoteHelper(RemoteHelperMethodMixin):
                     )
                 else:
                     log_fragments.append(f'<< {response.text.strip()}')
-            # self.logger.info('requests-out', '\n'.join(log_fragments))
+
+            logger.info(
+                '\n'.join(log_fragments),
+                extra={'attributes': {'type': LogMessageType.REQUEST_OUT}},
+            )
 
             try:
                 if response.status_code == 404 and ignore_404:
@@ -162,5 +166,8 @@ class RemoteHelper(RemoteHelperMethodMixin):
                 raise RemoteException(url=url, http_status=response.status_code, message='Invalid JSON') from e
 
         except (ConnectionError, NewConnectionError, Timeout) as e:
-            self.logger.error('server-remote', 'cannot %s data to %s: %s' % (method, url, data))
+            logger.error(
+                f'cannot {method} data to {url}: {data}',
+                extra={'attributes': {'type': LogMessageType.REQUEST_OUT}},
+            )
             raise RemoteException(url=url, message='Connection issue') from e

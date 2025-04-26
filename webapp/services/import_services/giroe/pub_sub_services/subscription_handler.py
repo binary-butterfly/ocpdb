@@ -16,6 +16,7 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+import logging
 from datetime import datetime, timezone
 
 from butterfly_pubsub import PubSubMessage
@@ -23,26 +24,25 @@ from butterfly_pubsub.giroe import ChargeConnectorStatus
 from butterfly_pubsub.sync import PubSubSubscriber
 
 from webapp.common.config import ConfigHelper
-from webapp.common.logger import Logger
-from webapp.dependencies import dependencies
+from webapp.common.contexts import TelemetryContext
+from webapp.common.logging.models import LogMessageType
 from webapp.repositories import EvseRepository, ObjectNotFoundException
 from webapp.services.import_services.giroe.giroe_mapper import GiroeMapper
 
+logger = logging.getLogger(__name__)
+
 
 class PubSubStatusSubscriptionHandler(PubSubSubscriber):
-    logger: Logger
     giroe_mapper: GiroeMapper
     evse_repository: EvseRepository
     pattern = 'CONNECTOR.*.STATUS'
 
-    def __init__(self, logger: Logger, config_helper: ConfigHelper, evse_repository: EvseRepository):
-        self.logger = logger
+    def __init__(self, config_helper: ConfigHelper, evse_repository: EvseRepository):
         self.config_helper = config_helper
         self.evse_repository = evse_repository
         self.giroe_mapper = GiroeMapper(config_helper=config_helper)
 
     def handle_message(self, message: PubSubMessage) -> None:
-        self.logger = dependencies.get_logger()
         channel_fragments = message['channel'].decode().split('.')
 
         # ignore invalid messages
@@ -53,9 +53,14 @@ class PubSubStatusSubscriptionHandler(PubSubSubscriber):
         connector_status_string = message['data'].decode().upper()
 
         if connector_status_string not in ChargeConnectorStatus.__members__:
-            self.logger.info(
-                'import-giroe',
+            logger.warning(
                 f'Got invalid status {connector_status_string} for evse {object_uid}',
+                extra={
+                    'attributes': {
+                        'type': LogMessageType.IMPORT_EVSE,
+                        TelemetryContext.EVSE: object_uid,
+                    },
+                },
             )
             return
 
@@ -77,9 +82,14 @@ class PubSubStatusSubscriptionHandler(PubSubSubscriber):
         if evse_status == evse.status:
             return
 
-        self.logger.info(
-            'import-giroe',
+        logger.info(
             f'evse {object_uid} got status update from {evse.status.name} to {evse_status.name}',
+            extra={
+                'attributes': {
+                    'type': LogMessageType.IMPORT_EVSE,
+                    TelemetryContext.EVSE: object_uid,
+                },
+            },
         )
 
         evse.status = evse_status

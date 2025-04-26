@@ -16,7 +16,7 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from typing import Any, Optional
+from typing import Any
 
 
 class AppException(Exception):
@@ -42,8 +42,8 @@ class AppException(Exception):
         self,
         message: str,
         *,
-        http_status: Optional[int] = None,
-        code: Optional[str] = None,
+        http_status: int | None = None,
+        code: str | None = None,
         data: Any = None,
         debug: Any = None,
     ):

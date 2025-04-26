@@ -16,11 +16,14 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+import logging
 from abc import ABC, abstractmethod
 
 from validataclass.exceptions import ValidationError
 from validataclass.validators import DataclassValidator
 
+from webapp.common.contexts import TelemetryContext
+from webapp.common.logging.models import LogMessageType
 from webapp.common.remote_helper import RemoteException, RemoteServerType
 from webapp.models.source import SourceStatus
 from webapp.services.import_services.base_import_service import BaseImportService
@@ -28,6 +31,8 @@ from webapp.services.import_services.ocpi.ocpi_mapper import OcpiMapper
 from webapp.services.import_services.ocpi.ocpi_validators import OcpiInput
 
 from .chargecloud_validators import ChargecloudLocationInput
+
+logger = logging.getLogger(__name__)
 
 
 class ChargecloudBaseImportService(BaseImportService, ABC):
@@ -52,9 +57,9 @@ class ChargecloudBaseImportService(BaseImportService, ABC):
                 remote_server_type=self.remote_server_type,
             )
         except RemoteException as e:
-            self.logger.info(
-                log_name=f'import-{self.source_info.uid}',
-                message=f'request failed: {e.to_dict()}',
+            logger.error(
+                f'request failed: {e.to_dict()}',
+                extra={'attributes': {'type': LogMessageType.IMPORT_SOURCE}},
             )
             self.update_source(source, static_status=SourceStatus.FAILED, realtime_status=SourceStatus.FAILED)
             return
@@ -64,9 +69,9 @@ class ChargecloudBaseImportService(BaseImportService, ABC):
         try:
             input_data: OcpiInput = self.ocpi_validator.validate(input_dict)
         except ValidationError as e:
-            self.logger.info(
-                log_name=f'import-{self.source_info.uid}',
-                message=f'data {input_dict} has validation error: {e.to_dict()}',
+            logger.error(
+                f'data {input_dict} has validation error: {e.to_dict()}',
+                extra={'attributes': {'type': LogMessageType.IMPORT_SOURCE}},
             )
             self.update_source(source, static_status=SourceStatus.FAILED, realtime_status=SourceStatus.FAILED)
             return
@@ -76,9 +81,14 @@ class ChargecloudBaseImportService(BaseImportService, ABC):
             try:
                 location_input: ChargecloudLocationInput = self.location_validator.validate(location_dict)
             except ValidationError as e:
-                self.logger.info(
-                    log_name=f'import-{self.source_info.uid}',
-                    message=f'location {location_dict} has validation error: {e.to_dict()}',
+                logger.warning(
+                    f'location {location_dict} has validation error: {e.to_dict()}',
+                    extra={
+                        'attributes': {
+                            'type': LogMessageType.IMPORT_LOCATION,
+                            TelemetryContext.LOCATION: location_dict.get('id'),
+                        },
+                    },
                 )
                 static_error_count += 1
                 realtime_error_count += 1

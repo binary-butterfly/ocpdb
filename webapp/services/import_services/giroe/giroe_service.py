@@ -16,11 +16,14 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+import logging
 from datetime import datetime, timezone
 
 from validataclass.exceptions import ValidationError
 from validataclass.validators import DataclassValidator
 
+from webapp.common.contexts import TelemetryContext
+from webapp.common.logging.models import LogMessageType
 from webapp.common.remote_helper import RemoteException, RemoteServerType
 from webapp.models.source import SourceStatus
 from webapp.services.import_services.base_import_service import BaseImportService, SourceInfo
@@ -28,6 +31,8 @@ from webapp.services.import_services.models import EvseUpdate, LocationUpdate
 
 from .giroe_mapper import GiroeMapper
 from .giroe_validator import ConnectorInput, ItemListInput, LocationInput
+
+logger = logging.getLogger(__name__)
 
 
 class GiroeImportService(BaseImportService):
@@ -64,7 +69,10 @@ class GiroeImportService(BaseImportService):
             )
             location_list_input: ItemListInput = self.item_list_validator.validate(location_list_data)
         except (ValidationError, RemoteException) as e:
-            self.logger.info('import-giro-e', f'giro-e static data has error: {e.to_dict()}')
+            logger.error(
+                f'giro-e static data has error: {e.to_dict()}',
+                extra={'attributes': {'type': LogMessageType.IMPORT_SOURCE}},
+            )
             self.update_source(source, static_status=SourceStatus.FAILED)
             return
 
@@ -79,7 +87,10 @@ class GiroeImportService(BaseImportService):
                 location_list_input: ItemListInput = self.item_list_validator.validate(location_list_data)
                 location_dicts += location_list_input.items
             except (ValidationError, RemoteException) as e:
-                self.logger.info('import-giro-e', f'giro-e static data has error: {e.to_dict()}')
+                logger.error(
+                    f'giro-e static data has error: {e.to_dict()}',
+                    extra={'attributes': {'type': LogMessageType.IMPORT_SOURCE}},
+                )
                 self.update_source(source, static_status=SourceStatus.FAILED)
                 return
 
@@ -87,9 +98,14 @@ class GiroeImportService(BaseImportService):
             try:
                 location_input: LocationInput = self.location_validator.validate(location_dict)
             except ValidationError as e:
-                self.logger.info(
-                    'import-giro-e',
+                logger.warning(
                     f'location {location_dict} has validation error: {e.to_dict()}',
+                    extra={
+                        'attributes': {
+                            'type': LogMessageType.IMPORT_LOCATION,
+                            'location_dict': location_dict.get('id'),
+                        },
+                    },
                 )
                 static_error_count += 1
                 continue
@@ -129,7 +145,10 @@ class GiroeImportService(BaseImportService):
             )
             connector_list_input: ItemListInput = self.item_list_validator.validate(connector_list_data)
         except (ValidationError, RemoteException) as e:
-            self.logger.info('import-giro-e', f'giro-e realtime data has error: {e.to_dict()}')
+            logger.error(
+                f'giro-e realtime data has error: {e.to_dict()}',
+                extra={'attributes': {'type': LogMessageType.IMPORT_SOURCE}},
+            )
             self.update_source(source, realtime_status=SourceStatus.FAILED)
             return
 
@@ -144,7 +163,10 @@ class GiroeImportService(BaseImportService):
                 connector_list_input: ItemListInput = self.item_list_validator.validate(connector_list_data)
                 connector_dicts += connector_list_input.items
             except (ValidationError, RemoteException) as e:
-                self.logger.info('import-giro-e', f'giro-e realtime data has error: {e.to_dict()}')
+                logger.error(
+                    f'giro-e realtime data has error: {e.to_dict()}',
+                    extra={'attributes': {'type': LogMessageType.IMPORT_SOURCE}},
+                )
                 self.update_source(source, realtime_status=SourceStatus.FAILED)
                 return
 
@@ -152,9 +174,14 @@ class GiroeImportService(BaseImportService):
             try:
                 connector_input: ConnectorInput = self.connector_validator.validate(connector_dict)
             except ValidationError as e:
-                self.logger.info(
-                    'import-giro-e',
+                logger.warning(
                     f'connector {connector_dict} has validation error: {e.to_dict()}',
+                    extra={
+                        'attributes': {
+                            'type': LogMessageType.IMPORT_EVSE,
+                            TelemetryContext.EVSE: connector_dict.get('uid'),
+                        },
+                    },
                 )
                 realtime_error_count += 1
                 continue

@@ -3,7 +3,7 @@
 ## System requirements
 
 This application is a flask application with following requirements:
-* Python 3.11+
+* Python 3.12+
 * SQLAlchemy-compatible SQL-server (e.g. MariaDB)
 * An AMQP-Queue (eg RabbitMQ)
 

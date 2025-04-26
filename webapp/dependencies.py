@@ -42,7 +42,6 @@ from webapp.services.import_services.generic_import_runner import GenericImportR
 from webapp.services.matching_service import MatchingService
 
 if TYPE_CHECKING:
-    from webapp.common.logger import Logger
     from webapp.common.server_auth import ServerAuthHelper
 
 
@@ -83,13 +82,6 @@ class Dependencies:
 
     # Common
     @cache_dependency
-    def get_logger(self) -> 'Logger':
-        # Late import (don't initialize all the extensions unless needed)
-        from webapp.extensions import logger
-
-        return logger
-
-    @cache_dependency
     def get_config_helper(self) -> ConfigHelper:
         return ConfigHelper()
 
@@ -101,7 +93,6 @@ class Dependencies:
     def get_remote_helper(self) -> RemoteHelper:
         return RemoteHelper(
             config_helper=self.get_config_helper(),
-            logger=self.get_logger(),
         )
 
     @cache_dependency
@@ -177,8 +168,8 @@ class Dependencies:
     # Services
     def get_base_service_dependencies(self) -> dict:
         return {
-            'logger': self.get_logger(),
             'config_helper': self.get_config_helper(),
+            'context_helper': self.get_context_helper(),
         }
 
     @cache_dependency
