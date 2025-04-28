@@ -28,7 +28,7 @@ from webapp.services.import_services.models import LocationUpdate, SourceInfo
 
 
 class BnetzaApiImportService(BaseImportService):
-    schedule = crontab(day_of_month='1')
+    schedule = crontab(day_of_week='1')
 
     response_validator = DataclassValidator(BnetzaResponseInput)
     charging_station_validator = DataclassValidator(BnetzaChargingStation)
