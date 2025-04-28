@@ -146,7 +146,7 @@ class RemoteHelper(RemoteHelperMethodMixin):
                     )
                 else:
                     log_fragments.append(f'<< {response.text.strip()}')
-            self.logger.info('requests-out', '\n'.join(log_fragments))
+            # self.logger.info('requests-out', '\n'.join(log_fragments))
 
             try:
                 if response.status_code == 404 and ignore_404:

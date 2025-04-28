@@ -17,6 +17,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 import os
+from pathlib import Path
 
 from flask import Flask
 from yaml import safe_load
@@ -50,8 +51,15 @@ class ConfigLoader:
             )
 
         # Load config from yaml file
-        config_path = os.path.join(app.config['PROJECT_ROOT'], os.pardir, os.getenv('CONFIG_FILE', 'config.yaml'))
+        config_path = Path(app.config['PROJECT_ROOT']).parent.joinpath(os.getenv('CONFIG_FILE', 'config.yaml'))
         app.config.from_file(config_path, safe_load)
+
+        # load additional secrets config from yaml file (if it exists)
+        config_secrets_filename = os.getenv('CONFIG_SECRETS_FILE', 'config.secrets.yaml')
+        config_secrets_path = Path(app.config['PROJECT_ROOT']).parent.joinpath(config_secrets_filename)
+        if config_secrets_path.exists():
+            app.config.from_file(config_secrets_path, safe_load)
+
         app.config['MODE'] = os.getenv('APPLICATION_MODE', 'DEVELOPMENT')
 
         # Transform REMOTE_SERVERS entries into RemoteServer dataclass objects

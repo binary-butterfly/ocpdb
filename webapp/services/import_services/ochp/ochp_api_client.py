@@ -24,7 +24,8 @@ from lxml.etree import XMLSyntaxError
 from validataclass.exceptions import ValidationError
 from validataclass.validators import DataclassValidator
 
-from webapp.common.remote_helper import RemoteHelper, RemoteServer
+from webapp.common.config import ConfigHelper
+from webapp.common.remote_helper import RemoteHelper, RemoteServer, RemoteServerType
 
 from .ochp_helper import xml_to_dict
 from .ochp_validators import GetChargePointListInput, GetStatusEnvelopeInput
@@ -32,7 +33,9 @@ from .ochp_validators import GetChargePointListInput, GetStatusEnvelopeInput
 
 class OchpApiClient:
     remote_helper: RemoteHelper
-    remote_server: RemoteServer
+    remote_server_type: RemoteServerType
+    config_helper: ConfigHelper
+
     request_nsmap = {
         'soapenv': 'http://schemas.xmlsoap.org/soap/envelope/',
         'ns': 'http://ochp.eu/1.4',
@@ -40,9 +43,14 @@ class OchpApiClient:
     get_charge_point_list_validator = DataclassValidator(GetChargePointListInput)
     get_status_validator = DataclassValidator(GetStatusEnvelopeInput)
 
-    def __init__(self, remote_helper: RemoteHelper, remote_server: RemoteServer):
+    def __init__(self, remote_helper: RemoteHelper, config_helper: ConfigHelper, remote_server_type: RemoteServerType):
         self.remote_helper = remote_helper
-        self.remote_server = remote_server
+        self.config_helper = config_helper
+        self.remote_server_type = remote_server_type
+
+    @property
+    def remote_server(self) -> RemoteServer:
+        return self.config_helper.get('REMOTE_SERVERS')[self.remote_server_type]
 
     def download_base_data(self) -> List[dict]:
         em = builder.ElementMaker(namespace=self.request_nsmap['ns'], nsmap=self.request_nsmap)

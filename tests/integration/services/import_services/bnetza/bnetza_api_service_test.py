@@ -16,19 +16,23 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from sqlalchemy import text
+from pathlib import Path
+
+from requests_mock import Mocker
 
 from webapp.common.sqlalchemy import SQLAlchemy
+from webapp.dependencies import dependencies
+from webapp.services.import_services.bnetza.bnetza_api_service import BnetzaApiImportService
 
 
-def empty_all_tables(db: SQLAlchemy) -> None:
-    """
-    empty all tables in the database
-    (this is much faster than completely deleting the database and creating a new one)
-    """
-    db.session.close()
-    with db.engine.connect() as connection:
-        connection.execute(text('SET FOREIGN_KEY_CHECKS=0;'))
-        for table_name in db.metadata.tables.keys():
-            connection.execute(text(f'TRUNCATE `{table_name}`;'))
-        connection.execute(text('SET FOREIGN_KEY_CHECKS=1;'))
+def test_bnetza_api_service(db: SQLAlchemy, requests_mock: Mocker):
+    bnetza_import_service: BnetzaApiImportService = dependencies.get_import_services().bnetza_api_import_service
+
+    bnetza_file_path = Path(Path(__file__).parent, 'bnetza.json')
+    with bnetza_file_path.open('rb') as bnetza_file:
+        requests_mock.get(
+            'https://ladesaeulenregister.bnetza.de/els/service/public/v1/chargepoints',
+            content=bnetza_file.read(),
+        )
+
+    bnetza_import_service.fetch_static_data()

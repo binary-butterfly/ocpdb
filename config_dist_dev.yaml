@@ -2,7 +2,7 @@ PROJECT_URL: 'http://localhost:5010'
 SECRET_KEY: 'random-key'
 DEBUG: True
 
-SQLALCHEMY_DATABASE_URI: 'mysql+pymysql://root:root@mysql/ocpdb'
+SQLALCHEMY_DATABASE_URI: 'postgresql://ocpdb:development@postgre/ocpdb'
 SQLALCHEMY_ENGINE_OPTIONS:
   pool_size: 100
   pool_recycle: 600
@@ -19,7 +19,7 @@ SERVER_AUTH_USERS:
 
 
 REMOTE_SERVERS:
-  LADENETZ:
+  OCHP_LADENETZ:
     url: http://mocked-ochp:5000
     user: ocpdb
     password: test
@@ -36,7 +36,7 @@ REMOTE_SERVERS:
     user: ocpdb
     password: test
   BNETZA:
-    url: http://localhost:5000
+    url: http://mocked-bnetza:5000
     user: bnetza
     password: test
 

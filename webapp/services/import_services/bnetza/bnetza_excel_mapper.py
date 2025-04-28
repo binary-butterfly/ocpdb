@@ -22,10 +22,10 @@ from webapp.models.connector import ConnectorFormat, ConnectorType
 from webapp.models.evse import EvseStatus
 from webapp.services.import_services.models import BusinessUpdate, ConnectorUpdate, EvseUpdate, LocationUpdate
 
-from .bnetza_validators import BnetzaConnectorType, BnetzaRowInput
+from .bnetza_excel_validators import BnetzaConnectorType, BnetzaRowInput
 
 
-class BnetzaMapper:
+class BnetzaExcelMapper:
     def map_rows_to_location_update(self, location_uid: str, rows: List[BnetzaRowInput]) -> LocationUpdate:
         row = rows[0]
         address = row.address.strip().replace('  ', ' ')

@@ -32,14 +32,14 @@ from webapp.common.remote_helper import RemoteException, RemoteServerType
 from webapp.models.source import Source, SourceStatus
 from webapp.services.import_services.base_import_service import BaseImportService, SourceInfo
 
-from .bnetza_mapper import BnetzaMapper
-from .bnetza_validators import BnetzaRowInput
+from .bnetza_excel_mapper import BnetzaExcelMapper
+from .bnetza_excel_validators import BnetzaRowInput
 
 
-class BnetzaImportService(BaseImportService):
+class BnetzaExcelImportService(BaseImportService):
     schedule = crontab(day_of_month='1')
 
-    bnetza_mapper: BnetzaMapper = BnetzaMapper()
+    bnetza_mapper: BnetzaExcelMapper = BnetzaExcelMapper()
     row_validator: DataclassValidator[BnetzaRowInput] = DataclassValidator(BnetzaRowInput)
     header_line: Dict[str, str] = {
         'Betreiber': 'operator',
@@ -93,7 +93,7 @@ class BnetzaImportService(BaseImportService):
         try:
             data = self.remote_helper.get(remote_server_type=RemoteServerType.BNETZA, raw=True)
         except RemoteException as e:
-            self.logger.info('import-bnetza', f'bnetza request failed: {e.to_dict()}')
+            self.logger.info('import-bnetza-excel', f'bnetza request failed: {e.to_dict()}')
             self.update_source(source, static_status=SourceStatus.FAILED)
             return
         worksheet = load_workbook(filename=BytesIO(data)).active
@@ -105,7 +105,7 @@ class BnetzaImportService(BaseImportService):
         try:
             worksheet = load_workbook(filename=import_file_path).active
         except InvalidFileException:
-            self.logger.info('import-bnetza', f'bnetza file {import_file_path} loading failed')
+            self.logger.info('import-bnetza-excel', f'bnetza file {import_file_path} loading failed')
             self.update_source(source, static_status=SourceStatus.FAILED)
             return
         self.load_and_save(source=source, worksheet=worksheet)
@@ -114,7 +114,7 @@ class BnetzaImportService(BaseImportService):
         try:
             self.check_mapping(worksheet[11])
         except ValidationError as e:
-            self.logger.info('import-bnetza', f'bnetza data has validation error: {e.to_dict()}')
+            self.logger.info('import-bnetza-excel', f'bnetza data has validation error: {e.to_dict()}')
             self.update_source(source, static_status=SourceStatus.FAILED)
             return
 
@@ -159,6 +159,6 @@ class BnetzaImportService(BaseImportService):
                     location_dict[geo_hash] = []
                 location_dict[geo_hash].append(row)
             except ValidationError as e:
-                self.logger.info('import-bnetza', f'row {row_dict} is invalid: {e.to_dict()}')
+                self.logger.info('import-bnetza-excel', f'row {row_dict} is invalid: {e.to_dict()}')
                 static_error_count += 1
         return location_dict, static_error_count

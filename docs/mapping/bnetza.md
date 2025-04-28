@@ -24,21 +24,21 @@ As there is no unique identifier for `connector.id`, `connector.id` will be set 
 | operator                    | [Operator](#Operator)                           | 1           |                                        |                                                         |
 | status                      | [ChargingStationStatus](#ChargingStationStatus) | 1           |                                        |                                                         |
 | type                        | [ChargingStationType](#ChargingStationType)     | 1           |                                        |                                                         |
-| location_description        | string                                          | 1           |                                        |                                                         |
-| street                      | string                                          | 1           | location.address                       | Combined with `house_no`                                |
-| house_no                    | string                                          | 1           | location.address                       | Combined with `street`, will be ignored when set to `0` |
-| address_addition            | string                                          | 1           |                                        |                                                         |
+| location_description        | string                                          | ?           |                                        |                                                         |
+| street                      | string                                          | ?           | location.address                       | Combined with `house_no`                                |
+| house_no                    | string                                          | ?           | location.address                       | Combined with `street`, will be ignored when set to `0` |
+| address_addition            | string                                          | ?           |                                        |                                                         |
 | city                        | string                                          | 1           | location.city                          |                                                         |
 | postal_code                 | string                                          | 1           | location.postal_code                   |                                                         |
 | district_independent_city   | string                                          | 1           |                                        |                                                         |
 | state                       | string                                          | 1           |                                        |                                                         |
 | coordinates                 | [Coordinates](#Coordinates)                     | 1           |                                        |                                                         |
 | payment_systems             | [PaymentSystem](#PaymentSystem)                 | 1           | evse.capabilities                      |                                                         |
-| access_restriction          | [AccessRestriction](#AccessRestriction)         | 1           |                                        |                                                         |
+| access_restriction          | [AccessRestriction](#AccessRestriction)         | ?           |                                        |                                                         |
 | go_live_date                | string (dd.MM.yyyy)                             | 1           |                                        |                                                         |
 | opening_hours_specification | [OpeningHours](#OpeningHours)                   | 1           | location.opening_hours.twentyfourseven |                                                         |
 | opening_days                | [OpeningDay](#OpeningDay)                       | *           | location.opening_hours.regular_hours   |                                                         |
-| max_electric_power_station  | integer                                         | 1           |                                        | unit: kW                                                |
+| max_electric_power_station  | numeric                                         | 1           |                                        | unit: kW                                                |
 | evses                       | [Evse](#Evse)                                   | *           |                                        |                                                         |
 
 
@@ -98,16 +98,16 @@ As there is no unique identifier for `connector.id`, `connector.id` will be set 
 
 ## ChargingStationStatus
 
-| Field       | Type                                    | Cardinality | Mapping     | Comment |
-|-------------|-----------------------------------------|-------------|-------------|---------|
-| operational | [OperationalStatus](#OperationalStatus) | 1           | evse.status |         |
+| Field       | Type                                    | Cardinality | Mapping | Comment |
+|-------------|-----------------------------------------|-------------|---------|---------|
+| operational | [OperationalStatus](#OperationalStatus) | 1           |         |         |
 
 
 ### OperationalStatus
 
 | Key        | Mapping     |
 |------------|-------------|
-| In Betrieb | AVAILABLE   |
+| In Betrieb | STATIC      |
 | In Wartung | INOPERATIVE |
 
 
@@ -123,7 +123,7 @@ As there is no unique identifier for `connector.id`, `connector.id` will be set 
 
 | Field     | Type                | Cardinality | Mapping                                           | Comment |
 |-----------|---------------------|-------------|---------------------------------------------------|---------|
-| weekday   | [Weekday](#Weekday) | 1           | location.opening_hours.regular_hours.weekday      |         |
+| weekday   | [Weekday](#Weekday) | ?           | location.opening_hours.regular_hours.weekday      |         |
 | open_from | string (HH:mm)      | 1           | location.opening_hours.regular_hours.period_begin |         |
 | open_to   | string (HH:mm)      | 1           | location.opening_hours.regular_hours.period_end   |         |
 
@@ -135,7 +135,7 @@ As there is no unique identifier for `connector.id`, `connector.id` will be set 
 | Montag     | 1       |
 | Dienstag   | 2       |
 | Mittwoch   | 3       |
-| Donnerstag | 4       |
+| Donnerstag | 4       |`
 | Freitag    | 5       |
 | Samstag    | 6       |
 | Sonntag    | 7       |
@@ -155,8 +155,8 @@ As there is no unique identifier for `connector.id`, `connector.id` will be set 
 
 | Field                        | Type                            | Cardinality | Mapping                                                    | Comment |
 |------------------------------|---------------------------------|-------------|------------------------------------------------------------|---------|
-| connector_type               | [ConnectorType](#ConnectorType) | 1           | connector.standard, connector.format, connector.power_type |         |
-| max_electric_power_connector | integer                         | 1           | connector.max_electric_power                               |         |
+| connector_type               | [ConnectorType](#ConnectorType) | ?           | connector.standard, connector.format, connector.power_type |         |
+| max_electric_power_connector | numeric                         | 1           | connector.max_electric_power                               |         |
 
 If `connector_type` is `AC Schuko`, `max_electric_power` is capped to 3700 kW, as there are a lot of wrong datasets in the data source with 22000 kW.
 
