@@ -1,5 +1,24 @@
 # Changelog
 
+## Version 1.5.0
+
+Released 2025-04-28
+
+### Features
+
+* [BNetzA import via API](https://github.com/binary-butterfly/ocpdb/pull/101)
+* Loads config.secrets.yaml as an additional file for secrets
+
+### Fixes
+
+* Fixes the `flask source fetch-all` endpoint
+
+
+### Maintenance
+
+* Integration tests now run via CI
+
+
 ## Version 1.4.1
 
 Released 2025-04-14
@@ -14,6 +33,8 @@ Released 2025-04-14
 Released 2025-04-12
 
 In this release, we migrated to SQLAlchemy2 and add two new data sources.
+
+### Features
 
 * [SQLAlchemy2 migration](https://github.com/binary-butterfly/ocpdb/pull/95)
 * [Support Albwerk](https://github.com/binary-butterfly/ocpdb/pull/94)
