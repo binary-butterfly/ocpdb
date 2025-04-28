@@ -114,7 +114,7 @@ class ImportServices(BaseService):
         """
         Fetches static and realtime data for a specific source uid.
         """
-        if 'source_uid' not in self.importer_by_uid:
+        if source_uid not in self.importer_by_uid:
             raise Exception('Unknown source UID')
 
         importer_service = self.importer_by_uid[source_uid]
