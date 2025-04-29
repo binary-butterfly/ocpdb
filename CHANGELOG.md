@@ -1,5 +1,14 @@
 # Changelog
 
+## Version 1.5.1
+
+Released 2025-04-29
+
+### Fixes
+
+* [prevent ochp import error at empty data source](https://github.com/binary-butterfly/ocpdb/pull/103)
+
+
 ## Version 1.5.0
 
 Released 2025-04-28
