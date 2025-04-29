@@ -33,6 +33,7 @@ from validataclass.validators import (
     EnumValidator,
     IntegerValidator,
     ListValidator,
+    Noneable,
     StringValidator,
     TimeFormat,
     TimeValidator,
@@ -270,7 +271,7 @@ class GetStatusEvseInput:
 
 @validataclass
 class GetStatusResponseInput:
-    GetStatusResponse: GetStatusEvseInput = DataclassValidator(GetStatusEvseInput)
+    GetStatusResponse: GetStatusEvseInput | None = Noneable(DataclassValidator(GetStatusEvseInput))
 
 
 @validataclass

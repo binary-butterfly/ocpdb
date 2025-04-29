@@ -112,7 +112,11 @@ class OchpApiClient:
             ],
             remote_type_tags=[],
         )
+
         input_data: GetStatusEnvelopeInput = self.get_status_validator.validate(input_dict)
+
+        if input_data.Envelope.Body.GetStatusResponse is None:
+            return []
 
         return input_data.Envelope.Body.GetStatusResponse.evse
 
