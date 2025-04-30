@@ -16,8 +16,10 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+from validataclass.helpers import UnsetValueType
+
 from webapp.common.remote_helper import RemoteServerType
-from webapp.services.import_services.models import SourceInfo
+from webapp.services.import_services.models import BusinessUpdate, SourceInfo
 from webapp.services.import_services.ochp.base_ochp_service import BaseOchpImportService
 
 
@@ -30,3 +32,8 @@ class AlbwerkOchpImportService(BaseOchpImportService):
         public_url='https://albwerk.de',
         has_realtime_data=True,
     )
+
+    def get_operator(self) -> BusinessUpdate | UnsetValueType:
+        return BusinessUpdate(
+            name='Albwerk',
+        )
