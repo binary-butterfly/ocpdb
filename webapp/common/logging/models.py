@@ -20,11 +20,6 @@ from enum import Enum
 
 
 class LogMessageType(Enum):
-    REQUEST_IN = 'request-in'
-    REQUEST_OUT = 'request-out'
-    DATABASE_CREATE = 'database-create'
-    DATABASE_UPDATE = 'database-update'
-    DATABASE_DELETE = 'database-delete'
     EXCEPTION = 'exception'
     DUPLICATE_HANDLING = 'duplicate-handling'
     IMPORT_SOURCE = 'import-source'

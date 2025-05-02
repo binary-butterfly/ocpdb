@@ -16,17 +16,15 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from webapp.common.remote_helper import RemoteServerType
 from webapp.services.import_services.base_import_service import SourceInfo
 from webapp.services.import_services.ocpi.chargecloud.chargecloud_base_service import ChargecloudBaseImportService
 
 
 class PforzheimImportService(ChargecloudBaseImportService):
-    remote_server_type = RemoteServerType.PFORZHEIM
-
     source_info = SourceInfo(
-        uid='pforzheim',
+        uid='chargecloud_pforzheim',
         name='Stadtwerke Pforzheim',
-        public_url='https://new-poi.chargecloud.de/pforzheim',
+        public_url='https://www.stadtwerke-pforzheim.de/elektromobilitaet/oeffentliches-laden/',
+        source_url='https://new-poi.chargecloud.de/pforzheim',
         has_realtime_data=True,
     )

@@ -16,6 +16,7 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+import logging
 import os
 from pathlib import Path
 
@@ -23,7 +24,9 @@ from flask import Flask
 from yaml import safe_load
 
 from webapp.common.constants import BaseConfig
-from webapp.common.remote_helper import RemoteServer, RemoteServerType
+from webapp.common.logging.models import LogMessageType
+
+logger = logging.getLogger(__name__)
 
 
 class ConfigLoader:
@@ -62,16 +65,23 @@ class ConfigLoader:
 
         app.config['MODE'] = os.getenv('APPLICATION_MODE', 'DEVELOPMENT')
 
-        # Transform REMOTE_SERVERS entries into RemoteServer dataclass objects
-        app.config['REMOTE_SERVERS'] = {
-            RemoteServerType[key]: RemoteServer(
-                url=server['url'],
-                user=server.get('user'),
-                password=server.get('password'),
-                cert=server.get('cert'),
+        if 'REMOTE_SERVERS' in app.config:
+            mapping: dict[str, str] = {
+                'BNETZA': 'bnetza_excel',
+                'CHARGEIT': 'lichtblick',
+                'GIROE': 'giroe',
+                'OCHP_LADENETZ': 'ochp_ladenetz',
+                'OCHP_ALBWERK': 'ochp_albwerk',
+                'STADTNAVI': 'ocpi_stadtnavi',
+                'SW_STUTTGART': 'chargecloud_stuttgart',
+                'PFORZHEIM': 'chargecloud_pforzheim',
+            }
+            logger.warning(
+                'The REMOTE_SERVERS config value is deprecated. Please use the SOURCES config value instead.',
+                extra={'attributes': {'type': LogMessageType.MAIN}},
             )
-            for key, server in app.config['REMOTE_SERVERS'].items()
-        }
+            for key, values in app.config['REMOTE_SERVERS'].items():
+                app.config['SOURCES'][mapping[key]] = values
 
         if config_overrides is not None:
             app.config.update(config_overrides)

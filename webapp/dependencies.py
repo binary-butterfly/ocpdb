@@ -26,7 +26,6 @@ from sqlalchemy.orm import scoped_session
 from webapp.common.celery import CeleryHelper
 from webapp.common.config import ConfigHelper
 from webapp.common.contexts import ContextHelper
-from webapp.common.remote_helper import RemoteHelper
 from webapp.common.rest import RequestHelper
 from webapp.repositories import (
     BusinessRepository,
@@ -34,7 +33,6 @@ from webapp.repositories import (
     EvseRepository,
     ImageRepository,
     LocationRepository,
-    OptionRepository,
     SourceRepository,
 )
 from webapp.services.import_services import ImageImportService, ImportServices
@@ -88,12 +86,6 @@ class Dependencies:
     @cache_dependency
     def get_request_helper(self) -> RequestHelper:
         return RequestHelper()
-
-    @cache_dependency
-    def get_remote_helper(self) -> RemoteHelper:
-        return RemoteHelper(
-            config_helper=self.get_config_helper(),
-        )
 
     @cache_dependency
     def get_context_helper(self) -> ContextHelper:
@@ -159,12 +151,6 @@ class Dependencies:
             session=self.get_db_session(),
         )
 
-    @cache_dependency
-    def get_option_repository(self) -> OptionRepository:
-        return OptionRepository(
-            session=self.get_db_session(),
-        )
-
     # Services
     def get_base_service_dependencies(self) -> dict:
         return {
@@ -176,14 +162,12 @@ class Dependencies:
     def get_import_services(self) -> ImportServices:
         return ImportServices(
             **self.get_base_service_dependencies(),
-            remote_helper=self.get_remote_helper(),
             source_repository=self.get_source_repository(),
             location_repository=self.get_location_repository(),
             evse_repository=self.get_evse_repository(),
             connector_repository=self.get_connector_repository(),
             business_repository=self.get_business_repository(),
             image_repository=self.get_image_repository(),
-            option_repository=self.get_option_repository(),
         )
 
     @cache_dependency

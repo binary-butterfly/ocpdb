@@ -16,4 +16,4 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from .chargeit_service import ChargeitImportService
+from .lichtblick_service import LichtblickImportService

@@ -44,6 +44,7 @@ class BnetzaApiImportService(BaseImportService):
         name='Bundesnetzagentur',
         public_url='https://www.bundesnetzagentur.de/DE/Fachthemen/ElektrizitaetundGas/E-Mobilitaet'
         '/Ladesaeulenkarte/start.html',
+        source_url='https://ladesaeulenregister.bnetza.de/els/service/public/v1/chargepoints',
         attribution_license='CC BY 4.0',
         attribution_url='https://creativecommons.org/licenses/by/4.0/deed.de',
         has_realtime_data=False,
@@ -51,11 +52,11 @@ class BnetzaApiImportService(BaseImportService):
 
     def fetch_static_data(self):
         source = self.get_source()
+        static_success_count = 0
         static_error_count = 0
         static_data_updated_at = datetime.now(tz=timezone.utc)
 
-        response_data = self.remote_helper.get(
-            url='https://ladesaeulenregister.bnetza.de/els/service/public/v1/chargepoints',
+        response_data = self.json_request(
             headers={'Accept': 'application/json'},
         )
 
@@ -78,6 +79,7 @@ class BnetzaApiImportService(BaseImportService):
                 continue
 
             location_updates.append(charging_station.to_location_update(last_updated=static_data_updated_at))
+            static_success_count += 1
 
         self.save_location_updates(location_updates)
 
@@ -86,4 +88,10 @@ class BnetzaApiImportService(BaseImportService):
             static_status=SourceStatus.ACTIVE,
             static_error_count=static_error_count,
             static_data_updated_at=static_data_updated_at,
+        )
+
+        logger.info(
+            f'Successfully updated {self.source_info.uid} static with {static_success_count} valid locations and '
+            f'{static_error_count} failed locations. .',
+            extra={'attributes': {'type': LogMessageType.IMPORT_LOCATION}},
         )

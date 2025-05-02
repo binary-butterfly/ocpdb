@@ -82,3 +82,20 @@ class AppException(Exception):
             'code': self.code,
             'message': self.message,
         }
+
+
+class RemoteException(AppException):
+    url: str
+    code = 'remote_exception'
+    http_status: int | None = None
+
+    def __init__(self, *args, url: str, http_status: int | None = None, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.url = url
+        self.http_status = http_status
+
+    def to_dict(self) -> dict:
+        result = super().to_dict()
+        if self.http_status is not None:
+            result['http_status'] = self.http_status
+        return result

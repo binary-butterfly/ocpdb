@@ -42,7 +42,7 @@ def test_bnetza_excel_import(db: SQLAlchemy, requests_mock: Mocker) -> None:
     When writing this test, we limited the file to line 119 included.
     """
 
-    bnetza_import_service: BnetzaExcelImportService = dependencies.get_import_services().bnetza_excel_import_service
+    bnetza_import_service: BnetzaExcelImportService = dependencies.get_import_services().importer_by_uid['bnetza_excel']
 
     bnetza_file_path = Path(Path(__file__).parent, 'bnetza.xlsx')
     with bnetza_file_path.open('rb') as bnetza_file:

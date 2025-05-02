@@ -38,7 +38,7 @@ class GiroeBlueprint(ServerApiBaseBlueprint):
             **self.get_base_handler_dependencies(),
             location_repository=dependencies.get_location_repository(),
             evse_repository=dependencies.get_evse_repository(),
-            giroe_import_service=dependencies.get_import_services().giroe_import_service,
+            import_services=dependencies.get_import_services(),
         )
         super().__init__('giroe', __name__, url_prefix='/giroe')
 

@@ -25,10 +25,10 @@ from webapp.models.connector import ConnectorFormat, ConnectorType
 from webapp.models.evse import EvseStatus
 from webapp.services.import_services.models import BusinessUpdate, ConnectorUpdate, EvseUpdate, LocationUpdate
 
-from .chargeit_validators import CircuitInput, CircuitStatus, LocationInput, OperatorInput, Plug
+from .lichtblick_validators import CircuitInput, CircuitStatus, LocationInput, OperatorInput, Plug
 
 
-class ChargeitMapper:
+class LichtblickMapper:
     def map_location_to_location_update(
         self,
         operator_input: OperatorInput,
@@ -36,7 +36,7 @@ class ChargeitMapper:
     ) -> LocationUpdate:
         # TODO: regular hours
         return LocationUpdate(
-            source='chargeit',
+            source='lichtblick',
             uid=location_input.shortcode,
             name=location_input.name,
             address=location_input.address.street,

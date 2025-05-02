@@ -10,38 +10,19 @@ CELERY_BROKER_URL: 'amqp://rabbitmq'
 
 OBJECT_ID_SECRET: secret
 
-SERVER_AUTH_USERS:
-  # Test user for local development
-  dev:
-    hash: 9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08  # test
-    roles:
-      - bnetza
-
-
-REMOTE_SERVERS:
-  OCHP_LADENETZ:
-    url: http://mocked-ochp:5000
-    user: ocpdb
-    password: test
-  STADTNAVI:
-    url: http://mocked-stadtnavi:5000
-  SW_STUTTGART:
-    url: http://mocked-sw-stuttgart:5000
-  CHARGEIT:
-    url: http://mocked-chargeit:5000
-    user: ocpdb
-    password: test
-  GIROE:
-    url: http://mocked-giroe:5000
-    user: ocpdb
-    password: test
-  BNETZA:
+SOURCES:
+  bnetza_api:
+  bnetza_excel:
     url: http://mocked-bnetza:5000
-    user: bnetza
-    password: test
+  chargecloud_pforzheim:
+  chargecloud_stuttgart:
+    url: http://mocked-sw-stuttgart:5000
+
 
 AUTO_FETCH_SOURCES:
-  - sw_stuttgart
+  - bnetza_api
+  - chargecloud_pforzheim
+  - chargecloud_stuttgart
 
 
 # This is a template. You can rename it to the config value LOGGING and adapt it to your needs.

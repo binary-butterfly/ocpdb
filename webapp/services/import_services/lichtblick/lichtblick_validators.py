@@ -171,5 +171,5 @@ class OperatorInput:
 
 
 @validataclass
-class ChargeitInput:
+class LichtblickInput:
     operator: OperatorInput = DataclassValidator(OperatorInput)

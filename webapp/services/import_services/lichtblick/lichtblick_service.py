@@ -17,32 +17,36 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 import logging
+from abc import ABC
 from datetime import datetime, timezone
 
 from validataclass.exceptions import ValidationError
 from validataclass.validators import DataclassValidator
 
 from webapp.common.contexts import TelemetryContext
+from webapp.common.error_handling.exceptions import RemoteException
 from webapp.common.logging.models import LogMessageType
-from webapp.common.remote_helper import RemoteServerType
 from webapp.models.source import SourceStatus
 from webapp.services.import_services.base_import_service import BaseImportService, SourceInfo
 
-from .chargeit_mapper import ChargeitMapper
-from .chargeit_validators import ChargeitInput, LocationInput
+from .lichtblick_mapper import LichtblickMapper
+from .lichtblick_validators import LichtblickInput, LocationInput
 
 logger = logging.getLogger(__name__)
 
 
-class ChargeitImportService(BaseImportService):
-    chargit_mapper: ChargeitMapper = ChargeitMapper()
-    chargeit_validator = DataclassValidator(ChargeitInput)
+class LichtblickImportService(BaseImportService, ABC):
+    chargit_mapper: LichtblickMapper = LichtblickMapper()
+    lichtblick_validator = DataclassValidator(LichtblickInput)
     location_validator = DataclassValidator(LocationInput)
 
+    required_config_keys: list[str] = ['user', 'password']
+
     source_info = SourceInfo(
-        uid='chargeit',
-        name='LichtBlick SE',
+        uid='lichtblick',
+        name='Lichtblick',
         public_url='https://www.lichtblick.de',
+        source_url='https://portal.lichtblick-emobility.de',
         has_realtime_data=True,
     )
 
@@ -54,17 +58,28 @@ class ChargeitImportService(BaseImportService):
 
     def download_and_save(self):
         source = self.get_source()
-        static_error_count = 0
-        realtime_error_count = 0
+        success_count = 0
+        error_count = 0
         data_updated_at = datetime.now(tz=timezone.utc)
-
-        input_dict = self.remote_helper.get(remote_server_type=RemoteServerType.CHARGEIT, path='/ps/rest/feed')
+        try:
+            input_dict = self.json_request()
+        except RemoteException as e:
+            logger.error(
+                f'lichtblick request failed: {e.to_dict()}',
+                extra={'attributes': {'type': LogMessageType.IMPORT_SOURCE}},
+            )
+            self.update_source(
+                source=source,
+                static_status=SourceStatus.FAILED,
+                realtime_status=SourceStatus.FAILED,
+            )
+            return
 
         try:
-            input_data: ChargeitInput = self.chargeit_validator.validate(input_dict)
+            input_data: LichtblickInput = self.lichtblick_validator.validate(input_dict)
         except ValidationError as e:
             logger.error(
-                f'chargeit data {input_dict} has validation error: {e.to_dict()}',
+                f'lichtblick data {input_dict} has validation error: {e.to_dict()}',
                 extra={'attributes': {'type': LogMessageType.IMPORT_SOURCE}},
             )
             self.update_source(
@@ -88,29 +103,33 @@ class ChargeitImportService(BaseImportService):
                         },
                     },
                 )
-                static_error_count += 1
-                realtime_error_count += 1
+                error_count += 1
                 continue
 
             # don't add unpublished location to list, then it will be removed afterwards if it still is in db
             if not location_input.published:
                 continue
 
-            location_updates.append(
-                self.chargit_mapper.map_location_to_location_update(
-                    operator_input=input_data.operator,
-                    location_input=location_input,
-                ),
+            location_update = self.chargit_mapper.map_location_to_location_update(
+                operator_input=input_data.operator,
+                location_input=location_input,
             )
+            location_updates.append(location_update)
+            success_count += 1
 
         self.save_location_updates(location_updates)
 
         self.update_source(
             source=source,
-            static_error_count=static_error_count,
-            realtime_error_count=realtime_error_count,
+            static_error_count=error_count,
+            realtime_error_count=error_count,
             static_data_updated_at=data_updated_at,
             realtime_data_updated_at=data_updated_at,
             static_status=SourceStatus.ACTIVE,
             realtime_status=SourceStatus.ACTIVE,
+        )
+        logger.info(
+            f'Successfully updated {self.source_info.uid} static and realtime with {success_count} valid '
+            f'locations and {error_count} failed locations. .',
+            extra={'attributes': {'type': LogMessageType.IMPORT_LOCATION}},
         )
