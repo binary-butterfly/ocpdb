@@ -254,7 +254,7 @@ class OchpMapper:
         )
 
         for connector_position, connector_input in enumerate(charge_point_input.connectors):
-            evse_update.connectors.append(self.map_connector(connector_input, connector_position))
+            evse_update.connectors.append(self.map_connector(charge_point_input, connector_input, connector_position))
 
         for image_input in charge_point_input.images:
             if image_input.class_ == OchpImageCategory.stationPhoto:
@@ -277,12 +277,29 @@ class OchpMapper:
         return evse_update
 
     @staticmethod
-    def map_connector(ochp_connector: ConnectorInput, position: int) -> ConnectorUpdate:
-        return ConnectorUpdate(
+    def map_connector(
+        charge_point_input: ChargePointInput,
+        ochp_connector: ConnectorInput,
+        position: int,
+    ) -> ConnectorUpdate:
+        connector_update = ConnectorUpdate(
             format=OchpMapper.map_connector_format(ochp_connector.connectorFormat),
             standard=OchpMapper.map_connector_standard(ochp_connector.connectorStandard),
             uid=str(position),
         )
+        if charge_point_input.ratings:
+            connector_update.max_electric_power = int(charge_point_input.ratings.maximumPower * 1000)
+            # SchuKo plugs never have more than 3700 W.
+            if connector_update.standard == ConnectorType.DOMESTIC_F and connector_update.max_electric_power > 3700:
+                connector_update.max_electric_power = 3700
+
+            if charge_point_input.ratings.nominalVoltage:
+                connector_update.voltage = charge_point_input.ratings.nominalVoltage
+                # SchuKo plugs never have more than 230 V.
+                if connector_update.standard == ConnectorType.DOMESTIC_F and connector_update.voltage > 230:
+                    connector_update.voltage = 230
+
+        return connector_update
 
     def map_image(self, image_input: ImageInput) -> ImageUpdate:
         return ImageUpdate(

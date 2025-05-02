@@ -21,11 +21,13 @@ from datetime import datetime, timezone
 from typing import Dict, List
 
 from validataclass.exceptions import ValidationError
+from validataclass.helpers import UnsetValue, UnsetValueType
 from validataclass.validators import DataclassValidator
 
 from webapp.common.remote_helper import RemoteException, RemoteServer, RemoteServerType
 from webapp.models.source import SourceStatus
 from webapp.services.import_services.base_import_service import BaseImportService
+from webapp.services.import_services.models import BusinessUpdate
 
 from .ochp_api_client import OchpApiClient
 from .ochp_mapper import OchpMapper
@@ -88,12 +90,12 @@ class BaseOchpImportService(BaseImportService, ABC):
 
         location_updates = []
         for ochp_chargepoints in chargepoints_by_location.values():
-            location_updates.append(
-                self.ochp_mapper.map_chargepoint_to_location_update(
-                    source_uid=self.source_info.uid,
-                    charge_point_inputs=ochp_chargepoints,
-                ),
+            location_update = self.ochp_mapper.map_chargepoint_to_location_update(
+                source_uid=self.source_info.uid,
+                charge_point_inputs=ochp_chargepoints,
             )
+            location_update.operator = self.get_operator()
+            location_updates.append(location_update)
 
         self.save_location_updates(location_updates)
 
@@ -147,3 +149,10 @@ class BaseOchpImportService(BaseImportService, ABC):
             realtime_error_count=realtime_error_count,
             realtime_data_updated_at=realtime_data_updated_at,
         )
+
+    def get_operator(self) -> BusinessUpdate | UnsetValueType:
+        """
+        This method is for hardcoding an operator at a subclass. Per default, it's UnsetValue, as we get data from lot's
+        of operators.
+        """
+        return UnsetValue

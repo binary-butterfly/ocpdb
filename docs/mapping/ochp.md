@@ -36,7 +36,7 @@ only, realtime information is transported using the `EvseStatusType`.
 | authMethods         | AuthMethodType                                  | +           |                                                                     |         |
 | connectors          | [ConnectorType](#ConnectorType)                 | +           |                                                                     |         |
 | chargePointType     | string (2)                                      | 1           |                                                                     |         |
-| ratings             | RatingsType                                     | ?           |                                                                     |         |
+| ratings             | [RatingsType](#RatingsType)                     | ?           |                                                                     |         |
 | userInterfaceLang   | string (3)                                      | *           |                                                                     |         |
 | maxReservation      | float                                           | ?           |                                                                     |         |
 
@@ -141,6 +141,21 @@ OCHP `ImageClass` maps to OCPI `ImageCategory`
 | connectorStandard | ConnectorStandardType | 1           | connector.standard | 1:1 mappingt to OCPI |
 | connectorFormat   | ConnectorFormatType   | 1           | connector.format   | 1:1 mappingt to OCPI |
 | tariffId          | TariffId              | ?           |                    |                      |
+
+
+## RatingsType
+
+This can be a source of invalid data, because at OCPI, `max_electric_power` and `voltage` is at Connector level,
+while the data source provides it at EVSE level. This might lead to invalid data, if one plug has less power then the
+others. Obvious errors are fixed (Type F plugs cannot have 22kW), but especially if it comes to fast charging, it's
+impossible to determine the power of combined CCS + CHAdeMO plugs, so we just set the given `maximumPower` for every
+plug. Same applies for voltage, too.
+
+| Field           | Type    | Cardinality | Mapping                      | Comment                        |
+|-----------------|---------|-------------|------------------------------|--------------------------------|
+| maximumPower    | float   | 1           | connector.max_electric_power | Unit: kW, is transformed in W. |
+| guaranteedPower | float   | ?           |                              |                                |
+| nominalVoltage  | integer | ?           | connector.voltage            |                                |
 
 
 # EvseStatusType
