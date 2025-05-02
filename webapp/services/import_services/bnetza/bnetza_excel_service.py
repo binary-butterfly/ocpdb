@@ -30,8 +30,8 @@ from validataclass.exceptions import ValidationError
 from validataclass.validators import DataclassValidator
 
 from webapp.common.contexts import TelemetryContext
+from webapp.common.error_handling.exceptions import RemoteException
 from webapp.common.logging.models import LogMessageType
-from webapp.common.remote_helper import RemoteException, RemoteServerType
 from webapp.models.source import Source, SourceStatus
 from webapp.services.import_services.base_import_service import BaseImportService, SourceInfo
 
@@ -82,9 +82,12 @@ class BnetzaExcelImportService(BaseImportService):
         'Public Key6': 'connector_6_public_key',
     }
     source_info = SourceInfo(
-        uid='bnetza',
+        uid='bnetza_excel',
         name='Bundesnetzagentur',
-        public_url='https://www.bundesnetzagentur.de/DE/Fachthemen/ElektrizitaetundGas/E-Mobilitaet/Ladesaeulenkarte/start.html',
+        public_url='https://www.bundesnetzagentur.de/DE/Fachthemen/ElektrizitaetundGas/E-Mobilitaet/Ladesaeulenkarte'
+        '/start.html',
+        source_url='https://www.bundesnetzagentur.de/DE/Fachthemen/ElektrizitaetundGas/E-Mobilitaet/DL'
+        '/Ladesaeuleninfrastruktur.xlsx',
         attribution_license='CC BY 4.0',
         attribution_url='https://creativecommons.org/licenses/by/4.0/deed.de',
         has_realtime_data=False,
@@ -98,7 +101,7 @@ class BnetzaExcelImportService(BaseImportService):
         static_data_updated_at = datetime.now(tz=timezone.utc)
 
         try:
-            data = self.remote_helper.get(remote_server_type=RemoteServerType.BNETZA, raw=True)
+            response = self.request()
         except RemoteException as e:
             logger.error(
                 f'bnetza request failed: {e.to_dict()}',
@@ -107,7 +110,7 @@ class BnetzaExcelImportService(BaseImportService):
             self.update_source(source, static_status=SourceStatus.FAILED)
             return
 
-        worksheet = load_workbook(filename=BytesIO(data)).active
+        worksheet = load_workbook(filename=BytesIO(response.content)).active
         self.load_and_save(source=source, worksheet=worksheet, static_data_updated_at=static_data_updated_at)
 
     def load_and_save_from_file(self, import_file_path: Path):
@@ -141,10 +144,12 @@ class BnetzaExcelImportService(BaseImportService):
             return
 
         rows_by_location_uid, static_error_count = self.get_rows_by_location_uid(worksheet=worksheet)
+        static_success_count = 0
 
         location_updates = []
         for location_uid, rows in rows_by_location_uid.items():
             location_updates.append(self.bnetza_mapper.map_rows_to_location_update(location_uid, rows))
+            static_success_count += 1
 
         self.save_location_updates(location_updates)
 
@@ -153,6 +158,12 @@ class BnetzaExcelImportService(BaseImportService):
             static_error_count=static_error_count,
             static_status=SourceStatus.ACTIVE,
             static_data_updated_at=static_data_updated_at,
+        )
+
+        logger.info(
+            f'Successfully updated {self.source_info.uid} static with {static_success_count} valid locations and '
+            f'{static_error_count} failed locations. .',
+            extra={'attributes': {'type': LogMessageType.IMPORT_LOCATION}},
         )
 
     def check_mapping(self, row: tuple) -> None:

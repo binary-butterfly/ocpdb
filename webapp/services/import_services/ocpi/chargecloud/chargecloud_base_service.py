@@ -17,14 +17,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 import logging
-from abc import ABC, abstractmethod
+from abc import ABC
+from datetime import datetime, timezone
 
 from validataclass.exceptions import ValidationError
 from validataclass.validators import DataclassValidator
 
 from webapp.common.contexts import TelemetryContext
+from webapp.common.error_handling.exceptions import RemoteException
 from webapp.common.logging.models import LogMessageType
-from webapp.common.remote_helper import RemoteException, RemoteServerType
 from webapp.models.source import SourceStatus
 from webapp.services.import_services.base_import_service import BaseImportService
 from webapp.services.import_services.ocpi.ocpi_mapper import OcpiMapper
@@ -40,10 +41,6 @@ class ChargecloudBaseImportService(BaseImportService, ABC):
     location_validator = DataclassValidator(ChargecloudLocationInput)
     ocpi_mapper = OcpiMapper()
 
-    @property
-    @abstractmethod
-    def remote_server_type(self) -> RemoteServerType: ...
-
     def fetch_static_data(self):
         self.download_and_save()
 
@@ -52,10 +49,12 @@ class ChargecloudBaseImportService(BaseImportService, ABC):
 
     def download_and_save(self):
         source = self.get_source()
+        data_updated_at = datetime.now(timezone.utc)
+        success_count: int = 0
+        error_count: int = 0
+
         try:
-            input_dict = self.remote_helper.get(
-                remote_server_type=self.remote_server_type,
-            )
+            input_dict = self.json_request()
         except RemoteException as e:
             logger.error(
                 f'request failed: {e.to_dict()}',
@@ -63,8 +62,6 @@ class ChargecloudBaseImportService(BaseImportService, ABC):
             )
             self.update_source(source, static_status=SourceStatus.FAILED, realtime_status=SourceStatus.FAILED)
             return
-        static_error_count: int = 0
-        realtime_error_count: int = 0
 
         try:
             input_data: OcpiInput = self.ocpi_validator.validate(input_dict)
@@ -90,15 +87,25 @@ class ChargecloudBaseImportService(BaseImportService, ABC):
                         },
                     },
                 )
-                static_error_count += 1
-                realtime_error_count += 1
+                error_count += 1
                 continue
+
             location_updates.append(self.ocpi_mapper.map_location(location_input, self.source_info.uid))
+            success_count += 1
 
         self.save_location_updates(location_updates)
 
         self.update_source(
             source=source,
-            static_error_count=static_error_count,
-            realtime_error_count=realtime_error_count,
+            static_status=SourceStatus.ACTIVE,
+            static_error_count=error_count,
+            static_data_updated_at=data_updated_at,
+            realtime_status=SourceStatus.ACTIVE,
+            realtime_error_count=error_count,
+            realtime_data_updated_at=data_updated_at,
+        )
+        logger.info(
+            f'Successfully updated {self.source_info.uid} static and realtime with {success_count} valid '
+            f'locations and {error_count} failed locations. .',
+            extra={'attributes': {'type': LogMessageType.IMPORT_LOCATION}},
         )

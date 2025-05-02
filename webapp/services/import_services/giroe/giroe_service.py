@@ -23,8 +23,8 @@ from validataclass.exceptions import ValidationError
 from validataclass.validators import DataclassValidator
 
 from webapp.common.contexts import TelemetryContext
+from webapp.common.error_handling.exceptions import RemoteException
 from webapp.common.logging.models import LogMessageType
-from webapp.common.remote_helper import RemoteException, RemoteServerType
 from webapp.models.source import SourceStatus
 from webapp.services.import_services.base_import_service import BaseImportService, SourceInfo
 from webapp.services.import_services.models import EvseUpdate, LocationUpdate
@@ -41,6 +41,8 @@ class GiroeImportService(BaseImportService):
     location_validator = DataclassValidator(LocationInput)
     connector_validator = DataclassValidator(ConnectorInput)
 
+    required_config_keys: list[str] = ['user', 'password']
+
     source_info = SourceInfo(
         uid='giroe',
         name='GLS Mobility GmbH',
@@ -55,17 +57,18 @@ class GiroeImportService(BaseImportService):
     def fetch_static_data(self):
         source = self.get_source()
         location_updates: list[LocationUpdate] = []
+        static_success_count = 0
         static_error_count = 0
         static_data_updated_at = datetime.now(timezone.utc)
 
         try:
-            location_list_data = self.remote_helper.get(
-                remote_server_type=RemoteServerType.GIROE,
+            location_list_data = self.json_request(
                 path='/api/server/v1/charge-locations',
                 params={
                     'technical_backend': 'tcc',
                     'public': True,
                 },
+                auth=(self.config.get('user'), self.config.get('password')),
             )
             location_list_input: ItemListInput = self.item_list_validator.validate(location_list_data)
         except (ValidationError, RemoteException) as e:
@@ -80,9 +83,9 @@ class GiroeImportService(BaseImportService):
 
         while location_list_input.next_path:
             try:
-                location_list_data = self.remote_helper.get(
-                    remote_server_type=RemoteServerType.GIROE,
+                location_list_data = self.json_request(
                     path=location_list_input.next_path,
+                    auth=(self.config.get('user'), self.config.get('password')),
                 )
                 location_list_input: ItemListInput = self.item_list_validator.validate(location_list_data)
                 location_dicts += location_list_input.items
@@ -111,6 +114,7 @@ class GiroeImportService(BaseImportService):
                 continue
 
             location_updates.append(self.giroe_mapper.map_location_input_to_update(location_input))
+            static_success_count += 1
 
         self.save_location_updates(location_updates)
 
@@ -120,6 +124,11 @@ class GiroeImportService(BaseImportService):
             static_error_count=static_error_count,
             static_data_updated_at=static_data_updated_at,
         )
+        logger.info(
+            f'Successfully updated {self.source_info.uid} static with {static_success_count} valid locations and '
+            f'{static_error_count} failed locations. .',
+            extra={'attributes': {'type': LogMessageType.IMPORT_LOCATION}},
+        )
 
     def fetch_realtime_data(self):
         source = self.get_source()
@@ -128,6 +137,7 @@ class GiroeImportService(BaseImportService):
             return
 
         evse_updates: list[EvseUpdate] = []
+        realtime_success_count = 0
         realtime_error_count = 0
         realtime_data_updated_at = datetime.now(timezone.utc)
 
@@ -138,10 +148,10 @@ class GiroeImportService(BaseImportService):
         if source.realtime_data_updated_at:
             params['modified_since'] = source.realtime_data_updated_at.isoformat()
         try:
-            connector_list_data = self.remote_helper.get(
-                remote_server_type=RemoteServerType.GIROE,
+            connector_list_data = self.json_request(
                 path='/api/server/v1/charge-connectors',
                 params=params,
+                auth=(self.config.get('user'), self.config.get('password')),
             )
             connector_list_input: ItemListInput = self.item_list_validator.validate(connector_list_data)
         except (ValidationError, RemoteException) as e:
@@ -156,9 +166,9 @@ class GiroeImportService(BaseImportService):
 
         while connector_list_input.next_path:
             try:
-                connector_list_data = self.remote_helper.get(
-                    remote_server_type=RemoteServerType.GIROE,
+                connector_list_data = self.json_request(
                     path=connector_list_input.next_path,
+                    auth=(self.config.get('user'), self.config.get('password')),
                 )
                 connector_list_input: ItemListInput = self.item_list_validator.validate(connector_list_data)
                 connector_dicts += connector_list_input.items
@@ -201,4 +211,9 @@ class GiroeImportService(BaseImportService):
             realtime_status=SourceStatus.ACTIVE,
             realtime_error_count=realtime_error_count,
             realtime_data_updated_at=realtime_data_updated_at,
+        )
+        logger.info(
+            f'Successfully updated {self.source_info.uid} realtime with {realtime_success_count} valid locations '
+            f'and {realtime_error_count} failed locations. .',
+            extra={'attributes': {'type': LogMessageType.IMPORT_LOCATION}},
         )

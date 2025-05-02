@@ -23,7 +23,7 @@ from celery.schedules import crontab
 from validataclass.helpers import OptionalUnset, UnsetValue
 
 from webapp.common.contexts import TelemetryContext
-from webapp.common.remote_helper import RemoteHelper
+from webapp.common.remote_mixin import RemoteMixin
 from webapp.models import Business, Connector, Evse, Image, Location, RegularHours, Source
 from webapp.models.source import SourceStatus
 from webapp.repositories import (
@@ -31,7 +31,6 @@ from webapp.repositories import (
     EvseRepository,
     LocationRepository,
     ObjectNotFoundException,
-    OptionRepository,
     SourceRepository,
 )
 from webapp.repositories.business_repository import BusinessRepository
@@ -47,46 +46,43 @@ from webapp.services.import_services.models import (
 )
 
 
-class BaseImportService(BaseService, ABC):
-    remote_helper: RemoteHelper
-
+class BaseImportService(BaseService, RemoteMixin, ABC):
     source_repository: SourceRepository
     location_repository: LocationRepository
     evse_repository: EvseRepository
     connector_repository: ConnectorRepository
     business_repository: BusinessRepository
     image_repository: ImageRepository
-    option_repository: OptionRepository
 
     schedule: crontab | None = None
+    required_config_keys: list[str] = []
 
     @property
     @abstractmethod
     def source_info(self) -> SourceInfo:
         pass
 
+    @abstractmethod
+    def fetch_static_data(self): ...
+
     def __init__(
         self,
         *args,
-        remote_helper: RemoteHelper,
         source_repository: SourceRepository,
         location_repository: LocationRepository,
         evse_repository: EvseRepository,
         connector_repository: ConnectorRepository,
         business_repository: BusinessRepository,
         image_repository: ImageRepository,
-        option_repository: OptionRepository,
         **kwargs,
     ):
         super().__init__(*args, **kwargs)
-        self.remote_helper = remote_helper
         self.source_repository = source_repository
         self.location_repository = location_repository
         self.evse_repository = evse_repository
         self.connector_repository = connector_repository
         self.business_repository = business_repository
         self.image_repository = image_repository
-        self.option_repository = option_repository
 
     def save_location_updates(self, location_updates: list[LocationUpdate]):
         # get old location ids
