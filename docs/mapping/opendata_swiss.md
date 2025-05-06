@@ -1,5 +1,9 @@
 # OpenData Swiss mapping
 
+As the data source does not provide a dedicated location entity, OCPDB will use the coordinates for grouping to
+coordinates. If there are different information for the location, we will use the information of the first
+`EVSEDataRecord`.
+
 
 ## EVSEData
 
@@ -20,7 +24,7 @@
 | Address                          | [Address](#Address)                             | 1           |                       |                                                       |
 | AuthenticationModes              | [AuthenticationMode](#AuthenticationMode)       | *           | evse.capabilities     |                                                       |
 | CalibrationLawDataAvailability   | string                                          | 1           |                       | Always 'Not Available'                                |
-| ChargingFacilities               | ChargingFacility                                | *           |                       |                                                       |
+| ChargingFacilities               | [ChargingFacility](#ChargingFacility)           | *           |                       |                                                       |
 | ChargingPoolID                   | ?                                               | ?           |                       | Always null                                           |
 | ChargingStationId                | string                                          | 1           | evse.uid              |                                                       |
 | ChargingStationLocationReference | ?                                               | ?           |                       | Always null                                           |
@@ -33,11 +37,11 @@
 | EnvironmentalImpact              | ?                                               | ?           |                       | Always null                                           |
 | EvseID                           | string                                          | 1           | evse.evse_id          |                                                       |
 | GeoChargingPointEntrance         | object                                          | 1           |                       | Either {} or {"Google": "None None"}, both not useful |
-| GeoCoordinates                   | [GeoCoordinates](#GeoCoordinates)               | 1           |                       |                                                       |
+| GeoCoordinates                   | [GeoCoordinates](#GeoCoordinates)               | 1           | location.coordinates  |                                                       |
 | HardwareManufacturer             | string                                          | ?           |                       |                                                       |
 | HotlinePhoneNumber               | string                                          | 1           |                       |                                                       |
 | HubOperatorID                    | string                                          | ?           |                       |                                                       |
-| IsHubjectCompatible              | string or boolean                               | 1           | 1                     | String is `false`                                     |
+| IsHubjectCompatible              | string or boolean                               | 1           |                       | String is `false`                                     |
 | IsOpen24Hours                    | string or boolean                               | 1           |                       | String is `true`                                      |
 | lastUpdate                       | string (date-time)                              | ?           |                       |                                                       |
 | LocationImage                    | ?                                               | ?           |                       | Always null                                           |
@@ -52,18 +56,18 @@
 
 ### Accessibility
 
-|                            |                |
-|----------------------------|----------------|
-| Free publicly accessible   |                |
-| Unspecified                |                |
-| Test Station               |                |
-| Restricted access          |                |
-| Paying publicly accessible |                |
+| Key                        | Mapping |
+|----------------------------|---------|
+| Free publicly accessible   |         |
+| Unspecified                |         |
+| Test Station               |         |
+| Restricted access          |         |
+| Paying publicly accessible |         |
 
 
 ### AccessibilityLocation
 
-|                          |                    |
+| Key                      | Mapping            |
 |--------------------------|--------------------|
 | ParkingGarage            | PARKING_GARAGE     |
 | OnStreet                 | ON_STREET          |
@@ -73,7 +77,7 @@
 
 ### AuthenticationMode
 
-|                  |                           |
+| Key              | Mapping                   |
 |------------------|---------------------------|
 | NFC RFID DESFire | RFID_READER               |
 | REMOTE           | REMOTE_START_STOP_CAPABLE |
@@ -84,20 +88,22 @@
 
 ### DynamicInfoAvailable
 
-|       |                |
-|-------|----------------|
-| auto  |                |
-| true  |                |
-| false |                |
+As OCPI does not have a field like `has_realtime_data`, we cannot use this enumeration.
+
+| Key   | Mapping |
+|-------|---------|
+| auto  |         |
+| true  |         |
+| false |         |
 
 
 ### PaymentOption
 
-|            |                |
-|------------|----------------|
-| No Payment |                |
-| Contract   |                |
-| Direct     |                |
+| Key        | Mapping |
+|------------|---------|
+| No Payment |         |
+| Contract   |         |
+| Direct     |         |
 
 
 ### Plug
@@ -118,27 +124,42 @@
 
 ### ValueAddedService
 
-|                      |                |
-|----------------------|----------------|
-| MaximumPowerCharging |                |
-| None                 |                |
-| DynamicPricing       |                |
+| Key                  | Mapping |
+|----------------------|---------|
+| MaximumPowerCharging |         |
+| None                 |         |
+| DynamicPricing       |         |
 
 
 ## Address
 
-| Field           | Type    | Cardinality | Mapping                 | Comment                                           |
-|-----------------|---------|-------------|-------------------------|---------------------------------------------------|
-| City            | string  | 1           | location.city           |                                                   |
-| Country         | string  | 1           | location.country        |                                                   |
-| Floor           | string  | ?           |                         | evse.floor_level                                  |
-| HouseNum        | string  | 1           | location.address        | Added to Street. Might be '0', then it's ignored. |
-| ParkingFacility | boolean | ?           |                         |                                                   |
-| ParkingSpot     | string  | ?           | evse.physical_reference |                                                   |
-| PostalCode      | string  | 1           | location.postal_code    |                                                   |
-| Region          | string  | ?           |                         |                                                   |
-| Street          | string  | 1           | location.address        |                                                   |
-| TimeZone        | string  | ?           | location.time_zone      | defaults to Europe/Zurich                         |
+| Field           | Type    | Cardinality | Mapping              | Comment                                                                             |
+|-----------------|---------|-------------|----------------------|-------------------------------------------------------------------------------------|
+| City            | string  | 1           | location.city        |                                                                                     |
+| Country         | string  | 1           | location.country     | Just charge stations with `Country` in CHE, DEU, AUT and LIE get imported           |
+| Floor           | string  | ?           |                      | evse.floor_level                                                                    |
+| HouseNum        | string  | 1           | location.address     | Added to Street. Might be '0', then it's ignored.                                   |
+| ParkingFacility | boolean | ?           |                      |                                                                                     |
+| ParkingSpot     | ?       | ?           |                      |                                                                                     |
+| PostalCode      | string  | 1           | location.postal_code |                                                                                     |
+| Region          | string  | ?           |                      |                                                                                     |
+| Street          | string  | 1           | location.address     | Often includes house number                                                         |
+| TimeZone        | string  | ?           | location.time_zone   | If not set, use corresponding timezone of the `Country`, eg `Europe/Zurich` for CHF |
+
+
+## ChargingStationName
+
+| Field  | Type   | Cardinality | Mapping               | Comment |
+|--------|--------|-------------|-----------------------|---------|
+| lang   | string | 1           | display_text.language |         |
+| value  | string | 1           | display_text.text     |         |
+
+
+## GeoCoordinates
+
+| Field  | Type   | Cardinality | Mapping              | Comment                                                    |
+|--------|--------|-------------|----------------------|------------------------------------------------------------|
+| Google | string | 1           | location.coordinates | Format: "{lat} {lon}": two floats with a space in between. |
 
 
 ## ChargingFacility
@@ -153,7 +174,7 @@
 
 ### PowerType
 
-|            |            |
+| Key        | Mapping    |
 |------------|------------|
 | DC         | DC         |
 | AC_1_PHASE | AC_1_PHASE |
@@ -170,15 +191,15 @@
 
 ### Weekday
 
-|           |   |
-|-----------|---|
-| Monday    | 1 |
-| Tuesday   | 2 |
-| Wednesday | 3 |
-| Thursday  | 4 |
-| Friday    | 5 |
-| Saturday  | 6 |
-| Sunday    | 7 |
+| Key       | Mapping |
+|-----------|---------|
+| Monday    | 1       |
+| Tuesday   | 2       |
+| Wednesday | 3       |
+| Thursday  | 4       |
+| Friday    | 5       |
+| Saturday  | 6       |
+| Sunday    | 7       |
 
 
 ## Period
@@ -207,7 +228,7 @@
 ### EVSEStatus
 
 
-|              |            |
+| Key          | Mapping    |
 |--------------|------------|
 | Available    | AVAILABLE  |
 | OutOfService | OUTOFORDER |
