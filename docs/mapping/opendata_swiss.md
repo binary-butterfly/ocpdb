@@ -16,53 +16,53 @@ coordinates. If there are different information for the location, we will use th
 
 ## EVSEDataRecord
 
-| Field                            | Type                                            | Cardinality | Mapping               | Comment                                               |
-|----------------------------------|-------------------------------------------------|-------------|-----------------------|-------------------------------------------------------|
-| Accessibility                    | [Accessibility](#Accessibility)                 | 1           |                       |                                                       |
-| AccessibilityLocation            | [AccessibilityLocation](#AccessibilityLocation) | ?           | location.parking_type |                                                       |
-| AdditionalInfo                   | ?                                               | ?           |                       | Always null                                           |
-| Address                          | [Address](#Address)                             | 1           |                       |                                                       |
-| AuthenticationModes              | [AuthenticationMode](#AuthenticationMode)       | *           | evse.capabilities     |                                                       |
-| CalibrationLawDataAvailability   | string                                          | 1           |                       | Always 'Not Available'                                |
-| ChargingFacilities               | [ChargingFacility](#ChargingFacility)           | *           |                       |                                                       |
-| ChargingPoolID                   | ?                                               | ?           |                       | Always null                                           |
-| ChargingStationId                | string                                          | 1           | evse.uid              |                                                       |
-| ChargingStationLocationReference | ?                                               | ?           |                       | Always null                                           |
-| ChargingStationNames             | [ChargingStationName](#ChargingStationName)     | *           | location.directions   |                                                       |
-| ClearinghouseID                  | ?                                               | ?           |                       | Always null                                           |
-| deltaType                        | string                                          | ?           |                       |                                                       |
-| DynamicInfoAvailable             | [DynamicInfoAvailable](#DynamicInfoAvailable)   | 1           |                       |                                                       |
-| DynamicPowerLevel                | boolean                                         | ?           |                       |                                                       |
-| EnergySource                     | ?                                               | ?           |                       | Always null                                           |
-| EnvironmentalImpact              | ?                                               | ?           |                       | Always null                                           |
-| EvseID                           | string                                          | 1           | evse.evse_id          |                                                       |
-| GeoChargingPointEntrance         | object                                          | 1           |                       | Either {} or {"Google": "None None"}, both not useful |
-| GeoCoordinates                   | [GeoCoordinates](#GeoCoordinates)               | 1           | location.coordinates  |                                                       |
-| HardwareManufacturer             | string                                          | ?           |                       |                                                       |
-| HotlinePhoneNumber               | string                                          | 1           |                       |                                                       |
-| HubOperatorID                    | string                                          | ?           |                       |                                                       |
-| IsHubjectCompatible              | string or boolean                               | 1           |                       | String is `false`                                     |
-| IsOpen24Hours                    | string or boolean                               | 1           |                       | String is `true`                                      |
-| lastUpdate                       | string (date-time)                              | ?           |                       |                                                       |
-| LocationImage                    | ?                                               | ?           |                       | Always null                                           |
-| MaxCapacity                      | integer                                         | ?           |                       |                                                       |
-| OpeningTimes                     | [OpeningTime](#OpeningTime)                     | *           |                       |                                                       |
-| PaymentOptions                   | [PaymentOption](#PaymentOption)                 | *           |                       |                                                       |
-| Plugs                            | [Plug](#Plug)                                   | *           |                       |                                                       |
-| RenewableEnergy                  | boolean                                         | 1           |                       |                                                       |
-| SuboperatorName                  | ?                                               | ?           |                       | Always null                                           |
-| ValueAddedServices               | [ValueAddedService](#ValueAddedService)         | *           |                       |                                                       |
+| Field                            | Type                                            | Cardinality | Mapping               | Comment                                                  |
+|----------------------------------|-------------------------------------------------|-------------|-----------------------|----------------------------------------------------------|
+| Accessibility                    | [Accessibility](#Accessibility)                 | 1           |                       |                                                          |
+| AccessibilityLocation            | [AccessibilityLocation](#AccessibilityLocation) | ?           | location.parking_type |                                                          |
+| AdditionalInfo                   | ?                                               | ?           |                       | Always null                                              |
+| Address                          | [Address](#Address)                             | 1           |                       |                                                          |
+| AuthenticationModes              | [AuthenticationMode](#AuthenticationMode)       | *           | evse.capabilities     |                                                          |
+| CalibrationLawDataAvailability   | string                                          | 1           |                       | Always 'Not Available'                                   |
+| ChargingFacilities               | [ChargingFacility](#ChargingFacility)           | *           |                       |                                                          |
+| ChargingPoolID                   | ?                                               | ?           |                       | Always null                                              |
+| ChargingStationId                | string                                          | 1           | evse.uid              |                                                          |
+| ChargingStationLocationReference | ?                                               | ?           |                       | Always null                                              |
+| ChargingStationNames             | [ChargingStationName](#ChargingStationName)     | *           | location.name         | Use the entry with lang = de, if not set the first entry |
+| ClearinghouseID                  | ?                                               | ?           |                       | Always null                                              |
+| deltaType                        | string                                          | ?           |                       |                                                          |
+| DynamicInfoAvailable             | [DynamicInfoAvailable](#DynamicInfoAvailable)   | 1           |                       |                                                          |
+| DynamicPowerLevel                | boolean                                         | ?           |                       |                                                          |
+| EnergySource                     | ?                                               | ?           |                       | Always null                                              |
+| EnvironmentalImpact              | ?                                               | ?           |                       | Always null                                              |
+| EvseID                           | string                                          | 1           | evse.evse_id          |                                                          |
+| GeoChargingPointEntrance         | object                                          | 1           |                       | Either {} or {"Google": "None None"}, both not useful    |
+| GeoCoordinates                   | [GeoCoordinates](#GeoCoordinates)               | 1           | location.coordinates  |                                                          |
+| HardwareManufacturer             | string                                          | ?           |                       |                                                          |
+| HotlinePhoneNumber               | string                                          | 1           |                       |                                                          |
+| HubOperatorID                    | string                                          | ?           |                       |                                                          |
+| IsHubjectCompatible              | string or boolean                               | 1           |                       | String is `false`                                        |
+| IsOpen24Hours                    | string or boolean                               | 1           |                       | String is `true`                                         |
+| lastUpdate                       | string (date-time)                              | ?           |                       |                                                          |
+| LocationImage                    | ?                                               | ?           |                       | Always null                                              |
+| MaxCapacity                      | integer                                         | ?           |                       |                                                          |
+| OpeningTimes                     | [OpeningTime](#OpeningTime)                     | *           |                       |                                                          |
+| PaymentOptions                   | [PaymentOption](#PaymentOption)                 | *           |                       |                                                          |
+| Plugs                            | [Plug](#Plug)                                   | *           |                       |                                                          |
+| RenewableEnergy                  | boolean                                         | 1           |                       |                                                          |
+| SuboperatorName                  | ?                                               | ?           |                       | Always null                                              |
+| ValueAddedServices               | [ValueAddedService](#ValueAddedService)         | *           |                       |                                                          |
 
 
 ### Accessibility
 
-| Key                        | Mapping |
-|----------------------------|---------|
-| Free publicly accessible   |         |
-| Unspecified                |         |
-| Test Station               |         |
-| Restricted access          |         |
-| Paying publicly accessible |         |
+| Key                        | Mapping | Commend            |
+|----------------------------|---------|--------------------|
+| Free publicly accessible   |         |                    |
+| Unspecified                |         |                    |
+| Test Station               |         | Should be filtered |
+| Restricted access          |         |                    |
+| Paying publicly accessible |         |                    |
 
 
 ### AccessibilityLocation
@@ -149,10 +149,10 @@ As OCPI does not have a field like `has_realtime_data`, we cannot use this enume
 
 ## ChargingStationName
 
-| Field  | Type   | Cardinality | Mapping               | Comment |
-|--------|--------|-------------|-----------------------|---------|
-| lang   | string | 1           | display_text.language |         |
-| value  | string | 1           | display_text.text     |         |
+| Field  | Type   | Cardinality | Mapping           | Comment |
+|--------|--------|-------------|-------------------|---------|
+| lang   | string | 1           |                   |         |
+| value  | string | 1           | display_text.text |         |
 
 
 ## GeoCoordinates
@@ -212,11 +212,14 @@ As OCPI does not have a field like `has_realtime_data`, we cannot use this enume
 
 ## EVSEStatuses
 
-| Field            | Type             | Cardinality | Mapping | Comment |
-|------------------|------------------|-------------|---------|---------|
-| EVSEStatusRecord | EVSEStatusRecord | *           |         |         |
-| OperatorID       | string           | 1           |         |         |
-| OperatorName     | string           | 1           |         |         |
+| Field            | Type                                  | Cardinality | Mapping | Comment |
+|------------------|---------------------------------------|-------------|---------|---------|
+| EVSEStatusRecord | [EVSEStatusRecord](#EVSEStatusRecord) | *           |         |         |
+| OperatorID       | string                                | 1           |         |         |
+| OperatorName     | string                                | 1           |         |         |
+
+
+## EVSEStatusRecord
 
 
 | Field      | Type                      | Cardinality | Mapping      | Comment |
