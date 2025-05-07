@@ -1,7 +1,7 @@
 # OpenData Swiss mapping
 
-As the data source does not provide a dedicated location entity, OCPDB will use the coordinates for grouping to
-coordinates. If there are different information for the location, we will use the information of the first
+As the data source does not provide a dedicated location entity, OCPDB will use the `ChargingStationId` field for
+grouping to locations. If there are different information for the location, we will use the information of the first
 `EVSEDataRecord`.
 
 
@@ -56,7 +56,7 @@ coordinates. If there are different information for the location, we will use th
 
 ### Accessibility
 
-| Key                        | Mapping | Commend            |
+| Key                        | Mapping | Comment            |
 |----------------------------|---------|--------------------|
 | Free publicly accessible   |         |                    |
 | Unspecified                |         |                    |
