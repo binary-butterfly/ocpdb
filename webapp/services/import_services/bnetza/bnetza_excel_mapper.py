@@ -16,8 +16,6 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from typing import List
-
 from webapp.models.connector import ConnectorFormat, ConnectorType
 from webapp.models.evse import EvseStatus
 from webapp.services.import_services.models import BusinessUpdate, ConnectorUpdate, EvseUpdate, LocationUpdate
@@ -26,7 +24,7 @@ from .bnetza_excel_validators import BnetzaConnectorType, BnetzaRowInput
 
 
 class BnetzaExcelMapper:
-    def map_rows_to_location_update(self, location_uid: str, rows: List[BnetzaRowInput]) -> LocationUpdate:
+    def map_rows_to_location_update(self, location_uid: str, rows: list[BnetzaRowInput]) -> LocationUpdate:
         row = rows[0]
         address = row.address.strip().replace('  ', ' ')
         if row.housenumber and row.housenumber != '0':
@@ -57,7 +55,7 @@ class BnetzaExcelMapper:
 
         return location_update
 
-    def map_row_to_evses(self, location_uid: str, row: BnetzaRowInput, line: int) -> List[EvseUpdate]:
+    def map_row_to_evses(self, location_uid: str, row: BnetzaRowInput, line: int) -> list[EvseUpdate]:
         """
         This is fundamentally broken: sometimes multiple connector types in a single inline counter mean multiple
         EVSEs (eg DC Kupplung Combo, DC CHAdeMO), sometimes it means the same EVSE (eg AC Steckdose Typ 2, AC Schuko).
@@ -86,7 +84,7 @@ class BnetzaExcelMapper:
         row: BnetzaRowInput,
         line: int,
         inline_counter: int,
-    ) -> List[ConnectorUpdate]:
+    ) -> list[ConnectorUpdate]:
         connectors = []
         for connector_counter in range(len(getattr(row, 'connector_%s_type' % inline_counter))):
             if getattr(row, 'connector_%s_power' % inline_counter) is None:  # should not happen, but it does happen ...

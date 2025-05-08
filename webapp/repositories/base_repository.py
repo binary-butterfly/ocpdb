@@ -17,7 +17,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 from abc import ABC, abstractmethod
-from typing import Any, Generic, Optional, Type, TypeVar
+from typing import Any, Generic, Type, TypeVar
 
 from sqlalchemy.orm import Session, scoped_session
 from validataclass_search_queries.repositories import SearchQueryRepositoryMixin
@@ -69,9 +69,9 @@ class BaseRepository(SearchQueryRepositoryMixin[T_Model], Generic[T_Model], ABC)
 
     @staticmethod
     def _or_raise(
-        resource: Optional[Any],
+        resource: Any,
         exception_msg: str,
-        exception_cls: Type[Exception] = ObjectNotFoundException,
+        exception_cls: type[Exception] = ObjectNotFoundException,
     ) -> Any:
         """
         Returns the resource unless it is None.

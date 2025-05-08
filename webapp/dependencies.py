@@ -26,7 +26,6 @@ from sqlalchemy.orm import scoped_session
 from webapp.common.celery import CeleryHelper
 from webapp.common.config import ConfigHelper
 from webapp.common.contexts import ContextHelper
-from webapp.common.remote_helper import RemoteHelper
 from webapp.common.rest import RequestHelper
 from webapp.repositories import (
     BusinessRepository,
@@ -34,7 +33,6 @@ from webapp.repositories import (
     EvseRepository,
     ImageRepository,
     LocationRepository,
-    OptionRepository,
     SourceRepository,
 )
 from webapp.services.import_services import ImageImportService, ImportServices
@@ -42,7 +40,6 @@ from webapp.services.import_services.generic_import_runner import GenericImportR
 from webapp.services.matching_service import MatchingService
 
 if TYPE_CHECKING:
-    from webapp.common.logger import Logger
     from webapp.common.server_auth import ServerAuthHelper
 
 
@@ -83,26 +80,12 @@ class Dependencies:
 
     # Common
     @cache_dependency
-    def get_logger(self) -> 'Logger':
-        # Late import (don't initialize all the extensions unless needed)
-        from webapp.extensions import logger
-
-        return logger
-
-    @cache_dependency
     def get_config_helper(self) -> ConfigHelper:
         return ConfigHelper()
 
     @cache_dependency
     def get_request_helper(self) -> RequestHelper:
         return RequestHelper()
-
-    @cache_dependency
-    def get_remote_helper(self) -> RemoteHelper:
-        return RemoteHelper(
-            config_helper=self.get_config_helper(),
-            logger=self.get_logger(),
-        )
 
     @cache_dependency
     def get_context_helper(self) -> ContextHelper:
@@ -168,31 +151,23 @@ class Dependencies:
             session=self.get_db_session(),
         )
 
-    @cache_dependency
-    def get_option_repository(self) -> OptionRepository:
-        return OptionRepository(
-            session=self.get_db_session(),
-        )
-
     # Services
     def get_base_service_dependencies(self) -> dict:
         return {
-            'logger': self.get_logger(),
             'config_helper': self.get_config_helper(),
+            'context_helper': self.get_context_helper(),
         }
 
     @cache_dependency
     def get_import_services(self) -> ImportServices:
         return ImportServices(
             **self.get_base_service_dependencies(),
-            remote_helper=self.get_remote_helper(),
             source_repository=self.get_source_repository(),
             location_repository=self.get_location_repository(),
             evse_repository=self.get_evse_repository(),
             connector_repository=self.get_connector_repository(),
             business_repository=self.get_business_repository(),
             image_repository=self.get_image_repository(),
-            option_repository=self.get_option_repository(),
         )
 
     @cache_dependency

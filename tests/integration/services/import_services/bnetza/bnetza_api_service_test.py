@@ -26,7 +26,7 @@ from webapp.services.import_services.bnetza.bnetza_api_service import BnetzaApiI
 
 
 def test_bnetza_api_service(db: SQLAlchemy, requests_mock: Mocker):
-    bnetza_import_service: BnetzaApiImportService = dependencies.get_import_services().bnetza_api_import_service
+    bnetza_import_service: BnetzaApiImportService = dependencies.get_import_services().importer_by_uid['bnetza_api']
 
     bnetza_file_path = Path(Path(__file__).parent, 'bnetza.json')
     with bnetza_file_path.open('rb') as bnetza_file:

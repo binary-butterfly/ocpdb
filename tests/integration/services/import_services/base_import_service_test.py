@@ -33,20 +33,25 @@ class TestingImportService(BaseImportService):
 
     @property
     def source_info(self) -> SourceInfo:
-        return SourceInfo(uid='test_source_uid', name='test_source', public_url='test_url', has_realtime_data=None)
+        return SourceInfo(
+            uid='test_source_uid',
+            name='test_source',
+            public_url='test_url',
+            has_realtime_data=None,
+        )
+
+    def fetch_static_data(self): ...
 
 
 @pytest.fixture
 def testing_import_service():
     return TestingImportService(
         **dependencies.get_base_service_dependencies(),
-        remote_helper=dependencies.get_remote_helper(),
         location_repository=dependencies.get_location_repository(),
         evse_repository=dependencies.get_evse_repository(),
         connector_repository=dependencies.get_evse_repository(),
         business_repository=dependencies.get_business_repository(),
         image_repository=dependencies.get_image_repository(),
-        option_repository=dependencies.get_option_repository(),
         source_repository=dependencies.get_source_repository(),
     )
 
