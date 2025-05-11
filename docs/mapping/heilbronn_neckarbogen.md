@@ -81,7 +81,7 @@ The outlet represents an EVSE.
 | connectorId  | integer                             | 1           |              |         |
 | evseId       | string                              | 1           | evse.evse_id |         |
 | image        | [Image](#Image)                     | 1           |              |         |
-| modelName    | evse.evse_id                        | 1           |              |         |
+| modelName    | string                              | 1           |              |         |
 | nativeStatus | OCPI EVSE Status                    | 1           | evse.status  |         |
 
 
@@ -108,10 +108,10 @@ These attributes contain the connector information.
 
 Following keys are used:
 
-| Key                | Mapping                      | Comment                                          |
-|--------------------|------------------------------|--------------------------------------------------|
-| FORMAT             | connector.format             |                                                  |
-| MAX_ELECTRIC_POWER | connector.max_electric_power |                                                  |
-| MAX_VOLTAGE        | connector.max_voltage        |                                                  |
-| MAX_AMPERAGE       | connector.max_amperage       |                                                  |
-| POWER_TYPE         | connector.standard           | Always `AC3`, which is mapped to `IEC_62196_T2`. |
+| Key                | Mapping                      | Comment                                                                    |
+|--------------------|------------------------------|----------------------------------------------------------------------------|
+| FORMAT             | connector.format             |                                                                            |
+| MAX_ELECTRIC_POWER | connector.max_electric_power |                                                                            |
+| MAX_VOLTAGE        | connector.max_voltage        |                                                                            |
+| MAX_AMPERAGE       | connector.max_amperage       | Always 32A, which is impossible with also always 11kW, fixed during import |
+| POWER_TYPE         | connector.standard           | Always `AC3`, which is mapped to `IEC_62196_T2`.                           |
