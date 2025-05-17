@@ -19,7 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from datetime import datetime, time, timezone
 from decimal import Decimal
 from enum import Enum
-from typing import Any, List, Optional
+from typing import Any
 
 from validataclass.dataclasses import Default, DefaultFactory, validataclass
 from validataclass.exceptions import ValidationError
@@ -75,11 +75,11 @@ class OchpEnumValidator(EnumValidator):
 @validataclass
 class ImageInput:
     uri: str = UrlValidator(max_length=255)
-    thumbUri: Optional[str] = UrlValidator(max_length=255), Default(None)
+    thumbUri: str | None = UrlValidator(max_length=255), Default(None)
     type: str = StringValidator(max_length=4)
     class_: OchpImageCategory = OchpEnumValidator(OchpImageCategory)
-    width: Optional[int] = IntegerValidator(min_value=1, allow_strings=True), Default(None)
-    height: Optional[int] = IntegerValidator(min_value=1, allow_strings=True), Default(None)
+    width: int | None = IntegerValidator(min_value=1, allow_strings=True), Default(None)
+    height: int | None = IntegerValidator(min_value=1, allow_strings=True), Default(None)
 
 
 @validataclass
@@ -98,7 +98,7 @@ class ExceptionalPeriodInput:
 @validataclass
 class RelatedResourceInput:
     uri: str = UrlValidator(max_length=255)
-    class_: List[OchpRelatedResourceType] = (
+    class_: list[OchpRelatedResourceType] = (
         ListValidator(OchpEnumValidator(OchpRelatedResourceType)),
         DefaultFactory(list),
     )
@@ -106,7 +106,7 @@ class RelatedResourceInput:
 
 @validataclass
 class AddressInput:
-    houseNumber: Optional[str] = StringValidator(max_length=6), Default(None)
+    houseNumber: str | None = StringValidator(max_length=6), Default(None)
     address: str = StringValidator(max_length=45)
     city: str = StringValidator(max_length=45)
     zipCode: str = StringValidator(max_length=10)
@@ -123,23 +123,23 @@ class GeoPointInput:
 class AdditionalGeoPoint:
     lat: Decimal = DecimalValidator()
     lon: Decimal = DecimalValidator()
-    name: Optional[str] = StringValidator(max_length=255), Default(None)
+    name: str | None = StringValidator(max_length=255), Default(None)
     type: OchpGeoType = OchpEnumValidator(OchpGeoType)
 
 
 @validataclass
 class OpeningTimesInput:
-    regularHours: Optional[List[RegularHoursInput]] = (
+    regularHours: list[RegularHoursInput] | None = (
         ListValidator(DataclassValidator(RegularHoursInput)),
         Default(None),
     )
-    twentyfourseven: Optional[bool] = BooleanValidator(allow_strings=True), Default(None)
+    twentyfourseven: bool | None = BooleanValidator(allow_strings=True), Default(None)
     closedCharging: bool = BooleanValidator(allow_strings=True)
-    exceptionalOpenings: List[ExceptionalPeriodInput] = (
+    exceptionalOpenings: list[ExceptionalPeriodInput] = (
         ListValidator(DataclassValidator(ExceptionalPeriodInput)),
         DefaultFactory(list),
     )
-    exceptionalClosings: List[ExceptionalPeriodInput] = (
+    exceptionalClosings: list[ExceptionalPeriodInput] = (
         ListValidator(DataclassValidator(ExceptionalPeriodInput)),
         DefaultFactory(list),
     )
@@ -154,7 +154,7 @@ class OpeningTimesInput:
 @validataclass
 class ScheduleInput:
     startDate: datetime = OchpDateTimeValidator()
-    endDate: Optional[datetime] = OchpDateTimeValidator(), Default(None)
+    endDate: datetime | None = OchpDateTimeValidator(), Default(None)
     status: OchpStaticStatus = OchpEnumValidator(OchpStaticStatus)
 
 
@@ -162,58 +162,58 @@ class ScheduleInput:
 class ConnectorInput:
     connectorStandard: OchpConnectorStandard = OchpEnumValidator(OchpConnectorStandard)
     connectorFormat: OchpConnectorFormat = OchpEnumValidator(OchpConnectorFormat)
-    tariffId: Optional[str] = StringValidator(max_length=64), Default(None)
+    tariffId: str | None = StringValidator(max_length=64), Default(None)
 
 
 @validataclass
 class RatingsInput:
     maximumPower: Decimal = DecimalValidator()
-    guaranteedPower: Optional[Decimal] = DecimalValidator(), Default(None)
-    nominalVoltage: Optional[int] = IntegerValidator(allow_strings=True), Default(None)
+    guaranteedPower: Decimal | None = DecimalValidator(), Default(None)
+    nominalVoltage: int | None = IntegerValidator(allow_strings=True), Default(None)
 
 
 @validataclass
 class ChargePointInput:
     evseId: str = StringValidator(max_length=64)
     locationId: str = StringValidator(max_length=15)
-    timestamp: Optional[datetime] = OchpDateTimeValidator(), Default(None)
+    timestamp: datetime | None = OchpDateTimeValidator(), Default(None)
     locationName: str = StringValidator(max_length=100)
     locationNameLang: str = StringValidator(min_length=3, max_length=3)
-    images: List[ImageInput] = ListValidator(DataclassValidator(ImageInput)), DefaultFactory(list)
-    relatedResource: List[RelatedResourceInput] = (
+    images: list[ImageInput] = ListValidator(DataclassValidator(ImageInput)), DefaultFactory(list)
+    relatedResource: list[RelatedResourceInput] = (
         ListValidator(DataclassValidator(RelatedResourceInput)),
         DefaultFactory(list),
     )
     chargePointAddress: AddressInput = DataclassValidator(AddressInput)
     chargePointLocation: GeoPointInput = DataclassValidator(GeoPointInput)
-    relatedLocation: Optional[List[AdditionalGeoPoint]] = (
+    relatedLocation: list[AdditionalGeoPoint] | None = (
         ListValidator(DataclassValidator(AdditionalGeoPoint)),
         Default(None),
     )
     timeZone: str = StringValidator(max_length=255)
-    openingTimes: Optional[OpeningTimesInput] = DataclassValidator(OpeningTimesInput), Default(None)
-    status: Optional[OchpStaticStatus] = OchpEnumValidator(OchpStaticStatus), Default(None)
-    statusSchedule: Optional[List[ScheduleInput]] = ListValidator(DataclassValidator(ScheduleInput)), Default(None)
-    telephoneNumber: Optional[str] = StringValidator(max_length=20), Default(None)
+    openingTimes: OpeningTimesInput | None = DataclassValidator(OpeningTimesInput), Default(None)
+    status: OchpStaticStatus | None = OchpEnumValidator(OchpStaticStatus), Default(None)
+    statusSchedule: list[ScheduleInput] | None = ListValidator(DataclassValidator(ScheduleInput)), Default(None)
+    telephoneNumber: str | None = StringValidator(max_length=20), Default(None)
     location: OchpLocationType = OchpEnumValidator(OchpLocationType)
-    parkingRestriction: List[OchpParkingRestrictionType] = (
+    parkingRestriction: list[OchpParkingRestrictionType] = (
         ListValidator(OchpEnumValidator(OchpParkingRestrictionType)),
         DefaultFactory(list),
     )
-    authMethods: List[OchpAuthMethodType] = ListValidator(OchpEnumValidator(OchpAuthMethodType)), DefaultFactory(list)
-    connectors: List[ConnectorInput] = ListValidator(DataclassValidator(ConnectorInput), min_length=1)
+    authMethods: list[OchpAuthMethodType] = ListValidator(OchpEnumValidator(OchpAuthMethodType)), DefaultFactory(list)
+    connectors: list[ConnectorInput] = ListValidator(DataclassValidator(ConnectorInput), min_length=1)
     chargePointType: OchpChargePointType = OchpEnumValidator(OchpChargePointType)
-    ratings: Optional[RatingsInput] = DataclassValidator(RatingsInput), Default(None)
-    userInterfaceLang: List[str] = ListValidator(StringValidator(min_length=3, max_length=3)), DefaultFactory(list)
-    maxReservation: Optional[Decimal] = DecimalValidator(), Default(None)
+    ratings: RatingsInput | None = DataclassValidator(RatingsInput), Default(None)
+    userInterfaceLang: list[str] = ListValidator(StringValidator(min_length=3, max_length=3)), DefaultFactory(list)
+    maxReservation: Decimal | None = DecimalValidator(), Default(None)
 
 
 @validataclass
 class ChargePointStatusInput:
     evseId: str = StringValidator(max_length=64)
     major: OchpMajorStatus = OchpEnumValidator(OchpMajorStatus)
-    minor: Optional[OchpMinorStatus] = OchpEnumValidator(OchpMinorStatus), Default(None)
-    ttl: Optional[datetime] = OchpDateTimeValidator(), Default(None)
+    minor: OchpMinorStatus | None = OchpEnumValidator(OchpMinorStatus), Default(None)
+    ttl: datetime | None = OchpDateTimeValidator(), Default(None)
 
     def __post_init__(self):
         if self.major == OchpMajorStatus.available and self.minor not in [
@@ -246,7 +246,7 @@ class GetChargePointListResultInput:
 @validataclass
 class GetChargePointListResponseInput:
     result: GetChargePointListResultInput = DataclassValidator(GetChargePointListResultInput)
-    chargePointInfoArray: List[dict] = ListValidator(AnythingValidator(allowed_types=[dict]))
+    chargePointInfoArray: list[dict] = ListValidator(AnythingValidator(allowed_types=[dict]))
 
 
 @validataclass
@@ -266,7 +266,7 @@ class GetChargePointListInput:
 
 @validataclass
 class GetStatusEvseInput:
-    evse: List[dict] = ListValidator(AnythingValidator(allowed_types=[dict]))
+    evse: list[dict] = ListValidator(AnythingValidator(allowed_types=[dict]))
 
 
 @validataclass

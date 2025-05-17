@@ -16,7 +16,7 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from typing import Any, Dict, Optional
+from typing import Any
 
 from flask import Request
 from flask import request as flask_request
@@ -33,7 +33,7 @@ class RequestHelper:
 
     request: Request
 
-    def __init__(self, request: Optional[Request] = None):
+    def __init__(self, request: Request | None = None):
         self.request = request if request else flask_request
 
     def get_parsed_json(self, *, default: Any = UnsetParameter) -> Any:
@@ -51,7 +51,7 @@ class RequestHelper:
 
         return parsed_json if parsed_json is not None else default
 
-    def get_query_args(self, skip_empty: bool = False) -> Dict[str, str]:
+    def get_query_args(self, skip_empty: bool = False) -> dict[str, str]:
         """
         Returns a dictionary containing all query arguments of the request as strings. If `skip_empty` is True, empty
         parameters (i.e. empty strings) will be removed from the dictionary.

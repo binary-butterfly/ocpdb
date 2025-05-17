@@ -69,7 +69,7 @@ class Image(BaseModel):
 
     @property
     def url(self) -> str:
-        return f'{current_app.config["PROJECT_URL"]}/static/images/dynamic/{self.id}.{self.type}'
+        return f'{current_app.config["PROJECT_URL"]}{current_app.config["PUBLIC_IMAGE_PATH"]}/{self.id}.{self.type}'
 
     @property
     def path(self) -> Path:
@@ -77,7 +77,9 @@ class Image(BaseModel):
 
     @property
     def url_thumbnail(self) -> str:
-        return f'{current_app.config["PROJECT_URL"]}/static/images/dynamic/{self.id}.thumb.{self.type}'
+        return (
+            f'{current_app.config["PROJECT_URL"]}{current_app.config["PUBLIC_IMAGE_PATH"]}/{self.id}.thumb.{self.type}'
+        )
 
     @property
     def path_thumbnail(self) -> Path:

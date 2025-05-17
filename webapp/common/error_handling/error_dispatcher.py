@@ -16,8 +16,6 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from typing import Optional
-
 from flask import Request
 from flask import request as flask_request
 
@@ -36,7 +34,7 @@ class ErrorDispatcher:
         # Initialize error handlers
         self.rest_api_error_handler = rest_api_error_handler
 
-    def dispatch_error(self, error: Exception, request: Optional[Request] = None):
+    def dispatch_error(self, error: Exception, request: Request | None = None):
         """
         Passes the exception to Error Handler.
         Returns the result of the error handler, which should be a tuple of an HTTP response and a response code.

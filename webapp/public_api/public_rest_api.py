@@ -16,8 +16,6 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from typing import List, Type
-
 from webapp.common.base_blueprint import BaseBlueprint
 
 from .business_api import BusinessBlueprint
@@ -28,7 +26,7 @@ from .tiles_api import TilesBlueprint
 
 class PublicApi(BaseBlueprint):
     documentation_base = True
-    blueprints: List[Type[BaseBlueprint]] = [
+    blueprints: list[type[BaseBlueprint]] = [
         TilesBlueprint,
         BusinessBlueprint,
         OcpiBlueprint,

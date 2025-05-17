@@ -18,11 +18,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from datetime import datetime, time, timezone
 from decimal import Decimal
-from typing import List
 
 from validataclass.dataclasses import DefaultUnset, ValidataclassMixin, validataclass
 from validataclass.helpers import OptionalUnset, UnsetValueType
 from validataclass.validators import (
+    AnythingValidator,
     BooleanValidator,
     DataclassValidator,
     DateTimeFormat,
@@ -39,7 +39,6 @@ from validataclass.validators import (
     UrlValidator,
 )
 
-from webapp.common.validation import UnvalidatedDictValidator
 from webapp.common.validation.replacing_string_validator import ReplacingStringValidator
 from webapp.models.connector import ConnectorFormat, ConnectorType, PowerType
 from webapp.models.evse import Capability, EvseStatus, ParkingRestriction
@@ -56,7 +55,7 @@ class ConnectorInput(ValidataclassMixin):
     max_voltage: int = IntegerValidator()
     max_amperage: int = IntegerValidator()
     max_electric_power: OptionalUnset[int] = IntegerValidator(), DefaultUnset
-    tariff_ids: OptionalUnset[List[str]] = ListValidator(StringValidator(max_length=36)), DefaultUnset
+    tariff_ids: OptionalUnset[list[str]] = ListValidator(StringValidator(max_length=36)), DefaultUnset
     terms_and_conditions: OptionalUnset[str] = UrlValidator(max_length=255), DefaultUnset
     last_updated: OptionalUnset[datetime] = (
         DateTimeValidator(
@@ -101,15 +100,15 @@ class ExceptionalPeriodInput(ValidataclassMixin):
 @validataclass
 class HoursInput(ValidataclassMixin):
     twentyfourseven: bool = BooleanValidator()
-    regular_hours: OptionalUnset[List[RegularHoursInput]] = (
+    regular_hours: OptionalUnset[list[RegularHoursInput]] = (
         ListValidator(DataclassValidator(RegularHoursInput)),
         DefaultUnset,
     )
-    exceptional_openings: OptionalUnset[List[ExceptionalPeriodInput]] = (
+    exceptional_openings: OptionalUnset[list[ExceptionalPeriodInput]] = (
         ListValidator(DataclassValidator(ExceptionalPeriodInput)),
         DefaultUnset,
     )
-    exceptional_closings: OptionalUnset[List[ExceptionalPeriodInput]] = (
+    exceptional_closings: OptionalUnset[list[ExceptionalPeriodInput]] = (
         ListValidator(DataclassValidator(ExceptionalPeriodInput)),
         DefaultUnset,
     )
@@ -188,11 +187,11 @@ class EnvironmentalImpactInput(ValidataclassMixin):
 @validataclass
 class EnergyMixInput(ValidataclassMixin):
     is_green_energy: bool = BooleanValidator()
-    energy_sources: OptionalUnset[List[EnergySourceInput]] = (
+    energy_sources: OptionalUnset[list[EnergySourceInput]] = (
         ListValidator(DataclassValidator(EnergySourceInput)),
         DefaultUnset,
     )
-    environ_impact: OptionalUnset[List[EnvironmentalImpactInput]] = (
+    environ_impact: OptionalUnset[list[EnvironmentalImpactInput]] = (
         ListValidator(DataclassValidator(EnvironmentalImpactInput)),
         DefaultUnset,
     )
@@ -205,24 +204,24 @@ class EvseInput(ValidataclassMixin):
     id: str = StringValidator(max_length=36)
     evse_id: str = StringValidator(max_length=36)
     status: EvseStatus = EnumValidator(EvseStatus)
-    status_schedule: OptionalUnset[List[StatusScheduleInput]] = (
+    status_schedule: OptionalUnset[list[StatusScheduleInput]] = (
         ListValidator(DataclassValidator(StatusScheduleInput)),
         DefaultUnset,
     )
-    capabilities: OptionalUnset[List[Capability]] = ListValidator(EnumValidator(Capability)), DefaultUnset
-    connectors: List[ConnectorInput] = ListValidator(DataclassValidator(ConnectorInput), min_length=1), DefaultUnset
+    capabilities: OptionalUnset[list[Capability]] = ListValidator(EnumValidator(Capability)), DefaultUnset
+    connectors: list[ConnectorInput] = ListValidator(DataclassValidator(ConnectorInput), min_length=1), DefaultUnset
     floor_level: str | None | UnsetValueType = Noneable(StringValidator(max_length=4)), DefaultUnset
     coordinates: OptionalUnset[GeoLocationInput] = DataclassValidator(GeoLocationInput), DefaultUnset
     physical_reference: str | None | UnsetValueType = Noneable(StringValidator(max_length=16)), DefaultUnset
-    directions: OptionalUnset[List[DisplayTextInput]] = (
+    directions: OptionalUnset[list[DisplayTextInput]] = (
         ListValidator(DataclassValidator(DisplayTextInput)),
         DefaultUnset,
     )
-    parking_restrictions: OptionalUnset[List[ParkingRestriction]] = (
+    parking_restrictions: OptionalUnset[list[ParkingRestriction]] = (
         ListValidator(EnumValidator(ParkingRestriction)),
         DefaultUnset,
     )
-    images: OptionalUnset[List[ImageInput]] = ListValidator(DataclassValidator(ImageInput)), DefaultUnset
+    images: OptionalUnset[list[ImageInput]] = ListValidator(DataclassValidator(ImageInput)), DefaultUnset
     last_updated: OptionalUnset[datetime] = (
         DateTimeValidator(
             DateTimeFormat.LOCAL_OR_UTC,
@@ -243,24 +242,24 @@ class LocationInput(ValidataclassMixin):
     state: OptionalUnset[str] = StringValidator(max_length=20), DefaultUnset
     country: str = StringValidator(min_length=3, max_length=3)
     coordinates: GeoLocationInput = DataclassValidator(GeoLocationInput)
-    related_locations: OptionalUnset[List[AdditionalGeoLocationInput]] = (
+    related_locations: OptionalUnset[list[AdditionalGeoLocationInput]] = (
         ListValidator(DataclassValidator(AdditionalGeoLocationInput)),
         DefaultUnset,
     )
     parking_type: OptionalUnset[ParkingType] = EnumValidator(ParkingType), DefaultUnset
-    evses: OptionalUnset[List[EvseInput]] = ListValidator(DataclassValidator(EvseInput)), DefaultUnset
-    directions: OptionalUnset[List[DisplayTextInput]] = (
+    evses: OptionalUnset[list[EvseInput]] = ListValidator(DataclassValidator(EvseInput)), DefaultUnset
+    directions: OptionalUnset[list[DisplayTextInput]] = (
         ListValidator(DataclassValidator(DisplayTextInput)),
         DefaultUnset,
     )
     operator: OptionalUnset[BusinessDetailsInput] = DataclassValidator(BusinessDetailsInput), DefaultUnset
     suboperator: OptionalUnset[BusinessDetailsInput] = DataclassValidator(BusinessDetailsInput), DefaultUnset
     owner: OptionalUnset[BusinessDetailsInput] = DataclassValidator(BusinessDetailsInput), DefaultUnset
-    facilities: OptionalUnset[List[Facility]] = ListValidator(EnumValidator(Facility)), DefaultUnset
+    facilities: OptionalUnset[list[Facility]] = ListValidator(EnumValidator(Facility)), DefaultUnset
     time_zone: str = StringValidator(max_length=255)
     opening_times: OptionalUnset[HoursInput] = DataclassValidator(HoursInput), DefaultUnset
     charging_when_closed: OptionalUnset[bool] = BooleanValidator(), DefaultUnset
-    images: OptionalUnset[List[ImageInput]] = ListValidator(DataclassValidator(ImageInput)), DefaultUnset
+    images: OptionalUnset[list[ImageInput]] = ListValidator(DataclassValidator(ImageInput)), DefaultUnset
     energy_mix: OptionalUnset[EnergyMixInput] = DataclassValidator(EnergyMixInput), DefaultUnset
     last_updated: OptionalUnset[datetime] = (
         DateTimeValidator(
@@ -276,4 +275,4 @@ class LocationInput(ValidataclassMixin):
 class OcpiInput(ValidataclassMixin):
     status_code: int = IntegerValidator()
     timestamp: datetime = DateTimeValidator()
-    data: List[LocationInput] = ListValidator(UnvalidatedDictValidator())
+    data: list[dict] = ListValidator(AnythingValidator(allowed_types=[dict]))

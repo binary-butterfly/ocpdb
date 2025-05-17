@@ -16,8 +16,6 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from typing import List, Type
-
 from flask import Response, request
 
 from webapp.common.base_blueprint import BaseBlueprint
@@ -30,7 +28,7 @@ from .giroe.giroe_rest_api import GiroeBlueprint
 class ServerRestApi(BaseBlueprint):
     documentation_base = True
     documentation_auth = False
-    blueprints: List[Type[ServerApiBaseBlueprint]] = []
+    blueprints: list[type[ServerApiBaseBlueprint]] = []
 
     def __init__(self):
         super().__init__('server', __name__, url_prefix='/api/server/v1')

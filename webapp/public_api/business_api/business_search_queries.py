@@ -16,8 +16,6 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from typing import Optional
-
 from validataclass.dataclasses import Default
 from validataclass.validators import AnyOfValidator, StringValidator
 from validataclass_search_queries.filters import SearchParamContains
@@ -32,6 +30,6 @@ class BusinessSearchQuery(SortingMixin, OffsetPaginationMixin, BaseSearchQuery):
     sorted_by: str = AnyOfValidator(['name', 'created', 'modified']), Default('name')
 
     # Search filters
-    name: Optional[str] = SearchParamContains(), StringValidator()
+    name: str | None = SearchParamContains(), StringValidator()
     # Pagination
-    limit: Optional[int] = PaginationLimitValidator(optional=False, max_value=1000), Default(100)
+    limit: int | None = PaginationLimitValidator(optional=False, max_value=1000), Default(100)

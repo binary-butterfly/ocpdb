@@ -18,27 +18,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from celery.schedules import crontab
 
-from webapp.common.config import ConfigHelper
-from webapp.common.logger import Logger
 from webapp.extensions import celery
+from webapp.services.base_service import BaseService
 
 from .generic_import_heartbeat_tasks import image_import_task, realtime_import_task, static_import_task
 from .import_services import ImportServices
 
 
-class GenericImportRunner:
-    logger: Logger
-    config_helper: ConfigHelper
+class GenericImportRunner(BaseService):
     import_services: ImportServices
 
-    def __init__(
-        self,
-        logger: Logger,
-        config_helper: ConfigHelper,
-        import_services: ImportServices,
-    ):
-        self.logger = logger
-        self.config_helper = config_helper
+    def __init__(self, *, import_services: ImportServices, **kwargs):
+        super().__init__(**kwargs)
         self.import_services = import_services
 
     def start(self):
