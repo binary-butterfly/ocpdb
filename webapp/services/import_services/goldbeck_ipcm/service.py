@@ -17,14 +17,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 import logging
+from abc import ABC
 from datetime import datetime, timezone
 
 from validataclass.exceptions import ValidationError
-from validataclass.validators import DataclassValidator, ListValidator, AnythingValidator
+from validataclass.validators import AnythingValidator, DataclassValidator, ListValidator
 
 from webapp.common.error_handling.exceptions import RemoteException
 from webapp.common.logging.models import LogMessageType
-from webapp.models.source import SourceStatus
+from webapp.models.source import Source, SourceStatus
 from webapp.services.import_services.base_import_service import BaseImportService, SourceInfo
 from webapp.services.import_services.goldbeck_ipcm.validators import GoldbeckIpcmChargePoint
 from webapp.services.import_services.models import EvseUpdate, LocationUpdate
@@ -32,29 +33,25 @@ from webapp.services.import_services.models import EvseUpdate, LocationUpdate
 logger = logging.getLogger(__name__)
 
 
-class GoldbeckIpcmImportService(BaseImportService):
+class GoldbeckIpcmImportService(BaseImportService, ABC):
     list_validator: list[dict] = ListValidator(AnythingValidator(allowed_types=[dict]))
     chargepoint_validator = DataclassValidator(GoldbeckIpcmChargePoint)
 
-    source_info = SourceInfo(
-        uid='heilbronn_neckarbogen',
-        name='Heilbronn Neckarbogen',
-        public_url='https://www.heilbronn.de/bauen-wohnen/stadtquartier-neckarbogen.html',
-        has_realtime_data=True,
-    )
-
     def fetch_static_data(self):
         source = self.get_source()
-        location_updates: list[LocationUpdate] = []
+        location_updates_by_uid: dict[str, LocationUpdate] = {}
 
         static_data_updated_at = datetime.now(timezone.utc)
 
-        chargepoints, static_error_count = self._fetch_chargepoints()
+        chargepoints, static_error_count = self._fetch_chargepoints(source)
 
         for chargepoint in chargepoints:
-            location_updates.append(chargepoint.to_location_update())
+            location_update = chargepoint.to_location_update(
+                location_update=location_updates_by_uid.get(str(chargepoint.postalAddress.id)),
+            )
+            location_updates_by_uid[str(chargepoint.postalAddress.id)] = location_update
 
-        self.save_location_updates(location_updates)
+        self.save_location_updates(list(location_updates_by_uid.values()))
 
         self.update_source(
             source=source,
@@ -73,12 +70,10 @@ class GoldbeckIpcmImportService(BaseImportService):
         realtime_error_count = 0
         realtime_data_updated_at = datetime.now(timezone.utc)
 
-
-        chargepoints, static_error_count = self._fetch_chargepoints()
+        chargepoints, static_error_count = self._fetch_chargepoints(source)
 
         for chargepoint in chargepoints:
-            for outlets in chargepoint.outlets:
-                evse_updates.append(outlets.to_evse_update())
+            evse_updates += chargepoint.to_realtime_evse_updates()
 
         self.save_evse_updates(evse_updates)
 
@@ -89,14 +84,12 @@ class GoldbeckIpcmImportService(BaseImportService):
             realtime_data_updated_at=realtime_data_updated_at,
         )
 
-
-    def _fetch_chargepoints(self) -> tuple[list[GoldbeckIpcmChargePoint], int]:
+    def _fetch_chargepoints(self, source: Source) -> tuple[list[GoldbeckIpcmChargePoint], int]:
         chargepoints: list[GoldbeckIpcmChargePoint] = []
         error_count = 0
 
         try:
             chargepoint_list = self.json_request(
-                path='/api/server/v1/charge-connectors',
                 auth=(self.config.get('user'), self.config.get('password')),
             )
             chargepoint_dicts = self.list_validator.validate(chargepoint_list)
@@ -121,3 +114,13 @@ class GoldbeckIpcmImportService(BaseImportService):
                 continue
 
         return chargepoints, error_count
+
+
+class HeilbronnNeckarbogenImportService(GoldbeckIpcmImportService):
+    source_info = SourceInfo(
+        uid='heilbronn_neckarbogen',
+        name='Heilbronn Neckarbogen',
+        public_url='https://www.heilbronn.de/bauen-wohnen/stadtquartier-neckarbogen.html',
+        source_url='https://control.goldbeck-parking.de/ipaw/services/charging/v1x0/charging-stations?maxResults=1000',
+        has_realtime_data=True,
+    )

@@ -17,6 +17,10 @@ SOURCES:
   chargecloud_pforzheim:
   chargecloud_stuttgart:
     url: http://mocked-sw-stuttgart:5000
+  heilbronn_neckarbogen:
+    user: user
+    password: password
+
 
 
 AUTO_FETCH_SOURCES:

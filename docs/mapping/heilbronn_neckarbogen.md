@@ -1,4 +1,4 @@
-# Heilbronn Neckarbogen Mapping
+**# Heilbronn Neckarbogen Mapping
 
 This documents the input data model from Heilbronn Neckarbogen and the mapping to
 [OCPI 2.2.1 Locations / EVSEs / Connectors](https://github.com/ocpi/ocpi/blob/release-2.2.1-bugfixes/mod_locations.asciidoc#131-location-object). It is an extension to the `_general.md`, for global mapping
@@ -20,7 +20,8 @@ Global / generated values:
 | id                     | integer                                       | 1           | evse.uid          |         |
 | lastUpdatedAt          | string (date-time)                            | 1           | evse.last_updated |         |
 | modelName              | string                                        | 1           |                   |         |
-| name                   | string                                        | ?           | evse.directions   |         |
+| name                   | string                                        | ?           |                   |         |
+| openingHours           | [OpeningHours](#OpeningHours)                 | *           |                   |         |
 | nativeStatus           | OCPI EVSE Status                              | 1           |                   |         |
 | outlets                | [Outlet](#Outlet)                             | *           |                   |         |
 | position               | [Position](#Position)                         | 1           |                   |         |
@@ -36,7 +37,24 @@ Some OCPP related attributes, none of them have an OCPI representation.
 | Field         | Type               | Cardinality | Mapping | Comment |
 |---------------|--------------------|-------------|---------|---------|
 | key           | string             | 1           |         |         |
-| value         | string             | 1           |         |         |
+| value         | string             | ?           |         |         |
+
+
+## OpeningHours
+
+| Field          | Type                                  | Cardinality | Mapping | Comment |
+|----------------|---------------------------------------|-------------|---------|---------|
+| id             | integer                               | 1           |         |         |
+| type           | [OpeningHoursType](#OpeningHoursType) | ?           |         |         |
+| plainTextValue | string                                |             |         |         |
+
+
+### OpeningHoursType
+
+| Key                     | Mapping |
+|-------------------------|---------|
+| PlainTextTimeDefinition |         |
+
 
 
 ## Position
@@ -75,14 +93,14 @@ The tenant is input for an OCPI business, which is used as `location.operator`.
 
 The outlet represents an EVSE.
 
-| Field        | Type                                | Cardinality | Mapping      | Comment |
-|--------------|-------------------------------------|-------------|--------------|---------|
-| attributes   | [OutletAttribute](#OutletAttribute) | *           |              |         |
-| connectorId  | integer                             | 1           |              |         |
-| evseId       | string                              | 1           | evse.evse_id |         |
-| image        | [Image](#Image)                     | 1           |              |         |
-| modelName    | string                              | 1           |              |         |
-| nativeStatus | OCPI EVSE Status                    | 1           | evse.status  |         |
+| Field        | Type                                | Cardinality | Mapping      | Comment              |
+|--------------|-------------------------------------|-------------|--------------|----------------------|
+| attributes   | [OutletAttribute](#OutletAttribute) | *           |              |                      |
+| connectorId  | integer                             | 1           |              |                      |
+| evseId       | string                              | 1           | evse.evse_id |                      |
+| image        | [Image](#Image)                     | 1           |              |                      |
+| modelName    | string                              | 1           |              |                      |
+| nativeStatus | OCPI EVSE Status                    | ?           | evse.status  | Defaults to `STATIC` |
 
 
 ## Image
@@ -114,4 +132,4 @@ Following keys are used:
 | MAX_ELECTRIC_POWER | connector.max_electric_power |                                                                            |
 | MAX_VOLTAGE        | connector.max_voltage        |                                                                            |
 | MAX_AMPERAGE       | connector.max_amperage       | Always 32A, which is impossible with also always 11kW, fixed during import |
-| POWER_TYPE         | connector.standard           | Always `AC3`, which is mapped to `IEC_62196_T2`.                           |
+| POWER_TYPE         | connector.standard           | Always `AC3`, which is mapped to `IEC_62196_T2`.                           |**
