@@ -96,15 +96,6 @@ services:
       # Disable spammy logging
       APACHE_LOG_DIR: /tmp/logs
 
-  pgadmin:
-    image: dpage/pgadmin4
-    ports:
-      - '8092:80'
-    environment:
-      PGADMIN_DEFAULT_EMAIL: admin@binary-butterfly.de
-      PGADMIN_DISABLE_POSTFIX: 1
-      PGADMIN_DEFAULT_PASSWORD: admin
-
   rabbitmq:
     image: rabbitmq:latest
     user: rabbitmq

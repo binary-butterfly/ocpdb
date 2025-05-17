@@ -19,7 +19,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from dataclasses import asdict, dataclass
 from datetime import datetime
 from decimal import Decimal
-from typing import List, Optional
 
 from validataclass.helpers import OptionalUnset, UnsetValue
 
@@ -35,12 +34,12 @@ class SourceInfo:
     uid: str
     name: str
     public_url: str
-    has_realtime_data: Optional[bool]
+    has_realtime_data: bool | None
     timezone: str = 'Europe/Berlin'
-    source_url: Optional[str] = None
-    attribution_license: Optional[str] = None
-    attribution_url: Optional[str] = None
-    attribution_contributor: Optional[str] = None
+    source_url: str | None = None
+    attribution_license: str | None = None
+    attribution_url: str | None = None
+    attribution_contributor: str | None = None
 
     def to_dict(self) -> dict:
         return {key: value for key, value in asdict(self).items() if value is not None}
@@ -80,7 +79,7 @@ class BusinessUpdate(BaseUpdate):
 @dataclass
 class RelatedResourceUpdate(BaseUpdate):
     url: OptionalUnset[str] = UnsetValue
-    types: OptionalUnset[List[RelatedResourceType]] = UnsetValue
+    types: OptionalUnset[list[RelatedResourceType]] = UnsetValue
 
 
 @dataclass
@@ -116,9 +115,9 @@ class EvseUpdate(BaseUpdate):
     uid: str
     evse_id: str
 
-    connectors: OptionalUnset[List[ConnectorUpdate]] = UnsetValue
-    images: OptionalUnset[List[ImageUpdate]] = UnsetValue
-    related_resource: OptionalUnset[List[RelatedResourceUpdate]] = UnsetValue
+    connectors: OptionalUnset[list[ConnectorUpdate]] = UnsetValue
+    images: OptionalUnset[list[ImageUpdate]] = UnsetValue
+    related_resource: OptionalUnset[list[RelatedResourceUpdate]] = UnsetValue
 
     status: OptionalUnset[EvseStatus] = UnsetValue
 
@@ -136,8 +135,8 @@ class EvseUpdate(BaseUpdate):
 
     last_updated: OptionalUnset[datetime] = UnsetValue
     max_reservation: OptionalUnset[float] = UnsetValue
-    capabilities: OptionalUnset[List[Capability]] = UnsetValue
-    parking_restrictions: OptionalUnset[List[ParkingRestriction]] = UnsetValue
+    capabilities: OptionalUnset[list[Capability]] = UnsetValue
+    parking_restrictions: OptionalUnset[list[ParkingRestriction]] = UnsetValue
 
     terms_and_conditions: OptionalUnset[str] = UnsetValue
 
@@ -163,14 +162,14 @@ class LocationUpdate(BaseUpdate):
 
     uid: str
     source: str
-    evses: OptionalUnset[List[EvseUpdate]] = UnsetValue
-    images: OptionalUnset[List[ImageUpdate]] = UnsetValue
+    evses: OptionalUnset[list[EvseUpdate]] = UnsetValue
+    images: OptionalUnset[list[ImageUpdate]] = UnsetValue
     operator: OptionalUnset[BusinessUpdate] = UnsetValue
     suboperator: OptionalUnset[BusinessUpdate] = UnsetValue
     owner: OptionalUnset[BusinessUpdate] = UnsetValue
-    exceptional_closings: OptionalUnset[List[ExceptionalPeriodUpdate]] = UnsetValue
-    exceptional_openings: OptionalUnset[List[ExceptionalPeriodUpdate]] = UnsetValue
-    regular_hours: OptionalUnset[List[RegularHoursUpdate]] = UnsetValue
+    exceptional_closings: OptionalUnset[list[ExceptionalPeriodUpdate]] = UnsetValue
+    exceptional_openings: OptionalUnset[list[ExceptionalPeriodUpdate]] = UnsetValue
+    regular_hours: OptionalUnset[list[RegularHoursUpdate]] = UnsetValue
 
     name: OptionalUnset[str] = UnsetValue
     address: OptionalUnset[str] = UnsetValue

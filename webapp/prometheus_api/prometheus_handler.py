@@ -19,7 +19,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from datetime import datetime, timezone
 
 from webapp.common.config import ConfigHelper
-from webapp.common.logger import Logger
 from webapp.models.evse import EvseStatus
 from webapp.models.source import SourceStatus
 from webapp.prometheus_api.prometheus_models import EvseMetric, Metrics, MetricType, SourceMetric
@@ -27,19 +26,16 @@ from webapp.repositories import EvseRepository, SourceRepository
 
 
 class PrometheusHandler:
-    logger: Logger
     config_helper: ConfigHelper
     source_repository: SourceRepository
     evse_repository: EvseRepository
 
     def __init__(
         self,
-        logger: Logger,
         config_helper: ConfigHelper,
         source_repository: SourceRepository,
         evse_repository: EvseRepository,
     ):
-        self.logger = logger
         self.config_helper = config_helper
         self.source_repository = source_repository
         self.evse_repository = evse_repository

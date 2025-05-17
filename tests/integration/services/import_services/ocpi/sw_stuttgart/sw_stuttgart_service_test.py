@@ -37,7 +37,9 @@ def test_sw_stuttgart_import(db: SQLAlchemy, requests_mock: Mocker) -> None:
     and a sample of the imported data's content.
     """
 
-    sw_stuttgart_service: SWStuttgartImportService = dependencies.get_import_services().sw_stuttgart_import_service
+    sw_stuttgart_service: SWStuttgartImportService = dependencies.get_import_services().importer_by_uid[
+        'chargecloud_stuttgart'
+    ]
 
     locations_in_db_before = db.session.query(Location).count()
     evses_in_db_before = db.session.query(Evse).count()
@@ -64,7 +66,7 @@ def test_sw_stuttgart_import(db: SQLAlchemy, requests_mock: Mocker) -> None:
     assert sample_location.to_dict() == {
         'id': ANY,
         'original_id': '2185120',
-        'source': 'sw_stuttgart',
+        'source': 'chargecloud_stuttgart',
         'name': 'B+B Tiefgarage / Kronprinzstr. 6 / 4. UG',
         'address': 'Kronprinzstr. 6 / 4. UG',
         'postal_code': '70173',
