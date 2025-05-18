@@ -320,7 +320,7 @@ class BnetzaChargingStation:
 
         location_update = LocationUpdate(
             uid=str(self.id),
-            source='bnetza',
+            source='bnetza_api',
             address=address,
             postal_code=self.postal_code,
             city=self.city,
