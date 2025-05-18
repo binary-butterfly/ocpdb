@@ -13,7 +13,7 @@ ENV PYTHONUNBUFFERED 1
 # Create venv
 RUN python -m venv /opt/venv
 # Make sure to use the venv
-ENV PATH="/opt/venv/bin:$PATH"
+ENV PATH "/opt/venv/bin:$PATH"
 
 # Install dependencies to venv
 COPY requirements.txt .
@@ -38,7 +38,7 @@ WORKDIR /app
 COPY --from=builder /opt/venv /opt/venv
 
 # Make sure to use the venv
-ENV PATH="/opt/venv/bin:$PATH"
+ENV PATH "/opt/venv/bin:$PATH"
 
 # Copy application code
 COPY . /app
