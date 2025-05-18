@@ -44,6 +44,7 @@ ENV PATH="/opt/venv/bin:$PATH"
 COPY ./webapp /app/webapp
 COPY ./migrations /app/migrations
 COPY ./data /app/data
+COPY ./.flaskenv /app/.flaskenv
 
 EXPOSE 5000
 CMD ["gunicorn", "--bind", "0.0.0.0:5000", "app:app"]
