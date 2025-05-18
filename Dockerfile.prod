@@ -41,7 +41,9 @@ COPY --from=builder /opt/venv /opt/venv
 ENV PATH="/opt/venv/bin:$PATH"
 
 # Copy application code
-COPY . /app
+COPY ./webapp /app/webapp
+COPY ./migrations /app/migrations
+COPY ./data /app/data
 
 EXPOSE 5000
 CMD ["gunicorn", "--bind", "0.0.0.0:5000", "app:app"]
