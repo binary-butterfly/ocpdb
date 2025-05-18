@@ -28,6 +28,7 @@ from webapp.services.base_service import BaseService
 from webapp.services.import_services.base_import_service import BaseImportService
 from webapp.services.import_services.bnetza import BnetzaApiImportService, BnetzaExcelImportService
 from webapp.services.import_services.giroe import GiroeImportService
+from webapp.services.import_services.goldbeck_ipcm import HeilbronnNeckarbogenImportService
 from webapp.services.import_services.lichtblick import LichtblickImportService
 from webapp.services.import_services.ochp.albwerk import AlbwerkOchpImportService
 from webapp.services.import_services.ochp.ladenetz import LadenetzOchpImportService
@@ -40,15 +41,16 @@ class ImportServices(BaseService):
     importer_by_uid: dict[str, BaseImportService] = {}
 
     importer_classes: list[type[BaseImportService]] = [
+        AlbwerkOchpImportService,
         BnetzaApiImportService,
         BnetzaExcelImportService,
-        LichtblickImportService,
         GiroeImportService,
-        AlbwerkOchpImportService,
+        HeilbronnNeckarbogenImportService,
         LadenetzOchpImportService,
+        LichtblickImportService,
+        PforzheimImportService,
         StadtnaviImportService,
         SWStuttgartImportService,
-        PforzheimImportService,
     ]
 
     def __init__(
