@@ -17,7 +17,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 from webapp.common.config import ConfigHelper
-from webapp.common.logger import Logger
 
 
 class ServerApiBaseHandler:
@@ -25,9 +24,7 @@ class ServerApiBaseHandler:
     Base class for API handler classes (`auth.AuthHandler`, etc.)
     """
 
-    logger: Logger
     config_helper: ConfigHelper
 
-    def __init__(self, logger: Logger, config_helper: ConfigHelper):
-        self.logger = logger
+    def __init__(self, config_helper: ConfigHelper):
         self.config_helper = config_helper

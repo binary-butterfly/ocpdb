@@ -18,18 +18,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from validataclass.helpers import UnsetValueType
 
-from webapp.common.remote_helper import RemoteServerType
 from webapp.services.import_services.models import BusinessUpdate, SourceInfo
 from webapp.services.import_services.ochp.base_ochp_service import BaseOchpImportService
 
 
 class AlbwerkOchpImportService(BaseOchpImportService):
-    remote_server_type = RemoteServerType.OCHP_ALBWERK
-
     source_info = SourceInfo(
         uid='ochp_albwerk',
         name='Albwerk',
         public_url='https://albwerk.de',
+        source_url='https://echs.e-clearing.net',
         has_realtime_data=True,
     )
 

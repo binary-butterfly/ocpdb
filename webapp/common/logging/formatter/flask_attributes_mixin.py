@@ -1,6 +1,6 @@
 """
 Open ChargePoint DataBase OCPDB
-Copyright (C) 2022 binary butterfly GmbH
+Copyright (C) 2025 binary butterfly GmbH
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published by
@@ -16,4 +16,14 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from .chargeit_service import ChargeitImportService
+from typing import Any
+
+from flask import has_app_context
+from flask.globals import app_ctx
+
+
+class FlaskAttributesMixin:
+    @staticmethod
+    def add_additional_attributes(record_attributes: dict[str, Any]) -> None:
+        if has_app_context() and hasattr(app_ctx, 'butterfly_butterfly_telemetry_context'):
+            record_attributes.update(getattr(app_ctx, 'butterfly_butterfly_telemetry_context'))

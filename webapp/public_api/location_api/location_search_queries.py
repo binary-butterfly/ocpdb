@@ -17,7 +17,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 from decimal import Decimal
-from typing import Optional
 
 from validataclass.dataclasses import Default
 from validataclass.exceptions import ValidationError
@@ -34,13 +33,13 @@ class LocationSearchQuery(SortingMixin, OffsetPaginationMixin, BaseSearchQuery):
     sorted_by: str = AnyOfValidator(['name', 'created', 'modified']), Default('name')
 
     # Search filters
-    name: Optional[str] = SearchParamContains(), StringValidator()
-    source: Optional[str] = SearchParamContains(), StringValidator()
-    postal_code: Optional[str] = SearchParamEquals(), StringValidator()
+    name: str | None = SearchParamContains(), StringValidator()
+    source: str | None = SearchParamContains(), StringValidator()
+    postal_code: str | None = SearchParamEquals(), StringValidator()
 
-    lat: Optional[Decimal] = SearchParamCustom(), DecimalValidator()
-    lon: Optional[Decimal] = SearchParamCustom(), DecimalValidator()
-    radius: Optional[int] = SearchParamCustom(), IntegerValidator(allow_strings=True)
+    lat: Decimal | None = SearchParamCustom(), DecimalValidator()
+    lon: Decimal | None = SearchParamCustom(), DecimalValidator()
+    radius: int | None = SearchParamCustom(), IntegerValidator(allow_strings=True)
 
     # Pagination
     limit: int = PaginationLimitValidator(optional=False, max_value=1000), Default(100)

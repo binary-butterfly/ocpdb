@@ -20,7 +20,6 @@ import hmac
 from dataclasses import dataclass
 from enum import Enum
 from hashlib import sha256
-from typing import Dict, List
 
 from flask import Config
 
@@ -44,7 +43,7 @@ class ServerAuthUser:
 
     username: str
     password_hash: str
-    roles: List[ServerAuthRole]
+    roles: list[ServerAuthRole]
 
     def __post_init__(self):
         # Type checks
@@ -77,9 +76,9 @@ class ServerAuthDatabase:
     Manages server API users. Wrapper around the SERVER_AUTH_USERS dictionary from the application config.
     """
 
-    _users: Dict[str, ServerAuthUser]
+    _users: dict[str, ServerAuthUser]
 
-    def __init__(self, *, server_auth_users: Dict[str, ServerAuthUser]):
+    def __init__(self, *, server_auth_users: dict[str, ServerAuthUser]):
         if not all(isinstance(user, ServerAuthUser) for user in server_auth_users.values()):
             raise Exception('invalid server config')
         self._users = server_auth_users

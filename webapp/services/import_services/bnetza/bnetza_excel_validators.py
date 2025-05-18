@@ -19,7 +19,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from datetime import datetime
 from decimal import Decimal
 from enum import Enum
-from typing import List, Optional
 
 from validataclass.dataclasses import validataclass
 from validataclass.validators import EnumValidator, IntegerValidator, ListValidator, StringValidator
@@ -68,21 +67,21 @@ class BnetzaRowInput:
     connection_power: float = CommaStringToDecimalValidator()
     chargestation_type: BnetzaChargestationType = EnumValidator(BnetzaChargestationType)
     connector_count: int = IntegerValidator()
-    connector_1_type: List[BnetzaConnectorType] = ListValidator(EnumValidator(BnetzaConnectorType))
-    connector_1_power: Optional[float] = EmptystringToNoneable(CommaStringToDecimalValidator())
-    connector_1_public_key: Optional[str] = EmptystringToNoneable(IntegerToStringValidator(multiline=True))
-    connector_2_type: List[BnetzaConnectorType] = ListValidator(EnumValidator(BnetzaConnectorType))
-    connector_2_power: Optional[float] = EmptystringToNoneable(CommaStringToDecimalValidator())
-    connector_2_public_key: Optional[str] = EmptystringToNoneable(IntegerToStringValidator(multiline=True))
-    connector_3_type: List[BnetzaConnectorType] = ListValidator(EnumValidator(BnetzaConnectorType))
-    connector_3_power: Optional[float] = EmptystringToNoneable(CommaStringToDecimalValidator())
-    connector_3_public_key: Optional[str] = EmptystringToNoneable(IntegerToStringValidator(multiline=True))
-    connector_4_type: List[BnetzaConnectorType] = ListValidator(EnumValidator(BnetzaConnectorType))
-    connector_4_power: Optional[float] = EmptystringToNoneable(CommaStringToDecimalValidator())
-    connector_4_public_key: Optional[str] = EmptystringToNoneable(IntegerToStringValidator(multiline=True))
-    connector_5_type: List[BnetzaConnectorType] = ListValidator(EnumValidator(BnetzaConnectorType))
-    connector_5_power: Optional[float] = EmptystringToNoneable(CommaStringToDecimalValidator())
-    connector_5_public_key: Optional[str] = EmptystringToNoneable(IntegerToStringValidator(multiline=True))
-    connector_6_type: List[BnetzaConnectorType] = ListValidator(EnumValidator(BnetzaConnectorType))
-    connector_6_power: Optional[float] = EmptystringToNoneable(CommaStringToDecimalValidator())
-    connector_6_public_key: Optional[str] = EmptystringToNoneable(IntegerToStringValidator(multiline=True))
+    connector_1_type: list[BnetzaConnectorType] = ListValidator(EnumValidator(BnetzaConnectorType))
+    connector_1_power: float | None = EmptystringToNoneable(CommaStringToDecimalValidator())
+    connector_1_public_key: str | None = EmptystringToNoneable(IntegerToStringValidator(multiline=True))
+    connector_2_type: list[BnetzaConnectorType] = ListValidator(EnumValidator(BnetzaConnectorType))
+    connector_2_power: float | None = EmptystringToNoneable(CommaStringToDecimalValidator())
+    connector_2_public_key: str | None = EmptystringToNoneable(IntegerToStringValidator(multiline=True))
+    connector_3_type: list[BnetzaConnectorType] = ListValidator(EnumValidator(BnetzaConnectorType))
+    connector_3_power: float | None = EmptystringToNoneable(CommaStringToDecimalValidator())
+    connector_3_public_key: str | None = EmptystringToNoneable(IntegerToStringValidator(multiline=True))
+    connector_4_type: list[BnetzaConnectorType] = ListValidator(EnumValidator(BnetzaConnectorType))
+    connector_4_power: float | None = EmptystringToNoneable(CommaStringToDecimalValidator())
+    connector_4_public_key: str | None = EmptystringToNoneable(IntegerToStringValidator(multiline=True))
+    connector_5_type: list[BnetzaConnectorType] = ListValidator(EnumValidator(BnetzaConnectorType))
+    connector_5_power: float | None = EmptystringToNoneable(CommaStringToDecimalValidator())
+    connector_5_public_key: str | None = EmptystringToNoneable(IntegerToStringValidator(multiline=True))
+    connector_6_type: list[BnetzaConnectorType] = ListValidator(EnumValidator(BnetzaConnectorType))
+    connector_6_power: float | None = EmptystringToNoneable(CommaStringToDecimalValidator())
+    connector_6_public_key: str | None = EmptystringToNoneable(IntegerToStringValidator(multiline=True))

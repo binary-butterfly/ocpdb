@@ -4,6 +4,8 @@ on:
   release:
     types:
       - published
+  pull_request:
+    branches: [ "main" ]
 
 jobs:
   build-publish:
@@ -22,12 +24,25 @@ jobs:
         username: ${{ github.actor }}
         password: ${{ github.token }}
 
-    - name: build and push Docker image
+    - name: build and push Docker release image
       uses: docker/build-push-action@v6
+      if: github.ref_type == 'tag'
       with:
         push: true
         tags: |
           ghcr.io/${{ github.repository }}:latest,ghcr.io/${{ github.repository }}:${{ github.ref_name }}
+        platforms: linux/amd64,linux/arm64
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+        file: Dockerfile.prod
+
+    - name: build and push Docker branch image
+      uses: docker/build-push-action@v6
+      if: github.ref_type == 'branch'
+      with:
+        push: true
+        tags: |
+          ghcr.io/${{ github.repository }}:${{ github.head_ref }}
         platforms: linux/amd64,linux/arm64
         cache-from: type=gha
         cache-to: type=gha,mode=max

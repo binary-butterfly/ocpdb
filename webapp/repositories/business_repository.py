@@ -16,8 +16,6 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from typing import Optional
-
 from validataclass_search_queries.pagination import PaginatedResult
 from validataclass_search_queries.search_queries import BaseSearchQuery
 
@@ -32,7 +30,7 @@ class BusinessRepository(BaseRepository[Business]):
     def fetch_by_id(self, business_id: int) -> Business:
         return self.fetch_resource_by_id(business_id)
 
-    def fetch_businesses(self, search_query: Optional[BaseSearchQuery] = None) -> PaginatedResult[Business]:
+    def fetch_businesses(self, search_query: BaseSearchQuery | None = None) -> PaginatedResult[Business]:
         query = self.session.query(Business)
         return self._search_and_paginate(query, search_query)
 

@@ -16,15 +16,21 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+import logging
 from datetime import datetime, timezone
 
 from celery.schedules import crontab
 from validataclass.exceptions import ValidationError
 from validataclass.validators import DataclassValidator
 
+from webapp.common.contexts import TelemetryContext
+from webapp.common.logging.models import LogMessageType
+from webapp.models.source import SourceStatus
 from webapp.services.import_services.base_import_service import BaseImportService
 from webapp.services.import_services.bnetza.bnetza_api_validators import BnetzaChargingStation, BnetzaResponseInput
 from webapp.services.import_services.models import LocationUpdate, SourceInfo
+
+logger = logging.getLogger(__name__)
 
 
 class BnetzaApiImportService(BaseImportService):
@@ -38,16 +44,19 @@ class BnetzaApiImportService(BaseImportService):
         name='Bundesnetzagentur',
         public_url='https://www.bundesnetzagentur.de/DE/Fachthemen/ElektrizitaetundGas/E-Mobilitaet'
         '/Ladesaeulenkarte/start.html',
+        source_url='https://ladesaeulenregister.bnetza.de/els/service/public/v1/chargepoints',
         attribution_license='CC BY 4.0',
         attribution_url='https://creativecommons.org/licenses/by/4.0/deed.de',
         has_realtime_data=False,
     )
 
     def fetch_static_data(self):
-        last_updated = datetime.now(tz=timezone.utc)
+        source = self.get_source()
+        static_success_count = 0
+        static_error_count = 0
+        static_data_updated_at = datetime.now(tz=timezone.utc)
 
-        response_data = self.remote_helper.get(
-            url='https://ladesaeulenregister.bnetza.de/els/service/public/v1/chargepoints',
+        response_data = self.json_request(
             headers={'Accept': 'application/json'},
         )
 
@@ -58,12 +67,31 @@ class BnetzaApiImportService(BaseImportService):
             try:
                 charging_station = self.charging_station_validator.validate(charging_station_dict)
             except ValidationError as e:
-                self.logger.info(
-                    'import-bnetza-api',
+                logger.warning(
                     f'bnetza data {charging_station_dict} has validation error: {e.to_dict()}',
+                    extra={
+                        'attributes': {
+                            'type': LogMessageType.IMPORT_LOCATION,
+                            TelemetryContext.LOCATION: charging_station_dict.get('id'),
+                        },
+                    },
                 )
                 continue
 
-            location_updates.append(charging_station.to_location_update(last_updated=last_updated))
+            location_updates.append(charging_station.to_location_update(last_updated=static_data_updated_at))
+            static_success_count += 1
 
         self.save_location_updates(location_updates)
+
+        self.update_source(
+            source=source,
+            static_status=SourceStatus.ACTIVE,
+            static_error_count=static_error_count,
+            static_data_updated_at=static_data_updated_at,
+        )
+
+        logger.info(
+            f'Successfully updated {self.source_info.uid} static with {static_success_count} valid locations and '
+            f'{static_error_count} failed locations. .',
+            extra={'attributes': {'type': LogMessageType.IMPORT_LOCATION}},
+        )

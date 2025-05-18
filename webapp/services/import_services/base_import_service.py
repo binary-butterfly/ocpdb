@@ -18,12 +18,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from abc import ABC, abstractmethod
 from datetime import datetime, timezone
-from typing import Dict, List, Optional, Union
 
 from celery.schedules import crontab
 from validataclass.helpers import OptionalUnset, UnsetValue
 
-from webapp.common.remote_helper import RemoteHelper
+from webapp.common.contexts import TelemetryContext
+from webapp.common.remote_mixin import RemoteMixin
 from webapp.models import Business, Connector, Evse, Image, Location, RegularHours, Source
 from webapp.models.source import SourceStatus
 from webapp.repositories import (
@@ -31,7 +31,6 @@ from webapp.repositories import (
     EvseRepository,
     LocationRepository,
     ObjectNotFoundException,
-    OptionRepository,
     SourceRepository,
 )
 from webapp.repositories.business_repository import BusinessRepository
@@ -47,48 +46,45 @@ from webapp.services.import_services.models import (
 )
 
 
-class BaseImportService(BaseService, ABC):
-    remote_helper: RemoteHelper
-
+class BaseImportService(BaseService, RemoteMixin, ABC):
     source_repository: SourceRepository
     location_repository: LocationRepository
     evse_repository: EvseRepository
     connector_repository: ConnectorRepository
     business_repository: BusinessRepository
     image_repository: ImageRepository
-    option_repository: OptionRepository
 
     schedule: crontab | None = None
+    required_config_keys: list[str] = []
 
     @property
     @abstractmethod
     def source_info(self) -> SourceInfo:
         pass
 
+    @abstractmethod
+    def fetch_static_data(self): ...
+
     def __init__(
         self,
         *args,
-        remote_helper: RemoteHelper,
         source_repository: SourceRepository,
         location_repository: LocationRepository,
         evse_repository: EvseRepository,
         connector_repository: ConnectorRepository,
         business_repository: BusinessRepository,
         image_repository: ImageRepository,
-        option_repository: OptionRepository,
         **kwargs,
     ):
         super().__init__(*args, **kwargs)
-        self.remote_helper = remote_helper
         self.source_repository = source_repository
         self.location_repository = location_repository
         self.evse_repository = evse_repository
         self.connector_repository = connector_repository
         self.business_repository = business_repository
         self.image_repository = image_repository
-        self.option_repository = option_repository
 
-    def save_location_updates(self, location_updates: List[LocationUpdate]):
+    def save_location_updates(self, location_updates: list[LocationUpdate]):
         # get old location ids
         old_location_ids = self.location_repository.fetch_location_ids_by_source(self.source_info.uid)
 
@@ -112,9 +108,9 @@ class BaseImportService(BaseService, ABC):
     def save_location_update(
         self,
         location_update: LocationUpdate,
-        businesses_by_name: Optional[Dict[str, Business]] = None,
-        old_location_ids: Optional[List[int]] = None,
-        images_by_url: Optional[Dict[str, Image]] = None,
+        businesses_by_name: dict[str, Business] | None = None,
+        old_location_ids: list[int] | None = None,
+        images_by_url: dict[str, Image] | None = None,
     ):
         try:
             location = self.location_repository.fetch_location_by_uid(
@@ -146,7 +142,7 @@ class BaseImportService(BaseService, ABC):
         if old_location_ids is not None and location.id in old_location_ids:
             old_location_ids.remove(location.id)
 
-    def save_evse_updates(self, evse_updates: List[EvseUpdate]):
+    def save_evse_updates(self, evse_updates: list[EvseUpdate]):
         for evse_update in evse_updates:
             self.save_evse_update(evse_update)
 
@@ -164,8 +160,8 @@ class BaseImportService(BaseService, ABC):
     def get_evse(
         self,
         evse_update: EvseUpdate,
-        old_evse_by_uid: Dict[str, Evse],
-        images_by_url: Optional[Dict[str, Image]],
+        old_evse_by_uid: dict[str, Evse],
+        images_by_url: dict[str, Image] | None,
     ) -> Evse:
         evse = old_evse_by_uid.get(evse_update.uid, Evse())
 
@@ -183,7 +179,7 @@ class BaseImportService(BaseService, ABC):
         return evse
 
     @staticmethod
-    def get_connector(connector_update: ConnectorUpdate, old_connectors_by_uid: Dict[str, Connector]) -> Connector:
+    def get_connector(connector_update: ConnectorUpdate, old_connectors_by_uid: dict[str, Connector]) -> Connector:
         connector = old_connectors_by_uid.get(connector_update.uid, Connector())
 
         for key, value in connector_update.to_dict().items():
@@ -196,7 +192,7 @@ class BaseImportService(BaseService, ABC):
         location: Location,
         location_update: LocationUpdate,
         location_key: str,
-        businesses_by_name: Optional[Dict[str, Business]] = None,
+        businesses_by_name: dict[str, Business] | None = None,
     ):
         business_update = getattr(location_update, location_key)
         if business_update is UnsetValue:
@@ -231,9 +227,9 @@ class BaseImportService(BaseService, ABC):
 
     def set_image_list(
         self,
-        primary_object: Union[Location, Evse],
-        image_updates: OptionalUnset[List[ImageUpdate]],
-        images_by_url: Optional[Dict[str, Image]] = None,
+        primary_object: Location | Evse,
+        image_updates: OptionalUnset[list[ImageUpdate]],
+        images_by_url: dict[str, Image] | None = None,
     ):
         if image_updates is UnsetValue:
             return
@@ -266,7 +262,7 @@ class BaseImportService(BaseService, ABC):
         primary_object.images = new_images
 
     @staticmethod
-    def set_opening_times(location: Location, regular_hours_updates: OptionalUnset[List[RegularHoursUpdate]]):
+    def set_opening_times(location: Location, regular_hours_updates: OptionalUnset[list[RegularHoursUpdate]]):
         if regular_hours_updates is UnsetValue:
             return
         old_regular_hours_items = location.regular_hours
@@ -282,6 +278,8 @@ class BaseImportService(BaseService, ABC):
         location.regular_hours = new_regular_hours_items
 
     def get_source(self) -> Source:
+        self.context_helper.set_telemetry_context(TelemetryContext.SOURCE, self.source_info.uid)
+
         try:
             return self.source_repository.fetch_source_by_uid(self.source_info.uid)
         except ObjectNotFoundException:

@@ -10,35 +10,61 @@ CELERY_BROKER_URL: 'amqp://rabbitmq'
 
 OBJECT_ID_SECRET: secret
 
-SERVER_AUTH_USERS:
-  # Test user for local development
-  dev:
-    hash: 9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08  # test
-    roles:
-      - bnetza
-
-
-REMOTE_SERVERS:
-  OCHP_LADENETZ:
-    url: http://mocked-ochp:5000
-    user: ocpdb
-    password: test
-  STADTNAVI:
-    url: http://mocked-stadtnavi:5000
-  SW_STUTTGART:
-    url: http://mocked-sw-stuttgart:5000
-  CHARGEIT:
-    url: http://mocked-chargeit:5000
-    user: ocpdb
-    password: test
-  GIROE:
-    url: http://mocked-giroe:5000
-    user: ocpdb
-    password: test
-  BNETZA:
+SOURCES:
+  bnetza_api:
+  bnetza_excel:
     url: http://mocked-bnetza:5000
-    user: bnetza
-    password: test
+  chargecloud_pforzheim:
+  chargecloud_stuttgart:
+    url: http://mocked-sw-stuttgart:5000
+
 
 AUTO_FETCH_SOURCES:
-  - sw_stuttgart
+  - bnetza_api
+  - chargecloud_pforzheim
+  - chargecloud_stuttgart
+
+
+# This is a template. You can rename it to the config value LOGGING and adapt it to your needs.
+LOGGING_TEMPLATE:
+  version: 1
+  formatters:
+    open_telemetry:
+      (): webapp.common.logging.formatter.flask_open_telemetry_formatter.FlaskOpenTelemetryFormatter
+      prefix: ocpdb
+      service_name: OCPDB
+    human_readable:
+      format: '%(asctime)s %(levelname)s: %(message)s'
+  handlers:
+    console_stdout:
+      class: logging.StreamHandler
+      level: INFO
+      formatter: open_telemetry
+      stream: ext://sys.stdout
+    console_stderr:
+      class: logging.StreamHandler
+      level: ERROR
+      formatter: open_telemetry
+      stream: ext://sys.stderr
+    split_log_file:
+      class: webapp.common.logging.split_log_file_handler.SplitLogFileHandler
+      level: INFO
+      log_path: /app/logs
+      formatter: human_readable
+    open_telemetry_queue:
+      class: logging.handlers.QueueHandler
+      listener: webapp.common.logging.autostart_queue_listener.AutostartQueueListener
+      queue: queue.Queue
+      handlers:
+        - open_telemetry_push
+      level: INFO
+      formatter: open_telemetry
+    open_telemetry_push:
+      class: webapp.common.logging.http_json_post_handler.HttpPostJsonHandler
+      url: http://mocked-loki:5000/otel
+      level: INFO
+  loggers:
+    webapp:
+      level: INFO
+      handlers:
+        - split_log_file

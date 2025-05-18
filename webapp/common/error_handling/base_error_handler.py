@@ -16,13 +16,15 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+import logging
 import traceback
-from typing import TYPE_CHECKING, Callable, Optional, Type
+from typing import Callable, Type
 
 from sqlalchemy.orm import scoped_session
 
-if TYPE_CHECKING:
-    from webapp.common.logger import Logger
+from webapp.common.logging.models import LogMessageType
+
+logger = logging.getLogger(__name__)
 
 
 class BaseErrorHandler:
@@ -34,15 +36,13 @@ class BaseErrorHandler:
     _handlers: dict
 
     # Dependencies
-    logger: 'Logger'
     db_session: scoped_session
 
     # Whether the application is running in debug mode. Error handlers may decide to log more detailed errors when in debug mode.
     debug: bool
 
-    def __init__(self, *, logger: 'Logger', db_session: scoped_session, debug: bool = False):
+    def __init__(self, *, db_session: scoped_session, debug: bool = False):
         self._handlers = {}
-        self.logger = logger
         self.db_session = db_session
         self.debug = debug
 
@@ -67,7 +67,7 @@ class BaseErrorHandler:
 
         return None
 
-    def _find_handler(self, error_class: Type[Exception]) -> Optional[Callable]:
+    def _find_handler(self, error_class: Type[Exception]) -> Callable | None:
         """
         Finds the most specific handler for this exception by traversing the inheritance hierarchy.
         E.g. for a NotFound exception: First lookup NotFound, then HTTPException, then Exception, then BaseException, then object.
@@ -90,4 +90,7 @@ class BaseErrorHandler:
         """
         Helper function to write critical errors to the log.
         """
-        self.logger.critical('app', str(error), traceback.format_exc())
+        logger.error(
+            f'{error}: {traceback.format_exc()}',
+            extra={'attributes': {'type': LogMessageType.EXCEPTION}},
+        )

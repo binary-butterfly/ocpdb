@@ -16,7 +16,7 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from typing import TYPE_CHECKING, Any, Optional
+from typing import Any
 
 from flask import Response, jsonify
 from flask.views import MethodView
@@ -31,9 +31,6 @@ from webapp.common.unset_parameter import UnsetParameter
 from .exceptions import InputValidationException
 from .request_helper import RequestHelper
 
-if TYPE_CHECKING:
-    from webapp.common.logger import Logger
-
 
 class BaseMethodView(MethodView):
     """
@@ -41,18 +38,15 @@ class BaseMethodView(MethodView):
     """
 
     # Dependencies
-    logger: 'Logger'
     request_helper: RequestHelper
     config_helper: ConfigHelper
 
     def __init__(
         self,
         *,
-        logger: 'Logger',
         request_helper: RequestHelper,
         config_helper: ConfigHelper,
     ):
-        self.logger = logger
         self.request_helper = request_helper
         self.config_helper = config_helper
 
@@ -91,7 +85,7 @@ class BaseMethodView(MethodView):
     def jsonify_paginated_response(
         self,
         paginated_result: PaginatedResult[Any],
-        search_query: Optional[BaseSearchQuery],
+        search_query: BaseSearchQuery | None,
     ) -> Response:
         """
         Generate a jsonified response from (potentially) paginated data, containing the paginated results in "items",

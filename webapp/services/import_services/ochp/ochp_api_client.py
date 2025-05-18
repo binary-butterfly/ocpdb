@@ -17,7 +17,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 from datetime import datetime
-from typing import List, Optional
 
 from lxml import builder, etree
 from lxml.etree import XMLSyntaxError
@@ -25,15 +24,15 @@ from validataclass.exceptions import ValidationError
 from validataclass.validators import DataclassValidator
 
 from webapp.common.config import ConfigHelper
-from webapp.common.remote_helper import RemoteHelper, RemoteServer, RemoteServerType
+from webapp.common.remote_mixin import RemoteMixin
+from webapp.services.import_services.models import SourceInfo
 
 from .ochp_helper import xml_to_dict
 from .ochp_validators import GetChargePointListInput, GetStatusEnvelopeInput
 
 
-class OchpApiClient:
-    remote_helper: RemoteHelper
-    remote_server_type: RemoteServerType
+class OchpApiClient(RemoteMixin):
+    source_info: SourceInfo
     config_helper: ConfigHelper
 
     request_nsmap = {
@@ -43,16 +42,15 @@ class OchpApiClient:
     get_charge_point_list_validator = DataclassValidator(GetChargePointListInput)
     get_status_validator = DataclassValidator(GetStatusEnvelopeInput)
 
-    def __init__(self, remote_helper: RemoteHelper, config_helper: ConfigHelper, remote_server_type: RemoteServerType):
-        self.remote_helper = remote_helper
+    def __init__(self, source_info: SourceInfo, config_helper: ConfigHelper):
         self.config_helper = config_helper
-        self.remote_server_type = remote_server_type
+        self.source_info = source_info
 
     @property
-    def remote_server(self) -> RemoteServer:
-        return self.config_helper.get('REMOTE_SERVERS')[self.remote_server_type]
+    def config(self) -> dict:
+        return self.config_helper.get('SOURCES', {}).get(self.source_info.uid, {})
 
-    def download_base_data(self) -> List[dict]:
+    def download_base_data(self) -> list[dict]:
         em = builder.ElementMaker(namespace=self.request_nsmap['ns'], nsmap=self.request_nsmap)
         input_xml = self.ochp_request(
             path='/service/ochp/v1.4',
@@ -92,7 +90,7 @@ class OchpApiClient:
 
         return result.Envelope.Body.GetChargePointListResponse.chargePointInfoArray
 
-    def download_live_data(self, last_update: Optional[datetime] = None) -> List[dict]:
+    def download_live_data(self, last_update: datetime | None = None) -> list[dict]:
         em = builder.ElementMaker(namespace=self.request_nsmap['ns'], nsmap=self.request_nsmap)
         input_xml = self.ochp_request(
             path='/live/ochp/v1.4',
@@ -130,15 +128,14 @@ class OchpApiClient:
             em.Header(self.get_security_header()),
             em.Body(request_data),
         )
-        result = self.remote_helper.post(
-            url=self.remote_server.url,
+        result = self.request(
+            method='post',
             path=path,
             data=etree.tostring(request_xml).decode(),
             headers={'content-type': 'text/xml', 'SOAPAction': action},
-            raw=True,
         )
         try:
-            return etree.fromstring(result.decode('latin-1'))  # noqa: S320
+            return etree.fromstring(result.content.decode('latin-1'))  # noqa: S320
         except XMLSyntaxError:
             raise ValidationError(code='invalid_xml', reason='Invalid XML')
 
@@ -155,9 +152,9 @@ class OchpApiClient:
         em_user = builder.ElementMaker(namespace=nsmap_user['wsse'], nsmap=nsmap_user)
 
         username_token = em_user.UsernameToken(
-            em_user.Username(self.remote_server.user),
+            em_user.Username(self.config['user']),
             em_user.Password(
-                self.remote_server.password,
+                self.config['password'],
                 Type='http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0#PasswordText',
             ),
         )

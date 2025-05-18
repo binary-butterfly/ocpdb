@@ -16,15 +16,17 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from abc import ABC, abstractmethod
+import logging
+from abc import ABC
 from datetime import datetime, timezone
-from typing import Dict, List
 
 from validataclass.exceptions import ValidationError
 from validataclass.helpers import UnsetValue, UnsetValueType
 from validataclass.validators import DataclassValidator
 
-from webapp.common.remote_helper import RemoteException, RemoteServer, RemoteServerType
+from webapp.common.contexts import TelemetryContext
+from webapp.common.error_handling.exceptions import RemoteException
+from webapp.common.logging.models import LogMessageType
 from webapp.models.source import SourceStatus
 from webapp.services.import_services.base_import_service import BaseImportService
 from webapp.services.import_services.models import BusinessUpdate
@@ -33,53 +35,52 @@ from .ochp_api_client import OchpApiClient
 from .ochp_mapper import OchpMapper
 from .ochp_validators import ChargePointInput, ChargePointStatusInput
 
+logger = logging.getLogger(__name__)
+
 
 class BaseOchpImportService(BaseImportService, ABC):
     ochp_api_client: OchpApiClient
-    remote_server: RemoteServer
 
     charge_point_validator = DataclassValidator(ChargePointInput)
     charge_point_status_validator = DataclassValidator(ChargePointStatusInput)
 
     ochp_mapper: OchpMapper
 
-    @property
-    @abstractmethod
-    def remote_server_type(self) -> RemoteServerType:
-        pass
+    required_config_keys: list[str] = ['user', 'password']
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+
         self.ochp_mapper = OchpMapper()
 
         self.ochp_api_client = OchpApiClient(
-            remote_helper=self.remote_helper,
-            remote_server_type=self.remote_server_type,
+            source_info=self.source_info,
             config_helper=self.config_helper,
         )
 
-    @property
-    def remote_server(self) -> RemoteServer:
-        return self.config_helper.get('REMOTE_SERVERS')[self.remote_server_type]
-
     def fetch_static_data(self):
         source = self.get_source()
+        static_success_count = 0
         static_error_count = 0
+        static_data_updated_at = datetime.now(timezone.utc)
 
-        chargepoints_by_location: Dict[str, List[ChargePointInput]] = {}
+        chargepoints_by_location: dict[str, list[ChargePointInput]] = {}
         try:
             ochp_chargepoint_dicts = self.ochp_api_client.download_base_data()
         except (ValidationError, RemoteException) as e:
-            self.logger.info('import-ochp', f'ochp static data has error: {e.to_dict()}')
+            logger.error(
+                f'ochp static data has error: {e.to_dict()}',
+                extra={'attributes': {'type': LogMessageType.IMPORT_SOURCE}},
+            )
             self.update_source(source, static_status=SourceStatus.FAILED)
             return
         for ochp_chargepoint_dict in ochp_chargepoint_dicts:
             try:
                 ochp_chargepoint: ChargePointInput = self.charge_point_validator.validate(ochp_chargepoint_dict)
             except ValidationError as e:
-                self.logger.info(
-                    f'import-{self.source_info.uid}',
-                    f'evse status {ochp_chargepoint_dict} has validation error: {e.to_dict()}',
+                logger.error(
+                    f'chargepoint {ochp_chargepoint_dict} has validation error: {e.to_dict()}',
+                    extra={'attributes': {'type': LogMessageType.IMPORT_LOCATION}},
                 )
                 static_error_count += 1
                 continue
@@ -96,18 +97,28 @@ class BaseOchpImportService(BaseImportService, ABC):
             )
             location_update.operator = self.get_operator()
             location_updates.append(location_update)
+            static_success_count += 1
 
         self.save_location_updates(location_updates)
 
-        self.update_source(source=source, static_error_count=static_error_count)
-
-        # Do a full realtime sync for an initial set of status data
-        self.fetch_realtime_data(full_sync=True)
+        self.update_source(
+            source=source,
+            static_status=SourceStatus.ACTIVE,
+            static_error_count=static_error_count,
+            static_data_updated_at=static_data_updated_at,
+        )
+        logger.info(
+            f'Successfully updated {self.source_info.uid} static with {static_success_count} valid locations and '
+            f'{static_error_count} failed locations. .',
+            extra={'attributes': {'type': LogMessageType.IMPORT_LOCATION}},
+        )
 
     def fetch_realtime_data(self, full_sync: bool = False):
         source = self.get_source()
-        if source.static_status == SourceStatus.FAILED:
+        if source.static_status != SourceStatus.ACTIVE:
             return
+
+        realtime_success_count = 0
         realtime_error_count = 0
         realtime_data_updated_at = datetime.now(timezone.utc)
 
@@ -116,9 +127,9 @@ class BaseOchpImportService(BaseImportService, ABC):
                 last_update=None if full_sync is True else source.realtime_data_updated_at,
             )
         except (ValidationError, RemoteException) as e:
-            self.logger.info(
-                f'import-{self.source_info.uid}',
+            logger.info(
                 f'ochp realtime data has error: {e.to_dict()}',
+                extra={'attributes': {'type': LogMessageType.IMPORT_EVSE}},
             )
             self.update_source(source, realtime_status=SourceStatus.FAILED)
             return
@@ -131,9 +142,14 @@ class BaseOchpImportService(BaseImportService, ABC):
                     evse_status_dict,
                 )
             except ValidationError as e:
-                self.logger.info(
-                    f'import-{self.source_info.uid}',
+                logger.warning(
                     f'evse status {evse_status_dict} has validation error: {e.to_dict()}',
+                    extra={
+                        'attributes': {
+                            'type': LogMessageType.IMPORT_EVSE,
+                            TelemetryContext.EVSE: evse_status_dict.get('evseId'),
+                        },
+                    },
                 )
                 realtime_error_count += 1
                 continue
@@ -141,13 +157,20 @@ class BaseOchpImportService(BaseImportService, ABC):
             evse_update = self.ochp_mapper.map_evse_status_to_update(evse_status_input)
 
             evse_updates.append(evse_update)
+            realtime_success_count += 1
 
         self.save_evse_updates(evse_updates)
 
         self.update_source(
             source=source,
+            realtime_status=SourceStatus.ACTIVE,
             realtime_error_count=realtime_error_count,
             realtime_data_updated_at=realtime_data_updated_at,
+        )
+        logger.info(
+            f'Successfully updated {self.source_info.uid} realtime with {realtime_success_count} valid locations '
+            f'and {realtime_error_count} failed locations. .',
+            extra={'attributes': {'type': LogMessageType.IMPORT_LOCATION}},
         )
 
     def get_operator(self) -> BusinessUpdate | UnsetValueType:

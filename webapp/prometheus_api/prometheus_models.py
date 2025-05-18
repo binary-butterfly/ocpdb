@@ -18,7 +18,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from dataclasses import asdict, dataclass, field
 from enum import Enum
-from typing import List
 
 
 class MetricType(Enum):
@@ -31,7 +30,7 @@ class BaseMetric:
 
     def to_metric(self, identifier: str) -> str:
         data = asdict(self)
-        label_list: List[str] = []
+        label_list: list[str] = []
         for key, value in data.items():
             if key == 'value':
                 continue
@@ -56,9 +55,9 @@ class Metrics:
     help: str
     type: MetricType
     identifier: str
-    metrics: List[BaseMetric] = field(default_factory=list)
+    metrics: list[BaseMetric] = field(default_factory=list)
 
-    def to_metrics(self) -> List[str]:
+    def to_metrics(self) -> list[str]:
         return [f'# HELP {self.identifier} {self.help}', f'# TYPE {self.identifier} {self.type.name}'] + [
             metric.to_metric(self.identifier) for metric in self.metrics
         ]

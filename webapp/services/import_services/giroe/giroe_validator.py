@@ -18,12 +18,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from datetime import datetime
 from decimal import Decimal
-from typing import List, Optional
 
 from butterfly_pubsub.giroe import ChargeConnectorStatus
 from validataclass.dataclasses import Default, DefaultUnset, validataclass
 from validataclass.helpers import OptionalUnset
 from validataclass.validators import (
+    AnythingValidator,
     BooleanValidator,
     DataclassValidator,
     DateTimeValidator,
@@ -34,7 +34,7 @@ from validataclass.validators import (
     StringValidator,
 )
 
-from webapp.common.validation import NoneableToUnsetValue, UnvalidatedDictValidator
+from webapp.common.validation import NoneableToUnsetValue
 from webapp.models.connector import ConnectorFormat, ConnectorType, PowerType
 from webapp.models.evse import EvseStatus
 
@@ -77,7 +77,7 @@ class StationInput:
     uid: str = StringValidator(max_length=36)
     technical_backend: str = StringValidator()
     hardware_id: int = IntegerValidator()
-    connectors: List[ConnectorInput] = ListValidator(DataclassValidator(ConnectorInput))
+    connectors: list[ConnectorInput] = ListValidator(DataclassValidator(ConnectorInput))
 
 
 @validataclass
@@ -93,10 +93,10 @@ class LocationInput:
     country: str = StringValidator()
     public: bool = BooleanValidator()
     public_description: str = StringValidator(multiline=True)
-    stations: List[StationInput] = ListValidator(DataclassValidator(StationInput))
+    stations: list[StationInput] = ListValidator(DataclassValidator(StationInput))
 
 
 @validataclass
 class ItemListInput:
-    items: List[dict] = ListValidator(UnvalidatedDictValidator())
-    next_path: Optional[str] = StringValidator(), Default(None)
+    items: list[dict] = ListValidator(AnythingValidator(allowed_types=[dict]))
+    next_path: str | None = StringValidator(), Default(None)
