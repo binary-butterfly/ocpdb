@@ -7,8 +7,9 @@ This application is a flask application with following requirements:
 * SQLAlchemy-compatible SQL-server (e.g. MariaDB or Postgre)
 * An AMQP-Queue (eg RabbitMQ)
 
+You can deploy OCPDB via docker (recommended), or via virtual environment.
 
-## Deploy via docker container
+### Deploy via docker container
 
 We provide docker containers at `ghcr.io/binary-butterfly/ocpdb` with all
 [version tags](https://github.com/binary-butterfly/ocpdb/tags) as container versions. A full docker compose service
@@ -61,7 +62,7 @@ used:
 You will need an additional database and an additional rabbitmq.
 
 
-## Deploy via virtual environment
+### Deploy via virtual environment
 
 1) Use `virtualenv venv` to create a virtual environment
 2) Use `./venv/bin/pip install -r requirements.txt` to install required packages
@@ -71,7 +72,7 @@ You will need an additional database and an additional rabbitmq.
 6) Use `./venv/bin/flask` to start downloads
 
 
-## Development setup (via Docker)
+### Development setup (via Docker)
 
 1) Use `make first-start` to create a dev environment
 2) Use `make` to start the container
@@ -81,3 +82,30 @@ The web interface will be available at http://localhost:5010.
 All sources have mocked services, so you can play around with mocked data and import everything.
 
 At `dev/api_tests` you will find some HTTP request files you can use to emulate requests.
+
+
+## Configuration
+
+There are config templates for development (`config_dist_dev.yaml`) and production (`config_dist.yaml`).
+
+Sources can be configured by `SOURCES` config value. It has the following format:
+
+```yaml
+SOURCES:
+  source_uid_with_config:
+    config_key: config_value
+  source_uid_no_auto_fetch:
+    auto_fetch: false
+  source_uid_debug:
+    debug: true
+  source_uid_without_config:
+```
+
+* `source_uid_with_config` is an example for a source which required config, eg user and password.
+* `source_uid_no_auto_fetch` is an example for a source where the heartbeat mechanism is disabled, and therefore data
+  is not fetched automatically. This can make sense for debugging or for large datasets on small servers.
+* `source_uid_debug` is an example for a source where all requests are dumped for debugging.
+* `source_uid_without_config` is an example for a source without any required config.
+
+At some sources, you can use the config value `url` to point to another (base) url, which might help for de. Please
+have a look at the specific importer service for more information.

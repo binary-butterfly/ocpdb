@@ -1,9 +1,8 @@
-# Exclude the following directories from Docker build context to speed up builds
-.git/
-.idea/
-.vscode/
+# Keep the Docker build context small to speed up builds. This is really all we need in the Dockerfile.
 
-__pycache__/
-
-/venv
-/logs
+*
+!webapp
+!migrations
+!.flaskenv
+!requirements.txt
+!requirements-dev.txt

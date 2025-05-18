@@ -1,6 +1,6 @@
 """
 Open ChargePoint DataBase OCPDB
-Copyright (C) 2021 binary butterfly GmbH
+Copyright (C) 2025 binary butterfly GmbH
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published by
@@ -16,14 +16,16 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from flask import Flask
+from typing import Any
 
-from .import_cli import import_cli
-from .match_cli import match_cli
-from .source_cli import source_cli
+from validataclass.validators import IntegerValidator
 
 
-def register_cli_to_app(app: Flask):
-    app.cli.add_command(match_cli)
-    app.cli.add_command(import_cli)
-    app.cli.add_command(source_cli)
+class RoundingIntegerValidator(IntegerValidator):
+    def validate(self, input_data: Any, **kwargs) -> int:
+        self._ensure_type(input_data, [int, str, float])
+
+        if type(input_data) in [str, float]:
+            input_data = int(input_data)
+
+        return super().validate(input_data)

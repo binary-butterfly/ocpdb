@@ -41,4 +41,4 @@ class Business(BaseModel):
         ignore = ignore or []
         ignore += ['logo_id', 'id', 'created', 'modified']
 
-        return super().to_dict(*args, **kwargs)
+        return super().to_dict(*args, ignore=ignore, **kwargs)

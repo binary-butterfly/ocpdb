@@ -41,24 +41,25 @@ class GenericImportRunner(BaseService):
             image_import_task,
         )
 
-        for importer_service in self.import_services.importer_by_uid.values():
-            if importer_service.source_info.uid not in self.config_helper.get('AUTO_FETCH_SOURCES', []):
+        for source_uid, importer_service in self.import_services.importer_by_uid.items():
+            if source_uid not in self.config_helper.get('SOURCES'):
+                continue
+            if self.config_helper.get('SOURCES')[source_uid].get('auto_fetch', True) is False:
                 continue
 
-            if hasattr(importer_service, 'fetch_static_data'):
-                if importer_service.schedule is None:
-                    schedule = crontab(
-                        minute=str(self.config_helper.get('STATIC_PULL_MINUTE', 0)),
-                        hour=str(self.config_helper.get('STATIC_PULL_HOUR', 1)),
-                    )
-                else:
-                    schedule = importer_service.schedule
-
-                celery.add_periodic_task(
-                    schedule,
-                    static_import_task,
-                    kwargs={'source': importer_service.source_info.uid},
+            if importer_service.schedule is None:
+                schedule = crontab(
+                    minute=str(self.config_helper.get('STATIC_PULL_MINUTE', 0)),
+                    hour=str(self.config_helper.get('STATIC_PULL_HOUR', 1)),
                 )
+            else:
+                schedule = importer_service.schedule
+
+            celery.add_periodic_task(
+                schedule,
+                static_import_task,
+                kwargs={'source': importer_service.source_info.uid},
+            )
 
             if hasattr(importer_service, 'fetch_realtime_data'):
                 celery.add_periodic_task(

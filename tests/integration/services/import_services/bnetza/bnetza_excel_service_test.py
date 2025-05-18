@@ -46,7 +46,11 @@ def test_bnetza_excel_import(db: SQLAlchemy, requests_mock: Mocker) -> None:
 
     bnetza_file_path = Path(Path(__file__).parent, 'bnetza.xlsx')
     with bnetza_file_path.open('rb') as bnetza_file:
-        requests_mock.get('http://mocked-bnetza:5000', content=bnetza_file.read())
+        requests_mock.get(
+            'https://www.bundesnetzagentur.de/DE/Fachthemen/ElektrizitaetundGas/E-Mobilitaet/DL'
+            '/Ladesaeuleninfrastruktur.xlsx',
+            content=bnetza_file.read(),
+        )
 
     bnetza_import_service.load_and_save_from_web()
 

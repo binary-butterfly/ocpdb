@@ -65,6 +65,7 @@ class ConfigLoader:
 
         app.config['MODE'] = os.getenv('APPLICATION_MODE', 'DEVELOPMENT')
 
+        # Legacy config converter
         if 'REMOTE_SERVERS' in app.config:
             mapping: dict[str, str] = {
                 'BNETZA': 'bnetza_excel',
@@ -90,3 +91,10 @@ class ConfigLoader:
         config_check = [key for key in app.config['ENFORCE_CONFIG_VALUES'] if key not in app.config]
         if len(config_check) > 0:
             raise Exception('missing config values: %s' % ', '.join(config_check))
+
+        # Ensure that all sources are dicts
+        for source, source_config in app.config['SOURCES'].items():
+            if source_config is None:
+                app.config['SOURCES'][source] = {}
+            elif not isinstance(source_config, dict):
+                raise Exception(f'Source config {source} has to be a dictionary, but is {source_config}')

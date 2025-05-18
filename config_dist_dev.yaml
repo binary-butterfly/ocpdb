@@ -11,22 +11,17 @@ CELERY_BROKER_URL: 'amqp://rabbitmq'
 OBJECT_ID_SECRET: secret
 
 SOURCES:
-  bnetza_api:
   bnetza_excel:
-    url: http://mocked-bnetza:5000
+    auto_fetch: false  # rather large dataset
+  bnetza_api:
+    auto_fetch: false  # rather large dataset
   chargecloud_pforzheim:
   chargecloud_stuttgart:
-    url: http://mocked-sw-stuttgart:5000
   heilbronn_neckarbogen:
     user: user
     password: password
-
-
-
-AUTO_FETCH_SOURCES:
-  - bnetza_api
-  - chargecloud_pforzheim
-  - chargecloud_stuttgart
+  opendata_swiss:
+    auto_fetch: false  # rather large dataset
 
 
 # This is a template. You can rename it to the config value LOGGING and adapt it to your needs.

@@ -47,7 +47,7 @@ def test_sw_stuttgart_import(db: SQLAlchemy, requests_mock: Mocker) -> None:
 
     # define mocked response
     requests_mock.get(
-        'http://mocked-sw-stuttgart:5000',
+        'https://new-poi.chargecloud.de/SW-Stuttgart',
         status_code=200,
         json=sw_stuttgart_response_json,
     )
@@ -96,10 +96,6 @@ def test_sw_stuttgart_import(db: SQLAlchemy, requests_mock: Mocker) -> None:
     }
     assert len(sample_location.evses) == 10
     assert sample_location.operator.to_dict() == {
-        'id': ANY,
-        'created': ANY,
-        'modified': ANY,
-        'logo_id': None,
         'name': 'Stadtwerke Stuttgart GmbH',
         'website': None,
     }
