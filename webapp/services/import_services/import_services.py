@@ -35,6 +35,7 @@ from webapp.services.import_services.ochp.ladenetz import LadenetzOchpImportServ
 from webapp.services.import_services.ocpi.chargecloud.pforzheim import PforzheimImportService
 from webapp.services.import_services.ocpi.chargecloud.sw_stuttgart import SWStuttgartImportService
 from webapp.services.import_services.ocpi.stadtnavi.stadtnavi_service import StadtnaviImportService
+from webapp.services.import_services.opendata_swiss import OpendataSwissImportService
 
 
 class ImportServices(BaseService):
@@ -48,6 +49,7 @@ class ImportServices(BaseService):
         HeilbronnNeckarbogenImportService,
         LadenetzOchpImportService,
         LichtblickImportService,
+        OpendataSwissImportService,
         PforzheimImportService,
         StadtnaviImportService,
         SWStuttgartImportService,
@@ -91,10 +93,12 @@ class ImportServices(BaseService):
 
     def fetch_sources(self) -> None:
         """
-        Fetch all sources enabled via AUTO_FETCH_SOURCES by fetching static and realtime data
+        Fetch all sources enabled via `auto_fetch`, which is true by default
         """
         for source_uid in self.importer_by_uid.keys():
-            if source_uid not in self.config_helper.get('AUTO_FETCH_SOURCES', []):
+            if source_uid not in self.config_helper.get('SOURCES'):
+                continue
+            if self.config_helper.get('SOURCES')[source_uid].get('auto_fetch', True) is False:
                 continue
 
             self.fetch_source(source_uid)

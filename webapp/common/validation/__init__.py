@@ -23,3 +23,4 @@ from .emptystring_to_noneable import EmptystringToNoneable
 from .integer_to_string_validator import IntegerToStringValidator
 from .nonable_to_unset import NoneableToUnsetValue
 from .printable_string_validator import PrintableStringValidator
+from .rounding_integer_validator import RoundingIntegerValidator
