@@ -1,5 +1,24 @@
 # Changelog
 
+## Version 2.0.0
+
+Released 2025-05-18
+
+### Features
+
+* [New Logging system with OpenTelemetry Support](https://github.com/binary-butterfly/ocpdb/pull/102), see
+* [New config file layout](https://github.com/binary-butterfly/ocpdb/blob/main/INSTALL.md#configuration)
+* [New debug system for dumping full communication per source](https://github.com/binary-butterfly/ocpdb/blob/main/INSTALL.md#configuration)
+* [OpenData Swiss](https://github.com/binary-butterfly/ocpdb/pull/106)
+* [Heilbronn Neckarbogen](https://github.com/binary-butterfly/ocpdb/pull/105)
+
+The old sources definition is still supported but will throw deprecation warnings. Please have a close look, as
+some mechanisms like the url work differently now (which makes this release breaking)
+
+Several converters were renamed, which makes this release breaking, too.
+[See README for details](https://github.com/binary-butterfly/ocpdb/blob/main/README.md#data-sources).
+
+
 ## Version 1.5.1
 
 Released 2025-04-29
