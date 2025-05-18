@@ -38,5 +38,5 @@ def test_business_handler_get_business_by_id(business_repository_mock, config_he
         business_repository=business_repository_mock,
         config_helper=config_helper_mock,
     )
-    assert handler.get_business_by_id(1) == {'id': 1, 'name': 'test'}
+    assert handler.get_business_by_id(1) == {'name': 'test'}
     business_repository_mock.fetch_by_id.assert_called_with(1)
