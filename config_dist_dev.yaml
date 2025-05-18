@@ -11,6 +11,8 @@ CELERY_BROKER_URL: 'amqp://rabbitmq'
 OBJECT_ID_SECRET: secret
 
 SOURCES:
+  bnetza_excel:
+    auto_fetch: false  # rather large dataset
   bnetza_api:
     auto_fetch: false  # rather large dataset
   chargecloud_pforzheim:
