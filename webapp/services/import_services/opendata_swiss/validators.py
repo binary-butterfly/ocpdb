@@ -211,7 +211,7 @@ class EVSEDataRecord:
                     regular_hours += opening_time.to_regular_hours()
 
             # Check if we have all time zones registered
-            if self.Address.TimeZone not in TIME_ZONE_MAPPING:
+            if self.Address.Country not in TIME_ZONE_MAPPING:
                 logger.warning(
                     f'opendata swiss country {self.Address.Country} missing in time zone mapping',
                     extra={'attributes': {'type': LogMessageType.IMPORT_LOCATION}},
