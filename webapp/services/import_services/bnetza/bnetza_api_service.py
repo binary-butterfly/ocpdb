@@ -63,6 +63,8 @@ class BnetzaApiImportService(BaseImportService):
         response_input: BnetzaResponseInput = self.response_validator.validate(response_data)
 
         location_updates: list[LocationUpdate] = []
+        ignore_operators: list[str] = self.config.get('ignore_operators', [])
+
         for charging_station_dict in response_input.chargingStations:
             try:
                 charging_station = self.charging_station_validator.validate(charging_station_dict)
@@ -76,6 +78,10 @@ class BnetzaApiImportService(BaseImportService):
                         },
                     },
                 )
+                continue
+
+            # Ignore operators
+            if charging_station.operator.companyName in ignore_operators:
                 continue
 
             location_updates.append(charging_station.to_location_update(last_updated=static_data_updated_at))
