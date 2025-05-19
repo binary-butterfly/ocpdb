@@ -1,5 +1,12 @@
 # Changelog
 
+## Version 2.1.0
+
+### Features
+
+* [Simple ignore mechanism for BNetzA operators](https://github.com/binary-butterfly/ocpdb/pull/112)
+
+
 ## Version 2.0.0
 
 Released 2025-05-18
