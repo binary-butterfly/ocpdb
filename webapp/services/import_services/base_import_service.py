@@ -143,19 +143,25 @@ class BaseImportService(BaseService, RemoteMixin, ABC):
             old_location_ids.remove(location.id)
 
     def save_evse_updates(self, evse_updates: list[EvseUpdate]):
+        evses = self.evse_repository.fetch_evses_by_source_and_uids(
+            self.source_info.uid,
+            uids=[evse_update.uid for evse_update in evse_updates],
+        )
+        evses_by_uid: dict[str, Evse] = {evse.uid: evse for evse in evses}
         for evse_update in evse_updates:
-            self.save_evse_update(evse_update)
+            if evse_update.uid not in evses_by_uid:
+                continue
 
-    def save_evse_update(self, evse_update: EvseUpdate):
-        try:
-            evse = self.evse_repository.fetch_by_uid(self.source_info.uid, evse_update.uid)
-        except ObjectNotFoundException:
-            return
+            evse = evses_by_uid[evse_update.uid]
+            if evse_update.status == evse.status:
+                continue
 
-        for key, value in evse_update.to_dict().items():
-            setattr(evse, key, value)
+            for key, value in evse_update.to_dict().items():
+                setattr(evse, key, value)
 
-        self.evse_repository.save_evse(evse)
+            self.evse_repository.save_evse(evse, commit=False)
+
+        self.evse_repository.session.commit()
 
     def get_evse(
         self,
