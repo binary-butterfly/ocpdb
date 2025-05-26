@@ -23,17 +23,67 @@ OCPI-style JSON-API and a vector tile server.
 There is a matching algorithm which matches live data sources with bnetza sources. You can find details at
 [our matching docs](https://github.com/binary-butterfly/ocpdb/blob/main/docs/matching.md).
 
+
 ## API documentation
 
 At [api.ocpdb.de](https://api.ocpdb.de/documentation/public.html) you will find an OpenAPI documentation of public endpoints you can use.
+
+
+## Command line interface
+
+The application provides a simple command line interface:
+
+### Import all sources
+
+```bash
+flask import all
+```
+
+### Import source: static data
+
+```bash
+flask import static example_source
+```
+
+### Import source: realtime data
+
+```bash
+flask import realtime example_source
+```
+
+### Import source: images
+
+```bash
+flask import images example_source
+```
+
+### List all sources
+
+```bash
+flask source list
+```
+
+### Delete source
+
+```bash
+flask source delete example_source
+```
+
+### Matching
+
+```bash
+flask match run
+```
 
 ## System requirements & installatiion
 
 The installation process is documented at [INSTALL.md](https://github.com/binary-butterfly/ocpdb/blob/main/INSTALL.md).
 
+
 ## Licence
 
 OCPDB is under AGPL. You will find details at the [LICENCE.txt](https://github.com/binary-butterfly/ocpdb/blob/main/LICENCE.txt).
+
 
 ## Participate
 
