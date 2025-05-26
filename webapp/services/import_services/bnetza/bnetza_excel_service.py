@@ -42,7 +42,7 @@ logger = logging.getLogger(__name__)
 
 
 class BnetzaExcelImportService(BaseImportService):
-    schedule = crontab(day_of_month='1')
+    schedule = crontab(minute='0', hour='2', day_of_month='1')
 
     bnetza_mapper: BnetzaExcelMapper = BnetzaExcelMapper()
     row_validator: DataclassValidator[BnetzaRowInput] = DataclassValidator(BnetzaRowInput)

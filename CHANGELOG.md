@@ -1,5 +1,12 @@
 # Changelog
 
+## Version 2.1.1
+
+### Fixes
+
+* [more efficient evse status updates, fixing BNetzA Cron, other small fixes](https://github.com/binary-butterfly/ocpdb/pull/113)
+
+
 ## Version 2.1.0
 
 ### Features
