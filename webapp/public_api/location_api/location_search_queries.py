@@ -34,7 +34,7 @@ class LocationSearchQuery(SortingMixin, OffsetPaginationMixin, BaseSearchQuery):
 
     # Search filters
     name: str | None = SearchParamContains(), StringValidator()
-    source: str | None = SearchParamContains(), StringValidator()
+    source: str | None = SearchParamEquals(), StringValidator()
     postal_code: str | None = SearchParamEquals(), StringValidator()
 
     lat: Decimal | None = SearchParamCustom(), DecimalValidator()

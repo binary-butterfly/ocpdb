@@ -162,7 +162,7 @@ class BnetzaExcelImportService(BaseImportService):
 
         logger.info(
             f'Successfully updated {self.source_info.uid} static with {static_success_count} valid locations and '
-            f'{static_error_count} failed locations. .',
+            f'{static_error_count} failed locations.',
             extra={'attributes': {'type': LogMessageType.IMPORT_LOCATION}},
         )
 

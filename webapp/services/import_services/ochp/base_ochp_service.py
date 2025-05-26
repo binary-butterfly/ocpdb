@@ -109,7 +109,7 @@ class BaseOchpImportService(BaseImportService, ABC):
         )
         logger.info(
             f'Successfully updated {self.source_info.uid} static with {static_success_count} valid locations and '
-            f'{static_error_count} failed locations. .',
+            f'{static_error_count} failed locations.',
             extra={'attributes': {'type': LogMessageType.IMPORT_LOCATION}},
         )
 
@@ -168,8 +168,8 @@ class BaseOchpImportService(BaseImportService, ABC):
             realtime_data_updated_at=realtime_data_updated_at,
         )
         logger.info(
-            f'Successfully updated {self.source_info.uid} realtime with {realtime_success_count} valid locations '
-            f'and {realtime_error_count} failed locations. .',
+            f'Successfully updated {self.source_info.uid} realtime with {realtime_success_count} valid EVSEs '
+            f'and {realtime_error_count} failed EVSEs.',
             extra={'attributes': {'type': LogMessageType.IMPORT_LOCATION}},
         )
 

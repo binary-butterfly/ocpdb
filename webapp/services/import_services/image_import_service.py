@@ -65,6 +65,7 @@ class ImageImportService(BaseService):
             )
             return
 
+        image.path.parent.mkdir(parents=True, exist_ok=True)
         image.path.unlink(missing_ok=True)
 
         with image.path.open('wb') as image_file:

@@ -34,7 +34,7 @@ logger = logging.getLogger(__name__)
 
 
 class BnetzaApiImportService(BaseImportService):
-    schedule = crontab(day_of_week='1')
+    schedule = crontab(minute='0', hour='2', day_of_week='1')
 
     response_validator = DataclassValidator(BnetzaResponseInput)
     charging_station_validator = DataclassValidator(BnetzaChargingStation)
@@ -98,6 +98,6 @@ class BnetzaApiImportService(BaseImportService):
 
         logger.info(
             f'Successfully updated {self.source_info.uid} static with {static_success_count} valid locations and '
-            f'{static_error_count} failed locations. .',
+            f'{static_error_count} failed locations.',
             extra={'attributes': {'type': LogMessageType.IMPORT_LOCATION}},
         )
