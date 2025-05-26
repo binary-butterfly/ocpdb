@@ -51,13 +51,19 @@ class GoldbeckIpcmImportService(BaseImportService, ABC):
             )
             location_updates_by_uid[str(chargepoint.postalAddress.id)] = location_update
 
-        self.save_location_updates(list(location_updates_by_uid.values()))
+        location_updates: list[LocationUpdate] = list(location_updates_by_uid.values())
+        self.save_location_updates(location_updates)
 
         self.update_source(
             source=source,
             static_status=SourceStatus.ACTIVE,
             static_error_count=static_error_count,
             static_data_updated_at=static_data_updated_at,
+        )
+        logger.info(
+            f'Successfully updated {self.source_info.uid} static with {len(location_updates)} valid locations and '
+            f'{static_error_count} failed locations.',
+            extra={'attributes': {'type': LogMessageType.IMPORT_LOCATION}},
         )
 
     def fetch_realtime_data(self):
@@ -82,6 +88,11 @@ class GoldbeckIpcmImportService(BaseImportService, ABC):
             realtime_status=SourceStatus.ACTIVE,
             realtime_error_count=realtime_error_count,
             realtime_data_updated_at=realtime_data_updated_at,
+        )
+        logger.info(
+            f'Successfully updated {self.source_info.uid} realtime with {len(evse_updates)} valid EVSEs '
+            f'and {realtime_error_count} failed EVSEs.',
+            extra={'attributes': {'type': LogMessageType.IMPORT_LOCATION}},
         )
 
     def _fetch_chargepoints(self, source: Source) -> tuple[list[GoldbeckIpcmChargePoint], int]:

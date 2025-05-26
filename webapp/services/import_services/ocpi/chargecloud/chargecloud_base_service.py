@@ -106,6 +106,6 @@ class ChargecloudBaseImportService(BaseImportService, ABC):
         )
         logger.info(
             f'Successfully updated {self.source_info.uid} static and realtime with {success_count} valid '
-            f'locations and {error_count} failed locations. .',
+            f'locations and {error_count} failed locations.',
             extra={'attributes': {'type': LogMessageType.IMPORT_LOCATION}},
         )
