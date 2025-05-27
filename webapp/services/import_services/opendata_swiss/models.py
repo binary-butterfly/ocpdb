@@ -157,6 +157,7 @@ class SwissEvseStatus(Enum):
     UNKNOWN = 'Unknown'
     OUT_OF_SERVICE = 'OutOfService'
     OCCUPIED = 'Occupied'
+    RESERVED = 'Reserved'
 
     def to_evse_status(self) -> EvseStatus:
         return {
@@ -164,4 +165,5 @@ class SwissEvseStatus(Enum):
             self.UNKNOWN: EvseStatus.UNKNOWN,
             self.OUT_OF_SERVICE: EvseStatus.OUTOFORDER,
             self.OCCUPIED: EvseStatus.CHARGING,
+            self.RESERVED: EvseStatus.RESERVED,
         }.get(self)

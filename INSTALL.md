@@ -96,6 +96,8 @@ SOURCES:
     config_key: config_value
   source_uid_no_auto_fetch:
     auto_fetch: false
+  source_without_fetch_at_init:
+    fetch_at_init: false
   source_uid_debug:
     debug: true
   source_uid_without_config:
@@ -104,6 +106,8 @@ SOURCES:
 * `source_uid_with_config` is an example for a source which required config, eg user and password.
 * `source_uid_no_auto_fetch` is an example for a source where the heartbeat mechanism is disabled, and therefore data
   is not fetched automatically. This can make sense for debugging or for large datasets on small servers.
+* `source_without_fetch_at_init` is an example for not fetching the data at init. This might make sense with large
+  data sources, where you don't want to fetch all data after an update via init container.
 * `source_uid_debug` is an example for a source where all requests are dumped for debugging.
 * `source_uid_without_config` is an example for a source without any required config.
 

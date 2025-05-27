@@ -93,12 +93,12 @@ class ImportServices(BaseService):
 
     def fetch_sources(self) -> None:
         """
-        Fetch all sources enabled via `auto_fetch`, which is true by default
+        Fetch all sources enabled via `fetch_at_init`, which is true by default
         """
         for source_uid in self.importer_by_uid.keys():
             if source_uid not in self.config_helper.get('SOURCES'):
                 continue
-            if self.config_helper.get('SOURCES')[source_uid].get('auto_fetch', True) is False:
+            if self.config_helper.get('SOURCES')[source_uid].get('fetch_at_init', True) is False:
                 continue
 
             self.fetch_source(source_uid)

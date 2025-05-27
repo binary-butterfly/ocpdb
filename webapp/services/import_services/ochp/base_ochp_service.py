@@ -78,7 +78,7 @@ class BaseOchpImportService(BaseImportService, ABC):
             try:
                 ochp_chargepoint: ChargePointInput = self.charge_point_validator.validate(ochp_chargepoint_dict)
             except ValidationError as e:
-                logger.error(
+                logger.warning(
                     f'chargepoint {ochp_chargepoint_dict} has validation error: {e.to_dict()}',
                     extra={'attributes': {'type': LogMessageType.IMPORT_LOCATION}},
                 )
@@ -127,7 +127,7 @@ class BaseOchpImportService(BaseImportService, ABC):
                 last_update=None if full_sync is True else source.realtime_data_updated_at,
             )
         except (ValidationError, RemoteException) as e:
-            logger.info(
+            logger.error(
                 f'ochp realtime data has error: {e.to_dict()}',
                 extra={'attributes': {'type': LogMessageType.IMPORT_EVSE}},
             )

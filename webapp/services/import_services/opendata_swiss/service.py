@@ -50,6 +50,7 @@ class OpendataSwissImportService(BaseImportService, ABC):
     def fetch_static_data(self):
         source = self.get_source()
         error_count = 0
+        success_count = 0
         location_updates: list[LocationUpdate] = []
         static_data_updated_at = datetime.now(timezone.utc)
 
@@ -57,12 +58,21 @@ class OpendataSwissImportService(BaseImportService, ABC):
             raw_opendata_swiss_data = self.json_request(
                 url='https://data.geo.admin.ch/ch.bfe.ladestellen-elektromobilitaet/data/oicp/ch.bfe.ladestellen-elektromobilitaet.json',
             )
+        except RemoteException as e:
+            logger.error(
+                f'opendata swiss static data request failed: {e}',
+                extra={'attributes': {'type': LogMessageType.IMPORT_SOURCE}},
+            )
+            self.update_source(source, static_status=SourceStatus.FAILED, realtime_status=SourceStatus.FAILED)
+            return
+
+        try:
             opendata_swiss_input: OpendataSwissStaticInput = self.opendata_swiss_static_validator.validate(
                 raw_opendata_swiss_data,
             )
-        except (ValidationError, RemoteException) as e:
+        except ValidationError as e:
             logger.error(
-                f'opendata swiss static data has error: {e.to_dict()}',
+                f'opendata swiss static data {raw_opendata_swiss_data} has validation error: {e.to_dict()}',
                 extra={'attributes': {'type': LogMessageType.IMPORT_SOURCE}},
             )
             self.update_source(source, static_status=SourceStatus.FAILED, realtime_status=SourceStatus.FAILED)
@@ -74,8 +84,8 @@ class OpendataSwissImportService(BaseImportService, ABC):
                 try:
                     evse_data_record: EVSEDataRecord = self.evse_data_record_validator.validate(raw_evse_data_record)
                 except ValidationError as e:
-                    logger.error(
-                        f'opendata swiss EVSEDataRecord has error: {e.to_dict()}',
+                    logger.warning(
+                        f'opendata swiss EVSEDataRecord {raw_evse_data_record} has error: {e.to_dict()}',
                         extra={'attributes': {'type': LogMessageType.IMPORT_SOURCE}},
                     )
                     error_count += 1
@@ -92,6 +102,7 @@ class OpendataSwissImportService(BaseImportService, ABC):
                 )
 
             location_updates += list(location_updates_by_uid.values())
+            success_count += 1
 
         self.save_location_updates(location_updates)
 
@@ -101,14 +112,20 @@ class OpendataSwissImportService(BaseImportService, ABC):
             static_error_count=error_count,
             static_data_updated_at=static_data_updated_at,
         )
+        logger.info(
+            f'Successfully updated {self.source_info.uid} static data with {success_count} valid '
+            f'locations and {error_count} failed locations.',
+            extra={'attributes': {'type': LogMessageType.IMPORT_LOCATION}},
+        )
 
     def fetch_realtime_data(self):
         source = self.get_source()
         # Don't fetch realtime updates if there is no static data
-        # if source.static_status != SourceStatus.ACTIVE:
-        #    return
+        if source.static_status != SourceStatus.ACTIVE:
+            return
 
         evse_updates: list[EvseUpdate] = []
+        success_count = 0
         error_count = 0
         realtime_data_updated_at = datetime.now(timezone.utc)
 
@@ -134,14 +151,15 @@ class OpendataSwissImportService(BaseImportService, ABC):
                         raw_evse_status_record,
                     )
                 except ValidationError as e:
-                    logger.error(
-                        f'opendata swiss EVSEStatusRecord has error: {e.to_dict()}',
+                    logger.warning(
+                        f'opendata swiss EVSEStatusRecord {raw_evse_status_record} has error: {e.to_dict()}',
                         extra={'attributes': {'type': LogMessageType.IMPORT_SOURCE}},
                     )
                     error_count += 1
                     continue
 
                 evse_updates.append(evse_status_record.to_evse_update())
+                success_count += 1
 
         self.save_evse_updates(evse_updates)
 
@@ -150,4 +168,10 @@ class OpendataSwissImportService(BaseImportService, ABC):
             realtime_status=SourceStatus.ACTIVE,
             realtime_error_count=error_count,
             realtime_data_updated_at=realtime_data_updated_at,
+        )
+
+        logger.info(
+            f'Successfully updated {self.source_info.uid} ealtime with {success_count} valid '
+            f'locations and {error_count} failed locations.',
+            extra={'attributes': {'type': LogMessageType.IMPORT_LOCATION}},
         )

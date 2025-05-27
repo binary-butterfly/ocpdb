@@ -117,7 +117,7 @@ class GoldbeckIpcmImportService(BaseImportService, ABC):
                 chargepoint: GoldbeckIpcmChargePoint = self.chargepoint_validator.validate(chargepoint_dict)
                 chargepoints.append(chargepoint)
             except ValidationError as e:
-                logger.error(
+                logger.warning(
                     f'goldbeck ipcm chargepoint has error: {e.to_dict()}',
                     extra={'attributes': {'type': LogMessageType.IMPORT_SOURCE}},
                 )
