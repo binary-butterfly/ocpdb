@@ -1,5 +1,16 @@
 # Changelog
 
+## Version 2.1.2
+
+### Fixes
+
+* [Several smaller fixes](https://github.com/binary-butterfly/ocpdb/pull/116)
+  * fetch_at_init support
+  * OpenData Swiss Reserved Enum
+  * prevent duplicate logging at celery dev server
+  * more fitting log levels
+
+
 ## Version 2.1.1
 
 ### Fixes
