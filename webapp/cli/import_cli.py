@@ -26,7 +26,7 @@ from webapp.services.import_services import ImageImportService, ImportServices
 import_cli = AppGroup('import')
 
 
-@import_cli.command('all', help='Fetches static and realtime data from all auto-fetched sources.')
+@import_cli.command('all', help='Fetches static and realtime data from all sources which should be fetched at init.')
 @catch_exception
 def import_all_sources() -> None:
     import_service: ImportServices = dependencies.get_import_services()
