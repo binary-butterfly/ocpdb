@@ -143,10 +143,14 @@ class BaseImportService(BaseService, RemoteMixin, ABC):
             old_location_ids.remove(location.id)
 
     def save_evse_updates(self, evse_updates: list[EvseUpdate]):
-        evses = self.evse_repository.fetch_evses_by_source_and_uids(
-            self.source_info.uid,
-            uids=[evse_update.uid for evse_update in evse_updates],
-        )
+        # With over 100 updates, we can expect a data source where we get all data at all times
+        if len(evse_updates) > 100:
+            evses = self.evse_repository.fetch_evses_by_source(self.source_info.uid)
+        else:
+            evses = self.evse_repository.fetch_evses_by_source_and_uids(
+                self.source_info.uid,
+                uids=[evse_update.uid for evse_update in evse_updates],
+            )
         evses_by_uid: dict[str, Evse] = {evse.uid: evse for evse in evses}
         for evse_update in evse_updates:
             if evse_update.uid not in evses_by_uid:
