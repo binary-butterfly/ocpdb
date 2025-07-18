@@ -121,7 +121,25 @@ class LocationListMethodView(LocationBaseMethodView):
                 schema=AnyOfField(allowed_values=['name', 'created', 'modified'], required=False, default='name'),
             ),
             Parameter('name', schema=StringField(required=False)),
-            Parameter('source', schema=StringField(required=False), example='bnetza'),
+            Parameter('source_uid', schema=StringField(required=False), example='bnetza_api'),
+            Parameter(
+                'source_uids',
+                schema=StringField(required=False),
+                example='bnetza_api,something_else',
+                description='Comma separated list of sources',
+            ),
+            Parameter(
+                'exclude_source_uid',
+                schema=StringField(required=False),
+                example='bnetza_api',
+                description='Sources to exclude',
+            ),
+            Parameter(
+                'exclude_source_uids',
+                schema=StringField(required=False),
+                example='bnetza_api,something_else',
+                description='Comma separated list of sources which should be excluded',
+            ),
             Parameter('postal_code', schema=StringField(required=False), example='59423'),
             Parameter(
                 'lat',

@@ -21,10 +21,18 @@ from decimal import Decimal
 from validataclass.dataclasses import Default
 from validataclass.exceptions import ValidationError
 from validataclass.validators import AnyOfValidator, DecimalValidator, IntegerValidator, StringValidator
-from validataclass_search_queries.filters import SearchParamContains, SearchParamCustom, SearchParamEquals
+from validataclass_search_queries.filters import (
+    SearchParamContains,
+    SearchParamCustom,
+    SearchParamEquals,
+    SearchParamMultiSelect,
+)
 from validataclass_search_queries.pagination import OffsetPaginationMixin, PaginationLimitValidator
 from validataclass_search_queries.search_queries import BaseSearchQuery, search_query_dataclass
 from validataclass_search_queries.sorting import SortingMixin
+from validataclass_search_queries.validators import MultiSelectValidator
+
+from webapp.common.validation import SearchParamNotInList, SearchParamUnequal
 
 
 @search_query_dataclass
@@ -34,8 +42,17 @@ class LocationSearchQuery(SortingMixin, OffsetPaginationMixin, BaseSearchQuery):
 
     # Search filters
     name: str | None = SearchParamContains(), StringValidator()
-    source: str | None = SearchParamEquals(), StringValidator()
-    postal_code: str | None = SearchParamEquals(), StringValidator()
+    source_uid: str | None = SearchParamEquals('source'), StringValidator()
+    source_uids: list[str] | None = (
+        SearchParamMultiSelect('source'),
+        MultiSelectValidator(StringValidator(min_length=1)),
+    )
+    exclude_source_uid: str | None = SearchParamUnequal('source'), StringValidator()
+    exclude_source_uids: list[str] | None = (
+        SearchParamNotInList('source'),
+        MultiSelectValidator(StringValidator(min_length=1)),
+    )
+    postal_code: str | None = SearchParamEquals('source'), StringValidator()
 
     lat: Decimal | None = SearchParamCustom(), DecimalValidator()
     lon: Decimal | None = SearchParamCustom(), DecimalValidator()

@@ -102,7 +102,7 @@ class OpendataSwissImportService(BaseImportService, ABC):
                 )
 
             location_updates += list(location_updates_by_uid.values())
-            success_count += 1
+            success_count += len(location_updates_by_uid)
 
         self.save_location_updates(location_updates)
 
@@ -171,7 +171,7 @@ class OpendataSwissImportService(BaseImportService, ABC):
         )
 
         logger.info(
-            f'Successfully updated {self.source_info.uid} ealtime with {success_count} valid '
-            f'locations and {error_count} failed locations.',
+            f'Successfully updated {self.source_info.uid} realtime with {success_count} valid '
+            f'evses and {error_count} failed evses.',
             extra={'attributes': {'type': LogMessageType.IMPORT_LOCATION}},
         )
