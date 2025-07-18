@@ -1,5 +1,22 @@
 # Changelog
 
+## Version 2.2.0
+
+### Features
+
+* [Additional source filter](https://github.com/binary-butterfly/ocpdb/pull/124)
+
+
+### Fixes
+
+* [OpenData Swiss static status](https://github.com/binary-butterfly/ocpdb/pull/125)
+
+
+### Maintenance
+
+* [Dependency updates](https://github.com/binary-butterfly/ocpdb/pull/125)
+
+
 ## Version 2.1.2
 
 ### Fixes
