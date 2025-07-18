@@ -42,7 +42,7 @@ from validataclass.validators import (
 from webapp.common.logging.models import LogMessageType
 from webapp.common.validation import RoundingIntegerValidator
 from webapp.common.validation.replacing_string_validator import ReplacingStringValidator
-from webapp.models.evse import Capability
+from webapp.models.evse import Capability, EvseStatus
 from webapp.services.import_services.models import (
     BusinessUpdate,
     ConnectorUpdate,
@@ -55,6 +55,7 @@ from .models import (
     TIME_ZONE_MAPPING,
     AccessibilityLocationType,
     AuthenticationMode,
+    DynamicInfoAvailable,
     Plug,
     SwissEvseStatus,
     SwissPowerType,
@@ -178,6 +179,7 @@ class EVSEDataRecord:
     IsOpen24Hours: bool = BooleanValidator(allow_strings=True)
     OpeningTimes: list[OpeningTime] | None = Noneable(ListValidator(DataclassValidator(OpeningTime))), Default(None)
     Plugs: list[Plug] = ListValidator(EnumValidator(Plug))
+    DynamicInfoAvailable: DynamicInfoAvailable = EnumValidator(DynamicInfoAvailable)
 
     @staticmethod
     def __pre_validate__(input_data: Any, **kwargs) -> Any:
@@ -252,6 +254,8 @@ class EVSEDataRecord:
             last_updated=last_updated,
             connectors=[],
         )
+        if self.DynamicInfoAvailable == DynamicInfoAvailable.FALSE:
+            evse_update.status = EvseStatus.STATIC
 
         for i, plug in enumerate(self.Plugs):
             connector_update = ConnectorUpdate(

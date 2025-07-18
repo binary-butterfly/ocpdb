@@ -167,3 +167,9 @@ class SwissEvseStatus(Enum):
             self.OCCUPIED: EvseStatus.CHARGING,
             self.RESERVED: EvseStatus.RESERVED,
         }.get(self)
+
+
+class DynamicInfoAvailable(Enum):
+    TRUE = 'true'
+    FALSE = 'false'
+    AUTO = 'auto'

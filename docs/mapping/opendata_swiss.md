@@ -31,7 +31,7 @@ use the information of the first `EVSEDataRecord`.
 | ChargingStationNames             | [ChargingStationName](#ChargingStationName)     | *           | location.name                            | Sometimes dict, sometimes list of dicts. Use the entry with lang = de, if not set the first entry |
 | ClearinghouseID                  | ?                                               | ?           |                                          | Always null                                                                                       |
 | deltaType                        | string                                          | ?           |                                          |                                                                                                   |
-| DynamicInfoAvailable             | [DynamicInfoAvailable](#DynamicInfoAvailable)   | 1           |                                          |                                                                                                   |
+| DynamicInfoAvailable             | [DynamicInfoAvailable](#DynamicInfoAvailable)   | 1           | evse.status                              |                                                                                                   |
 | DynamicPowerLevel                | boolean                                         | ?           |                                          |                                                                                                   |
 | EnergySource                     | ?                                               | ?           |                                          | Always null                                                                                       |
 | EnvironmentalImpact              | ?                                               | ?           |                                          | Always null                                                                                       |
@@ -88,13 +88,11 @@ use the information of the first `EVSEDataRecord`.
 
 ### DynamicInfoAvailable
 
-As OCPI does not have a field like `has_realtime_data`, we cannot use this enumeration.
-
 | Key   | Mapping |
 |-------|---------|
 | auto  |         |
 | true  |         |
-| false |         |
+| false | STATIC  |
 
 
 ### PaymentOption
