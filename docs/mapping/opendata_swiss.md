@@ -211,6 +211,9 @@ use the information of the first `EVSEDataRecord`.
 
 ## EVSEStatuses
 
+If all EVSEStatus within a EVSEStatusRecord list are unknown, the whole operator is ignored, as we don't get
+realtime data from this operator.
+
 | Field            | Type                                  | Cardinality | Mapping | Comment |
 |------------------|---------------------------------------|-------------|---------|---------|
 | EVSEStatusRecord | [EVSEStatusRecord](#EVSEStatusRecord) | *           |         |         |

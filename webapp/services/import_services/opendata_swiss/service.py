@@ -145,6 +145,11 @@ class OpendataSwissImportService(BaseImportService, ABC):
             return
 
         for evse_status in opendata_swiss_input.EVSEStatuses:
+            # If all EVSEStatus' are unknown, we have an operator without realtime data, so we ignore it to keep the
+            # status = STATIC set by DynamicInfoAvailable = FALSE at getting static data
+            if all(record.get('EVSEStatus') == 'Unknown' for record in evse_status.EVSEStatusRecord):
+                continue
+
             for raw_evse_status_record in evse_status.EVSEStatusRecord:
                 try:
                     evse_status_record: EVSEStatusRecord = self.evse_status_record_validator.validate(
