@@ -1,5 +1,12 @@
 # Changelog
 
+## Version 2.2.1
+
+### Fixes
+
+* [Fix OpenData Swiss Overwriting](https://github.com/binary-butterfly/ocpdb/pull/127)
+
+
 ## Version 2.2.0
 
 ### Features
