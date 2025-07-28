@@ -31,6 +31,6 @@ urllib3~=2.5.0
 
 # binary butterfly shared libraries (https://git.binary-butterfly.de/public_libraries)
 --extra-index-url https://git.binary-butterfly.de/api/v4/groups/262/-/packages/pypi/simple
-flask-openapi~=2.1.4
+flask-openapi~=2.3.0
 validataclass-search-queries~=0.5.1
 butterfly_pubsub~=2.1.1
