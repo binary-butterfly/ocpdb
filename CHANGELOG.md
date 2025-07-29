@@ -1,5 +1,12 @@
 # Changelog
 
+## Version 2.2.2
+
+### Fixes
+
+* [fix bnetza after api change](https://github.com/binary-butterfly/ocpdb/pull/132)
+
+
 ## Version 2.2.1
 
 ### Fixes
