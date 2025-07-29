@@ -28,6 +28,7 @@ from validataclass.validators import (
     EnumValidator,
     IntegerValidator,
     ListValidator,
+    Noneable,
     NumericValidator,
     StringValidator,
     TimeFormat,
@@ -186,13 +187,13 @@ class BnetzaCoordinates:
 @validataclass
 class BnetzaOperator:
     companyName: str = PrintableStringValidator()
-    displayName: str | None = StringValidator(), Default(None)
+    displayName: str | None = Noneable(StringValidator()), Default(None)
 
 
 @validataclass
 class BnetzaConnector:
-    connector_type: BnetzaConnectorType | None = EnumValidator(BnetzaConnectorType), Default(None)
-    max_electric_power_connector: Decimal | None = NumericValidator(), Default(None)
+    connector_type: BnetzaConnectorType | None = Noneable(EnumValidator(BnetzaConnectorType)), Default(None)
+    max_electric_power_connector: Decimal | None = Noneable(NumericValidator()), Default(None)
 
     def __post_init__(self):
         # There are several connectors where there's 22kW for SchuKo which is impossible, so we cap max power there
@@ -224,7 +225,7 @@ class BnetzaConnector:
 class BnetzaEvse:
     connectors: list[BnetzaConnector] = ListValidator(DataclassValidator(BnetzaConnector))
     public_key_available: bool = BooleanValidator()
-    evse_id: str | None = PrintableStringValidator(), Default(None)
+    evse_id: str | None = Noneable(PrintableStringValidator()), Default(None)
 
     def to_evse_update(
         self,
@@ -274,7 +275,7 @@ class BnetzaStatus:
 
 @validataclass
 class OpeningDay:
-    day: BnetzaWeekday | None = EnumValidator(BnetzaWeekday), Default(None)
+    day: BnetzaWeekday | None = Noneable(EnumValidator(BnetzaWeekday)), Default(None)
     open_from: time = TimeValidator(time_format=TimeFormat.NO_SECONDS)
     open_to: time = TimeValidator(time_format=TimeFormat.NO_SECONDS)
 
@@ -282,22 +283,25 @@ class OpeningDay:
 @validataclass
 class BnetzaChargingStation:
     id: int = IntegerValidator()
-    location_description: str | None = PrintableStringValidator(), Default(None)
-    street: str | None = PrintableStringValidator(), Default(None)
-    house_no: str | None = PrintableStringValidator(), Default(None)
-    address_addition: str | None = PrintableStringValidator(), Default(None)
+    location_description: str | None = Noneable(PrintableStringValidator()), Default(None)
+    street: str | None = Noneable(PrintableStringValidator()), Default(None)
+    house_no: str | None = Noneable(PrintableStringValidator()), Default(None)
+    address_addition: str | None = Noneable(PrintableStringValidator()), Default(None)
     district_independent_city: str = StringValidator()
     postal_code: str = StringValidator()
     city: str = PrintableStringValidator()
     state: str = StringValidator()
     coordinates: BnetzaCoordinates = DataclassValidator(BnetzaCoordinates)
     evses: list[BnetzaEvse] = ListValidator(DataclassValidator(BnetzaEvse))
-    max_electric_power_station: Decimal | None = NumericValidator(), Default(None)
+    max_electric_power_station: Decimal | None = Noneable(NumericValidator()), Default(None)
     opening_days: list[OpeningDay] = ListValidator(DataclassValidator(OpeningDay))
     opening_hours_specification: OpeningHoursSpecification = EnumValidator(OpeningHoursSpecification)
     operator: BnetzaOperator = DataclassValidator(BnetzaOperator)
-    payment_systems: list[PaymentSystem | None] = ListValidator(EmptystringToNoneable(EnumValidator(PaymentSystem)))
-    access_restriction: AccessRestriction | None = EnumValidator(AccessRestriction), Default(None)
+    payment_systems: list[PaymentSystem | None] = ListValidator(
+        Noneable(EmptystringToNoneable(EnumValidator(PaymentSystem))),
+    )
+    # Not used, and the enumeration seems unstable anyway
+    # access_restriction: AccessRestriction | None = Noneable(EnumValidator(AccessRestriction)), Default(None)
     status: BnetzaStatus = DataclassValidator(BnetzaStatus)
     type: ChargingStationType = EnumValidator(ChargingStationType)
     go_live_date: date = ParsedDateValidator(date_format='%d.%m.%Y')
