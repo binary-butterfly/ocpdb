@@ -52,7 +52,10 @@ class LocationSearchQuery(SortingMixin, OffsetPaginationMixin, BaseSearchQuery):
         SearchParamNotInList('source'),
         MultiSelectValidator(StringValidator(min_length=1)),
     )
-    postal_code: str | None = SearchParamEquals('source'), StringValidator()
+    postal_code: str | None = SearchParamEquals(), StringValidator()
+    address: str | None = SearchParamContains(), StringValidator()
+    city: str | None = SearchParamContains(), StringValidator()
+    country: str | None = SearchParamEquals(), StringValidator(min_length=3, max_length=3)
 
     lat: Decimal | None = SearchParamCustom(), DecimalValidator()
     lon: Decimal | None = SearchParamCustom(), DecimalValidator()

@@ -108,7 +108,7 @@ class BaseMethodView(MethodView):
             paginated_api_response(
                 paginated_result,
                 search_query,
-                request_path=self.request_helper.get_path(),
+                request_path=self.config_helper.get('PROJECT_PATH') + self.request_helper.get_path(),
                 original_params=self.request_helper.get_query_args(skip_empty=True),
-            )
+            ),
         )

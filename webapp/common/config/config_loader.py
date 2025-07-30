@@ -19,6 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import logging
 import os
 from pathlib import Path
+from urllib.parse import urlparse
 
 from flask import Flask
 from yaml import safe_load
@@ -98,3 +99,7 @@ class ConfigLoader:
                 app.config['SOURCES'][source] = {}
             elif not isinstance(source_config, dict):
                 raise Exception(f'Source config {source} has to be a dictionary, but is {source_config}')
+
+        # Set PROJECT_PATH based on PROJECT_URL
+        url = urlparse(app.config['PROJECT_URL'])
+        app.config['PROJECT_PATH'] = url.path

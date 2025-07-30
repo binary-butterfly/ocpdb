@@ -140,7 +140,10 @@ class LocationListMethodView(LocationBaseMethodView):
                 example='bnetza_api,something_else',
                 description='Comma separated list of sources which should be excluded',
             ),
+            Parameter('address', schema=StringField(required=False), example='Erlenweg', description='Contain query'),
             Parameter('postal_code', schema=StringField(required=False), example='59423'),
+            Parameter('city', schema=StringField(required=False), example='Bad Gateway', description='Contain query'),
+            Parameter('country', schema=StringField(required=False), example='59423'),
             Parameter(
                 'lat',
                 schema=NumericField(required=False),
