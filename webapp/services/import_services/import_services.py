@@ -34,6 +34,7 @@ from webapp.services.import_services.ochp.albwerk import AlbwerkOchpImportServic
 from webapp.services.import_services.ochp.ladenetz import LadenetzOchpImportService
 from webapp.services.import_services.ocpi.chargecloud.pforzheim import PforzheimImportService
 from webapp.services.import_services.ocpi.chargecloud.sw_stuttgart import SWStuttgartImportService
+from webapp.services.import_services.ocpi.chargecloud.tuebingen import TuebingenImportService
 from webapp.services.import_services.ocpi.stadtnavi.stadtnavi_service import StadtnaviImportService
 from webapp.services.import_services.opendata_swiss import OpendataSwissImportService
 
@@ -53,6 +54,7 @@ class ImportServices(BaseService):
         PforzheimImportService,
         StadtnaviImportService,
         SWStuttgartImportService,
+        TuebingenImportService,
     ]
 
     def __init__(
