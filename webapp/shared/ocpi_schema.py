@@ -392,9 +392,9 @@ location_schema = JsonSchema(
     'garage which contains these EVSEs. The exact way to reach each EVSE can be further specified by its own properties.',
     properties={
         'country_code': StringField(
-            minLength=2,
-            maxLength=2,
-            description="ISO-3166 alpha-2 country code of the CPO that 'owns' this Location.",
+            minLength=3,
+            maxLength=3,
+            description="ISO-3166 alpha-3 country code of the CPO that 'owns' this Location.",
         ),
         'party_id': StringField(
             minLength=3,
