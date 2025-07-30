@@ -5,17 +5,17 @@ OCPI-style JSON-API and a vector tile server.
 
 ## Data sources
 
-| name                              | uid                   | realtime | credentials | comment                                                                                                         |
-|-----------------------------------|-----------------------|----------|-------------|-----------------------------------------------------------------------------------------------------------------|
-| Bundesnetzagentur: API            | bnetza_api            | false    | false       | Additional config `ignore_operators:: list[str]` is supported, which will ignore given operators during import. |
-| Bundesnetzagentur: Excel          | bnetza_excel          | false    | false       |                                                                                                                 |
-| Lichtblick                        | lichtblick            | true     | true        | Currently dysfunctional                                                                                         |
-| chargecloud: Stadtwerke Pforzheim | chargecloud_pforzheim | true     | false       |                                                                                                                 |
-| chargecloud: Stadtwerke Stuttgart | chargecloud_stuttgart | true     | false       |                                                                                                                 |
-| OCHP: Albwerk                     | ochp_albwerk          | true     | true        |                                                                                                                 |
-| OCHP: Ladenetz                    | ochp_ladenetz         | true     | true        |                                                                                                                 |
-| Giro-e                            | giroe                 | true     | true        |                                                                                                                 |
-| OCPI: Stadtnavi                   | ocpi_stadtnavi        | true     | false       |                                                                                                                 |
+| name                              | uid                   | realtime | credentials | comment                                                                                                                                                                 |
+|-----------------------------------|-----------------------|----------|-------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Bundesnetzagentur: API            | bnetza_api            | false    | false       | Additional config `ignore_operators:: list[str]` is supported, which will ignore given operators during import. Set to weekly download, as it does not change so often. |
+| Bundesnetzagentur: Excel          | bnetza_excel          | false    | false       |                                                                                                                                                                         |
+| Lichtblick                        | lichtblick            | true     | true        | Currently dysfunctional                                                                                                                                                 |
+| chargecloud: Stadtwerke Pforzheim | chargecloud_pforzheim | true     | false       |                                                                                                                                                                         |
+| chargecloud: Stadtwerke Stuttgart | chargecloud_stuttgart | true     | false       |                                                                                                                                                                         |
+| OCHP: Albwerk                     | ochp_albwerk          | true     | true        |                                                                                                                                                                         |
+| OCHP: Ladenetz                    | ochp_ladenetz         | true     | true        |                                                                                                                                                                         |
+| Giro-e                            | giroe                 | true     | true        |                                                                                                                                                                         |
+| OCPI: Stadtnavi                   | ocpi_stadtnavi        | true     | false       |                                                                                                                                                                         |
 
 
 ### Duplicate matching
