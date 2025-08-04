@@ -1,5 +1,13 @@
 # Changelog
 
+## Version 2.3.0
+
+### Features
+
+* [more search params](https://github.com/binary-butterfly/ocpdb/pull/133)
+* [chargecloud tuebingen importer](https://github.com/binary-butterfly/ocpdb/pull/134)
+
+
 ## Version 2.2.2
 
 ### Fixes
