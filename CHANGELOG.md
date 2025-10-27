@@ -1,5 +1,14 @@
 # Changelog
 
+## Version 2.3.1
+
+Released 2025-10-27
+
+### Fixes
+
+* [better geo-validation](https://github.com/binary-butterfly/ocpdb/pull/151)
+
+
 ## Version 2.3.0
 
 ### Features
