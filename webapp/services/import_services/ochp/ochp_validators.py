@@ -115,14 +115,14 @@ class AddressInput:
 
 @validataclass
 class GeoPointInput:
-    lat: Decimal = DecimalValidator()
-    lon: Decimal = DecimalValidator()
+    lat: Decimal = DecimalValidator(min_value=-90, max_value=90)
+    lon: Decimal = DecimalValidator(min_value=-180, max_value=180)
 
 
 @validataclass
 class AdditionalGeoPoint:
-    lat: Decimal = DecimalValidator()
-    lon: Decimal = DecimalValidator()
+    lat: Decimal = DecimalValidator(min_value=-90, max_value=90)
+    lon: Decimal = DecimalValidator(min_value=-180, max_value=180)
     name: str | None = StringValidator(max_length=255), Default(None)
     type: OchpGeoType = OchpEnumValidator(OchpGeoType)
 

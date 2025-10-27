@@ -114,7 +114,7 @@ class ChargingStationName:
 
 @validataclass
 class GeoCoordinates:
-    Google: str = RegexValidator(r'-?\d+.\d+ -?\d+.\d+')
+    Google: str = RegexValidator(r'-?\d{1,3}\.\d+ -?\d{1,3}\.\d+')
 
     def to_lat_lon(self) -> tuple[Decimal, Decimal]:
         lat, lon = self.Google.split(' ')
