@@ -33,10 +33,13 @@ from webapp.services.import_services.goldbeck_ipcm import HeilbronnNeckarbogenIm
 from webapp.services.import_services.lichtblick import LichtblickImportService
 from webapp.services.import_services.ochp.albwerk import AlbwerkOchpImportService
 from webapp.services.import_services.ochp.ladenetz import LadenetzOchpImportService
-from webapp.services.import_services.ocpi.chargecloud.pforzheim import PforzheimImportService
-from webapp.services.import_services.ocpi.chargecloud.sw_stuttgart import SWStuttgartImportService
-from webapp.services.import_services.ocpi.chargecloud.tuebingen import TuebingenImportService
 from webapp.services.import_services.ocpi.eaaze_pbw import EaazePbwImportService
+from webapp.services.import_services.ocpi.chargecloud_afir.ludwigsburg.ludwigsburg_service import (
+    LudwigsburgImportService,
+)
+from webapp.services.import_services.ocpi.chargecloud_public.pforzheim import PforzheimImportService
+from webapp.services.import_services.ocpi.chargecloud_public.sw_stuttgart import SWStuttgartImportService
+from webapp.services.import_services.ocpi.chargecloud_public.tuebingen import TuebingenImportService
 from webapp.services.import_services.ocpi.stadtnavi.stadtnavi_service import StadtnaviImportService
 from webapp.services.import_services.opendata_swiss import OpendataSwissImportService
 
@@ -53,6 +56,7 @@ class ImportServices(BaseService):
         HeilbronnNeckarbogenImportService,
         LadenetzOchpImportService,
         LichtblickImportService,
+        LudwigsburgImportService,
         OpendataSwissImportService,
         PforzheimImportService,
         StadtnaviImportService,

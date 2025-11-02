@@ -17,13 +17,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 from validataclass.dataclasses import Default, DefaultUnset, validataclass
-from validataclass.helpers import OptionalUnset, UnsetValue
+from validataclass.helpers import OptionalUnset, UnsetValue, UnsetValueType
 from validataclass.validators import (
     AllowEmptyString,
     DataclassValidator,
     IntegerValidator,
     ListValidator,
     Noneable,
+    RejectValidator,
     StringValidator,
 )
 
@@ -37,7 +38,7 @@ from webapp.services.import_services.ocpi.ocpi_validators import (
 
 
 @validataclass
-class ChargecloudConnectorInput(ConnectorInput):
+class ChargecloudPublicConnectorInput(ConnectorInput):
     max_voltage: int = IntegerValidator(allow_strings=True)
     max_amperage: int = IntegerValidator(allow_strings=True)
 
@@ -55,14 +56,16 @@ class ChargecloudConnectorInput(ConnectorInput):
 
 
 @validataclass
-class ChargecloudEvseInput(EvseInput):
-    connectors: list[ChargecloudConnectorInput] = (
+class ChargecloudPublicEvseInput(EvseInput):
+    connectors: list[ChargecloudPublicConnectorInput] = (
         ListValidator(
-            DataclassValidator(ChargecloudConnectorInput),
+            DataclassValidator(ChargecloudPublicConnectorInput),
             min_length=1,
         ),
         DefaultUnset,
     )
+    id: str = StringValidator(max_length=36)
+    uid: UnsetValueType = RejectValidator(), DefaultUnset
 
     @staticmethod
     def __pre_validate__(input_data: dict) -> dict:
@@ -74,9 +77,9 @@ class ChargecloudEvseInput(EvseInput):
 
 
 @validataclass
-class ChargecloudLocationInput(LocationInput):
-    evses: OptionalUnset[list[ChargecloudEvseInput]] = (
-        ListValidator(DataclassValidator(ChargecloudEvseInput)),
+class ChargecloudPublicLocationInput(LocationInput):
+    evses: OptionalUnset[list[ChargecloudPublicEvseInput]] = (
+        ListValidator(DataclassValidator(ChargecloudPublicEvseInput)),
         DefaultUnset,
     )
 
