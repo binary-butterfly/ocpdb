@@ -15,16 +15,3 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-
-from webapp.services.import_services.base_import_service import SourceInfo
-from webapp.services.import_services.ocpi.chargecloud.chargecloud_base_service import ChargecloudBaseImportService
-
-
-class SWStuttgartImportService(ChargecloudBaseImportService):
-    source_info = SourceInfo(
-        uid='chargecloud_stuttgart',
-        name='Stadtwerke Stuttgart',
-        public_url='https://www.stadtwerke-stuttgart.de/elektromobilitaet/offentliche-ladeinfrastruktur-stuttgart/',
-        source_url='https://new-poi.chargecloud.de/SW-Stuttgart',
-        has_realtime_data=True,
-    )
