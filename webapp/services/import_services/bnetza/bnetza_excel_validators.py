@@ -21,7 +21,7 @@ from decimal import Decimal
 from enum import Enum
 
 from validataclass.dataclasses import validataclass
-from validataclass.validators import EnumValidator, IntegerValidator, ListValidator, StringValidator
+from validataclass.validators import EnumValidator, IntegerValidator, ListValidator
 
 from webapp.common.validation import (
     CommaStringToDecimalValidator,
@@ -57,10 +57,10 @@ class BnetzaRowInput:
     operator: str = PrintableStringValidator()
     address: str = PrintableStringValidator()
     housenumber: str = IntegerToStringValidator()
-    postcode: str = StringValidator()
-    locality: str = StringValidator()
-    land: str = StringValidator()
-    district: str = StringValidator()
+    postcode: str = PrintableStringValidator()
+    locality: str = PrintableStringValidator()
+    land: str = PrintableStringValidator()
+    district: str = PrintableStringValidator()
     lat: Decimal = CommaStringToDecimalValidator(min_value=Decimal(-90), max_value=Decimal(90))
     lon: Decimal = CommaStringToDecimalValidator(min_value=Decimal(-180), max_value=Decimal(180))
     launch_date: datetime = DateTimeToUtcDateTimeValidator()
