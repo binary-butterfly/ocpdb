@@ -16,13 +16,34 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+import re
+import sys
+import unicodedata
 from typing import Any
 
 from validataclass.validators import StringValidator
 
 
 class PrintableStringValidator(StringValidator):
+    filtered_char_re: re.Pattern
+    stripped: bool
+
+    def __init__(self, *args, stripped: bool = True, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.stripped = stripped
+
+        all_chars = (chr(i) for i in range(sys.maxunicode))
+        categories = {'Zs', 'Zl', 'Zp', 'Cc', 'Cf', 'Cs', 'Co', 'Cn'}
+        filtered_chars = ''.join(c for c in all_chars if unicodedata.category(c) in categories and c != ' ')
+        self.filtered_char_re = re.compile('[%s]' % re.escape(filtered_chars))
+
     def validate(self, input_data: Any, **kwargs) -> Any:
         self._ensure_type(input_data, str)
 
-        return super().validate(input_data=repr(input_data)[1:-1])
+        # Filter out unprintable characters
+        input_data = self.filtered_char_re.sub('', input_data)
+
+        if self.stripped:
+            input_data = input_data.strip()
+
+        return super().validate(input_data=input_data)
