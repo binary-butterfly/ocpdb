@@ -19,6 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from mercantile import LngLatBbox
 from sqlalchemy import func, text
 from sqlalchemy.orm import joinedload, selectinload
+from validataclass_search_queries.filters import BoundSearchFilter
 from validataclass_search_queries.pagination import PaginatedResult
 from validataclass_search_queries.search_queries import BaseSearchQuery
 
@@ -197,5 +198,14 @@ class LocationRepository(BaseRepository[Location]):
                     )
                     < search_query.radius
                 )
+
+        return query
+
+    def _apply_bound_search_filter(self, query: Query, bound_filter: BoundSearchFilter) -> Query:
+        """
+        Extends the base _apply_bound_search_filter() method to implement model specific search filters.
+        """
+        if bound_filter.param_name == 'operator_name':
+            return query.join(Location.operator).filter(Business.name.like(f'%{bound_filter.value}%'))
 
         return query

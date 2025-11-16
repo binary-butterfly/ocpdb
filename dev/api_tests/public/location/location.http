@@ -6,5 +6,9 @@ GET {{api_host}}/api/public/v1/locations
 GET {{api_host}}/api/public/v1/locations?lat=48.59523&lon=8.86648&radius=1000000
 
 
+### Get locations by operator name
+GET {{api_host}}/api/public/v1/locations?operator_name=Electric
+
+
 ### Get location by ID
 GET {{api_host}}/api/public/v1/locations/1

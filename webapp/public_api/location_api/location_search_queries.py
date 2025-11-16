@@ -57,6 +57,8 @@ class LocationSearchQuery(SortingMixin, OffsetPaginationMixin, BaseSearchQuery):
     city: str | None = SearchParamContains(), StringValidator()
     country: str | None = SearchParamEquals(), StringValidator(min_length=3, max_length=3)
 
+    operator_name: str | None = SearchParamContains(), StringValidator()
+
     lat: Decimal | None = SearchParamCustom(), DecimalValidator()
     lon: Decimal | None = SearchParamCustom(), DecimalValidator()
     radius: int | None = SearchParamCustom(), IntegerValidator(allow_strings=True)

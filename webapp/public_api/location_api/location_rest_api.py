@@ -144,6 +144,7 @@ class LocationListMethodView(LocationBaseMethodView):
             Parameter('postal_code', schema=StringField(required=False), example='59423'),
             Parameter('city', schema=StringField(required=False), example='Bad Gateway', description='Contain query'),
             Parameter('country', schema=StringField(required=False), example='59423'),
+            Parameter('operator_name', schema=StringField(required=False), example='Electro Inc'),
             Parameter(
                 'lat',
                 schema=NumericField(required=False),
