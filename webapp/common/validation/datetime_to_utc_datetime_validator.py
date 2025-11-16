@@ -16,10 +16,10 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any
+from zoneinfo import ZoneInfo
 
-import pytz
 from validataclass.validators import Validator
 
 
@@ -27,4 +27,4 @@ class DateTimeToUtcDateTimeValidator(Validator):
     def validate(self, input_data: Any, **kwargs) -> datetime:
         self._ensure_type(input_data, datetime)
 
-        return pytz.timezone('Europe/Berlin').localize(input_data).astimezone(pytz.UTC)
+        return input_data.replace(tzinfo=ZoneInfo('Europe/Berlin')).astimezone(timezone.utc)
