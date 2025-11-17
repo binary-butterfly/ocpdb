@@ -67,7 +67,9 @@ class BnetzaApiImportService(BaseImportService):
 
         for charging_station_dict in response_input.chargingStations:
             try:
-                charging_station = self.charging_station_validator.validate(charging_station_dict)
+                charging_station: BnetzaChargingStation = self.charging_station_validator.validate(
+                    charging_station_dict
+                )
             except ValidationError as e:
                 static_error_count += 1
                 logger.warning(

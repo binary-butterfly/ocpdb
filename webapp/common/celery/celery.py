@@ -21,7 +21,7 @@ import logging
 from abc import ABC
 from typing import Callable
 
-from celery import Celery, Task, _state
+from celery import Celery, Task, _state, platforms
 from flask import Flask
 from kombu.serialization import register
 
@@ -29,6 +29,10 @@ from webapp.common.json import DefaultJSONEncoder
 from webapp.common.logging.models import LogMessageType
 
 logger = logging.getLogger(__name__)
+
+# Monkeypatch invalid warning: in docker containers, the script fails to detect that it's not root
+platforms._warn_or_raise_security_error = lambda *args, **kwargs: None
+platforms.check_privileges = lambda *args, **kwargs: None
 
 
 class CeleryState:
