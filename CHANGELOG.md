@@ -1,5 +1,25 @@
 # Changelog
 
+## Version 2.4.0
+
+Released 2025-11-17
+
+### Features
+
+* [Filter by operator name](https://github.com/binary-butterfly/ocpdb/pull/156)
+
+
+### Fixes
+
+* [Improve PrintableStringValidator](https://github.com/binary-butterfly/ocpdb/pull/154)
+* [Use PrintableStringValidator at more places at XLSX import](https://github.com/binary-butterfly/ocpdb/pull/155)
+
+
+### Maintenance
+
+* [Updates and maintenance](https://github.com/binary-butterfly/ocpdb/pull/157)
+
+
 ## Version 2.3.1
 
 Released 2025-10-27
