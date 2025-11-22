@@ -208,4 +208,4 @@ class LocationRepository(BaseRepository[Location]):
         if bound_filter.param_name == 'operator_name':
             return query.join(Location.operator).filter(Business.name.like(f'%{bound_filter.value}%'))
 
-        return query
+        return super()._apply_bound_search_filter(query, bound_filter)
