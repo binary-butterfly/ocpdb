@@ -31,7 +31,7 @@ class RegularHours(BaseModel):
     __tablename__ = 'regular_hours'
 
     location: Mapped['Location'] = relationship('Location', back_populates='regular_hours')
-    location_id = mapped_column(BigInteger, ForeignKey('location.id', use_alter=True), nullable=False)
+    location_id = mapped_column(BigInteger, ForeignKey('location.id', use_alter=True), nullable=False, index=True)
 
     weekday: Mapped[int] = mapped_column(SmallInteger, nullable=False)
     period_begin: Mapped[int] = mapped_column(Integer, nullable=False)

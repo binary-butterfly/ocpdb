@@ -43,7 +43,7 @@ class RelatedResource(BaseModel):
     __tablename__ = 'related_resource'
 
     evse: Mapped['Evse'] = relationship('Evse', back_populates='related_resources')
-    evse_id: Mapped[int] = mapped_column(BigInteger, ForeignKey('evse.id', use_alter=True), nullable=False)
+    evse_id: Mapped[int] = mapped_column(BigInteger, ForeignKey('evse.id', use_alter=True), nullable=False, index=True)
 
     url: Mapped[str | None] = mapped_column(String(255), nullable=True)
     _types: Mapped[int | None] = mapped_column('types', Integer, nullable=True)

@@ -110,7 +110,7 @@ class Connector(BaseModel):
     __tablename__ = 'connector'
 
     evse: Mapped['Evse'] = relationship('Evse', back_populates='connectors')
-    evse_id: Mapped[int] = mapped_column(BigInteger, ForeignKey('evse.id', use_alter=True), nullable=False)
+    evse_id: Mapped[int] = mapped_column(BigInteger, ForeignKey('evse.id', use_alter=True), nullable=False, index=True)
 
     uid: Mapped[str] = mapped_column(String(64), nullable=False, index=True)  # OCPI: id
     standard: Mapped[ConnectorType | None] = mapped_column(SqlalchemyEnum(ConnectorType), nullable=True)
