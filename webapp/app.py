@@ -39,8 +39,8 @@ from webapp.server_rest_api import ServerRestApi
 __all__ = ['launch']
 
 
-def launch(config_overrides: dict | None = None) -> App:
-    app = App(BaseConfig.PROJECT_NAME)
+def launch(app_class: type[App] = App, config_overrides: dict | None = None) -> App:
+    app = app_class(BaseConfig.PROJECT_NAME)
     configure_app(app, config_overrides)
     configure_extensions(app)
     configure_blueprints(app)

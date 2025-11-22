@@ -242,6 +242,9 @@ class Location(BaseModel):
         # OCPI id has to be a string
         result['id'] = str(self.id)
 
+        # We just handle public locations
+        result['publish'] = True
+
         if not strict:
             result['original_id'] = self.uid
             result['source'] = self.source

@@ -16,6 +16,7 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+from flask_openapi.decorator import Schema as Component
 from flask_openapi.schema import (
     ArrayField,
     BooleanField,
@@ -66,6 +67,11 @@ additional_geo_location_schema = JsonSchema(
 additional_geo_location_example = {}
 
 
+additional_geo_location_component = Component(
+    'AdditionalGeoLocation', additional_geo_location_schema, additional_geo_location_example
+)
+
+
 business_details_schema = JsonSchema(
     title='BusinessDetails',
     properties={
@@ -77,6 +83,9 @@ business_details_schema = JsonSchema(
 
 
 business_details_example = {}
+
+
+business_details_component = Component('BusinessDetails', business_details_schema, business_details_example)
 
 
 connector_schema = JsonSchema(
@@ -126,6 +135,9 @@ connector_schema = JsonSchema(
 connector_example = {}
 
 
+connector_component = Component('Connector', connector_schema, connector_example)
+
+
 display_text_schema = JsonSchema(
     title='DisplayText',
     properties={
@@ -139,6 +151,9 @@ display_text_schema = JsonSchema(
 
 
 display_text_example = {}
+
+
+display_text_component = Component('DisplayText', display_text_schema, display_text_example)
 
 
 energy_mix_schema = JsonSchema(
@@ -175,6 +190,9 @@ energy_mix_schema = JsonSchema(
 energy_mix_example = {}
 
 
+energy_mix_component = Component('EnergyMix', energy_mix_schema, energy_mix_example)
+
+
 energy_source_schema = JsonSchema(
     title='EnergySource',
     description='Key-value pairs (enum + percentage) of energy sources. All given values of all categories should add up to 100 percent.',
@@ -186,6 +204,9 @@ energy_source_schema = JsonSchema(
 
 
 energy_source_example = {}
+
+
+energy_source_component = Component('EnergySource', energy_source_schema, energy_source_example)
 
 
 environmental_impact_schema = JsonSchema(
@@ -202,6 +223,11 @@ environmental_impact_schema = JsonSchema(
 
 
 environmental_impact_example = {}
+
+
+environmental_impact_component = Component(
+    'EnvironmentalImpact', environmental_impact_schema, environmental_impact_example
+)
 
 
 evse_schema = JsonSchema(
@@ -250,6 +276,7 @@ evse_schema = JsonSchema(
         'floor_level': StringField(
             maxLength=4,
             description='Level on which the Charge Point is located (in garage buildings) in the locally displayed numbering scheme.',
+            required=False,
         ),
         'coordinates': Reference(obj='GeoLocation', required=False, description='Coordinates of the EVSE.'),
         'physical_reference': StringField(
@@ -283,6 +310,9 @@ evse_schema = JsonSchema(
 evse_example = {}
 
 
+evse_component = Component('EVSE', evse_schema, evse_example)
+
+
 exceptional_period_schema = JsonSchema(
     title='ExceptionalPeriod',
     description='Specifies one exceptional period for opening or access hours.',
@@ -298,6 +328,9 @@ exceptional_period_schema = JsonSchema(
 
 
 exceptional_period_example = {}
+
+
+exceptional_period_component = Component('ExceptionalPeriod', exceptional_period_schema, exceptional_period_example)
 
 
 geo_location_schema = JsonSchema(
@@ -321,6 +354,9 @@ geo_location_schema = JsonSchema(
 
 
 geo_location_example = {}
+
+
+geo_location_component = Component('GeoLocation', geo_location_schema, geo_location_example)
 
 
 hours_schema = JsonSchema(
@@ -355,6 +391,9 @@ hours_schema = JsonSchema(
 hours_example = {}
 
 
+hours_component = Component('Hours', hours_schema, hours_example)
+
+
 image_schema = JsonSchema(
     title='Image',
     description='This class references an image related to an EVSE in terms of a file name or url. According to the roaming connection '
@@ -385,6 +424,9 @@ image_schema = JsonSchema(
 image_example = {}
 
 
+image_component = Component('Image', image_schema, image_example)
+
+
 location_schema = JsonSchema(
     title='Location',
     description='The Location object describes the location and its properties where a group of EVSEs that belong together are installed. '
@@ -394,22 +436,18 @@ location_schema = JsonSchema(
         'country_code': StringField(
             minLength=3,
             maxLength=3,
-            description="ISO-3166 alpha-3 country code of the CPO that 'owns' this Location.",
+            description="ISO-3166 alpha-3 country code of the CPO that 'owns' this Location.\n*In OCPI, this field is required. Most sources don't have it, though, so we cannot output it in OCPDB.*",
+            required=False,
         ),
         'party_id': StringField(
             minLength=3,
             maxLength=3,
-            description="ID of the CPO that 'owns' this Location (following the ISO-15118 standard).",
+            description="ID of the CPO that 'owns' this Location (following the ISO-15118 standard).\n*In OCPI, this field is required. Most sources don't have it, though, so we cannot output it in OCPDB.*",
+            required=False,
         ),
         'id': IntegerField(
             minimum=1,
             description='Unique internal ID which identifies the location',
-        ),
-        'uid': StringField(
-            minLength=1,
-            maxLength=36,
-            description='Uniquely identifies the location within the CPOs platform (and suboperator platforms). This field can never be '
-            'changed, modified or renamed. In original OCPI, this field is called id.',
         ),
         'publish': BooleanField(
             description='Defines if a Location may be published on an website or app etc. When this is set to false, only tokens '
@@ -508,15 +546,29 @@ location_schema = JsonSchema(
         'last_updated': DateTimeField(
             description='Timestamp when this Location or one of its EVSEs or Connectors were last updated (or created).',
         ),
-        'source': StringField(
-            maxLength=64,
-            description='Source UID to identify the data source the OCPDB got this dataset from.',
-        ),
     },
 )
 
 
+extended_location_schema = JsonSchema(
+    title='ExtendedLocation',
+    description=f'{location_schema.description}<br>*Extended with non-standard fields.*',
+    properties={
+        **location_schema.properties,
+        'source': StringField(maxLength=255, required=False, description='Source of the location data.'),
+        'original_id': StringField(
+            minLength=1,
+            maxLength=36,
+            description='Uniquely identifies the location within the CPOs platform (and suboperator platforms). This field can never be '
+            'changed, modified or renamed. In original OCPI, this field is called id.',
+        ),
+    },
+)
+
 location_example = {}
+
+
+location_component = Component('Location', location_schema, location_example)
 
 
 publish_token_type_schema = JsonSchema(
@@ -554,6 +606,9 @@ publish_token_type_schema = JsonSchema(
 publish_token_type_example = {}
 
 
+publish_token_type_component = Component('PublishTokenType', publish_token_type_schema, publish_token_type_example)
+
+
 regular_hours_schema = JsonSchema(
     title='RegularHours',
     description='Regular recurring operation or access hours.',
@@ -577,3 +632,51 @@ regular_hours_schema = JsonSchema(
 
 
 regular_hours_example = {}
+
+
+regular_hours_component = Component('RegularHours', regular_hours_schema, regular_hours_example)
+
+
+status_schedule_schema = JsonSchema(
+    title='StatusSchedule',
+    description='This type is used to schedule status periods in the future. The eMSP can provide this information to '
+    'the EV user for trip planning purposes. A period MAY have no end. Example: "This station will be '
+    'running as of tomorrow. Today it is still planned and under construction."',
+    properties={
+        'period_begin': DateTimeField(
+            description='Begin of the scheduled period.',
+        ),
+        'period_end': DateTimeField(
+            description='Status value during the scheduled period.',
+        ),
+        'status': EnumField(
+            enum=EvseStatus,
+            description='Status value during the scheduled period.',
+        ),
+    },
+)
+
+
+status_schedule_example = {}
+
+status_schedule_component = Component('StatusSchedule', status_schedule_schema, status_schedule_example)
+
+
+all_location_components = [
+    additional_geo_location_component,
+    business_details_component,
+    connector_component,
+    display_text_component,
+    energy_mix_component,
+    energy_source_component,
+    environmental_impact_component,
+    evse_component,
+    exceptional_period_component,
+    geo_location_component,
+    hours_component,
+    image_component,
+    location_component,
+    publish_token_type_component,
+    regular_hours_component,
+    status_schedule_component,
+]
