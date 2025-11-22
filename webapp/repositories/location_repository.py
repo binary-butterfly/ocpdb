@@ -156,12 +156,12 @@ class LocationRepository(BaseRepository[Location]):
 
     def fetch_locations(self, search_query: BaseSearchQuery | None = None) -> PaginatedResult[Location]:
         options = [
-            selectinload(Location.images),
-            selectinload(Location.evses).selectinload(Evse.connectors),
-            selectinload(Location.evses).selectinload(Evse.images),
             joinedload(Location.operator).joinedload(Business.logo),
             joinedload(Location.suboperator).joinedload(Business.logo),
             joinedload(Location.owner).joinedload(Business.logo),
+            selectinload(Location.images),
+            selectinload(Location.evses).selectinload(Evse.connectors),
+            selectinload(Location.evses).selectinload(Evse.images),
             selectinload(Location.evses).selectinload(Evse.related_resources),
             selectinload(Location.regular_hours),
             selectinload(Location.exceptional_closings),
