@@ -38,7 +38,7 @@ from webapp.common.validation import SearchParamNotInList, SearchParamUnequal
 @search_query_dataclass
 class LocationSearchQuery(SortingMixin, OffsetPaginationMixin, BaseSearchQuery):
     # Set allowed sorting keys and default sorting key
-    sorted_by: str = AnyOfValidator(['name', 'created', 'modified']), Default('name')
+    sorted_by: str = AnyOfValidator(['id', 'name', 'created', 'modified']), Default('id')
 
     # Search filters
     name: str | None = SearchParamContains(), StringValidator()
