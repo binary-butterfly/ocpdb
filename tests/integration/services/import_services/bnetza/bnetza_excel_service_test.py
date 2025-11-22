@@ -78,6 +78,7 @@ def test_bnetza_excel_import(db: SQLAlchemy, requests_mock: Mocker) -> None:
         },
         'directions': None,
         'parking_type': None,
+        'publish': True,
         'time_zone': None,
         'last_updated': ANY,
         'terms_and_conditions': None,

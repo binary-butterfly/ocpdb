@@ -92,6 +92,7 @@ def test_sw_stuttgart_import(db: SQLAlchemy, requests_mock: Mocker) -> None:
         'parking_type': None,
         'time_zone': 'Europe/Berlin',
         'last_updated': None,
+        'publish': True,
         'terms_and_conditions': None,
     }
     assert len(sample_location.evses) == 10

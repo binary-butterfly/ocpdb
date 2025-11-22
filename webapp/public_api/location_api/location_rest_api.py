@@ -24,7 +24,6 @@ from flask_openapi.decorator import (
     Parameter,
     Response,
     ResponseData,
-    Schema,
     SchemaListReference,
     SchemaReference,
     document,
@@ -35,38 +34,7 @@ from validataclass.validators import DataclassValidator
 from webapp.common.rest import BaseMethodView
 from webapp.dependencies import dependencies
 from webapp.public_api.base_blueprint import BaseBlueprint
-from webapp.shared.ocpi_schema import (
-    additional_geo_location_example,
-    additional_geo_location_schema,
-    business_details_example,
-    business_details_schema,
-    connector_example,
-    connector_schema,
-    display_text_example,
-    display_text_schema,
-    energy_mix_example,
-    energy_mix_schema,
-    energy_source_example,
-    energy_source_schema,
-    environmental_impact_example,
-    environmental_impact_schema,
-    evse_example,
-    evse_schema,
-    exceptional_period_example,
-    exceptional_period_schema,
-    geo_location_example,
-    geo_location_schema,
-    hours_example,
-    hours_schema,
-    image_example,
-    image_schema,
-    location_example,
-    location_schema,
-    publish_token_type_example,
-    publish_token_type_schema,
-    regular_hours_example,
-    regular_hours_schema,
-)
+from webapp.shared.ocpi_schema import all_location_components
 
 from .location_handler import LocationHandler
 from .location_search_queries import LocationSearchQuery
@@ -171,23 +139,7 @@ class LocationListMethodView(LocationBaseMethodView):
             ),
         ],
         response=[Response(ResponseData(SchemaListReference('Location'), ExampleListReference('Location')))],
-        components=[
-            Schema('AdditionalGeoLocation', additional_geo_location_schema, additional_geo_location_example),
-            Schema('BusinessDetails', business_details_schema, business_details_example),
-            Schema('Connector', connector_schema, connector_example),
-            Schema('DisplayText', display_text_schema, display_text_example),
-            Schema('EnergyMix', energy_mix_schema, energy_mix_example),
-            Schema('EnergySource', energy_source_schema, energy_source_example),
-            Schema('EnvironmentalImpact', environmental_impact_schema, environmental_impact_example),
-            Schema('EVSE', evse_schema, evse_example),
-            Schema('ExceptionalPeriod', exceptional_period_schema, exceptional_period_example),
-            Schema('GeoLocation', geo_location_schema, geo_location_example),
-            Schema('Hours', hours_schema, hours_example),
-            Schema('Image', image_schema, image_example),
-            Schema('Location', location_schema, location_example),
-            Schema('PublishTokenType', publish_token_type_schema, publish_token_type_example),
-            Schema('RegularHours', regular_hours_schema, regular_hours_example),
-        ],
+        components=all_location_components,
     )
     @cross_origin()
     def get(self):
@@ -211,23 +163,7 @@ class LocationItemMethodView(LocationBaseMethodView):
                 description='If set to true, all additional fields will be omitted for full OCPI compatibility.',
             ),
         ],
-        components=[
-            Schema('AdditionalGeoLocation', additional_geo_location_schema, additional_geo_location_example),
-            Schema('BusinessDetails', business_details_schema, business_details_example),
-            Schema('Connector', connector_schema, connector_example),
-            Schema('DisplayText', display_text_schema, display_text_example),
-            Schema('EnergyMix', energy_mix_schema, energy_mix_example),
-            Schema('EnergySource', energy_source_schema, energy_source_example),
-            Schema('EnvironmentalImpact', environmental_impact_schema, environmental_impact_example),
-            Schema('EVSE', evse_schema, evse_example),
-            Schema('ExceptionalPeriod', exceptional_period_schema, exceptional_period_example),
-            Schema('GeoLocation', geo_location_schema, geo_location_example),
-            Schema('Hours', hours_schema, hours_example),
-            Schema('Image', image_schema, image_example),
-            Schema('Location', location_schema, location_example),
-            Schema('PublishTokenType', publish_token_type_schema, publish_token_type_example),
-            Schema('RegularHours', regular_hours_schema, regular_hours_example),
-        ],
+        components=all_location_components,
     )
     @cross_origin()
     def get(self, location_id: int):

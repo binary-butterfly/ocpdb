@@ -4,8 +4,9 @@ on:
   release:
     types:
       - published
-  pull_request:
-    branches: [ "main" ]
+  push:
+    tags:
+      - 'preview-**'
 
 jobs:
   build-publish:

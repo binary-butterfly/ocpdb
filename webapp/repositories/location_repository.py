@@ -19,6 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from mercantile import LngLatBbox
 from sqlalchemy import func, text
 from sqlalchemy.orm import joinedload, selectinload
+from sqlalchemy.orm.interfaces import LoaderOption
 from validataclass_search_queries.filters import BoundSearchFilter
 from validataclass_search_queries.pagination import PaginatedResult
 from validataclass_search_queries.search_queries import BaseSearchQuery
@@ -27,7 +28,6 @@ from webapp.common.sqlalchemy import Query
 from webapp.models import Business, Evse, Location
 
 from .base_repository import BaseRepository
-from .exceptions import ObjectNotFoundException
 
 
 class LocationRepository(BaseRepository[Location]):
@@ -50,20 +50,14 @@ class LocationRepository(BaseRepository[Location]):
         return [item.id for item in items]
 
     def fetch_location_by_id(self, location_id: int, *, include_children: bool = False) -> Location:
-        location = self.session.query(Location)
-
+        load_options: list[LoaderOption] = []
         if include_children:
-            location = location.options(
+            load_options += [
+                joinedload(Location.operator),
                 selectinload(Location.evses).selectinload(Evse.connectors),
-                selectinload(Location.operator),
-            )
+            ]
 
-        location = location.get(location_id)
-
-        if location is None:
-            raise ObjectNotFoundException(message=f'location with id {location_id} not found')
-
-        return location
+        return self.fetch_resource_by_id(location_id, load_options=load_options)
 
     def fetch_location_by_uid(self, source: str, location_uid: str, *, include_children: bool = False) -> Location:
         query = self.session.query(Location)

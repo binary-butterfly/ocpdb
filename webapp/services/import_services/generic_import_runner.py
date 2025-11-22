@@ -33,6 +33,9 @@ class GenericImportRunner(BaseService):
         self.import_services = import_services
 
     def start(self):
+        if self.config_helper.get('DISABLE_AUTOFETCH'):
+            return
+
         celery.add_periodic_task(
             crontab(
                 minute=str(self.config_helper.get('IMAGE_PULL_MINUTE', 0)),
