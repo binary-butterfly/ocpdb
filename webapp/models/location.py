@@ -148,16 +148,19 @@ class Location(BaseModel):
         BigInteger,
         ForeignKey('business.id', use_alter=True),
         nullable=True,
+        index=True,
     )
     suboperator_id: Mapped[int | None] = mapped_column(
         BigInteger,
         ForeignKey('business.id', use_alter=True),
         nullable=True,
+        index=True,
     )
     owner_id: Mapped[int | None] = mapped_column(
         BigInteger,
         ForeignKey('business.id', use_alter=True),
         nullable=True,
+        index=True,
     )
 
     operator: Mapped[Optional['Business']] = relationship('Business', foreign_keys=[operator_id])

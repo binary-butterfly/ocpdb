@@ -30,10 +30,12 @@ class LocationImageAssociation(db.Model):
         ForeignKey('location.id'),
         primary_key=True,
         nullable=False,
+        index=True,
     )
     image_id: Mapped[int] = mapped_column(
         BigInteger,
         ForeignKey('image.id'),
         primary_key=True,
         nullable=False,
+        index=True,
     )

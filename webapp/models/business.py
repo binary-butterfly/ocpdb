@@ -32,7 +32,12 @@ class Business(BaseModel):
 
     logo: Mapped[Optional['Image']] = relationship('Image', uselist=False)
 
-    logo_id: Mapped[int | None] = mapped_column(BigInteger, ForeignKey('image.id', use_alter=True), nullable=True)
+    logo_id: Mapped[int | None] = mapped_column(
+        BigInteger,
+        ForeignKey('image.id', use_alter=True),
+        nullable=True,
+        index=True,
+    )
 
     name: Mapped[str] = mapped_column(String(255), index=True, nullable=False)
     website: Mapped[str | None] = mapped_column(String(255), nullable=True)

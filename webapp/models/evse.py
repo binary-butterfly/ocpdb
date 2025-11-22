@@ -103,7 +103,9 @@ class Evse(BaseModel):
     )
     location: Mapped['Location'] = relationship('Location', back_populates='evses')
 
-    location_id: Mapped[int] = mapped_column(BigInteger, ForeignKey('location.id', use_alter=True), nullable=False)
+    location_id: Mapped[int] = mapped_column(
+        BigInteger, ForeignKey('location.id', use_alter=True), nullable=False, index=True
+    )
 
     uid: Mapped[str] = mapped_column(String(64), nullable=False, index=True)
     evse_id: Mapped[str | None] = mapped_column(String(64), nullable=True, index=True)

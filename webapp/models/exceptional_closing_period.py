@@ -34,7 +34,9 @@ class ExceptionalClosingPeriod(BaseModel):
     __tablename__ = 'exceptional_closing_period'
 
     location: Mapped['Location'] = relationship('Location', back_populates='exceptional_closings')
-    location_id: Mapped[int] = mapped_column(BigInteger, ForeignKey('location.id', use_alter=True), nullable=False)
+    location_id: Mapped[int] = mapped_column(
+        BigInteger, ForeignKey('location.id', use_alter=True), nullable=False, index=True
+    )
     period_begin: Mapped[datetime] = mapped_column(UtcDateTime(), nullable=False)
     period_end: Mapped[datetime] = mapped_column(UtcDateTime(), nullable=False)
 
