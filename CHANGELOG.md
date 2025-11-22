@@ -1,5 +1,22 @@
 # Changelog
 
+## Version 2.5.0
+
+Released 2025-11-22
+
+### Features
+
+* [eaaze pbw](https://github.com/binary-butterfly/ocpdb/pull/160))
+
+
+### Fixes
+
+* [location test, test and fix OpenAPI](https://github.com/binary-butterfly/ocpdb/pull/162)
+* [Fix search filter](https://github.com/binary-butterfly/ocpdb/pull/161)
+* [Foreign key indices](https://github.com/binary-butterfly/ocpdb/pull/159)
+* [Optimize Location Query](https://github.com/binary-butterfly/ocpdb/pull/158)
+
+
 ## Version 2.4.0
 
 Released 2025-11-17
