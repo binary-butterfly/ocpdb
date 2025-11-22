@@ -201,7 +201,7 @@ class EnergyMixInput(ValidataclassMixin):
 
 @validataclass
 class EvseInput(ValidataclassMixin):
-    id: str = StringValidator(max_length=36)
+    uid: str = StringValidator(max_length=36)
     evse_id: str = StringValidator(max_length=36)
     status: EvseStatus = EnumValidator(EvseStatus)
     status_schedule: OptionalUnset[list[StatusScheduleInput]] = (
