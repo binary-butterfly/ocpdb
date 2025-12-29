@@ -32,7 +32,8 @@ class ConnectorRepository(BaseRepository[Connector]):
 
     def fetch_by_uid(self, source: str, connector_uid: str) -> Connector:
         result = (
-            self.session.query(Connector)
+            self.session
+            .query(Connector)
             .filter(Connector.uid == connector_uid)
             .join(Evse, Evse.id == Connector.evse_id)
             .join(Location, Location.id == Evse.location_id)
