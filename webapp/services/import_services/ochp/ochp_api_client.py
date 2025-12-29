@@ -135,7 +135,7 @@ class OchpApiClient(RemoteMixin):
             headers={'content-type': 'text/xml', 'SOAPAction': action},
         )
         try:
-            return etree.fromstring(result.content.decode('latin-1'))  # noqa: S320
+            return etree.fromstring(result.text)  # noqa: S320
         except XMLSyntaxError:
             raise ValidationError(code='invalid_xml', reason='Invalid XML')
 
