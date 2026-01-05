@@ -46,7 +46,8 @@ class EvseRepository(BaseRepository[Evse]):
 
     def fetch_by_uid(self, source: str, uid: str) -> Evse:
         items = (
-            self.session.query(Evse)
+            self.session
+            .query(Evse)
             .filter(Evse.uid == uid)
             .join(Location, Location.id == Evse.location_id)
             .filter(Location.source == source)
@@ -63,7 +64,8 @@ class EvseRepository(BaseRepository[Evse]):
 
     def fetch_evses_by_source_and_uids(self, source_uid: str, uids: list[str]) -> list[Evse]:
         query = (
-            self.session.query(Evse)
+            self.session
+            .query(Evse)
             .filter(Evse.uid.in_(uids))
             .join(Evse.location)
             .filter(Location.source == source_uid)
@@ -89,7 +91,8 @@ class EvseRepository(BaseRepository[Evse]):
 
     def fetch_evse_status_summary(self) -> list[EvseStatusSummary]:
         items = (
-            self.session.query(Evse.uid.label('evse'), Evse.status, Location.uid.label('location'), Location.source)
+            self.session
+            .query(Evse.uid.label('evse'), Evse.status, Location.uid.label('location'), Location.source)
             .filter(Evse.status != EvseStatus.STATIC)
             .join(Evse.location)
             .all()
