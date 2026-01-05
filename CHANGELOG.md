@@ -1,5 +1,14 @@
 # Changelog
 
+## Version 2.5.1
+
+Released 2026-01-05
+
+### Fixes
+
+* [Fix Ladenetz Charset](https://github.com/binary-butterfly/ocpdb/pull/167
+
+
 ## Version 2.5.0
 
 Released 2025-11-22
