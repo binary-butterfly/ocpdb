@@ -31,12 +31,12 @@ from webapp.common.sqlalchemy import SQLAlchemy
 
 def test_get_locations_strict(
     db: SQLAlchemy,
-    admin_test_client: OpenApiFlaskClient,
+    public_test_client: OpenApiFlaskClient,
 ) -> None:
     db.session.add_all([get_full_location_1(), get_full_location_2(), get_full_location_3()])
     db.session.commit()
 
-    response = admin_test_client.get(
+    response = public_test_client.get(
         path='/api/public/v1/locations?strict=true',
     )
     assert response.status_code == HTTPStatus.OK
@@ -45,12 +45,12 @@ def test_get_locations_strict(
 
 def test_get_locations_by_source_strict(
     db: SQLAlchemy,
-    admin_test_client: OpenApiFlaskClient,
+    public_test_client: OpenApiFlaskClient,
 ) -> None:
     db.session.add_all([get_full_location_1(), get_full_location_2(), get_full_location_3()])
     db.session.commit()
 
-    response = admin_test_client.get(
+    response = public_test_client.get(
         path=f'/api/public/v1/locations?strict=true&source_uid={SOURCE_UID_1}',
     )
     assert response.status_code == HTTPStatus.OK
@@ -65,12 +65,12 @@ def test_get_locations_by_source_strict(
 
 def test_get_location_strict(
     db: SQLAlchemy,
-    admin_test_client: OpenApiFlaskClient,
+    public_test_client: OpenApiFlaskClient,
 ) -> None:
     db.session.add(get_full_location_1())
     db.session.commit()
 
-    response = admin_test_client.get(
+    response = public_test_client.get(
         path='/api/public/v1/locations/1?strict=true',
     )
     assert response.status_code == HTTPStatus.OK

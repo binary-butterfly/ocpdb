@@ -21,6 +21,7 @@ from webapp.common.base_blueprint import BaseBlueprint
 from .business_api import BusinessBlueprint
 from .location_api import LocationBlueprint
 from .ocpi_api import OcpiBlueprint
+from .source_api import SourceBlueprint
 from .tiles_api import TilesBlueprint
 
 
@@ -31,6 +32,7 @@ class PublicApi(BaseBlueprint):
         BusinessBlueprint,
         OcpiBlueprint,
         LocationBlueprint,
+        SourceBlueprint,
     ]
 
     def __init__(self):

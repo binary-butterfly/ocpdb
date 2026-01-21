@@ -16,6 +16,9 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+from validataclass_search_queries.pagination import PaginatedResult
+from validataclass_search_queries.search_queries import BaseSearchQuery
+
 from webapp.models import Source
 
 from .base_repository import BaseRepository
@@ -24,8 +27,12 @@ from .base_repository import BaseRepository
 class SourceRepository(BaseRepository[Source]):
     model_cls = Source
 
-    def fetch_sources(self) -> list[Source]:
-        return self.session.query(Source).all()
+    def fetch_sources(self, *, search_query: BaseSearchQuery | None = None) -> PaginatedResult[Source]:
+        query = self.session.query(Source)
+        return self._search_and_paginate(query, search_query)
+
+    def fetch_source_by_id(self, source_id: int) -> Source:
+        return self.fetch_resource_by_id(source_id)
 
     def fetch_source_by_uid(self, source_uid: str) -> Source:
         result = self.session.query(Source).filter(Source.uid == source_uid).first()
