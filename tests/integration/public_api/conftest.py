@@ -24,6 +24,6 @@ from tests.integration.helpers import OpenApiFlaskClient, TestApp
 
 
 @pytest.fixture
-def admin_test_client(flask_app: TestApp) -> Generator[OpenApiFlaskClient, None, None]:
+def public_test_client(flask_app: TestApp) -> Generator[OpenApiFlaskClient, None, None]:
     with flask_app.test_client(openapi_realm='public') as client:
         yield client  # type: ignore

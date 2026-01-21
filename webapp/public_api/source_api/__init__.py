@@ -1,6 +1,6 @@
 """
 Open ChargePoint DataBase OCPDB
-Copyright (C) 2021 binary butterfly GmbH
+Copyright (C) 2026 binary butterfly GmbH
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published by
@@ -16,14 +16,4 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from .business import Business
-from .connector import Connector
-from .evse import Evse
-from .exceptional_closing_period import ExceptionalClosingPeriod
-from .exceptional_opening_period import ExceptionalOpeningPeriod
-from .image import Image
-from .location import Location
-from .option import Option
-from .regular_hours import RegularHours
-from .related_resource import RelatedResource
-from .source import Source, SourceStatus
+from .source_rest_api import SourceBlueprint
