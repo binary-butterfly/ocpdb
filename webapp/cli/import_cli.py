@@ -38,11 +38,7 @@ def import_all_sources() -> None:
 @catch_exception
 def cli_get_static(source_uid: str) -> None:
     import_services: ImportServices = dependencies.get_import_services()
-    if source_uid not in import_services.importer_by_uid:
-        raise ValueError(
-            f'Source UID {source_uid} not in registered importers: {", ".join(import_services.importer_by_uid.keys())}',
-        )
-    import_services.importer_by_uid[source_uid].fetch_static_data()
+    import_services.fetch_static_source(source_uid)
 
 
 @import_cli.command('realtime', help='Fetch realtime data')
@@ -50,11 +46,7 @@ def cli_get_static(source_uid: str) -> None:
 @catch_exception
 def cli_get_realtime(source_uid: str) -> None:
     import_services: ImportServices = dependencies.get_import_services()
-    if source_uid not in import_services.importer_by_uid:
-        raise ValueError(
-            f'Source UID {source_uid} not in registered importers: {", ".join(import_services.importer_by_uid.keys())}',
-        )
-    import_services.importer_by_uid[source_uid].fetch_realtime_data()
+    import_services.fetch_realtime_source(source_uid)
 
 
 @import_cli.command('images', help='Fetch images')

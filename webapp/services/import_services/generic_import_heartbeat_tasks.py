@@ -25,7 +25,7 @@ def static_import_task(source: str):
     from webapp.dependencies import dependencies
 
     import_services = dependencies.get_import_services()
-    import_services.importer_by_uid[source].fetch_static_data()
+    import_services.fetch_static_source(source)
 
 
 @celery.task()
@@ -33,7 +33,7 @@ def realtime_import_task(source: str):
     from webapp.dependencies import dependencies
 
     import_services: ImportServices = dependencies.get_import_services()
-    import_services.importer_by_uid[source].fetch_realtime_data()
+    import_services.fetch_realtime_source(source)
 
 
 @celery.task()

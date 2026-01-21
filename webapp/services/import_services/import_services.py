@@ -16,6 +16,7 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+from webapp.common.contexts import TelemetryContext
 from webapp.repositories import (
     ConnectorRepository,
     EvseRepository,
@@ -115,9 +116,36 @@ class ImportServices(BaseService):
             raise Exception('Unknown source UID')
 
         importer_service = self.importer_by_uid[source_uid]
+        self.context_helper.set_telemetry_context(TelemetryContext.SOURCE, importer_service.source_info.uid)
 
         if hasattr(importer_service, 'fetch_static_data'):
             importer_service.fetch_static_data()
+
+        if hasattr(importer_service, 'fetch_realtime_data'):
+            importer_service.fetch_realtime_data()
+
+    def fetch_static_source(self, source_uid: str) -> None:
+        """
+        Fetches static and realtime data for a specific source uid.
+        """
+        if source_uid not in self.importer_by_uid:
+            raise Exception('Unknown source UID')
+
+        importer_service = self.importer_by_uid[source_uid]
+        self.context_helper.set_telemetry_context(TelemetryContext.SOURCE, importer_service.source_info.uid)
+
+        if hasattr(importer_service, 'fetch_static_data'):
+            importer_service.fetch_static_data()
+
+    def fetch_realtime_source(self, source_uid: str) -> None:
+        """
+        Fetches static and realtime data for a specific source uid.
+        """
+        if source_uid not in self.importer_by_uid:
+            raise Exception('Unknown source UID')
+
+        importer_service = self.importer_by_uid[source_uid]
+        self.context_helper.set_telemetry_context(TelemetryContext.SOURCE, importer_service.source_info.uid)
 
         if hasattr(importer_service, 'fetch_realtime_data'):
             importer_service.fetch_realtime_data()
