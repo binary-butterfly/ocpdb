@@ -40,8 +40,12 @@ class RemoteMixin(ABC):
     def config(self) -> dict:
         return self.config_helper.get('SOURCES', {}).get(self.source_info.uid) or {}
 
-    def json_request(self, **kwargs) -> dict | list:
+    def json_request(self, fix_encoding: bool = False, **kwargs) -> dict | list:
         response = self.request(**kwargs)
+
+        if fix_encoding:
+            # Force UTF-8 encoding, because python requests sets ISO-8859-1 because of RFC 2616
+            response.encoding = 'utf-8'
         try:
             return response.json()
         except JSONDecodeError as e:

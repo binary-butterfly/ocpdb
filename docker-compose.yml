@@ -116,7 +116,6 @@ services:
       timeout: 1s
       retries: 20
 
-
   mocked-ochp:
     <<: *mocked-service-defaults
     volumes:
