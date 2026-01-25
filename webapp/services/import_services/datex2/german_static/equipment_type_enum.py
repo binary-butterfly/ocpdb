@@ -1,0 +1,53 @@
+"""
+Copyright 2026 binary butterfly GmbH
+Use of this source code is governed by an MIT-style license that can be found in the LICENSE.txt.
+"""
+
+from enum import Enum
+
+
+class EquipmentTypeEnum(Enum):
+    BATHROOM = 'bathRoom'
+    BIKEPARKING = 'bikeParking'
+    CASHMACHINE = 'cashMachine'
+    COPYMACHINEORSERVICE = 'copyMachineOrService'
+    DEFIBRILLATOR = 'defibrillator'
+    DSRCRECEIVER = 'dsrcReceiver'
+    DUMPINGSTATION = 'dumpingStation'
+    ELECTRICCHARGINGSTATION = 'electricChargingStation'
+    ELEVATOR = 'elevator'
+    FAXMACHINEORSERVICE = 'faxMachineOrService'
+    FIREEXTINGUISHER = 'fireExtinguisher'
+    FIREHOSE = 'fireHose'
+    FIREHYDRANT = 'fireHydrant'
+    FIRSTAIDEQUIPMENT = 'firstAidEquipment'
+    ICEFREESCAFFOLD = 'iceFreeScaffold'
+    INFORMATIONPOINT = 'informationPoint'
+    INFORMATIONSTELE = 'informationStele'
+    INTERNETTERMINAL = 'internetTerminal'
+    INTERNETWIRELESS = 'internetWireless'
+    LUGGAGELOCKER = 'luggageLocker'
+    PAYMENTMACHINE = 'paymentMachine'
+    PICNICFACILITIES = 'picnicFacilities'
+    PLAYGROUND = 'playground'
+    PUBLICCARDPHONE = 'publicCardPhone'
+    PUBLICCOINPHONE = 'publicCoinPhone'
+    PUBLICPHONE = 'publicPhone'
+    REFUSEBIN = 'refuseBin'
+    RESTINGFACILITIES = 'restingFacilities'
+    SAFEDEPOSIT = 'safeDeposit'
+    SHELTER = 'shelter'
+    SHOWER = 'shower'
+    SNOWANDICEREMOVALEQUIPMENT = 'snowAndIceRemovalEquipment'
+    TOILET = 'toilet'
+    TOLLTERMINAL = 'tollTerminal'
+    TYREAIRPRESSUREEQUIPMENT = 'tyreAirPressureEquipment'
+    WATERBASIN = 'waterBasin'
+    VENDINGMACHINE = 'vendingMachine'
+    WATERSUPPLY = 'waterSupply'
+    WASTEDISPOSAL = 'wasteDisposal'
+    WATERTAP = 'waterTap'
+    NONE = 'none'
+    UNKNOWN = 'unknown'
+    OTHER = 'other'
+    EXTENDEDG = 'extendedG'

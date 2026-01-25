@@ -23,6 +23,7 @@ from validataclass.dataclasses import Default
 from validataclass.exceptions import ValidationError
 from validataclass.validators import (
     AnyOfValidator,
+    DateTimeFormat,
     DateTimeValidator,
     DecimalValidator,
     IntegerValidator,
@@ -33,6 +34,7 @@ from validataclass_search_queries.filters import (
     SearchParamContains,
     SearchParamCustom,
     SearchParamEquals,
+    SearchParamGreaterThan,
     SearchParamMultiSelect,
 )
 from validataclass_search_queries.pagination import OffsetPaginationMixin, PaginationLimitValidator
@@ -78,8 +80,12 @@ class LocationSearchQuery(SortingMixin, OffsetPaginationMixin, BaseSearchQuery):
     lon_max: Decimal | None = SearchParamCustom(), NumericValidator()
 
     last_updated_since: datetime | None = (
-        SearchParamCustom(),
-        DateTimeValidator(local_timezone=timezone.utc, target_timezone=timezone.utc),
+        SearchParamGreaterThan(),
+        DateTimeValidator(
+            DateTimeFormat.LOCAL_OR_UTC,
+            local_timezone=timezone.utc,
+            target_timezone=timezone.utc,
+        ),
     )
 
     # Pagination
