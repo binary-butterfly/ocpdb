@@ -84,6 +84,59 @@ flask match run
 The installation process is documented at [INSTALL.md](https://github.com/binary-butterfly/ocpdb/blob/main/INSTALL.md).
 
 
+## Logging
+
+The application uses the logging module with some optional extensions. Logging can be configured using the `config.yml`.
+
+The application provides some additional context and / or special output formats to log entries with custom formatters:
+
+### Human readable formatter with injected context
+
+Most requests or tasks have context which can be used in log entries. The simplest  is
+
+```yaml
+LOGGING:
+  formatters:
+    human_readable:
+      (): webapp.common.logging.formatter.flask_attributes_formatter.FlaskAttributesFormatter
+      format: '%(asctime)s %(levelname)s %(source)s: %(message)s'
+      defaults: {'source': '-'}
+  handlers:
+    my_handler:
+      formatter: human_readable
+```
+
+With this example, you add the `source` to every log entry (if available). Please keep in mind that you need to
+add a default, because not every log entry has a source_uid context.
+
+Following additional log context variables are available:
+
+- `source`
+- `initiator`
+- `location`
+- `evse`
+- `image`
+
+
+### OpenTelemetry formatter
+
+You can output log entries in OpenTelemetry format, too:
+
+```yaml
+LOGGING:
+  formatters:
+    open_telemetry:
+      (): webapp.common.logging.formatter.flask_open_telemetry_formatter.FlaskOpenTelemetryFormatter
+      prefix: ocpdb
+      service_name: OCPDB
+  handlers:
+    my_handler:
+      formatter: open_telemetry
+```
+
+Context is automatically injected into log entry `Attributes`.
+
+
 ## Licence
 
 OCPDB is under AGPL. You will find details at the [LICENCE.txt](https://github.com/binary-butterfly/ocpdb/blob/main/LICENCE.txt).
