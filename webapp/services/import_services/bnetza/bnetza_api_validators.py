@@ -187,7 +187,7 @@ class BnetzaCoordinates:
 @validataclass
 class BnetzaOperator:
     companyName: str = PrintableStringValidator()
-    displayName: str | None = Noneable(StringValidator()), Default(None)
+    displayName: str | None = Noneable(PrintableStringValidator()), Default(None)
 
 
 @validataclass
