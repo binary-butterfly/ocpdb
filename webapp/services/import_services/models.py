@@ -29,7 +29,7 @@ from webapp.models.location import ParkingType
 from webapp.models.related_resource import RelatedResourceType
 
 
-@dataclass
+@dataclass(kw_only=True)
 class SourceInfo:
     uid: str
     name: str
@@ -45,7 +45,7 @@ class SourceInfo:
         return {key: value for key, value in asdict(self).items() if value is not None}
 
 
-@dataclass
+@dataclass(kw_only=True)
 class BaseUpdate:
     _object_keys = ()
 
@@ -57,7 +57,7 @@ class BaseUpdate:
         }
 
 
-@dataclass
+@dataclass(kw_only=True)
 class ImageUpdate(BaseUpdate):
     external_url: OptionalUnset[str] = UnsetValue
     type: OptionalUnset[str] = UnsetValue
@@ -67,7 +67,7 @@ class ImageUpdate(BaseUpdate):
     last_download: OptionalUnset[datetime] = UnsetValue
 
 
-@dataclass
+@dataclass(kw_only=True)
 class BusinessUpdate(BaseUpdate):
     _object_keys = ('logo',)
 
@@ -76,26 +76,26 @@ class BusinessUpdate(BaseUpdate):
     website: OptionalUnset[str] = UnsetValue
 
 
-@dataclass
+@dataclass(kw_only=True)
 class RelatedResourceUpdate(BaseUpdate):
     url: OptionalUnset[str] = UnsetValue
     types: OptionalUnset[list[RelatedResourceType]] = UnsetValue
 
 
-@dataclass
+@dataclass(kw_only=True)
 class RegularHoursUpdate(BaseUpdate):
     weekday: int
     period_begin: int
     period_end: int
 
 
-@dataclass
+@dataclass(kw_only=True)
 class ExceptionalPeriodUpdate(BaseUpdate):
     period_begin: OptionalUnset[datetime] = UnsetValue
     period_end: OptionalUnset[datetime] = UnsetValue
 
 
-@dataclass
+@dataclass(kw_only=True)
 class ConnectorUpdate(BaseUpdate):
     uid: str
     standard: OptionalUnset[ConnectorType] = UnsetValue
@@ -108,7 +108,7 @@ class ConnectorUpdate(BaseUpdate):
     terms_and_conditions: OptionalUnset[str] = UnsetValue
 
 
-@dataclass
+@dataclass(kw_only=True)
 class EvseUpdate(BaseUpdate):
     _object_keys = ('connectors', 'images', 'related_resource')
 
@@ -147,7 +147,7 @@ class EvseUpdate(BaseUpdate):
             self.lon = self.lon.quantize(Decimal('.0000001'))
 
 
-@dataclass
+@dataclass(kw_only=True)
 class LocationUpdate(BaseUpdate):
     _object_keys = (
         'evses',

@@ -7,9 +7,9 @@ Flask-Migrate~=4.1.0
 Flask-CORS~=6.0.2
 SQLAlchemy~=2.0.45
 requests~=2.32.5
-alembic~=1.17.2
+alembic~=1.18.1
 lxml~=6.0.2
-werkzeug~=3.1.4
+werkzeug~=3.1.5
 mercantile~=1.2.1
 psycopg2-binary~=2.9.11
 python-dotenv~=1.2.1
@@ -25,7 +25,7 @@ geopy~=2.4.1
 celery~=5.6.0
 kombu~=5.6.1
 mapbox-vector-tile~=2.2.0
-urllib3~=2.6.2
+urllib3~=2.6.3
 
 # binary butterfly shared libraries (https://git.binary-butterfly.de/public_libraries)
 --extra-index-url https://git.binary-butterfly.de/api/v4/groups/262/-/packages/pypi/simple
