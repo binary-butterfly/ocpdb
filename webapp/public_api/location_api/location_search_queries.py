@@ -20,7 +20,13 @@ from decimal import Decimal
 
 from validataclass.dataclasses import Default
 from validataclass.exceptions import ValidationError
-from validataclass.validators import AnyOfValidator, DecimalValidator, IntegerValidator, StringValidator
+from validataclass.validators import (
+    AnyOfValidator,
+    DecimalValidator,
+    IntegerValidator,
+    NumericValidator,
+    StringValidator,
+)
 from validataclass_search_queries.filters import (
     SearchParamContains,
     SearchParamCustom,
@@ -62,6 +68,11 @@ class LocationSearchQuery(SortingMixin, OffsetPaginationMixin, BaseSearchQuery):
     lat: Decimal | None = SearchParamCustom(), DecimalValidator()
     lon: Decimal | None = SearchParamCustom(), DecimalValidator()
     radius: int | None = SearchParamCustom(), IntegerValidator(allow_strings=True)
+
+    lat_min: Decimal | None = SearchParamCustom(), NumericValidator()
+    lat_max: Decimal | None = SearchParamCustom(), NumericValidator()
+    lon_min: Decimal | None = SearchParamCustom(), NumericValidator()
+    lon_max: Decimal | None = SearchParamCustom(), NumericValidator()
 
     # Pagination
     limit: int = PaginationLimitValidator(optional=False, max_value=1000), Default(100)

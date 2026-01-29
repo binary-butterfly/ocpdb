@@ -131,6 +131,10 @@ class LocationListMethodView(LocationBaseMethodView):
                 example='1000',
                 description='In meter. Radius, lat and lon always have to be set together.',
             ),
+            Parameter('lat_min', schema=NumericField(), example=55.0, description='Bounding box'),
+            Parameter('lat_max', schema=NumericField(), example=55.5, description='Bounding box'),
+            Parameter('lon_min', schema=NumericField(), example=5.0, description='Bounding box'),
+            Parameter('lon_max', schema=NumericField(), example=5.5, description='Bounding box'),
             Parameter('limit', schema=IntegerField(maximum=1000, required=False, default=100)),
             Parameter(
                 'strict',

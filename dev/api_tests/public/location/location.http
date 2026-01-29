@@ -6,6 +6,10 @@ GET {{api_host}}/api/public/v1/locations
 GET {{api_host}}/api/public/v1/locations?lat=48.59523&lon=8.86648&radius=1000000
 
 
+### Get locations by bounding box
+GET {{api_host}}/api/public/v1/locations?lat_min=48.5&lat_max=49.0&lon_min=8.5&lon_max=9.0
+
+
 ### Get locations by operator name
 GET {{api_host}}/api/public/v1/locations?operator_name=Electric
 

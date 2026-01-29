@@ -170,12 +170,16 @@ class LocationRepository(BaseRepository[Location]):
             return query
 
         for _param_name, bound_filter in search_query.get_search_filters():
-            if _param_name in ['lat', 'lon', 'radius']:
+            if _param_name in ['lat', 'lon', 'radius', 'lat_min', 'lat_max', 'lon_min', 'lon_max']:
                 continue
 
             query = self._apply_bound_search_filter(query, bound_filter)
 
-        if search_query.lat and search_query.lon and search_query.radius:
+        if (
+            getattr(search_query, 'lat', None)
+            and getattr(search_query, 'lon', None)
+            and getattr(search_query, 'radius', None)
+        ):
             if self.session.connection().dialect.name == 'postgresql':
                 query = query.filter(
                     func.ST_DistanceSphere(
@@ -192,6 +196,25 @@ class LocationRepository(BaseRepository[Location]):
                     )
                     < search_query.radius
                 )
+
+        if (
+            getattr(search_query, 'lat_min', None)
+            and getattr(search_query, 'lat_max', None)
+            and getattr(search_query, 'lon_min', None)
+            and getattr(search_query, 'lon_max', None)
+        ):
+            query = query.filter(
+                func.ST_Within(
+                    Location.geometry,
+                    func.ST_MakeEnvelope(
+                        getattr(search_query, 'lon_min'),
+                        getattr(search_query, 'lat_min'),
+                        getattr(search_query, 'lon_max'),
+                        getattr(search_query, 'lat_max'),
+                        4326,
+                    ),
+                ),
+            )
 
         return query
 
