@@ -48,6 +48,7 @@ from webapp.services.import_services.models import (
     ConnectorUpdate,
     EvseUpdate,
     LocationUpdate,
+    RegularHoursUpdate,
 )
 
 from .models import (
@@ -131,23 +132,27 @@ class OpeningTime:
     on: Weekday = EnumValidator(Weekday)
     Period: list[Period] = ListValidator(DataclassValidator(Period))
 
-    def to_regular_hours(self) -> list[dict]:
-        regular_hours: list[dict] = []
+    def to_regular_hours(self) -> list[RegularHoursUpdate]:
+        regular_hours: list[RegularHoursUpdate] = []
         for period in self.Period:
             if self.on == Weekday.WORKDAYS:
                 # We assume that 'Workdays' means Monday until Friday.
                 for i in range(1, 6):
-                    regular_hours.append({
-                        'weekday': i,
-                        'period_begin': period.begin.hour * 3600 + period.begin.minute * 60,
-                        'period_end': period.end.hour * 3600 + period.end.minute * 60,
-                    })
+                    regular_hours.append(
+                        RegularHoursUpdate(
+                            weekday=i,
+                            period_begin=period.begin.hour * 3600 + period.begin.minute * 60,
+                            period_end=period.end.hour * 3600 + period.end.minute * 60,
+                        )
+                    )
             else:
-                regular_hours.append({
-                    'weekday': self.on.to_weekday(),
-                    'period_begin': period.begin.hour * 3600 + period.begin.minute * 60,
-                    'period_end': period.end.hour * 3600 + period.end.minute * 60,
-                })
+                regular_hours.append(
+                    RegularHoursUpdate(
+                        weekday=self.on.to_weekday(),
+                        period_begin=period.begin.hour * 3600 + period.begin.minute * 60,
+                        period_end=period.end.hour * 3600 + period.end.minute * 60,
+                    ),
+                )
         return regular_hours
 
 
@@ -199,7 +204,7 @@ class EVSEDataRecord:
                 name = next(iter(item.value for item in self.ChargingStationNames), None)
 
             # Opening Times
-            regular_hours: list[dict] | UnsetValueType
+            regular_hours: list[RegularHoursUpdate] | UnsetValueType
             if self.OpeningTimes is None or self.OpeningTimes == []:
                 regular_hours = UnsetValue
             else:

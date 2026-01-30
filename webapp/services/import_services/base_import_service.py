@@ -122,6 +122,14 @@ class BaseImportService(BaseService, RemoteMixin, ABC):
         for key, value in location_update.to_dict().items():
             setattr(location, key, value)
 
+        # Convert opening times dataclasses to dicts for JSON storage
+        if location_update.regular_hours is not UnsetValue:
+            location.regular_hours = [rh.to_dict() for rh in location_update.regular_hours]
+        if location_update.exceptional_openings is not UnsetValue:
+            location.exceptional_openings = [eo.to_dict() for eo in location_update.exceptional_openings]
+        if location_update.exceptional_closings is not UnsetValue:
+            location.exceptional_closings = [ec.to_dict() for ec in location_update.exceptional_closings]
+
         self.set_business(location, location_update, 'operator', businesses_by_name)
         self.set_business(location, location_update, 'suboperator', businesses_by_name)
         self.set_business(location, location_update, 'owner', businesses_by_name)

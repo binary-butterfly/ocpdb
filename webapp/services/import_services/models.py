@@ -128,6 +128,19 @@ class EvseUpdate(BaseUpdate):
 
 
 @dataclass
+class RegularHoursUpdate(BaseUpdate):
+    weekday: int
+    period_begin: int
+    period_end: int
+
+
+@dataclass
+class ExceptionalPeriodUpdate(BaseUpdate):
+    period_begin: datetime
+    period_end: datetime
+
+
+@dataclass
 class LocationUpdate(BaseUpdate):
     _object_keys = (
         'evses',
@@ -135,6 +148,9 @@ class LocationUpdate(BaseUpdate):
         'operator',
         'suboperator',
         'owner',
+        'regular_hours',
+        'exceptional_openings',
+        'exceptional_closings',
     )
 
     uid: str
@@ -144,9 +160,9 @@ class LocationUpdate(BaseUpdate):
     operator: OptionalUnset[BusinessUpdate] = UnsetValue
     suboperator: OptionalUnset[BusinessUpdate] = UnsetValue
     owner: OptionalUnset[BusinessUpdate] = UnsetValue
-    exceptional_closings: OptionalUnset[list[dict]] = UnsetValue
-    exceptional_openings: OptionalUnset[list[dict]] = UnsetValue
-    regular_hours: OptionalUnset[list[dict]] = UnsetValue
+    exceptional_closings: OptionalUnset[list[ExceptionalPeriodUpdate]] = UnsetValue
+    exceptional_openings: OptionalUnset[list[ExceptionalPeriodUpdate]] = UnsetValue
+    regular_hours: OptionalUnset[list[RegularHoursUpdate]] = UnsetValue
 
     name: OptionalUnset[str] = UnsetValue
     address: OptionalUnset[str] = UnsetValue

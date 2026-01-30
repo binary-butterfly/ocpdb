@@ -20,8 +20,10 @@ from webapp.services.import_services.models import (
     BusinessUpdate,
     ConnectorUpdate,
     EvseUpdate,
+    ExceptionalPeriodUpdate,
     ImageUpdate,
     LocationUpdate,
+    RegularHoursUpdate,
 )
 from webapp.services.import_services.ocpi.ocpi_validators import (
     BusinessDetailsInput,
@@ -70,17 +72,21 @@ class OcpiMapper:
             if location_input.opening_times.regular_hours:
                 location_update.regular_hours = []
                 for regular_hour_input in location_input.opening_times.regular_hours:
-                    location_update.regular_hours.append(regular_hour_input.to_dict())
+                    location_update.regular_hours.append(RegularHoursUpdate(**regular_hour_input.to_dict()))
 
             if location_input.opening_times.exceptional_openings:
                 location_update.exceptional_openings = []
                 for exceptional_opening_input in location_input.opening_times.exceptional_openings:
-                    location_update.exceptional_openings.append(exceptional_opening_input.to_dict())
+                    location_update.exceptional_openings.append(
+                        ExceptionalPeriodUpdate(**exceptional_opening_input.to_dict()),
+                    )
 
             if location_input.opening_times.exceptional_closings:
                 location_update.exceptional_closings = []
                 for exceptional_closings_input in location_input.opening_times.exceptional_closings:
-                    location_update.exceptional_closings.append(exceptional_closings_input.to_dict())
+                    location_update.exceptional_closings.append(
+                        ExceptionalPeriodUpdate(**exceptional_closings_input.to_dict()),
+                    )
 
         return location_update
 
