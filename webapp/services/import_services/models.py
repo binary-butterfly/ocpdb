@@ -26,7 +26,6 @@ from webapp.models.connector import ConnectorFormat, ConnectorType, PowerType
 from webapp.models.evse import Capability, EvseStatus, ParkingRestriction
 from webapp.models.image import ImageCategory
 from webapp.models.location import ParkingType
-from webapp.models.related_resource import RelatedResourceType
 
 
 @dataclass
@@ -77,12 +76,6 @@ class BusinessUpdate(BaseUpdate):
 
 
 @dataclass
-class RelatedResourceUpdate(BaseUpdate):
-    url: OptionalUnset[str] = UnsetValue
-    types: OptionalUnset[list[RelatedResourceType]] = UnsetValue
-
-
-@dataclass
 class RegularHoursUpdate(BaseUpdate):
     weekday: int
     period_begin: int
@@ -110,14 +103,14 @@ class ConnectorUpdate(BaseUpdate):
 
 @dataclass
 class EvseUpdate(BaseUpdate):
-    _object_keys = ('connectors', 'images', 'related_resource')
+    _object_keys = ('connectors', 'images')
 
     uid: str
     evse_id: str
 
     connectors: OptionalUnset[list[ConnectorUpdate]] = UnsetValue
     images: OptionalUnset[list[ImageUpdate]] = UnsetValue
-    related_resource: OptionalUnset[list[RelatedResourceUpdate]] = UnsetValue
+    related_resources: OptionalUnset[list[dict]] = UnsetValue
 
     status: OptionalUnset[EvseStatus] = UnsetValue
 

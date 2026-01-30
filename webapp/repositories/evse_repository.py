@@ -56,7 +56,6 @@ class EvseRepository(BaseRepository[Evse]):
             query = query.options(
                 selectinload(Evse.connectors),
                 selectinload(Evse.images),
-                selectinload(Evse.related_resources),
             )
 
         result = query.filter(Evse.id == evse_id).first()
@@ -70,7 +69,6 @@ class EvseRepository(BaseRepository[Evse]):
         options = [
             selectinload(Evse.connectors),
             selectinload(Evse.images),
-            selectinload(Evse.related_resources),
         ]
 
         query = self.session.query(Evse).options(*options)
