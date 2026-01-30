@@ -16,12 +16,14 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+from datetime import datetime, timezone
 from decimal import Decimal
 
 from validataclass.dataclasses import Default
 from validataclass.exceptions import ValidationError
 from validataclass.validators import (
     AnyOfValidator,
+    DateTimeValidator,
     DecimalValidator,
     IntegerValidator,
     NumericValidator,
@@ -73,6 +75,11 @@ class LocationSearchQuery(SortingMixin, OffsetPaginationMixin, BaseSearchQuery):
     lat_max: Decimal | None = SearchParamCustom(), NumericValidator()
     lon_min: Decimal | None = SearchParamCustom(), NumericValidator()
     lon_max: Decimal | None = SearchParamCustom(), NumericValidator()
+
+    last_updated_since: datetime | None = (
+        SearchParamCustom(),
+        DateTimeValidator(local_timezone=timezone.utc, target_timezone=timezone.utc),
+    )
 
     # Pagination
     limit: int = PaginationLimitValidator(optional=False, max_value=1000), Default(100)

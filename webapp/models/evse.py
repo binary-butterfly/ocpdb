@@ -128,7 +128,7 @@ class Evse(BaseModel):
     # OCHP: parkingSpot.parkingSpotNumber
     parking_spot_number: Mapped[str | None] = mapped_column(String(255), nullable=True)
 
-    last_updated: Mapped[datetime | None] = mapped_column(UtcDateTime(), nullable=True)
+    last_updated: Mapped[datetime | None] = mapped_column(UtcDateTime(), nullable=True, index=True)
     max_reservation: Mapped[float | None] = mapped_column(Float, nullable=True)  # OCHP maxReservation
     _capabilities: Mapped[int | None] = mapped_column('capabilities', Integer, nullable=True)  # OCPI: capability
     # OCHP: RestrictionType     OCPI: parking_restrictions
