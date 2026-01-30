@@ -115,7 +115,10 @@ class TokenType(Enum):
 
 class Location(BaseModel):
     __tablename__ = 'location'
-    __table_args__ = (Index('uid', 'source'),)
+    __table_args__ = (
+        Index('uid_source', 'uid', 'source'),
+        Index('geometry_index', 'geometry', postgresql_using='gist'),
+    )
 
     evses: Mapped[list['Evse']] = relationship(
         'Evse',
