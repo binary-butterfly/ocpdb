@@ -43,7 +43,6 @@ from webapp.services.import_services.models import (
     ConnectorUpdate,
     EvseUpdate,
     LocationUpdate,
-    RegularHoursUpdate,
 )
 
 
@@ -348,13 +347,11 @@ class BnetzaChargingStation:
             for opening_day in self.opening_days:
                 if opening_day.day is None:
                     continue
-                location_update.regular_hours.append(
-                    RegularHoursUpdate(
-                        weekday=opening_day.day.to_integer_weekday(),
-                        period_begin=opening_day.open_from.hour * 60 + opening_day.open_from.minute,
-                        period_end=opening_day.open_to.hour * 60 + opening_day.open_to.minute,
-                    ),
-                )
+                location_update.regular_hours.append({
+                    'weekday': opening_day.day.to_integer_weekday(),
+                    'period_begin': opening_day.open_from.hour * 60 + opening_day.open_from.minute,
+                    'period_end': opening_day.open_to.hour * 60 + opening_day.open_to.minute,
+                })
 
         for i, evse in enumerate(self.evses):
             evse_update = evse.to_evse_update(

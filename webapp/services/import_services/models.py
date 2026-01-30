@@ -76,19 +76,6 @@ class BusinessUpdate(BaseUpdate):
 
 
 @dataclass
-class RegularHoursUpdate(BaseUpdate):
-    weekday: int
-    period_begin: int
-    period_end: int
-
-
-@dataclass
-class ExceptionalPeriodUpdate(BaseUpdate):
-    period_begin: OptionalUnset[datetime] = UnsetValue
-    period_end: OptionalUnset[datetime] = UnsetValue
-
-
-@dataclass
 class ConnectorUpdate(BaseUpdate):
     uid: str
     standard: OptionalUnset[ConnectorType] = UnsetValue
@@ -148,9 +135,6 @@ class LocationUpdate(BaseUpdate):
         'operator',
         'suboperator',
         'owner',
-        'exceptional_closings',
-        'exceptional_openings',
-        'regular_hours',
     )
 
     uid: str
@@ -160,9 +144,9 @@ class LocationUpdate(BaseUpdate):
     operator: OptionalUnset[BusinessUpdate] = UnsetValue
     suboperator: OptionalUnset[BusinessUpdate] = UnsetValue
     owner: OptionalUnset[BusinessUpdate] = UnsetValue
-    exceptional_closings: OptionalUnset[list[ExceptionalPeriodUpdate]] = UnsetValue
-    exceptional_openings: OptionalUnset[list[ExceptionalPeriodUpdate]] = UnsetValue
-    regular_hours: OptionalUnset[list[RegularHoursUpdate]] = UnsetValue
+    exceptional_closings: OptionalUnset[list[dict]] = UnsetValue
+    exceptional_openings: OptionalUnset[list[dict]] = UnsetValue
+    regular_hours: OptionalUnset[list[dict]] = UnsetValue
 
     name: OptionalUnset[str] = UnsetValue
     address: OptionalUnset[str] = UnsetValue

@@ -28,7 +28,6 @@ from webapp.services.import_services.models import (
     EvseUpdate,
     ImageUpdate,
     LocationUpdate,
-    RegularHoursUpdate,
 )
 
 from .ochp_models import (
@@ -216,15 +215,13 @@ class OchpMapper:
             elif charge_point_input.openingTimes.regularHours is not None:
                 location_update.regular_hours = []
                 for regular_hour_input in charge_point_input.openingTimes.regularHours:
-                    location_update.regular_hours.append(
-                        RegularHoursUpdate(
-                            weekday=regular_hour_input.weekday,
-                            period_begin=regular_hour_input.periodBegin.hour * 3600
-                            + regular_hour_input.periodBegin.minute * 60,
-                            period_end=regular_hour_input.periodEnd.hour * 3600
-                            + regular_hour_input.periodEnd.minute * 60,
-                        ),
-                    )
+                    location_update.regular_hours.append({
+                        'weekday': regular_hour_input.weekday,
+                        'period_begin': regular_hour_input.periodBegin.hour * 3600
+                        + regular_hour_input.periodBegin.minute * 60,
+                        'period_end': regular_hour_input.periodEnd.hour * 3600
+                        + regular_hour_input.periodEnd.minute * 60,
+                    })
 
         # Images like logos can appear multiple times, so we group them
         # TODO: image deduplication beyond urls
