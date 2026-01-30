@@ -1,0 +1,42 @@
+### Get EVSEs
+GET {{api_host}}/api/public/v1/evses
+
+
+### Get EVSEs with strict mode
+GET {{api_host}}/api/public/v1/evses?strict=true
+
+
+### Get EVSEs by status
+GET {{api_host}}/api/public/v1/evses?status=AVAILABLE
+
+
+### Get EVSEs by multiple statuses
+GET {{api_host}}/api/public/v1/evses?statuses=AVAILABLE,CHARGING
+
+
+### Get EVSEs with last_updated_since filter
+GET {{api_host}}/api/public/v1/evses?last_updated_since=2026-01-26T00:00:00Z
+
+
+### Get EVSEs by source
+GET {{api_host}}/api/public/v1/evses?source_uid=bnetza_api
+
+
+### Get EVSEs by location ID
+GET {{api_host}}/api/public/v1/evses?location_id=1
+
+
+### Get EVSEs with pagination
+GET {{api_host}}/api/public/v1/evses?limit=10&offset=0
+
+
+### Get EVSEs by status and last_updated_since
+GET {{api_host}}/api/public/v1/evses?status=AVAILABLE&last_updated_since=2026-01-26T00:00:00Z
+
+
+### Get single EVSE by ID
+GET {{api_host}}/api/public/v1/evses/1
+
+
+### Get single EVSE by ID with strict mode
+GET {{api_host}}/api/public/v1/evses/1?strict=true
