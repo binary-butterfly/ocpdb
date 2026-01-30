@@ -185,8 +185,11 @@ class LocationRepository(BaseRepository[Location]):
             query = self._apply_bound_search_filter(query, bound_filter)
 
         if last_updated_since := getattr(search_query, 'last_updated_since', None):
-            query = query.join(Location.evses).filter(
-                or_(Location.last_updated >= last_updated_since, Evse.last_updated >= last_updated_since)
+            query = (
+                query
+                .join(Location.evses)
+                .filter(or_(Location.last_updated >= last_updated_since, Evse.last_updated >= last_updated_since))
+                .distinct()
             )
 
         if (
