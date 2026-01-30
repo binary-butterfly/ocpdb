@@ -18,6 +18,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from dataclasses import dataclass
 
+from sqlalchemy.orm import selectinload
+from validataclass_search_queries.pagination import PaginatedResult
+from validataclass_search_queries.search_queries import BaseSearchQuery
+
+from webapp.common.sqlalchemy import Query
 from webapp.models import Evse, Location
 from webapp.models.evse import EvseStatus
 
@@ -43,6 +48,64 @@ class EvseRepository(BaseRepository[Evse]):
             raise ObjectNotFoundException(message=f'evse with id {evse_id} not found')
 
         return result
+
+    def fetch_evse_by_id(self, evse_id: int, *, include_children: bool = False) -> Evse:
+        query = self.session.query(Evse)
+
+        if include_children:
+            query = query.options(
+                selectinload(Evse.connectors),
+                selectinload(Evse.images),
+                selectinload(Evse.related_resources),
+            )
+
+        result = query.filter(Evse.id == evse_id).first()
+
+        if result is None:
+            raise ObjectNotFoundException(message=f'evse with id {evse_id} not found')
+
+        return result
+
+    def fetch_evses(self, search_query: BaseSearchQuery | None = None) -> PaginatedResult[Evse]:
+        options = [
+            selectinload(Evse.connectors),
+            selectinload(Evse.images),
+            selectinload(Evse.related_resources),
+        ]
+
+        query = self.session.query(Evse).options(*options)
+        return self._search_and_paginate(query, search_query)
+
+    def _filter_by_search_query(self, query: Query, search_query: BaseSearchQuery | None) -> Query:
+        if search_query is None:
+            return query
+
+        for _param_name, bound_filter in search_query.get_search_filters():
+            if _param_name in [
+                'source_uid',
+                'source_uids',
+                'exclude_source_uid',
+                'exclude_source_uids',
+            ]:
+                continue
+
+            query = self._apply_bound_search_filter(query, bound_filter)
+
+        if source_uid := getattr(search_query, 'source_uid', None):
+            query = query.join(Location, Location.id == Evse.location_id).filter(Location.source == source_uid)
+
+        if source_uids := getattr(search_query, 'source_uids', None):
+            query = query.join(Location, Location.id == Evse.location_id).filter(Location.source.in_(source_uids))
+
+        if exclude_source_uid := getattr(search_query, 'exclude_source_uid', None):
+            query = query.join(Location, Location.id == Evse.location_id).filter(Location.source != exclude_source_uid)
+
+        if exclude_source_uids := getattr(search_query, 'exclude_source_uids', None):
+            query = query.join(Location, Location.id == Evse.location_id).filter(
+                Location.source.notin_(exclude_source_uids)
+            )
+
+        return query
 
     def fetch_by_uid(self, source: str, uid: str) -> Evse:
         items = (

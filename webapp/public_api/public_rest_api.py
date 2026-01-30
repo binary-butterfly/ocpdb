@@ -19,6 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from webapp.common.base_blueprint import BaseBlueprint
 
 from .business_api import BusinessBlueprint
+from .evse_api import EvseBlueprint
 from .location_api import LocationBlueprint
 from .ocpi_api import OcpiBlueprint
 from .source_api import SourceBlueprint
@@ -32,6 +33,7 @@ class PublicApi(BaseBlueprint):
         BusinessBlueprint,
         OcpiBlueprint,
         LocationBlueprint,
+        EvseBlueprint,
         SourceBlueprint,
     ]
 

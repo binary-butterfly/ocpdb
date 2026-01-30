@@ -113,6 +113,7 @@ class Evse(BaseModel):
         SqlalchemyEnum(EvseStatus, name='EvseStatus'),
         default=EvseStatus.UNKNOWN,
         nullable=False,
+        index=True,
     )
 
     lat: Mapped[Decimal | None] = mapped_column(Numeric(9, 7), nullable=True)
