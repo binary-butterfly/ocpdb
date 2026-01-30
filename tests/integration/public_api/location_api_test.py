@@ -16,6 +16,7 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+from decimal import Decimal
 from http import HTTPStatus
 
 from tests.integration.helpers import OpenApiFlaskClient
@@ -75,3 +76,110 @@ def test_get_location_strict(
     )
     assert response.status_code == HTTPStatus.OK
     assert response.json == LOCATIONS_1_RESPONSE
+
+
+def test_get_locations_by_bounding_box(
+    db: SQLAlchemy,
+    public_test_client: OpenApiFlaskClient,
+) -> None:
+    # Location 1: Berlin (lat=52.52003, lon=13.40489) - inside bounding box
+    # Location 2: Munich area (lat=48.13, lon=11.58) - outside bounding box
+    # Location 3: Hamburg area (lat=53.55, lon=9.99) - outside bounding box
+    db.session.add_all([
+        get_full_location_1(),  # Berlin - default coordinates
+        get_full_location_2(lat=Decimal('48.13'), lon=Decimal('11.58')),  # Munich
+        get_full_location_3(lat=Decimal('53.55'), lon=Decimal('9.99')),  # Hamburg
+    ])
+    db.session.commit()
+
+    # Bounding box around Berlin only
+    response = public_test_client.get(
+        path='/api/public/v1/locations?strict=true&lat_min=52.0&lat_max=53.0&lon_min=13.0&lon_max=14.0',
+    )
+    assert response.status_code == HTTPStatus.OK
+    assert response.json['total_count'] == 1
+    assert len(response.json['items']) == 1
+    assert response.json['items'][0]['id'] == '1'
+
+
+def test_get_locations_by_bounding_box_multiple_results(
+    db: SQLAlchemy,
+    public_test_client: OpenApiFlaskClient,
+) -> None:
+    # Location 1: Berlin (lat=52.52003, lon=13.40489)
+    # Location 2: Also in Berlin area (lat=52.51, lon=13.38)
+    # Location 3: Munich area (lat=48.13, lon=11.58) - outside bounding box
+    db.session.add_all([
+        get_full_location_1(),  # Berlin - default coordinates
+        get_full_location_2(lat=Decimal('52.51'), lon=Decimal('13.38')),  # Also Berlin
+        get_full_location_3(lat=Decimal('48.13'), lon=Decimal('11.58')),  # Munich
+    ])
+    db.session.commit()
+
+    # Bounding box around Berlin
+    response = public_test_client.get(
+        path='/api/public/v1/locations?strict=true&lat_min=52.0&lat_max=53.0&lon_min=13.0&lon_max=14.0',
+    )
+    assert response.status_code == HTTPStatus.OK
+    assert response.json['total_count'] == 2
+    assert len(response.json['items']) == 2
+    ids = [item['id'] for item in response.json['items']]
+    assert '1' in ids
+    assert '2' in ids
+
+
+def test_get_locations_by_bounding_box_no_results(
+    db: SQLAlchemy,
+    public_test_client: OpenApiFlaskClient,
+) -> None:
+    # All locations are in Berlin, bounding box is in Munich area
+    db.session.add_all([get_full_location_1(), get_full_location_2(), get_full_location_3()])
+    db.session.commit()
+
+    # Bounding box around Munich (no locations there)
+    response = public_test_client.get(
+        path='/api/public/v1/locations?strict=true&lat_min=48.0&lat_max=49.0&lon_min=11.0&lon_max=12.0',
+    )
+    assert response.status_code == HTTPStatus.OK
+    assert response.json['total_count'] == 0
+    assert len(response.json['items']) == 0
+
+
+def test_get_locations_by_bounding_box_partial_params_ignored(
+    db: SQLAlchemy,
+    public_test_client: OpenApiFlaskClient,
+) -> None:
+    # When only some bounding box params are provided, the filter should not be applied
+    db.session.add_all([get_full_location_1(), get_full_location_2(), get_full_location_3()])
+    db.session.commit()
+
+    # Only lat_min and lat_max provided - should return all locations
+    response = public_test_client.get(
+        path='/api/public/v1/locations?strict=true&lat_min=52.0&lat_max=53.0',
+    )
+    assert response.status_code == HTTPStatus.OK
+    assert response.json['total_count'] == 3
+
+
+def test_get_locations_by_bounding_box_combined_with_source_filter(
+    db: SQLAlchemy,
+    public_test_client: OpenApiFlaskClient,
+) -> None:
+    # Test that bounding box works with other filters
+    db.session.add_all([
+        get_full_location_1(),  # Berlin, source 1
+        get_full_location_2(),  # Berlin, source 1
+        get_full_location_3(),  # Berlin, source 2
+    ])
+    db.session.commit()
+
+    # Bounding box around Berlin + source filter
+    response = public_test_client.get(
+        path=f'/api/public/v1/locations?strict=true&lat_min=52.0&lat_max=53.0&lon_min=13.0&lon_max=14.0'
+        f'&source_uid={SOURCE_UID_1}',
+    )
+    assert response.status_code == HTTPStatus.OK
+    assert response.json['total_count'] == 2
+    ids = [item['id'] for item in response.json['items']]
+    assert '1' in ids
+    assert '2' in ids
