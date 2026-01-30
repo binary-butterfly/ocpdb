@@ -17,7 +17,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 from mercantile import LngLatBbox
-from sqlalchemy import func, text
+from sqlalchemy import func, or_, text
 from sqlalchemy.orm import joinedload, selectinload
 from sqlalchemy.orm.interfaces import LoaderOption
 from validataclass_search_queries.filters import BoundSearchFilter
@@ -170,10 +170,27 @@ class LocationRepository(BaseRepository[Location]):
             return query
 
         for _param_name, bound_filter in search_query.get_search_filters():
-            if _param_name in ['lat', 'lon', 'radius', 'lat_min', 'lat_max', 'lon_min', 'lon_max']:
+            if _param_name in [
+                'lat',
+                'lon',
+                'radius',
+                'lat_min',
+                'lat_max',
+                'lon_min',
+                'lon_max',
+                'last_updated_since',
+            ]:
                 continue
 
             query = self._apply_bound_search_filter(query, bound_filter)
+
+        if last_updated_since := getattr(search_query, 'last_updated_since', None):
+            query = (
+                query
+                .join(Location.evses)
+                .filter(or_(Location.last_updated >= last_updated_since, Evse.last_updated >= last_updated_since))
+                .distinct()
+            )
 
         if (
             getattr(search_query, 'lat', None)

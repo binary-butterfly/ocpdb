@@ -28,7 +28,7 @@ from flask_openapi.decorator import (
     SchemaReference,
     document,
 )
-from flask_openapi.schema import AnyOfField, BooleanField, IntegerField, NumericField, StringField
+from flask_openapi.schema import AnyOfField, BooleanField, DateTimeField, IntegerField, NumericField, StringField
 from validataclass.validators import DataclassValidator
 
 from webapp.common.rest import BaseMethodView
@@ -135,6 +135,7 @@ class LocationListMethodView(LocationBaseMethodView):
             Parameter('lat_max', schema=NumericField(), example=55.5, description='Bounding box'),
             Parameter('lon_min', schema=NumericField(), example=5.0, description='Bounding box'),
             Parameter('lon_max', schema=NumericField(), example=5.5, description='Bounding box'),
+            Parameter('last_updated_since', schema=DateTimeField(), example='2023-01-01T00:00:00Z'),
             Parameter('limit', schema=IntegerField(maximum=1000, required=False, default=100)),
             Parameter(
                 'strict',

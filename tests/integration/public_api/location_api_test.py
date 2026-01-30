@@ -16,12 +16,29 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+from datetime import datetime, timedelta, timezone
 from decimal import Decimal
 from http import HTTPStatus
 
 from tests.integration.helpers import OpenApiFlaskClient
-from tests.integration.model_generators.location import get_full_location_1, get_full_location_2, get_full_location_3
-from tests.integration.model_generators.source import SOURCE_UID_1
+from tests.integration.model_generators.business import get_business_1, get_business_2
+from tests.integration.model_generators.evse import (
+    get_full_evse_1,
+    get_full_evse_2,
+    get_full_evse_3,
+    get_full_evse_4,
+    get_full_evse_5,
+    get_full_evse_6,
+)
+from tests.integration.model_generators.location import (
+    get_full_location_1,
+    get_full_location_2,
+    get_full_location_3,
+    get_location_1,
+    get_location_2,
+    get_location_3,
+)
+from tests.integration.model_generators.source import SOURCE_UID_1, SOURCE_UID_2
 from tests.integration.public_api.location_api_responses import (
     LOCATIONS_1_RESPONSE,
     LOCATIONS_2_RESPONSE,
@@ -183,3 +200,270 @@ def test_get_locations_by_bounding_box_combined_with_source_filter(
     ids = [item['id'] for item in response.json['items']]
     assert '1' in ids
     assert '2' in ids
+
+
+def test_get_locations_by_last_updated_since(
+    db: SQLAlchemy,
+    public_test_client: OpenApiFlaskClient,
+) -> None:
+    now = datetime.now(tz=timezone.utc)
+    old_timestamp = now - timedelta(days=7)
+    recent_timestamp = now - timedelta(hours=1)
+
+    # Location 1: updated recently (location and EVSEs)
+    # Location 2: updated a week ago (location and EVSEs)
+    # Location 3: updated a week ago (location and EVSEs)
+    db.session.add_all([
+        get_location_1(
+            last_updated=recent_timestamp,
+            evses=[
+                get_full_evse_1(last_updated=recent_timestamp),
+                get_full_evse_2(last_updated=recent_timestamp),
+            ],
+            operator=get_business_1(),
+        ),
+        get_location_2(
+            last_updated=old_timestamp,
+            evses=[
+                get_full_evse_3(last_updated=old_timestamp),
+                get_full_evse_4(last_updated=old_timestamp),
+            ],
+            operator=get_business_1(),
+        ),
+        get_location_3(
+            last_updated=old_timestamp,
+            source=SOURCE_UID_2,
+            evses=[
+                get_full_evse_5(last_updated=old_timestamp),
+                get_full_evse_6(last_updated=old_timestamp),
+            ],
+            operator=get_business_2(),
+        ),
+    ])
+    db.session.commit()
+
+    # Filter for locations updated in the last day
+    filter_timestamp = (now - timedelta(days=1)).strftime('%Y-%m-%dT%H:%M:%SZ')
+    response = public_test_client.get(
+        path=f'/api/public/v1/locations?strict=true&last_updated_since={filter_timestamp}',
+    )
+    assert response.status_code == HTTPStatus.OK
+    assert response.json['total_count'] == 1
+    assert len(response.json['items']) == 1
+    assert response.json['items'][0]['id'] == '1'
+
+
+def test_get_locations_by_last_updated_since_no_results(
+    db: SQLAlchemy,
+    public_test_client: OpenApiFlaskClient,
+) -> None:
+    now = datetime.now(tz=timezone.utc)
+    old_timestamp = now - timedelta(days=7)
+
+    # All locations and EVSEs were updated a week ago
+    db.session.add_all([
+        get_location_1(
+            last_updated=old_timestamp,
+            evses=[
+                get_full_evse_1(last_updated=old_timestamp),
+                get_full_evse_2(last_updated=old_timestamp),
+            ],
+            operator=get_business_1(),
+        ),
+        get_location_2(
+            last_updated=old_timestamp,
+            evses=[
+                get_full_evse_3(last_updated=old_timestamp),
+                get_full_evse_4(last_updated=old_timestamp),
+            ],
+            operator=get_business_1(),
+        ),
+        get_location_3(
+            last_updated=old_timestamp,
+            source=SOURCE_UID_2,
+            evses=[
+                get_full_evse_5(last_updated=old_timestamp),
+                get_full_evse_6(last_updated=old_timestamp),
+            ],
+            operator=get_business_2(),
+        ),
+    ])
+    db.session.commit()
+
+    # Filter for locations updated in the last hour - should return none
+    filter_timestamp = (now - timedelta(hours=1)).strftime('%Y-%m-%dT%H:%M:%SZ')
+    response = public_test_client.get(
+        path=f'/api/public/v1/locations?strict=true&last_updated_since={filter_timestamp}',
+    )
+    assert response.status_code == HTTPStatus.OK
+    assert response.json['total_count'] == 0
+    assert len(response.json['items']) == 0
+
+
+def test_get_locations_by_last_updated_since_all_results(
+    db: SQLAlchemy,
+    public_test_client: OpenApiFlaskClient,
+) -> None:
+    now = datetime.now(tz=timezone.utc)
+    recent_timestamp = now - timedelta(hours=1)
+
+    # All locations and EVSEs were updated recently
+    db.session.add_all([
+        get_location_1(
+            last_updated=recent_timestamp,
+            evses=[
+                get_full_evse_1(last_updated=recent_timestamp),
+                get_full_evse_2(last_updated=recent_timestamp),
+            ],
+            operator=get_business_1(),
+        ),
+        get_location_2(
+            last_updated=recent_timestamp,
+            evses=[
+                get_full_evse_3(last_updated=recent_timestamp),
+                get_full_evse_4(last_updated=recent_timestamp),
+            ],
+            operator=get_business_1(),
+        ),
+        get_location_3(
+            last_updated=recent_timestamp,
+            source=SOURCE_UID_2,
+            evses=[
+                get_full_evse_5(last_updated=recent_timestamp),
+                get_full_evse_6(last_updated=recent_timestamp),
+            ],
+            operator=get_business_2(),
+        ),
+    ])
+    db.session.commit()
+
+    # Filter for locations updated in the last week - should return all
+    filter_timestamp = (now - timedelta(days=7)).strftime('%Y-%m-%dT%H:%M:%SZ')
+    response = public_test_client.get(
+        path=f'/api/public/v1/locations?strict=true&last_updated_since={filter_timestamp}',
+    )
+    assert response.status_code == HTTPStatus.OK
+    assert response.json['total_count'] == 3
+    assert len(response.json['items']) == 3
+
+
+def test_get_locations_by_last_updated_since_evse_updated(
+    db: SQLAlchemy,
+    public_test_client: OpenApiFlaskClient,
+) -> None:
+    now = datetime.now(tz=timezone.utc)
+    old_timestamp = now - timedelta(days=7)
+    recent_timestamp = now - timedelta(hours=1)
+
+    # Location 1: location is old but has a recently updated EVSE
+    # Location 2: both location and EVSEs are old
+    db.session.add_all([
+        get_location_1(
+            last_updated=old_timestamp,
+            evses=[
+                get_full_evse_1(last_updated=recent_timestamp),
+                get_full_evse_2(last_updated=old_timestamp),
+            ],
+            operator=get_business_1(),
+        ),
+        get_location_2(
+            last_updated=old_timestamp,
+            evses=[
+                get_full_evse_3(last_updated=old_timestamp),
+                get_full_evse_4(last_updated=old_timestamp),
+            ],
+            operator=get_business_1(),
+        ),
+    ])
+    db.session.commit()
+
+    # Filter for locations updated in the last day - should return location 1 due to EVSE update
+    filter_timestamp = (now - timedelta(days=1)).strftime('%Y-%m-%dT%H:%M:%SZ')
+    response = public_test_client.get(
+        path=f'/api/public/v1/locations?strict=true&last_updated_since={filter_timestamp}',
+    )
+    assert response.status_code == HTTPStatus.OK
+    assert response.json['total_count'] == 1
+    assert len(response.json['items']) == 1
+    assert response.json['items'][0]['id'] == '1'
+
+
+def test_get_locations_by_last_updated_since_combined_with_source_filter(
+    db: SQLAlchemy,
+    public_test_client: OpenApiFlaskClient,
+) -> None:
+    now = datetime.now(tz=timezone.utc)
+    old_timestamp = now - timedelta(days=7)
+    recent_timestamp = now - timedelta(hours=1)
+
+    # Location 1: source 1, recently updated
+    # Location 2: source 1, old
+    # Location 3: source 2, recently updated
+    db.session.add_all([
+        get_location_1(
+            last_updated=recent_timestamp,
+            evses=[
+                get_full_evse_1(last_updated=recent_timestamp),
+                get_full_evse_2(last_updated=recent_timestamp),
+            ],
+            operator=get_business_1(),
+        ),
+        get_location_2(
+            last_updated=old_timestamp,
+            evses=[
+                get_full_evse_3(last_updated=old_timestamp),
+                get_full_evse_4(last_updated=old_timestamp),
+            ],
+            operator=get_business_1(),
+        ),
+        get_location_3(
+            last_updated=recent_timestamp,
+            source=SOURCE_UID_2,
+            evses=[
+                get_full_evse_5(last_updated=recent_timestamp),
+                get_full_evse_6(last_updated=recent_timestamp),
+            ],
+            operator=get_business_2(),
+        ),
+    ])
+    db.session.commit()
+
+    # Filter for source 1 and updated in the last day
+    filter_timestamp = (now - timedelta(days=1)).strftime('%Y-%m-%dT%H:%M:%SZ')
+    response = public_test_client.get(
+        path=f'/api/public/v1/locations?strict=true&source_uid={SOURCE_UID_1}&last_updated_since={filter_timestamp}',
+    )
+    assert response.status_code == HTTPStatus.OK
+    assert response.json['total_count'] == 1
+    assert len(response.json['items']) == 1
+    assert response.json['items'][0]['id'] == '1'
+
+
+def test_get_locations_by_last_updated_since_boundary(
+    db: SQLAlchemy,
+    public_test_client: OpenApiFlaskClient,
+) -> None:
+    now = datetime.now(tz=timezone.utc)
+    exact_timestamp = now - timedelta(hours=1)
+
+    # Location updated at exactly the filter timestamp (should be included due to >= comparison)
+    db.session.add_all([
+        get_location_1(
+            last_updated=exact_timestamp,
+            evses=[
+                get_full_evse_1(last_updated=exact_timestamp),
+                get_full_evse_2(last_updated=exact_timestamp),
+            ],
+            operator=get_business_1(),
+        ),
+    ])
+    db.session.commit()
+
+    # Filter with exact same timestamp - should include the location
+    filter_timestamp = exact_timestamp.strftime('%Y-%m-%dT%H:%M:%SZ')
+    response = public_test_client.get(
+        path=f'/api/public/v1/locations?strict=true&last_updated_since={filter_timestamp}',
+    )
+    assert response.status_code == HTTPStatus.OK
+    assert response.json['total_count'] == 1
+    assert len(response.json['items']) == 1

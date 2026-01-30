@@ -194,7 +194,7 @@ class Location(BaseModel):
     parking_type: Mapped[ParkingType | None] = mapped_column(SqlalchemyEnum(ParkingType), nullable=True)
     time_zone: Mapped[str | None] = mapped_column(String(32), nullable=True)  # OCHP: timeZone, OCPI: time_zone
 
-    last_updated: Mapped[datetime | None] = mapped_column(UtcDateTime(), nullable=True)  # OCHP: timestamp
+    last_updated: Mapped[datetime | None] = mapped_column(UtcDateTime(), nullable=True, index=True)  # OCHP: timestamp
 
     terms_and_conditions: Mapped[str | None] = mapped_column(String(255), nullable=True)  # OCPI: terms_and_conditions
     # OCHP: openingTimes.twentyfourseven    OCPI: opening_times.twentyfourseven
