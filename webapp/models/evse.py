@@ -37,7 +37,6 @@ if TYPE_CHECKING:
     from .connector import Connector
     from .image import Image
     from .location import Location
-    from .related_resource import RelatedResource
 
 
 class EvseStatus(Enum):
@@ -96,11 +95,6 @@ class Evse(BaseModel):
         secondary=EvseImageAssociation.__table__,
         back_populates='evses',
     )
-    related_resources: Mapped['RelatedResource'] = relationship(
-        'RelatedResource',
-        back_populates='evse',
-        cascade='all, delete, delete-orphan',
-    )
     location: Mapped['Location'] = relationship('Location', back_populates='evses')
 
     location_id: Mapped[int] = mapped_column(
@@ -136,6 +130,8 @@ class Evse(BaseModel):
     _parking_restrictions: Mapped[int | None] = mapped_column('parking_restrictions', Integer, nullable=True)
 
     terms_and_conditions: Mapped[str | None] = mapped_column(String(255), nullable=True)  # OCPI: terms_and_conditions
+
+    _related_resources: Mapped[str | None] = mapped_column('related_resources', Text, nullable=True)
 
     # status_schedule TODO
     # user_interface_lang TODO                              # OCHP userInterfaceLang
@@ -189,6 +185,20 @@ class Evse(BaseModel):
             self._directions = None
             return
         self._directions = json.dumps(directions, cls=DefaultJSONEncoder)
+
+    @hybrid_property
+    def related_resources(self) -> list[dict] | None:
+        if self._related_resources is None:
+            return None
+
+        return json.loads(self._related_resources)
+
+    @related_resources.setter
+    def related_resources(self, related_resources: list[dict] | None) -> None:
+        if related_resources is None:
+            self._related_resources = None
+            return
+        self._related_resources = json.dumps(related_resources, cls=DefaultJSONEncoder)
 
     def to_dict(self, *args, ignore: list[str] | None = None, strict: bool = False, **kwargs) -> dict:
         ignore = ignore or []

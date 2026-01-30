@@ -104,6 +104,7 @@ def test_bnetza_excel_import(db: SQLAlchemy, requests_mock: Mocker) -> None:
         'capabilities': [],
         'parking_restrictions': [],
         'terms_and_conditions': None,
+        'related_resources': None,
     }
 
     connectors = db.session.query(Connector).filter(Connector.evse_id == 1).all()

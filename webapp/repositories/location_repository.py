@@ -156,7 +156,6 @@ class LocationRepository(BaseRepository[Location]):
             selectinload(Location.images),
             selectinload(Location.evses).selectinload(Evse.connectors),
             selectinload(Location.evses).selectinload(Evse.images),
-            selectinload(Location.evses).selectinload(Evse.related_resources),
             selectinload(Location.regular_hours),
             selectinload(Location.exceptional_closings),
             selectinload(Location.exceptional_openings),
