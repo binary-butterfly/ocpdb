@@ -17,7 +17,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 import logging
-from datetime import datetime, timezone
 
 from butterfly_pubsub import PubSubMessage
 from butterfly_pubsub.giroe import ChargeConnectorStatus
@@ -93,6 +92,5 @@ class PubSubStatusSubscriptionHandler(PubSubSubscriber):
         )
 
         evse.status = evse_status
-        evse.last_updated = datetime.now(tz=timezone.utc)
 
         self.evse_repository.save_evse(evse)

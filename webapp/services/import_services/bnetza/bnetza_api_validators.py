@@ -16,7 +16,7 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from datetime import date, datetime, time, timezone
+from datetime import date, time
 from decimal import Decimal
 from enum import Enum
 
@@ -204,7 +204,7 @@ class BnetzaConnector:
         ):
             self.max_electric_power_connector = Decimal('3.7')
 
-    def to_connector_update(self, counter: int, last_updated: datetime) -> ConnectorUpdate | None:
+    def to_connector_update(self, counter: int) -> ConnectorUpdate | None:
         if not self.connector_type or not self.connector_type.to_connector_type():
             return None
 
@@ -213,7 +213,6 @@ class BnetzaConnector:
             standard=self.connector_type.to_connector_type(),
             format=self.connector_type.to_connector_format(),
             power_type=self.connector_type.to_power_type(self.max_electric_power_connector),
-            last_updated=datetime.now(tz=timezone.utc),
         )
         if self.max_electric_power_connector:
             connector_update.max_electric_power = int(self.max_electric_power_connector * 1000)
@@ -233,7 +232,6 @@ class BnetzaEvse:
         counter: int,
         capabilities: list[Capability],
         status: EvseStatus,
-        last_updated: datetime,
     ) -> EvseUpdate | None:
         uid = f'BNETZA*{location_id}*{counter}'
         if self.evse_id and len(self.evse_id) <= 48:
@@ -245,14 +243,12 @@ class BnetzaEvse:
             evse_id=evse_id,
             capabilities=capabilities,
             status=status,
-            last_updated=last_updated,
             connectors=[],
         )
 
         for i, connector in enumerate(self.connectors):
             connector_update = connector.to_connector_update(
                 counter=i + 1,
-                last_updated=last_updated,
             )
 
             # Continue at invalid connectors
@@ -306,7 +302,7 @@ class BnetzaChargingStation:
     type: ChargingStationType = EnumValidator(ChargingStationType)
     go_live_date: date = ParsedDateValidator(date_format='%d.%m.%Y')
 
-    def to_location_update(self, last_updated: datetime) -> LocationUpdate:
+    def to_location_update(self) -> LocationUpdate:
         if self.street and self.house_no and self.house_no != '0':
             address = f'{self.street} {self.house_no}'
         elif self.street:
@@ -332,8 +328,6 @@ class BnetzaChargingStation:
             lat=self.coordinates.latitude,
             lon=self.coordinates.longitude,
             country='DEU',
-            # We cannot use go_live_date as there might have been updates afterwards
-            last_updated=last_updated,
             operator=BusinessUpdate(
                 name=self.operator.companyName,
             ),
@@ -361,7 +355,6 @@ class BnetzaChargingStation:
                 location_id=self.id,
                 counter=i + 1,
                 capabilities=capabilities,
-                last_updated=last_updated,
                 status=self.status.operational.to_status(),
             )
 

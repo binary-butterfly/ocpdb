@@ -87,7 +87,7 @@ class BnetzaApiImportService(BaseImportService):
             if charging_station.operator.companyName in ignore_operators:
                 continue
 
-            location_updates.append(charging_station.to_location_update(last_updated=static_data_updated_at))
+            location_updates.append(charging_station.to_location_update())
             static_success_count += 1
 
         self.save_location_updates(location_updates)

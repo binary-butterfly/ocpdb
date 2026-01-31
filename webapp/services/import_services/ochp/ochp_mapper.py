@@ -16,8 +16,9 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from datetime import datetime, timezone
 from typing import Any
+
+from validataclass.helpers import UnsetValue
 
 from webapp.models.connector import ConnectorFormat, ConnectorType, PowerType
 from webapp.models.evse import Capability, EvseStatus, ParkingRestriction
@@ -192,7 +193,7 @@ class OchpMapper:
         location_update = LocationUpdate(
             source=source_uid,
             uid=charge_point_input.locationId,
-            last_updated=charge_point_input.timestamp or datetime.now(tz=timezone.utc),
+            last_updated=charge_point_input.timestamp or UnsetValue,
             name=charge_point_input.locationName,
             address=charge_point_address.strip().replace('  ', ' '),
             postal_code=charge_point_input.chargePointAddress.zipCode,
@@ -243,7 +244,7 @@ class OchpMapper:
         evse_update = EvseUpdate(
             uid=charge_point_input.evseId,
             evse_id=charge_point_input.evseId,
-            last_updated=charge_point_input.timestamp or datetime.now(tz=timezone.utc),
+            last_updated=charge_point_input.timestamp or UnsetValue,
             status=OchpMapper.map_ochp_static_status_to_evse_status(charge_point_input.status),
             phone=charge_point_input.telephoneNumber,
             parking_restrictions=[

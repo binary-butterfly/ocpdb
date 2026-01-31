@@ -19,7 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from datetime import datetime, time, timezone
 from decimal import Decimal
 
-from validataclass.dataclasses import DefaultUnset, ValidataclassMixin, validataclass
+from validataclass.dataclasses import Default, DefaultUnset, ValidataclassMixin, validataclass
 from validataclass.helpers import OptionalUnset, UnsetValueType
 from validataclass.validators import (
     AnythingValidator,
@@ -209,7 +209,7 @@ class EvseInput(ValidataclassMixin):
         DefaultUnset,
     )
     capabilities: OptionalUnset[list[Capability]] = ListValidator(EnumValidator(Capability)), DefaultUnset
-    connectors: list[ConnectorInput] = ListValidator(DataclassValidator(ConnectorInput), min_length=1), DefaultUnset
+    connectors: list[ConnectorInput] = ListValidator(DataclassValidator(ConnectorInput), min_length=1), Default([])
     floor_level: str | None | UnsetValueType = Noneable(StringValidator(max_length=4)), DefaultUnset
     coordinates: OptionalUnset[GeoLocationInput] = DataclassValidator(GeoLocationInput), DefaultUnset
     physical_reference: str | None | UnsetValueType = Noneable(StringValidator(max_length=16)), DefaultUnset
@@ -247,7 +247,7 @@ class LocationInput(ValidataclassMixin):
         DefaultUnset,
     )
     parking_type: OptionalUnset[ParkingType] = EnumValidator(ParkingType), DefaultUnset
-    evses: OptionalUnset[list[EvseInput]] = ListValidator(DataclassValidator(EvseInput)), DefaultUnset
+    evses: list[EvseInput] = ListValidator(DataclassValidator(EvseInput)), Default([])
     directions: OptionalUnset[list[DisplayTextInput]] = (
         ListValidator(DataclassValidator(DisplayTextInput)),
         DefaultUnset,

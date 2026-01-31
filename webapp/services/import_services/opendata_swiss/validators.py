@@ -190,7 +190,7 @@ class EVSEDataRecord:
         return input_data
 
     def to_location_update(self, location_update: LocationUpdate | None, operator_name: str) -> LocationUpdate:
-        last_updated = self.lastUpdate or datetime.now(tz=timezone.utc)
+        last_updated = self.lastUpdate or UnsetValue
         if location_update is None:
             if self.Address.HouseNum and self.Address.HouseNum != '0':
                 address = f'{self.Address.Street} {self.Address.HouseNum}'
@@ -285,7 +285,6 @@ class EVSEStatusRecord:
 
     def to_evse_update(self) -> EvseUpdate:
         return EvseUpdate(
-            last_updated=datetime.now(tz=timezone.utc),
             uid=self.EvseID,
             evse_id=self.EvseID,
             status=self.EVSEStatus.to_evse_status(),
