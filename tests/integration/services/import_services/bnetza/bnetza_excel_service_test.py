@@ -123,6 +123,6 @@ def test_bnetza_excel_import(db: SQLAlchemy, requests_mock: Mocker) -> None:
         'max_voltage': None,
         'max_amperage': None,
         'max_electric_power': 22000,
-        'last_updated': None,
+        'last_updated': ANY,
         'terms_and_conditions': None,
     }

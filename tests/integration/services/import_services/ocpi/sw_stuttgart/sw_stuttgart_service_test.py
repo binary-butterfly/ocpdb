@@ -94,7 +94,7 @@ def test_sw_stuttgart_import(db: SQLAlchemy, requests_mock: Mocker) -> None:
         'opening_times': {'twentyfourseven': True},
         'parking_type': None,
         'time_zone': 'Europe/Berlin',
-        'last_updated': None,
+        'last_updated': ANY,
         'publish': True,
         'terms_and_conditions': None,
     }

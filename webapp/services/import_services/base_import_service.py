@@ -119,7 +119,12 @@ class BaseImportService(BaseService, RemoteMixin, ABC):
             )
         except ObjectNotFoundException:
             location = Location()
+
+        location.last_updated = location_update.last_updated or datetime.now(tz=timezone.utc)
+
         for key, value in location_update.to_dict().items():
+            if key == 'last_updated':
+                continue
             setattr(location, key, value)
 
         # Convert opening times dataclasses to dicts for JSON storage
@@ -162,7 +167,11 @@ class BaseImportService(BaseService, RemoteMixin, ABC):
             if evse_update.status == evse.status:
                 continue
 
+            evse.last_updated = evse_update.last_updated or datetime.now(tz=timezone.utc)
+
             for key, value in evse_update.to_dict().items():
+                if key == 'last_updated':
+                    continue
                 setattr(evse, key, value)
 
             self.evse_repository.save_evse(evse, commit=False)
@@ -177,7 +186,11 @@ class BaseImportService(BaseService, RemoteMixin, ABC):
     ) -> Evse:
         evse = old_evse_by_uid.get(evse_update.uid, Evse())
 
+        evse.last_updated = evse_update.last_updated or datetime.now(tz=timezone.utc)
+
         for key, value in evse_update.to_dict().items():
+            if key == 'last_updated':
+                continue
             setattr(evse, key, value)
 
         old_connectors_by_uid = {connector.uid: connector for connector in evse.connectors}
@@ -194,7 +207,11 @@ class BaseImportService(BaseService, RemoteMixin, ABC):
     def get_connector(connector_update: ConnectorUpdate, old_connectors_by_uid: dict[str, Connector]) -> Connector:
         connector = old_connectors_by_uid.get(connector_update.uid, Connector())
 
+        connector.last_updated = connector_update.last_updated or datetime.now(tz=timezone.utc)
+
         for key, value in connector_update.to_dict().items():
+            if key == 'last_updated':
+                continue
             setattr(connector, key, value)
 
         return connector
