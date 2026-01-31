@@ -17,14 +17,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 from validataclass.dataclasses import Default, DefaultUnset, validataclass
-from validataclass.helpers import OptionalUnset, UnsetValue, UnsetValueType
+from validataclass.helpers import OptionalUnset, UnsetValue
 from validataclass.validators import (
     AllowEmptyString,
     DataclassValidator,
     IntegerValidator,
     ListValidator,
     Noneable,
-    RejectValidator,
     StringValidator,
 )
 
@@ -62,10 +61,8 @@ class ChargecloudPublicEvseInput(EvseInput):
             DataclassValidator(ChargecloudPublicConnectorInput),
             min_length=1,
         ),
-        DefaultUnset,
+        Default([]),
     )
-    id: str = StringValidator(max_length=36)
-    uid: UnsetValueType = RejectValidator(), DefaultUnset
 
     @staticmethod
     def __pre_validate__(input_data: dict) -> dict:
@@ -78,9 +75,9 @@ class ChargecloudPublicEvseInput(EvseInput):
 
 @validataclass
 class ChargecloudPublicLocationInput(LocationInput):
-    evses: OptionalUnset[list[ChargecloudPublicEvseInput]] = (
+    evses: list[ChargecloudPublicEvseInput] = (
         ListValidator(DataclassValidator(ChargecloudPublicEvseInput)),
-        DefaultUnset,
+        Default([]),
     )
 
     directions: OptionalUnset[list[DisplayTextInput]] = (
