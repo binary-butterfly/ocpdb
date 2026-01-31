@@ -25,10 +25,11 @@ from validataclass.exceptions import ValidationError
 from validataclass.validators import DataclassValidator
 
 from webapp.common.contexts import TelemetryContext
-from webapp.common.error_handling.exceptions import RemoteException
+from webapp.common.error_handling.exceptions import RemoteException, StopHandling
 from webapp.common.logging.models import LogMessageType
 from webapp.models.source import SourceStatus
 from webapp.services.import_services.base_import_service import BaseImportService
+from webapp.services.import_services.models import EvseUpdate, LocationUpdate
 from webapp.services.import_services.ocpi.ocpi_mapper import OcpiMapper
 from webapp.services.import_services.ocpi.ocpi_validators import LocationInput
 
@@ -45,58 +46,18 @@ class ChargecloudAfirBaseImportService(BaseImportService, ABC):
     required_config_keys: list[str] = ['api_key']
 
     def fetch_static_data(self):
-        self.download_and_save()
-
-    def fetch_realtime_data(self):
-        self.download_and_save()
-
-    def download_and_save(self):
         source = self.get_source()
         success_count: int = 0
         data_updated_at = datetime.now(timezone.utc)
-        error_count: int = 0
-        location_dicts: list[dict[str, Any]] = []
 
         try:
-            input_data = self._download()
-            location_dicts += input_data.items
-
-            while input_data.next and len(input_data.items):
-                input_data = self._download(input_data.next)
-                location_dicts += input_data.items
-
-        except RemoteException as e:
-            logger.error(
-                f'request failed: {e.to_dict()}',
-                extra={'attributes': {'type': LogMessageType.IMPORT_SOURCE}},
-            )
-            self.update_source(source, static_status=SourceStatus.FAILED, realtime_status=SourceStatus.FAILED)
-            return
-        except ValidationError as e:
-            logger.error(
-                f'data has validation error: {e.to_dict()}',
-                extra={'attributes': {'type': LogMessageType.IMPORT_SOURCE}},
-            )
+            location_inputs, error_count = self._get_location_inputs()
+        except StopHandling:
             self.update_source(source, static_status=SourceStatus.FAILED, realtime_status=SourceStatus.FAILED)
             return
 
-        location_updates = []
-        for location_dict in location_dicts:
-            try:
-                location_input: LocationInput = self.location_validator.validate(location_dict)
-            except ValidationError as e:
-                logger.warning(
-                    f'location {location_dict} has validation error: {e.to_dict()}',
-                    extra={
-                        'attributes': {
-                            'type': LogMessageType.IMPORT_LOCATION,
-                            TelemetryContext.LOCATION: location_dict.get('id'),
-                        },
-                    },
-                )
-                error_count += 1
-                continue
-
+        location_updates: list[LocationUpdate] = []
+        for location_input in location_inputs:
             location_updates.append(self.ocpi_mapper.map_location(location_input, self.source_info.uid))
             success_count += 1
 
@@ -112,10 +73,85 @@ class ChargecloudAfirBaseImportService(BaseImportService, ABC):
             realtime_data_updated_at=data_updated_at,
         )
         logger.info(
-            f'Successfully updated {self.source_info.uid} static and realtime with {success_count} valid '
+            f'Successfully updated {self.source_info.uid} static {success_count} valid '
             f'locations and {error_count} failed locations.',
             extra={'attributes': {'type': LogMessageType.IMPORT_LOCATION}},
         )
+
+    def fetch_realtime_data(self):
+        source = self.get_source()
+        success_count: int = 0
+        data_updated_at = datetime.now(timezone.utc)
+
+        try:
+            location_inputs, error_count = self._get_location_inputs()
+        except StopHandling:
+            self.update_source(source, realtime_status=SourceStatus.FAILED)
+            return
+
+        evse_updates: list[EvseUpdate] = []
+        for location_input in location_inputs:
+            evse_updates += self.ocpi_mapper.map_location_to_evse_updates(location_input)
+            success_count += 1
+
+        self.save_evse_updates(evse_updates)
+
+        self.update_source(
+            source=source,
+            realtime_status=SourceStatus.ACTIVE,
+            realtime_error_count=error_count,
+            realtime_data_updated_at=data_updated_at,
+        )
+        logger.info(
+            f'Successfully updated {self.source_info.uid} realtime with {success_count} valid '
+            f'locations containing {len(evse_updates)} EVSEs and {error_count} failed locations.',
+            extra={'attributes': {'type': LogMessageType.IMPORT_LOCATION}},
+        )
+
+    def _get_location_inputs(self) -> tuple[list[LocationInput], int]:
+        location_dicts: list[dict[str, Any]] = []
+        error_count = 0
+
+        try:
+            input_data = self._download()
+            location_dicts += input_data.items
+
+            while input_data.next and len(input_data.items):
+                input_data = self._download(input_data.next)
+                location_dicts += input_data.items
+
+        except RemoteException as e:
+            logger.error(
+                f'request failed: {e.to_dict()}',
+                extra={'attributes': {'type': LogMessageType.IMPORT_SOURCE}},
+            )
+            raise StopHandling(message='Cannot proceed due remote error') from e
+
+        except ValidationError as e:
+            logger.error(
+                f'data has validation error: {e.to_dict()}',
+                extra={'attributes': {'type': LogMessageType.IMPORT_SOURCE}},
+            )
+            raise StopHandling(message='Cannot proceed due validation error') from e
+
+        location_input: list[LocationInput] = []
+        for location_dict in location_dicts:
+            try:
+                location_input.append(self.location_validator.validate(location_dict))
+            except ValidationError as e:
+                logger.warning(
+                    f'location {location_dict} has validation error: {e.to_dict()}',
+                    extra={
+                        'attributes': {
+                            'type': LogMessageType.IMPORT_LOCATION,
+                            TelemetryContext.LOCATION: location_dict.get('id'),
+                        },
+                    },
+                )
+                error_count += 1
+                continue
+
+        return location_input, error_count
 
     def _download(self, cursor: str | None = None) -> ChargecloudAfirLocationsInput:
         params: dict[str, str | int] = {'limit': 100}

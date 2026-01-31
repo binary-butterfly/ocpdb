@@ -114,6 +114,22 @@ class OcpiMapper:
         return evse_update
 
     @staticmethod
+    def map_location_to_evse_updates(location_input: LocationInput) -> list[EvseUpdate]:
+        """
+        Special function to focus on EVSE status updates
+        """
+        evse_updates = []
+        for evse_input in location_input.evses:
+            evse_updates.append(
+                EvseUpdate(
+                    uid=evse_input.evse_id,
+                    evse_id=evse_input.evse_id,
+                    status=evse_input.status,
+                ),
+            )
+        return evse_updates
+
+    @staticmethod
     def map_connector(connector_input: ConnectorInput) -> ConnectorUpdate:
         return ConnectorUpdate(
             uid=connector_input.id,

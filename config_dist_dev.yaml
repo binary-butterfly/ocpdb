@@ -15,6 +15,8 @@ SOURCES:
     auto_fetch: false  # rather large dataset
   bnetza_api:
     auto_fetch: false  # rather large dataset
+  chargecloud_ludwigsburg:
+    api_key: test-api-key
   chargecloud_pforzheim:
   chargecloud_stuttgart:
   heilbronn_neckarbogen:
