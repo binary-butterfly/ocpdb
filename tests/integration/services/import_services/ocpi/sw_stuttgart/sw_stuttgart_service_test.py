@@ -25,7 +25,7 @@ from tests.integration.services.import_services.ocpi.sw_stuttgart.sw_stuttgart_d
 from webapp.common.sqlalchemy import SQLAlchemy
 from webapp.dependencies import dependencies
 from webapp.models import Connector, Evse, Location
-from webapp.services.import_services.ocpi.chargecloud.sw_stuttgart import SWStuttgartImportService
+from webapp.services.import_services.ocpi.chargecloud_public.sw_stuttgart import SWStuttgartImportService
 
 
 def test_sw_stuttgart_import(db: SQLAlchemy, requests_mock: Mocker) -> None:
