@@ -25,7 +25,7 @@ from tests.integration.services.import_services.ocpi.sw_stuttgart.sw_stuttgart_d
 from webapp.common.sqlalchemy import SQLAlchemy
 from webapp.dependencies import dependencies
 from webapp.models import Connector, Evse, Location
-from webapp.services.import_services.ocpi.chargecloud.sw_stuttgart import SWStuttgartImportService
+from webapp.services.import_services.ocpi.chargecloud_public.sw_stuttgart import SWStuttgartImportService
 
 
 def test_sw_stuttgart_import(db: SQLAlchemy, requests_mock: Mocker) -> None:
@@ -41,10 +41,6 @@ def test_sw_stuttgart_import(db: SQLAlchemy, requests_mock: Mocker) -> None:
         'chargecloud_stuttgart'
     ]
 
-    locations_in_db_before = db.session.query(Location).count()
-    evses_in_db_before = db.session.query(Evse).count()
-    connectors_in_db_before = db.session.query(Connector).count()
-
     # define mocked response
     requests_mock.get(
         'https://new-poi.chargecloud.de/SW-Stuttgart',
@@ -56,9 +52,9 @@ def test_sw_stuttgart_import(db: SQLAlchemy, requests_mock: Mocker) -> None:
     sw_stuttgart_service.download_and_save()
 
     # check numbers of imported objects
-    assert db.session.query(Location).count() - locations_in_db_before == 234
-    assert db.session.query(Evse).count() - evses_in_db_before == 523
-    assert db.session.query(Connector).count() - connectors_in_db_before == 526
+    assert db.session.query(Location).count() == 234
+    assert db.session.query(Evse).count() == 523
+    assert db.session.query(Connector).count() == 526
 
     # check a sample of the imported data
     sample_location = db.session.query(Location).filter(Location.uid == '2185120').first()

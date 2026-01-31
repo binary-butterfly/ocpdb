@@ -99,3 +99,7 @@ class RemoteException(AppException):
         if self.http_status is not None:
             result['http_status'] = self.http_status
         return result
+
+
+class StopHandling(AppException):
+    code = 'stop_handling'

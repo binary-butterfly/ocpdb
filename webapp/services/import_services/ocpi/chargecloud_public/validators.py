@@ -37,7 +37,7 @@ from webapp.services.import_services.ocpi.ocpi_validators import (
 
 
 @validataclass
-class ChargecloudConnectorInput(ConnectorInput):
+class ChargecloudPublicConnectorInput(ConnectorInput):
     max_voltage: int = IntegerValidator(allow_strings=True)
     max_amperage: int = IntegerValidator(allow_strings=True)
 
@@ -55,13 +55,13 @@ class ChargecloudConnectorInput(ConnectorInput):
 
 
 @validataclass
-class ChargecloudEvseInput(EvseInput):
-    connectors: list[ChargecloudConnectorInput] = (
+class ChargecloudPublicEvseInput(EvseInput):
+    connectors: list[ChargecloudPublicConnectorInput] = (
         ListValidator(
-            DataclassValidator(ChargecloudConnectorInput),
+            DataclassValidator(ChargecloudPublicConnectorInput),
             min_length=1,
         ),
-        DefaultUnset,
+        Default([]),
     )
 
     @staticmethod
@@ -74,10 +74,10 @@ class ChargecloudEvseInput(EvseInput):
 
 
 @validataclass
-class ChargecloudLocationInput(LocationInput):
-    evses: OptionalUnset[list[ChargecloudEvseInput]] = (
-        ListValidator(DataclassValidator(ChargecloudEvseInput)),
-        DefaultUnset,
+class ChargecloudPublicLocationInput(LocationInput):
+    evses: list[ChargecloudPublicEvseInput] = (
+        ListValidator(DataclassValidator(ChargecloudPublicEvseInput)),
+        Default([]),
     )
 
     directions: OptionalUnset[list[DisplayTextInput]] = (

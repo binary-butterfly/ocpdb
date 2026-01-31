@@ -31,14 +31,14 @@ from webapp.services.import_services.base_import_service import BaseImportServic
 from webapp.services.import_services.ocpi.ocpi_mapper import OcpiMapper
 from webapp.services.import_services.ocpi.ocpi_validators import OcpiInput
 
-from .chargecloud_validators import ChargecloudLocationInput
+from .validators import ChargecloudPublicLocationInput
 
 logger = logging.getLogger(__name__)
 
 
-class ChargecloudBaseImportService(BaseImportService, ABC):
+class ChargecloudPublicBaseImportService(BaseImportService, ABC):
     ocpi_validator = DataclassValidator(OcpiInput)
-    location_validator = DataclassValidator(ChargecloudLocationInput)
+    location_validator = DataclassValidator(ChargecloudPublicLocationInput)
     ocpi_mapper = OcpiMapper()
 
     def fetch_static_data(self):
@@ -76,7 +76,7 @@ class ChargecloudBaseImportService(BaseImportService, ABC):
         location_updates = []
         for location_dict in input_data.data:
             try:
-                location_input: ChargecloudLocationInput = self.location_validator.validate(location_dict)
+                location_input: ChargecloudPublicLocationInput = self.location_validator.validate(location_dict)
             except ValidationError as e:
                 logger.warning(
                     f'location {location_dict} has validation error: {e.to_dict()}',

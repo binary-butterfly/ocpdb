@@ -20,7 +20,7 @@ from datetime import datetime, time, timezone
 from decimal import Decimal
 
 from validataclass.dataclasses import Default, DefaultUnset, ValidataclassMixin, validataclass
-from validataclass.helpers import OptionalUnset, UnsetValueType
+from validataclass.helpers import OptionalUnset, UnsetValue, UnsetValueType
 from validataclass.validators import (
     AnythingValidator,
     BooleanValidator,
@@ -39,6 +39,7 @@ from validataclass.validators import (
     UrlValidator,
 )
 
+from webapp.common.validation import EmptystringToNoneable
 from webapp.common.validation.replacing_string_validator import ReplacingStringValidator
 from webapp.models.connector import ConnectorFormat, ConnectorType, PowerType
 from webapp.models.evse import Capability, EvseStatus, ParkingRestriction
@@ -168,7 +169,8 @@ class ImageInput(ValidataclassMixin):
 @validataclass
 class BusinessDetailsInput(ValidataclassMixin):
     name: str = StringValidator(max_length=100)
-    website: OptionalUnset[str] = UrlValidator(), DefaultUnset
+    # From OCPI perspective, emptystring would be invalid, but many sources fail at this, and it's clear what is meant
+    website: OptionalUnset[str] = EmptystringToNoneable(UrlValidator(), default=UnsetValue), DefaultUnset
     logo: OptionalUnset[ImageInput] = DataclassValidator(ImageInput), DefaultUnset
 
 
