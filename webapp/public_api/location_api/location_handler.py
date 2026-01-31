@@ -43,28 +43,24 @@ class LocationHandler(PublicApiBaseHandler):
     def _map_location_to_ocpi(self, location: Location, strict: bool = False):
         location_dict = self.filter_none(location.to_dict(strict=strict))
 
-        for regular_hours in location.regular_hours:
+        if location.regular_hours:
             if 'opening_times' not in location_dict:
                 location_dict['opening_times'] = {}
-            if 'regular_hours' not in location_dict['opening_times']:
-                location_dict['opening_times']['regular_hours'] = []
-            location_dict['opening_times']['regular_hours'].append(regular_hours.to_dict())
+            location_dict['opening_times']['regular_hours'] = location.regular_hours
 
         for business in ['operator', 'owner', 'suboperator']:
             if getattr(location, f'{business}_id'):
                 location_dict[business] = self.filter_none(getattr(location, business).to_dict())
 
-        for exceptional_opening in location.exceptional_openings:
-            if 'exceptional_openings' not in location_dict['opening_times']:
-                location_dict['opening_times']['exceptional_openings'] = []
+        if location.exceptional_openings:
+            if 'opening_times' not in location_dict:
+                location_dict['opening_times'] = {}
+            location_dict['opening_times']['exceptional_openings'] = location.exceptional_openings
 
-            location_dict['opening_times']['exceptional_openings'].append(exceptional_opening.to_dict())
-
-        for exceptional_closing in location.exceptional_closings:
-            if 'exceptional_closings' not in location_dict['opening_times']:
-                location_dict['opening_times']['exceptional_closings'] = []
-
-            location_dict['opening_times']['exceptional_closings'].append(exceptional_closing.to_dict())
+        if location.exceptional_closings:
+            if 'opening_times' not in location_dict:
+                location_dict['opening_times'] = {}
+            location_dict['opening_times']['exceptional_closings'] = location.exceptional_closings
 
         location_dict['evses'] = []
         for evse in location.evses:

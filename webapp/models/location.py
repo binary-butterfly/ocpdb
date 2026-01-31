@@ -50,10 +50,7 @@ from .location_image import LocationImageAssociation
 if TYPE_CHECKING:
     from .business import Business
     from .evse import Evse
-    from .exceptional_closing_period import ExceptionalClosingPeriod
-    from .exceptional_opening_period import ExceptionalOpeningPeriod
     from .image import Image
-    from .regular_hours import RegularHours
 
 
 class ParkingType(Enum):
@@ -131,22 +128,6 @@ class Location(BaseModel):
         back_populates='locations',
     )
 
-    exceptional_openings: Mapped[list['ExceptionalOpeningPeriod']] = relationship(
-        'ExceptionalOpeningPeriod',
-        back_populates='location',
-        cascade='all, delete, delete-orphan',
-    )
-    exceptional_closings: Mapped[list['ExceptionalClosingPeriod']] = relationship(
-        'ExceptionalClosingPeriod',
-        back_populates='location',
-        cascade='all, delete, delete-orphan',
-    )
-    regular_hours: Mapped[list['RegularHours']] = relationship(
-        'RegularHours',
-        back_populates='location',
-        cascade='all, delete, delete-orphan',
-    )
-
     operator_id: Mapped[int | None] = mapped_column(
         BigInteger,
         ForeignKey('business.id', use_alter=True),
@@ -202,6 +183,10 @@ class Location(BaseModel):
 
     geometry: Mapped[Point] = mapped_column(Point(), nullable=False)
 
+    _regular_hours: Mapped[str | None] = mapped_column('regular_hours', Text, nullable=True)
+    _exceptional_openings: Mapped[str | None] = mapped_column('exceptional_openings', Text, nullable=True)
+    _exceptional_closings: Mapped[str | None] = mapped_column('exceptional_closings', Text, nullable=True)
+
     @hybrid_property
     def directions(self) -> list[dict[str, str]] | None:
         if self._directions is None:
@@ -215,6 +200,45 @@ class Location(BaseModel):
             self._directions = None
             return
         self._directions = json.dumps(directions, cls=DefaultJSONEncoder)
+
+    @hybrid_property
+    def regular_hours(self) -> list[dict] | None:
+        if self._regular_hours is None:
+            return None
+        return json.loads(self._regular_hours)
+
+    @regular_hours.setter
+    def regular_hours(self, regular_hours: list[dict] | None) -> None:
+        if regular_hours is None:
+            self._regular_hours = None
+            return
+        self._regular_hours = json.dumps(regular_hours, cls=DefaultJSONEncoder)
+
+    @hybrid_property
+    def exceptional_openings(self) -> list[dict] | None:
+        if self._exceptional_openings is None:
+            return None
+        return json.loads(self._exceptional_openings)
+
+    @exceptional_openings.setter
+    def exceptional_openings(self, exceptional_openings: list[dict] | None) -> None:
+        if exceptional_openings is None:
+            self._exceptional_openings = None
+            return
+        self._exceptional_openings = json.dumps(exceptional_openings, cls=DefaultJSONEncoder)
+
+    @hybrid_property
+    def exceptional_closings(self) -> list[dict] | None:
+        if self._exceptional_closings is None:
+            return None
+        return json.loads(self._exceptional_closings)
+
+    @exceptional_closings.setter
+    def exceptional_closings(self, exceptional_closings: list[dict] | None) -> None:
+        if exceptional_closings is None:
+            self._exceptional_closings = None
+            return
+        self._exceptional_closings = json.dumps(exceptional_closings, cls=DefaultJSONEncoder)
 
     def to_dict(self, *args, strict: bool = False, ignore: list[str] | None = None, **kwargs) -> dict:
         ignore = ignore or []

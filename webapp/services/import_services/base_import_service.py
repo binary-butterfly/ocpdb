@@ -24,7 +24,7 @@ from validataclass.helpers import OptionalUnset, UnsetValue
 
 from webapp.common.contexts import TelemetryContext
 from webapp.common.remote_mixin import RemoteMixin
-from webapp.models import Business, Connector, Evse, Image, Location, RegularHours, Source
+from webapp.models import Business, Connector, Evse, Image, Location, Source
 from webapp.models.source import SourceStatus
 from webapp.repositories import (
     ConnectorRepository,
@@ -41,7 +41,6 @@ from webapp.services.import_services.models import (
     EvseUpdate,
     ImageUpdate,
     LocationUpdate,
-    RegularHoursUpdate,
     SourceInfo,
 )
 
@@ -123,11 +122,18 @@ class BaseImportService(BaseService, RemoteMixin, ABC):
         for key, value in location_update.to_dict().items():
             setattr(location, key, value)
 
+        # Convert opening times dataclasses to dicts for JSON storage
+        if location_update.regular_hours is not UnsetValue:
+            location.regular_hours = [rh.to_dict() for rh in location_update.regular_hours]
+        if location_update.exceptional_openings is not UnsetValue:
+            location.exceptional_openings = [eo.to_dict() for eo in location_update.exceptional_openings]
+        if location_update.exceptional_closings is not UnsetValue:
+            location.exceptional_closings = [ec.to_dict() for ec in location_update.exceptional_closings]
+
         self.set_business(location, location_update, 'operator', businesses_by_name)
         self.set_business(location, location_update, 'suboperator', businesses_by_name)
         self.set_business(location, location_update, 'owner', businesses_by_name)
         self.set_image_list(location, location_update.images, images_by_url)
-        self.set_opening_times(location, location_update.regular_hours)
 
         if location_update.evses is not UnsetValue:
             old_evse_by_uid = {evse.uid: evse for evse in location.evses}
@@ -266,22 +272,6 @@ class BaseImportService(BaseService, RemoteMixin, ABC):
 
         # TODO: this emits unnecessary SQL UPDATE due re-ordering at many to many relationships
         primary_object.images = new_images
-
-    @staticmethod
-    def set_opening_times(location: Location, regular_hours_updates: OptionalUnset[list[RegularHoursUpdate]]):
-        if regular_hours_updates is UnsetValue:
-            return
-        old_regular_hours_items = location.regular_hours
-        new_regular_hours_items = []
-        for position, regular_hours_update in enumerate(regular_hours_updates):
-            if position < len(old_regular_hours_items):
-                regular_hours = old_regular_hours_items[position]
-            else:
-                regular_hours = RegularHours()
-            for key, value in regular_hours_update.to_dict().items():
-                setattr(regular_hours, key, value)
-            new_regular_hours_items.append(regular_hours)
-        location.regular_hours = new_regular_hours_items
 
     def get_source(self) -> Source:
         self.context_helper.set_telemetry_context(TelemetryContext.SOURCE, self.source_info.uid)

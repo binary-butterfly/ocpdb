@@ -76,19 +76,6 @@ class BusinessUpdate(BaseUpdate):
 
 
 @dataclass
-class RegularHoursUpdate(BaseUpdate):
-    weekday: int
-    period_begin: int
-    period_end: int
-
-
-@dataclass
-class ExceptionalPeriodUpdate(BaseUpdate):
-    period_begin: OptionalUnset[datetime] = UnsetValue
-    period_end: OptionalUnset[datetime] = UnsetValue
-
-
-@dataclass
 class ConnectorUpdate(BaseUpdate):
     uid: str
     standard: OptionalUnset[ConnectorType] = UnsetValue
@@ -141,6 +128,19 @@ class EvseUpdate(BaseUpdate):
 
 
 @dataclass
+class RegularHoursUpdate(BaseUpdate):
+    weekday: int
+    period_begin: int
+    period_end: int
+
+
+@dataclass
+class ExceptionalPeriodUpdate(BaseUpdate):
+    period_begin: datetime
+    period_end: datetime
+
+
+@dataclass
 class LocationUpdate(BaseUpdate):
     _object_keys = (
         'evses',
@@ -148,9 +148,9 @@ class LocationUpdate(BaseUpdate):
         'operator',
         'suboperator',
         'owner',
-        'exceptional_closings',
-        'exceptional_openings',
         'regular_hours',
+        'exceptional_openings',
+        'exceptional_closings',
     )
 
     uid: str
