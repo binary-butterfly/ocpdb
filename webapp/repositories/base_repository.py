@@ -19,7 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from abc import ABC, abstractmethod
 from typing import Any, Generic, Type, TypeVar
 
-from sqlalchemy.orm import Session, scoped_session
+from sqlalchemy.orm import scoped_session
 from validataclass_search_queries.repositories import SearchQueryRepositoryMixin
 
 from webapp.models.base import BaseModel
@@ -34,7 +34,7 @@ class BaseRepository(SearchQueryRepositoryMixin[T_Model], Generic[T_Model], ABC)
     def model_cls(self) -> Type[T_Model]:
         raise NotImplementedError
 
-    session: Session
+    session: scoped_session
 
     def __init__(self, session: scoped_session) -> None:
         self.session = session

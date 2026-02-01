@@ -64,6 +64,7 @@ docker-restart: .env
 docker-purge: .env
 	$(DOCKER_COMPOSE) down --remove-orphans --volumes
 	$(TESTING_DOCKER_COMPOSE) down --remove-orphans --volumes
+	rm -f data/regionalschluessel/.vg25-imported
 
 # Build the Docker image for the flask service
 .PHONY: docker-build
@@ -78,7 +79,7 @@ docker-rebuild: .env
 # Pull all images except for locally built images
 .PHONY: docker-pull
 docker-pull: .env
-	$(DOCKER_COMPOSE) pull webpack mysql phpmyadmin redis rabbitmq elasticsearch fakemail
+	$(DOCKER_COMPOSE) pull postgre redis rabbitmq
 
 # Show application logs, optionally with `make docker-logs SERVICE=flask` only for specified containers
 .PHONY: docker-logs

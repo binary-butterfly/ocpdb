@@ -22,4 +22,5 @@ from .evse_repository import EvseRepository
 from .exceptions import ObjectNotFoundException
 from .image_repository import ImageRepository
 from .location_repository import LocationRepository
+from .official_region_code_repository import OfficialRegionCodeRepository
 from .source_repository import SourceRepository
