@@ -88,6 +88,7 @@ def test_ludwigsburg_fetch_static_data(db: SQLAlchemy, requests_mock: Mocker) ->
         'city': 'Ludwigsburg',
         'state': None,
         'country': 'DEU',
+        'official_region_code': None,
         'coordinates': {
             'lat': Decimal('48.89233'),
             'lon': Decimal('9.18329'),
