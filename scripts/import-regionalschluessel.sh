@@ -1,5 +1,7 @@
 #!/bin/sh
 
+set -eo pipefail
+
 if [ -f /data/.vg25-imported ]; then
     exit 0
 fi
