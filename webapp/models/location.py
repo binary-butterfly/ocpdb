@@ -116,6 +116,7 @@ class Location(BaseModel):
     __table_args__ = (
         Index('uid_source', 'uid', 'source'),
         Index('geometry_index', 'geometry', postgresql_using='gist'),
+        Index('ix_country_official_region_code', 'country', 'official_region_code'),
     )
 
     charging_pool: Mapped[list['ChargingStation']] = relationship(
@@ -168,6 +169,8 @@ class Location(BaseModel):
     lon: Mapped[Decimal | None] = mapped_column(Numeric(10, 7), nullable=True)
 
     _directions: Mapped[str | None] = mapped_column('directions', Text, nullable=True)
+    official_region_code: Mapped[str | None] = mapped_column(String(36), nullable=True)
+
     parking_type: Mapped[ParkingType | None] = mapped_column(SqlalchemyEnum(ParkingType), nullable=True)
     time_zone: Mapped[str | None] = mapped_column(String(32), nullable=True)
 
@@ -297,6 +300,7 @@ class Location(BaseModel):
             'exceptional_closings',
             'max_power_unit',
             'max_power_value',
+            'official_region_code',
         ]
 
         result = super().to_dict(ignore=ignore, **kwargs)
@@ -310,6 +314,7 @@ class Location(BaseModel):
         if not strict:
             result['original_id'] = self.uid
             result['source'] = self.source
+            result['official_region_code'] = self.official_region_code
 
             if self.max_power_unit is not None or self.max_power_value is not None:
                 result['max_power'] = {

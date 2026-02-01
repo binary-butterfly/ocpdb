@@ -34,6 +34,7 @@ from webapp.repositories import (
     EvseRepository,
     ImageRepository,
     LocationRepository,
+    OfficialRegionCodeRepository,
     SourceRepository,
 )
 from webapp.services.import_services import ImageImportService, ImportServices
@@ -158,6 +159,12 @@ class Dependencies:
             session=self.get_db_session(),
         )
 
+    @cache_dependency
+    def get_official_region_code_repository(self) -> OfficialRegionCodeRepository:
+        return OfficialRegionCodeRepository(
+            session=self.get_db_session(),
+        )
+
     # Services
     def get_base_service_dependencies(self) -> dict:
         return {
@@ -175,6 +182,7 @@ class Dependencies:
             connector_repository=self.get_connector_repository(),
             business_repository=self.get_business_repository(),
             image_repository=self.get_image_repository(),
+            official_region_code_repository=self.get_official_region_code_repository(),
         )
 
     @cache_dependency

@@ -27,8 +27,6 @@ x-flask-defaults: &flask-defaults
   # owned by and accessible to the local user.
   user: *local-user
   depends_on:
-    mysql:
-      condition: service_healthy
     rabbitmq:
       condition: service_healthy
     postgre:
@@ -55,24 +53,14 @@ services:
     <<: *flask-defaults
     command: ["python3", "run_celery_heartbeat_dev.py"]
 
-  mysql:
-    image: mariadb
-    volumes:
-      - .:/app
-      - mysql:/var/lib/mysql
-    environment:
-      MYSQL_ROOT_PASSWORD: development
-      MYSQL_DATABASE: ocpdb
-    healthcheck:
-      test: mariadb -h mysql -P 3306 -u root -p$$MYSQL_ROOT_PASSWORD -e "SELECT 1"
-      interval: 1s
-      timeout: 1s
-      retries: 20
-
   postgre:
     image: postgis/postgis:15-3.5-alpine
+    ports:
+      - '5432:5432'
     volumes:
       - postgres:/var/lib/postgresql/data/
+      - ./scripts:/scripts
+      - ./data/regionalschluessel:/data
     environment:
       - POSTGRES_USER=ocpdb
       - POSTGRES_PASSWORD=development
@@ -84,17 +72,21 @@ services:
       timeout: 3s
       retries: 3
 
-  phpmyadmin:
-    image: phpmyadmin/phpmyadmin
-    ports:
-      - '8091:80'
+  regionalschluessel-importer:
+    image: ghcr.io/osgeo/gdal:alpine-small-3.12.1
+    user: *local-user
+    volumes:
+      - ./scripts:/scripts
+      - ./data/regionalschluessel:/data
     environment:
-      PMA_USER: root
-      PMA_PASSWORD: root
-      PMA_HOST: mysql
-      UPLOAD_LIMIT: 512M
-      # Disable spammy logging
-      APACHE_LOG_DIR: /tmp/logs
+      - POSTGRES_HOST=postgre
+      - POSTGRES_USER=ocpdb
+      - POSTGRES_PASSWORD=development
+      - POSTGRES_DB=ocpdb
+    depends_on:
+      postgre:
+        condition: service_healthy
+    command: ["/scripts/import-regionalschluessel.sh"]
 
   rabbitmq:
     image: rabbitmq:latest
@@ -143,5 +135,4 @@ services:
       - ./dev/test_services/mocked_giroe:/app
 
 volumes:
-  mysql:
   postgres:

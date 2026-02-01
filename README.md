@@ -5,21 +5,22 @@ OCPI-style JSON-API and a vector tile server.
 
 ## Data sources
 
-| name                              | uid                   | realtime | credentials | comment                                                                                                                                                                 |
-|-----------------------------------|-----------------------|----------|-------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Bundesnetzagentur: API            | bnetza_api            | false    | false       | Additional config `ignore_operators:: list[str]` is supported, which will ignore given operators during import. Set to weekly download, as it does not change so often. |
-| Bundesnetzagentur: Excel          | bnetza_excel          | false    | false       |                                                                                                                                                                         |
-| chargecloud: Stadtwerke Pforzheim | chargecloud_pforzheim | true     | false       |                                                                                                                                                                         |
-| chargecloud: Stadtwerke Stuttgart | chargecloud_stuttgart | true     | false       |                                                                                                                                                                         |
-| chargecloud: Stadtwerke Tübingen  | chargecloud_tuebingen | true     | false       |                                                                                                                                                                         |
-| PBW                               | eaaze_pbw             | true     | true        |                                                                                                                                                                         |
-| Giro-e                            | giroe                 | true     | true        |                                                                                                                                                                         |
-| Heilbronn Heckarbogen             | heilbronn_neckarbogen | true     | true        |                                                                                                                                                                         |
-| Lichtblick                        | lichtblick            | true     | true        | Currently dysfunctional                                                                                                                                                 |
-| OCHP: Albwerk                     | ochp_albwerk          | true     | true        |                                                                                                                                                                         |
-| OCHP: Ladenetz                    | ochp_ladenetz         | true     | true        |                                                                                                                                                                         |
-| OCPI: Stadtnavi                   | ocpi_stadtnavi        | true     | false       |                                                                                                                                                                         |
-| OpenData Swiss                    | opendata_swiss        | true     | false       |                                                                                                                                                                         |
+| name                                | uid                     | realtime | credentials | comment                                                                                                                                                                 |
+|-------------------------------------|-------------------------|----------|-------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Bundesnetzagentur: API              | bnetza_api              | false    | false       | Additional config `ignore_operators:: list[str]` is supported, which will ignore given operators during import. Set to weekly download, as it does not change so often. |
+| Bundesnetzagentur: Excel            | bnetza_excel            | false    | false       |                                                                                                                                                                         |
+| chargecloud: Stadtwerke Pforzheim   | chargecloud_pforzheim   | true     | false       |                                                                                                                                                                         |
+| chargecloud: Stadtwerke Stuttgart   | chargecloud_stuttgart   | true     | false       |                                                                                                                                                                         |
+| chargecloud: Stadtwerke Tübingen    | chargecloud_tuebingen   | true     | false       |                                                                                                                                                                         |
+| chargecloud: Stadtwerke Ludwigsburg | chargecloud_ludwigsburg | true     | true        |                                                                                                                                                                         |
+| PBW                                 | eaaze_pbw               | true     | true        |                                                                                                                                                                         |
+| Giro-e                              | giroe                   | true     | true        |                                                                                                                                                                         |
+| Heilbronn Heckarbogen               | heilbronn_neckarbogen   | true     | true        |                                                                                                                                                                         |
+| Lichtblick                          | lichtblick              | true     | true        | Currently dysfunctional                                                                                                                                                 |
+| OCHP: Albwerk                       | ochp_albwerk            | true     | true        |                                                                                                                                                                         |
+| OCHP: Ladenetz                      | ochp_ladenetz           | true     | true        |                                                                                                                                                                         |
+| OCPI: Stadtnavi                     | ocpi_stadtnavi          | true     | false       |                                                                                                                                                                         |
+| OpenData Swiss                      | opendata_swiss          | true     | false       |                                                                                                                                                                         |
 
 
 ### Duplicate matching
@@ -78,6 +79,28 @@ flask source delete example_source
 ```bash
 flask match run
 ```
+
+
+## Official Regional Code support
+
+OCPDB extends the Location data model with a new field `official_regional_code` in non-strict mode. This field provides
+the official regional code of a location, if available. Following regional codes are used:
+
+- DEU: Regionalschlüssel
+
+
+### Setup DEU: Regionalschlüssel
+
+In Germany, we use the dataset Verwaltungsgebiete 1:25 000 by Bundesamt für Kartographie und Geodäsie (BKG) for
+assigning official regional codes to locations, licenced as
+[Creative Commons Namensnennung 4.0 International](https://creativecommons.org/licenses/by/4.0/). We download the data
+using wget, transform the data using ogr2ogr and store it our Postgis database.
+
+The script does not download or import the data again. If you want to update the data, you can delete
+`data/regionalschluessel/vg25.gpkg` in order to trigger the download again, and `data/regionalschluessel/.vg25-imported`
+to trigger the import again. You can use this mechanism for ansible automatization, too: if you drop the geopackage
+at `data/regionalschluessel/vg25.gpkg` via ansible, you won't need to download the file during runtime.
+
 
 ## System requirements & installatiion
 
