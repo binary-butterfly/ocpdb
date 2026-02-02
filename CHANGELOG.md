@@ -1,5 +1,28 @@
 # Changelog
 
+## Version 2.6.0
+
+Released 2026-02-02
+
+### Features
+
+* [Sources API](https://github.com/binary-butterfly/ocpdb/pull/168)
+* [Better logging, including more context and docs](https://github.com/binary-butterfly/ocpdb/pull/169)
+* [bounding box search](https://github.com/binary-butterfly/ocpdb/pull/177)
+* [Last modified search](https://github.com/binary-butterfly/ocpdb/pull/178)
+* [Evse endpoint ](https://github.com/binary-butterfly/ocpdb/pull/179)
+* [optimize related resource](https://github.com/binary-butterfly/ocpdb/pull/180)
+* [optimize opening hours](https://github.com/binary-butterfly/ocpdb/pull/181)
+
+
+### Fixes
+
+* [fix performance issue with char filter](https://github.com/binary-butterfly/ocpdb/pull/171)
+* [re-add index](https://github.com/binary-butterfly/ocpdb/pull/172)
+* [BNetzA: filter more characters](https://github.com/binary-butterfly/ocpdb/pull/173)
+* [Optimize last updated](https://github.com/binary-butterfly/ocpdb/pull/182)
+
+
 ## Version 2.5.1
 
 Released 2026-01-05
