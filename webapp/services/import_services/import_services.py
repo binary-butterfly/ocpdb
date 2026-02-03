@@ -21,6 +21,7 @@ from webapp.repositories import (
     ConnectorRepository,
     EvseRepository,
     LocationRepository,
+    OfficialRegionCodeRepository,
     SourceRepository,
 )
 from webapp.repositories.business_repository import BusinessRepository
@@ -73,6 +74,7 @@ class ImportServices(BaseService):
         connector_repository: ConnectorRepository,
         business_repository: BusinessRepository,
         image_repository: ImageRepository,
+        official_region_code_repository: OfficialRegionCodeRepository,
         **kwargs,
     ):
         super().__init__(**kwargs)
@@ -84,6 +86,7 @@ class ImportServices(BaseService):
             'connector_repository': connector_repository,
             'business_repository': business_repository,
             'image_repository': image_repository,
+            'official_region_code_repository': official_region_code_repository,
             'config_helper': self.config_helper,
             'context_helper': self.context_helper,
         }

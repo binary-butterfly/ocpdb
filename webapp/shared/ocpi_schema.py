@@ -546,6 +546,11 @@ location_schema = JsonSchema(
         'last_updated': DateTimeField(
             description='Timestamp when this Location or one of its EVSEs or Connectors were last updated (or created).',
         ),
+        'official_region_code': StringField(
+            maxLength=36,
+            required=False,
+            description='Official region code. In Germany Regionalschlüssel.',
+        ),
     },
 )
 

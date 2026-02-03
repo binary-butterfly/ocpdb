@@ -6,6 +6,10 @@ GET {{api_host}}/api/public/v1/locations
 GET {{api_host}}/api/public/v1/locations?last_updated_since=2026-01-26T00:00:00
 
 
+### Get locations with country and official region code filter
+GET {{api_host}}/api/public/v1/locations?country=DEU&official_region_code=084160041041
+
+
 ### Get locations by lat, lon and radius
 GET {{api_host}}/api/public/v1/locations?lat=48.59523&lon=8.86648&radius=1000000
 

@@ -112,6 +112,12 @@ class LocationListMethodView(LocationBaseMethodView):
             Parameter('postal_code', schema=StringField(required=False), example='59423'),
             Parameter('city', schema=StringField(required=False), example='Bad Gateway', description='Contain query'),
             Parameter('country', schema=StringField(required=False), example='59423'),
+            Parameter(
+                'official_region_code',
+                schema=StringField(minLength=1, maxLength=36, required=False),
+                example='081180048048',
+                description='Official region code. In Germany Regionalschlüssel.',
+            ),
             Parameter('operator_name', schema=StringField(required=False), example='Electro Inc'),
             Parameter(
                 'lat',

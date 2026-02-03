@@ -115,6 +115,7 @@ class Location(BaseModel):
     __table_args__ = (
         Index('uid_source', 'uid', 'source'),
         Index('geometry_index', 'geometry', postgresql_using='gist'),
+        Index('ix_country_official_region_code', 'country', 'official_region_code'),
     )
 
     evses: Mapped[list['Evse']] = relationship(
@@ -170,6 +171,8 @@ class Location(BaseModel):
     lat: Mapped[Decimal | None] = mapped_column(Numeric(9, 7), nullable=True)
     # OCHP: chargePointLocation.lon, OCPI: coordinates.longitude
     lon: Mapped[Decimal | None] = mapped_column(Numeric(10, 7), nullable=True)
+
+    official_region_code: Mapped[str | None] = mapped_column(String(36), nullable=True)
 
     _directions: Mapped[str | None] = mapped_column('directions', Text, nullable=True)  # OCPI: directions
     parking_type: Mapped[ParkingType | None] = mapped_column(SqlalchemyEnum(ParkingType), nullable=True)
@@ -262,6 +265,7 @@ class Location(BaseModel):
             'modified',
             'dynamic_location_id',
             'dynamic_location_probability',
+            'official_region_code',
         ]
 
         result = super().to_dict(ignore=ignore, **kwargs)
@@ -275,6 +279,7 @@ class Location(BaseModel):
         if not strict:
             result['original_id'] = self.uid
             result['source'] = self.source
+            result['official_region_code'] = self.official_region_code
 
         # Additional fields which are not automatically in our result
         result['directions'] = self.directions
