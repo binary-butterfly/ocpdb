@@ -38,6 +38,7 @@ from validataclass.validators import (
 from webapp.common.validation import EmptystringToNoneable, ParsedDateValidator, PrintableStringValidator
 from webapp.models.charging_station import Capability
 from webapp.models.connector import ConnectorFormat, ConnectorType, PowerType
+from webapp.models.enums import ChargingRateUnit
 from webapp.models.evse import EvseStatus
 from webapp.services.import_services.models import (
     BusinessUpdate,
@@ -45,6 +46,7 @@ from webapp.services.import_services.models import (
     ConnectorUpdate,
     EvseUpdate,
     LocationUpdate,
+    MaxPowerUpdate,
     RegularHoursUpdate,
 )
 
@@ -336,7 +338,13 @@ class BnetzaChargingStation:
             uid=str(self.id),
             evses=evse_updates,
             capabilities=capabilities,
+            go_live_date=self.go_live_date,
         )
+        if self.max_electric_power_station:
+            charging_station_update.max_power = MaxPowerUpdate(
+                unit=ChargingRateUnit.KW,
+                value=float(self.max_electric_power_station),
+            )
 
         location_update = LocationUpdate(
             uid=str(self.id),

@@ -82,6 +82,7 @@ def upgrade():
         sa.Column('floor_level', sa.String(length=16), nullable=True),
         sa.Column('physical_reference', sa.String(length=255), nullable=True),
         sa.Column('last_updated', sqlalchemy_utc.sqltypes.UtcDateTime(timezone=True), nullable=False),
+        sa.Column('go_live_date', sa.Date(), nullable=True),
         sa.Column('lat', sa.Numeric(precision=9, scale=7), nullable=True),
         sa.Column('lon', sa.Numeric(precision=10, scale=7), nullable=True),
         sa.Column('directions', sa.Text(), nullable=True),
@@ -141,8 +142,8 @@ def upgrade():
     # Data migration: Create one charging_station per location and link evses
     op.execute(
         sa.text("""
-        INSERT INTO charging_station (location_id, uid, last_updated, lat, lon, created, modified)
-        SELECT id, uid, last_updated, lat, lon, NOW(), NOW()
+        INSERT INTO charging_station (location_id, uid, last_updated, created, modified)
+        SELECT id, uid, last_updated, NOW(), NOW()
         FROM location
     """)
     )

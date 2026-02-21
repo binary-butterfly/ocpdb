@@ -37,10 +37,10 @@ from webapp.public_api.base_blueprint import BaseBlueprint
 from webapp.public_api.location_api.location_search_queries import LocationSearchQuery
 from webapp.shared.ocpi_schema import all_ocpi_30_location_components
 
-from .ocpi_30_handler import Ocpi30LocationHandler
+from .handler import Ocpi30LocationHandler
 
 
-class Ocpi30Blueprint(BaseBlueprint):
+class Ocpi30LocationBlueprint(BaseBlueprint):
     documented = True
     ocpi_30_location_handler: Ocpi30LocationHandler
 
@@ -50,7 +50,7 @@ class Ocpi30Blueprint(BaseBlueprint):
             location_repository=dependencies.get_location_repository(),
         )
 
-        super().__init__('ocpi_30', __name__, url_prefix='/api/ocpi/3.0/locations')
+        super().__init__('ocpi_30_locations', __name__, url_prefix='/locations')
 
         self.add_url_rule(
             '',

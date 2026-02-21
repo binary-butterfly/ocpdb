@@ -16,11 +16,4 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from .business_repository import BusinessRepository
-from .charging_station_repository import ChargingStationRepository
-from .connector_repository import ConnectorRepository
-from .evse_repository import EvseRepository
-from .exceptions import ObjectNotFoundException
-from .image_repository import ImageRepository
-from .location_repository import LocationRepository
-from .source_repository import SourceRepository
+from .rest_api import OcpiLegacyLocationBlueprint, OcpiLocationBlueprint

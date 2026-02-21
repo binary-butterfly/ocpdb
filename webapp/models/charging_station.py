@@ -17,12 +17,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 import json
-from datetime import datetime
+from datetime import date, datetime
 from decimal import Decimal
 from enum import Enum
 from typing import TYPE_CHECKING
 
-from sqlalchemy import BigInteger, Float, ForeignKey, Integer, Numeric, String, Text
+from sqlalchemy import BigInteger, Date, Float, ForeignKey, Integer, Numeric, String, Text
 from sqlalchemy import Enum as SqlalchemyEnum
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -87,6 +87,7 @@ class ChargingStation(BaseModel):
     floor_level: Mapped[str | None] = mapped_column(String(16), nullable=True)
     physical_reference: Mapped[str | None] = mapped_column(String(255), nullable=True)
     last_updated: Mapped[datetime] = mapped_column(UtcDateTime(), nullable=False, index=True)
+    go_live_date: Mapped[date | None] = mapped_column(Date(), nullable=True)
 
     lat: Mapped[Decimal | None] = mapped_column(Numeric(9, 7), nullable=True)
     lon: Mapped[Decimal | None] = mapped_column(Numeric(10, 7), nullable=True)

@@ -60,7 +60,7 @@ class BnetzaExcelMapper:
             location_update.operator = BusinessUpdate(name=row.operator.strip())
 
         for line, row in enumerate(rows):
-            location_update.evses += self.map_row_to_evses(
+            location_update.charging_pool[0].evses += self.map_row_to_evses(
                 location_uid=location_uid,
                 row=row,
                 line=line,

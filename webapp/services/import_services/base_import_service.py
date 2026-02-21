@@ -212,6 +212,14 @@ class BaseImportService(BaseService, RemoteMixin, ABC):
                 continue
             setattr(charging_station, key, value)
 
+        if charging_station_update.max_power is not None:
+            if charging_station_update.max_power:
+                charging_station.max_power_unit = charging_station_update.max_power.unit
+                charging_station.max_power_value = charging_station_update.max_power.value
+            else:
+                charging_station.max_power_unit = None
+                charging_station.max_power_value = None
+
         old_evses_by_uid = {evse.uid: evse for evse in charging_station.evses}
         new_evses: list[Evse] = []
         for evse_update in charging_station_update.evses:

@@ -39,6 +39,7 @@ from webapp.services.import_services.models import (
     BusinessUpdate,
     ChargingStationUpdate,
     ConnectorUpdate,
+    EvseRealtimeUpdate,
     EvseUpdate,
     LocationUpdate,
 )
@@ -176,11 +177,11 @@ class GoldbeckIpcmChargePoint:
 
         return location_update
 
-    def to_realtime_evse_updates(self) -> list[EvseUpdate]:
-        evse_updates: list[EvseUpdate] = []
+    def to_realtime_evse_updates(self) -> list[EvseRealtimeUpdate]:
+        evse_updates: list[EvseRealtimeUpdate] = []
         for outlet in self.outlets:
             evse_updates.append(
-                EvseUpdate(
+                EvseRealtimeUpdate(
                     last_updated=self.lastUpdatedAt,
                     uid=outlet.evseId,
                     evse_id=outlet.evseId,

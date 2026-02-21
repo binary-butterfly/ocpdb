@@ -70,9 +70,20 @@ class Ocpi30LocationHandler(PublicApiBaseHandler):
         location_dict['charging_stations'] = []
         for charging_station in location.charging_pool:
             cs_dict = {
-                'uid': charging_station.uid,
+                'uid': str(charging_station.id),
                 'last_updated': charging_station.last_updated,
             }
+
+            if not strict:
+                cs_dict['original_uid'] = charging_station.uid
+                if charging_station.go_live_date:
+                    cs_dict['go_live_date'] = charging_station.go_live_date
+
+            if charging_station.max_power_unit and charging_station.max_power_value:
+                cs_dict['max_power'] = {
+                    'unit': charging_station.max_power_unit,
+                    'value': charging_station.max_power_value,
+                }
 
             capabilities = [c.value for c in charging_station.capabilities]
             if capabilities:

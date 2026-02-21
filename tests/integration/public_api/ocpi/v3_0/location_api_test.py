@@ -39,7 +39,7 @@ from tests.integration.model_generators.location import (
     get_location_3,
 )
 from tests.integration.model_generators.source import SOURCE_UID_1, SOURCE_UID_2
-from tests.integration.public_api.ocpi_30_api_responses import (
+from tests.integration.public_api.ocpi.v3_0.api_responses import (
     OCPI_30_LOCATION_1_RESPONSE,
     OCPI_30_LOCATION_2_RESPONSE,
     OCPI_30_LOCATIONS_RESPONSE,

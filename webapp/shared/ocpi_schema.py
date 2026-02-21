@@ -742,7 +742,11 @@ ocpi_30_location_schema = JsonSchema(
     'The Location describes the location and its properties where a group of ChargingStations that belong together '
     'are installed.',
     properties={
-        **{k: v for k, v in location_schema.properties.items() if k != 'evses'},
+        **{k: v for k, v in location_schema.properties.items() if k not in ('evses', 'id')},
+        'id': StringField(
+            maxLength=36,
+            description='Unique internal ID which identifies the location.',
+        ),
         'charging_stations': ArrayField(
             items=Reference(obj='ChargingStation'),
             required=False,
@@ -754,6 +758,35 @@ ocpi_30_location_schema = JsonSchema(
 ocpi_30_location_example = {}
 
 ocpi_30_location_component = Component('Ocpi30Location', ocpi_30_location_schema, ocpi_30_location_example)
+
+
+all_business_components = [
+    business_details_component,
+    image_component,
+]
+
+
+all_connector_components = [
+    connector_component,
+]
+
+
+all_evse_components = [
+    connector_component,
+    evse_component,
+    geo_location_component,
+    image_component,
+]
+
+
+all_charging_station_components = [
+    charging_station_component,
+    connector_component,
+    display_text_component,
+    evse_component,
+    geo_location_component,
+    image_component,
+]
 
 
 all_ocpi_30_location_components = [

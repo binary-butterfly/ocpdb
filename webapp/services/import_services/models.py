@@ -17,7 +17,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 from dataclasses import asdict, dataclass
-from datetime import datetime
+from datetime import date, datetime
 from decimal import Decimal
 from math import sqrt
 
@@ -363,6 +363,7 @@ class ChargingStationUpdate(BaseUpdate):
     floor_level: str | None = None
     physical_reference: str | None = None
     last_updated: datetime | None = None
+    go_live_date: date | None = None
 
     lat: Decimal | None = None
     lon: Decimal | None = None

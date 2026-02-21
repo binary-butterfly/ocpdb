@@ -33,7 +33,7 @@ OCPI_30_LOCATION_1_RESPONSE = {
     'operator': {'name': 'Electro Inc'},
     'charging_stations': [
         {
-            'uid': 'CS-1',
+            'uid': '1',
             'last_updated': ANY,
             'evses': [
                 {
@@ -94,7 +94,7 @@ OCPI_30_LOCATION_2_RESPONSE = {
     'operator': {'name': 'Electro Inc'},
     'charging_stations': [
         {
-            'uid': 'CS-2',
+            'uid': '2',
             'last_updated': ANY,
             'evses': [
                 {
@@ -155,7 +155,7 @@ OCPI_30_LOCATION_3_RESPONSE = {
     'operator': {'name': 'Power Inc'},
     'charging_stations': [
         {
-            'uid': 'CS-3',
+            'uid': '3',
             'last_updated': ANY,
             'evses': [
                 {

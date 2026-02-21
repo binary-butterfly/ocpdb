@@ -18,27 +18,24 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from webapp.common.base_blueprint import BaseBlueprint
 
-from .business_api import BusinessBlueprint
-from .evse_api import EvseBlueprint
-from .location_api import LocationBlueprint
-from .ocpi import Ocpi22Blueprint, Ocpi30Blueprint
-from .source_api import SourceBlueprint
-from .tiles_api import TilesBlueprint
+from .businesses import OcpiBusinessBlueprint
+from .charging_stations import OcpiChargingStationBlueprint
+from .connectors import OcpiConnectorBlueprint
+from .evses import OcpiEvseBlueprint
+from .locations import OcpiLegacyLocationBlueprint, OcpiLocationBlueprint
 
 
-class PublicApi(BaseBlueprint):
-    documentation_base = True
+class Ocpi22Blueprint(BaseBlueprint):
     blueprints: list[type[BaseBlueprint]] = [
-        TilesBlueprint,
-        BusinessBlueprint,
-        Ocpi22Blueprint,
-        Ocpi30Blueprint,
-        LocationBlueprint,
-        EvseBlueprint,
-        SourceBlueprint,
+        OcpiBusinessBlueprint,
+        OcpiChargingStationBlueprint,
+        OcpiConnectorBlueprint,
+        OcpiEvseBlueprint,
+        OcpiLocationBlueprint,
+        OcpiLegacyLocationBlueprint,
     ]
 
     def __init__(self):
-        super().__init__('public', __name__, url_prefix='')
+        super().__init__('ocpi_22', __name__, url_prefix='/api/ocpi/2.2')
         for blueprint in self.blueprints:
             self.register_blueprint(blueprint())

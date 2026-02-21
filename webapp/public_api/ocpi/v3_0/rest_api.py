@@ -1,6 +1,6 @@
 """
 Open ChargePoint DataBase OCPDB
-Copyright (C) 2021 binary butterfly GmbH
+Copyright (C) 2026 binary butterfly GmbH
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published by
@@ -18,27 +18,23 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from webapp.common.base_blueprint import BaseBlueprint
 
-from .business_api import BusinessBlueprint
-from .evse_api import EvseBlueprint
-from .location_api import LocationBlueprint
-from .ocpi import Ocpi22Blueprint, Ocpi30Blueprint
-from .source_api import SourceBlueprint
-from .tiles_api import TilesBlueprint
+from .businesses import Ocpi30BusinessBlueprint
+from .charging_stations import Ocpi30ChargingStationBlueprint
+from .connectors import Ocpi30ConnectorBlueprint
+from .evses import Ocpi30EvseBlueprint
+from .locations import Ocpi30LocationBlueprint
 
 
-class PublicApi(BaseBlueprint):
-    documentation_base = True
+class Ocpi30Blueprint(BaseBlueprint):
     blueprints: list[type[BaseBlueprint]] = [
-        TilesBlueprint,
-        BusinessBlueprint,
-        Ocpi22Blueprint,
-        Ocpi30Blueprint,
-        LocationBlueprint,
-        EvseBlueprint,
-        SourceBlueprint,
+        Ocpi30BusinessBlueprint,
+        Ocpi30ChargingStationBlueprint,
+        Ocpi30ConnectorBlueprint,
+        Ocpi30EvseBlueprint,
+        Ocpi30LocationBlueprint,
     ]
 
     def __init__(self):
-        super().__init__('public', __name__, url_prefix='')
+        super().__init__('ocpi_30', __name__, url_prefix='/api/ocpi/3.0')
         for blueprint in self.blueprints:
             self.register_blueprint(blueprint())

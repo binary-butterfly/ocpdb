@@ -1,6 +1,6 @@
 """
 Open ChargePoint DataBase OCPDB
-Copyright (C) 2025 binary butterfly GmbH
+Copyright (C) 2026 binary butterfly GmbH
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published by
@@ -35,13 +35,12 @@ from webapp.common.rest import BaseMethodView
 from webapp.dependencies import dependencies
 from webapp.models.evse import EvseStatus
 from webapp.public_api.base_blueprint import BaseBlueprint
+from webapp.public_api.evse_api.evse_handler import EvseHandler
+from webapp.public_api.evse_api.evse_search_queries import EvseSearchQuery
 from webapp.shared.ocpi_schema import all_evse_components
 
-from .evse_handler import EvseHandler
-from .evse_search_queries import EvseSearchQuery
 
-
-class EvseBlueprint(BaseBlueprint):
+class OcpiEvseBlueprint(BaseBlueprint):
     documented = True
     evse_handler: EvseHandler
 
@@ -51,27 +50,27 @@ class EvseBlueprint(BaseBlueprint):
             evse_repository=dependencies.get_evse_repository(),
         )
 
-        super().__init__('evse', __name__, url_prefix='/api/public/v1/evses')
+        super().__init__('ocpi_evses', __name__, url_prefix='/evses')
 
         self.add_url_rule(
             '',
-            view_func=EvseListMethodView.as_view(
-                'evses',
+            view_func=OcpiEvseListMethodView.as_view(
+                'ocpi_evses',
                 **self.get_base_method_view_dependencies(),
                 evse_handler=self.evse_handler,
             ),
         )
         self.add_url_rule(
             '/<int:evse_id>',
-            view_func=EvseItemMethodView.as_view(
-                'evse',
+            view_func=OcpiEvseItemMethodView.as_view(
+                'ocpi_evse',
                 **self.get_base_method_view_dependencies(),
                 evse_handler=self.evse_handler,
             ),
         )
 
 
-class EvseBaseMethodView(BaseMethodView):
+class OcpiEvseBaseMethodView(BaseMethodView):
     evse_handler: EvseHandler
 
     def __init__(self, *args, evse_handler: EvseHandler, **kwargs):
@@ -79,7 +78,7 @@ class EvseBaseMethodView(BaseMethodView):
         self.evse_handler = evse_handler
 
 
-class EvseListMethodView(EvseBaseMethodView):
+class OcpiEvseListMethodView(OcpiEvseBaseMethodView):
     search_query_validator = DataclassValidator(EvseSearchQuery)
 
     @document(
@@ -156,7 +155,7 @@ class EvseListMethodView(EvseBaseMethodView):
         return self.jsonify_paginated_response(evses, search_query)
 
 
-class EvseItemMethodView(EvseBaseMethodView):
+class OcpiEvseItemMethodView(OcpiEvseBaseMethodView):
     @document(
         description='Get single EVSE',
         path=[Parameter('evse_id', schema=IntegerField(minimum=1))],

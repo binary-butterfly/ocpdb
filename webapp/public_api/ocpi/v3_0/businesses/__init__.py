@@ -16,4 +16,4 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from webapp.public_api.ocpi_30_api.ocpi_30_rest_api import Ocpi30Blueprint
+from .rest_api import Ocpi30BusinessBlueprint

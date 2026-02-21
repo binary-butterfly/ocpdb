@@ -29,6 +29,7 @@ from webapp.common.contexts import ContextHelper
 from webapp.common.rest import RequestHelper
 from webapp.repositories import (
     BusinessRepository,
+    ChargingStationRepository,
     ConnectorRepository,
     EvseRepository,
     ImageRepository,
@@ -124,6 +125,12 @@ class Dependencies:
     @cache_dependency
     def get_location_repository(self) -> LocationRepository:
         return LocationRepository(
+            session=self.get_db_session(),
+        )
+
+    @cache_dependency
+    def get_charging_station_repository(self) -> ChargingStationRepository:
+        return ChargingStationRepository(
             session=self.get_db_session(),
         )
 
