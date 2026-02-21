@@ -119,6 +119,8 @@ def upgrade():
         )
         batch_op.create_index(batch_op.f('ix_charging_station_image_image_id'), ['image_id'], unique=False)
 
+    op.execute(sa.text('UPDATE connector SET last_updated = NOW() WHERE last_updated IS NULL'))
+
     with op.batch_alter_table('connector', schema=None) as batch_op:
         batch_op.alter_column('last_updated', existing_type=postgresql.TIMESTAMP(timezone=True), nullable=False)
 
@@ -171,6 +173,8 @@ def upgrade():
     """)
     )
 
+    op.execute(sa.text('UPDATE evse SET last_updated = NOW() WHERE last_updated IS NULL'))
+
     # Phase 2: Make charging_station_id NOT NULL, drop old columns and constraints
     with op.batch_alter_table('evse', schema=None) as batch_op:
         batch_op.alter_column('charging_station_id', nullable=False)
@@ -196,6 +200,8 @@ def upgrade():
         batch_op.drop_column('parking_floor_level')
         batch_op.drop_column('parking_uid')
         batch_op.drop_column('parking_spot_number')
+
+    op.execute(sa.text('UPDATE location SET last_updated = NOW() WHERE last_updated IS NULL'))
 
     with op.batch_alter_table('location', schema=None) as batch_op:
         batch_op.add_column(sa.Column('charging_when_closed', sa.Boolean(), nullable=True))
