@@ -182,7 +182,6 @@ def upgrade():
         batch_op.alter_column('last_updated', existing_type=postgresql.TIMESTAMP(timezone=True), nullable=False)
         batch_op.drop_index(batch_op.f('ix_evse_location_id'))
         batch_op.create_index(batch_op.f('ix_evse_charging_station_id'), ['charging_station_id'], unique=False)
-        batch_op.drop_constraint(batch_op.f('fk_evse_location_id'), type_='foreignkey')
         batch_op.create_foreign_key(
             batch_op.f('fk_evse_charging_station_id'),
             'charging_station',
@@ -278,9 +277,7 @@ def downgrade():
     with op.batch_alter_table('evse', schema=None) as batch_op:
         batch_op.alter_column('location_id', nullable=False)
         batch_op.drop_constraint(batch_op.f('fk_evse_charging_station_id'), type_='foreignkey')
-        batch_op.create_foreign_key(batch_op.f('fk_evse_location_id'), 'location', ['location_id'], ['id'])
         batch_op.drop_index(batch_op.f('ix_evse_charging_station_id'))
-        batch_op.create_index(batch_op.f('ix_evse_location_id'), ['location_id'], unique=False)
         batch_op.alter_column('last_updated', existing_type=postgresql.TIMESTAMP(timezone=True), nullable=True)
         batch_op.drop_column('calibration_info_url')
         batch_op.drop_column('status_last_updated')
