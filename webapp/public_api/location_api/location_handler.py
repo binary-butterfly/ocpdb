@@ -63,18 +63,29 @@ class LocationHandler(PublicApiBaseHandler):
             location_dict['opening_times']['exceptional_closings'] = location.exceptional_closings
 
         location_dict['evses'] = []
-        for evse in location.evses:
-            evse_dict = evse.to_dict(strict=strict)
-            evse_dict['connectors'] = []
-            for connector in evse.connectors:
-                evse_dict['connectors'].append(self.filter_none(connector.to_dict(strict=strict)))
+        for charging_station in location.charging_pool:
+            for evse in charging_station.evses:
+                evse_dict = evse.to_dict(strict=strict)
+                evse_dict['capabilities'] = [c.value for c in charging_station.capabilities]
+                if charging_station.floor_level:
+                    evse_dict['floor_level'] = charging_station.floor_level
+                if charging_station.lat is not None and charging_station.lon is not None:
+                    evse_dict['coordinates'] = {
+                        'latitude': charging_station.lat,
+                        'longitude': charging_station.lon,
+                    }
+                if charging_station.directions:
+                    evse_dict['directions'] = charging_station.directions
+                evse_dict['connectors'] = []
+                for connector in evse.connectors:
+                    evse_dict['connectors'].append(self.filter_none(connector.to_dict(strict=strict)))
 
-            for image in evse.images:
-                if 'images' not in evse_dict:
-                    evse_dict['images'] = []
+                for image in evse.images:
+                    if 'images' not in evse_dict:
+                        evse_dict['images'] = []
 
-                evse_dict['images'].append(self.filter_none(image.to_dict(strict=strict)))
+                    evse_dict['images'].append(self.filter_none(image.to_dict(strict=strict)))
 
-            location_dict['evses'].append(self.filter_none_and_empty_list(evse_dict))
+                location_dict['evses'].append(self.filter_none_and_empty_list(evse_dict))
 
         return location_dict

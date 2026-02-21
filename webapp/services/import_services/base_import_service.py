@@ -20,11 +20,10 @@ from abc import ABC, abstractmethod
 from datetime import datetime, timezone
 
 from celery.schedules import crontab
-from validataclass.helpers import OptionalUnset, UnsetValue
 
 from webapp.common.contexts import TelemetryContext
 from webapp.common.remote_mixin import RemoteMixin
-from webapp.models import Business, Connector, Evse, Image, Location, Source
+from webapp.models import Business, ChargingStation, Connector, Evse, Image, Location, Source
 from webapp.models.source import SourceStatus
 from webapp.repositories import (
     ConnectorRepository,
@@ -37,7 +36,9 @@ from webapp.repositories.business_repository import BusinessRepository
 from webapp.repositories.image_repository import ImageRepository
 from webapp.services.base_service import BaseService
 from webapp.services.import_services.models import (
+    ChargingStationUpdate,
     ConnectorUpdate,
+    EvseRealtimeUpdate,
     EvseUpdate,
     ImageUpdate,
     LocationUpdate,
@@ -83,6 +84,34 @@ class BaseImportService(BaseService, RemoteMixin, ABC):
         self.business_repository = business_repository
         self.image_repository = image_repository
 
+    def save_evse_updates(self, evse_updates: list[EvseUpdate | EvseRealtimeUpdate]):
+        """
+        Separated and optimized function for storing realtime EVSE updates
+        """
+        evses = self.evse_repository.fetch_evses_by_source_and_uids(
+            self.source_info.uid,
+            uids=[evse_update.uid for evse_update in evse_updates],
+        )
+        evses_by_uid: dict[str, Evse] = {evse.uid: evse for evse in evses}
+        for evse_update in evse_updates:
+            if evse_update.uid not in evses_by_uid:
+                continue
+
+            evse = evses_by_uid[evse_update.uid]
+            if evse_update.status == evse.status:
+                continue
+
+            evse.last_updated = evse_update.last_updated or datetime.now(tz=timezone.utc)
+
+            for key, value in evse_update.to_dict().items():
+                if key == 'last_updated':
+                    continue
+                setattr(evse, key, value)
+
+            self.evse_repository.save_evse(evse, commit=False)
+
+        self.evse_repository.session.commit()
+
     def save_location_updates(self, location_updates: list[LocationUpdate]):
         # get old location ids
         old_location_ids = self.location_repository.fetch_location_ids_by_source(self.source_info.uid)
@@ -123,68 +152,96 @@ class BaseImportService(BaseService, RemoteMixin, ABC):
         location.last_updated = location_update.last_updated or datetime.now(tz=timezone.utc)
 
         for key, value in location_update.to_dict().items():
-            if key == 'last_updated':
+            if key in ['last_updated']:
                 continue
             setattr(location, key, value)
 
         # Convert opening times dataclasses to dicts for JSON storage
-        if location_update.regular_hours is not UnsetValue:
+        if location_update.regular_hours is not None:
             location.regular_hours = [rh.to_dict() for rh in location_update.regular_hours]
-        if location_update.exceptional_openings is not UnsetValue:
+        if location_update.exceptional_openings is not None:
             location.exceptional_openings = [eo.to_dict() for eo in location_update.exceptional_openings]
-        if location_update.exceptional_closings is not UnsetValue:
+        if location_update.exceptional_closings is not None:
             location.exceptional_closings = [ec.to_dict() for ec in location_update.exceptional_closings]
+        if location_update.energy_mix is not None:
+            location.energy_mix = location_update.energy_mix.to_dict() if location_update.energy_mix else None
+        if location_update.max_power is not None:
+            if location_update.max_power:
+                location.max_power_unit = location_update.max_power.unit
+                location.max_power_value = location_update.max_power.value
+            else:
+                location.max_power_unit = None
+                location.max_power_value = None
 
         self.set_business(location, location_update, 'operator', businesses_by_name)
         self.set_business(location, location_update, 'suboperator', businesses_by_name)
         self.set_business(location, location_update, 'owner', businesses_by_name)
         self.set_image_list(location, location_update.images, images_by_url)
 
-        if location_update.evses is not UnsetValue:
-            old_evse_by_uid = {evse.uid: evse for evse in location.evses}
-            new_evses = []
-            for evse_update in location_update.evses:
-                # TODO: check for overlapping UIDs
-                new_evses.append(self.get_evse(evse_update, old_evse_by_uid, images_by_url))
+        old_charging_stations_by_uid = {
+            charging_station.id: charging_station for charging_station in location.charging_pool
+        }
+        new_charging_stations: list[ChargingStation] = []
+        for charging_station_update in location_update.charging_pool:
+            new_charging_stations.append(
+                self.get_charging_station(
+                    charging_station_update=charging_station_update,
+                    old_charging_stations_by_uid=old_charging_stations_by_uid,
+                    images_by_url=images_by_url,
+                ),
+            )
+        location.charging_pool = new_charging_stations
 
-            location.evses = new_evses
         self.location_repository.save_location(location)
 
         if old_location_ids is not None and location.id in old_location_ids:
             old_location_ids.remove(location.id)
 
-    def save_evse_updates(self, evse_updates: list[EvseUpdate]):
-        evses = self.evse_repository.fetch_evses_by_source_and_uids(
-            self.source_info.uid,
-            uids=[evse_update.uid for evse_update in evse_updates],
-        )
-        evses_by_uid: dict[str, Evse] = {evse.uid: evse for evse in evses}
-        for evse_update in evse_updates:
-            if evse_update.uid not in evses_by_uid:
+    def get_charging_station(
+        self,
+        charging_station_update: ChargingStationUpdate,
+        old_charging_stations_by_uid: dict[str, ChargingStation],
+        images_by_url: dict[str, Image] | None,
+    ) -> ChargingStation:
+        charging_station = old_charging_stations_by_uid.get(charging_station_update.uid, ChargingStation())
+
+        charging_station.last_updated = charging_station_update.last_updated or datetime.now(tz=timezone.utc)
+
+        for key, value in charging_station_update.to_dict().items():
+            if key == 'last_updated':
                 continue
+            setattr(charging_station, key, value)
 
-            evse = evses_by_uid[evse_update.uid]
-            if evse_update.status == evse.status:
-                continue
+        if charging_station_update.max_power is not None:
+            if charging_station_update.max_power:
+                charging_station.max_power_unit = charging_station_update.max_power.unit
+                charging_station.max_power_value = charging_station_update.max_power.value
+            else:
+                charging_station.max_power_unit = None
+                charging_station.max_power_value = None
 
-            evse.last_updated = evse_update.last_updated or datetime.now(tz=timezone.utc)
+        old_evses_by_uid = {evse.uid: evse for evse in charging_station.evses}
+        new_evses: list[Evse] = []
+        for evse_update in charging_station_update.evses:
+            new_evses.append(
+                self.get_evse(
+                    evse_update=evse_update,
+                    old_evses_by_uid=old_evses_by_uid,
+                    images_by_url=images_by_url,
+                ),
+            )
 
-            for key, value in evse_update.to_dict().items():
-                if key == 'last_updated':
-                    continue
-                setattr(evse, key, value)
+        charging_station.evses = new_evses
 
-            self.evse_repository.save_evse(evse, commit=False)
-
-        self.evse_repository.session.commit()
+        return charging_station
 
     def get_evse(
         self,
         evse_update: EvseUpdate,
-        old_evse_by_uid: dict[str, Evse],
+        old_evses_by_uid: dict[str, Evse],
         images_by_url: dict[str, Image] | None,
     ) -> Evse:
-        evse = old_evse_by_uid.get(evse_update.uid, Evse())
+        evse = old_evses_by_uid.get(evse_update.uid, Evse())
 
         evse.last_updated = evse_update.last_updated or datetime.now(tz=timezone.utc)
 
@@ -194,12 +251,21 @@ class BaseImportService(BaseService, RemoteMixin, ABC):
             setattr(evse, key, value)
 
         old_connectors_by_uid = {connector.uid: connector for connector in evse.connectors}
-        new_connectors = []
+        new_connectors: list[Connector] = []
         for connector_update in evse_update.connectors:
-            new_connectors.append(self.get_connector(connector_update, old_connectors_by_uid))
+            new_connectors.append(
+                self.get_connector(
+                    connector_update=connector_update,
+                    old_connectors_by_uid=old_connectors_by_uid,
+                ),
+            )
         evse.connectors = new_connectors
 
-        self.set_image_list(evse, evse_update.images, images_by_url)
+        self.set_image_list(
+            primary_object=evse,
+            image_updates=evse_update.images,
+            images_by_url=images_by_url,
+        )
 
         return evse
 
@@ -224,7 +290,7 @@ class BaseImportService(BaseService, RemoteMixin, ABC):
         businesses_by_name: dict[str, Business] | None = None,
     ):
         business_update = getattr(location_update, location_key)
-        if business_update is UnsetValue:
+        if business_update is None:
             return
 
         business = getattr(location, location_key)
@@ -245,7 +311,7 @@ class BaseImportService(BaseService, RemoteMixin, ABC):
         for key, value in business_update.to_dict().items():
             setattr(business, key, value)
 
-        if business_update.logo is not UnsetValue:
+        if business_update.logo is not None:
             if not business.logo:
                 business.logo = Image()
 
@@ -256,11 +322,11 @@ class BaseImportService(BaseService, RemoteMixin, ABC):
 
     def set_image_list(
         self,
-        primary_object: Location | Evse,
-        image_updates: OptionalUnset[list[ImageUpdate]],
+        primary_object: Location | ChargingStation | Evse,
+        image_updates: list[ImageUpdate] | None,
         images_by_url: dict[str, Image] | None = None,
     ):
-        if image_updates is UnsetValue:
+        if image_updates is None:
             return
 
         old_images_by_url = {image.url: image for image in primary_object.images}

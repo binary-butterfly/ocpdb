@@ -25,8 +25,9 @@ from requests_mock import Mocker
 from webapp.common.sqlalchemy import SQLAlchemy
 from webapp.dependencies import dependencies
 from webapp.models import Connector, Evse, Location
-from webapp.models.connector import ConnectorFormat, ConnectorType
-from webapp.models.evse import EvseStatus
+from webapp.models.charging_station import ChargingStation
+from webapp.models.connector import ConnectorFormat, ConnectorType, PowerType
+from webapp.models.evse import EvseStatus, PresenceStatus
 from webapp.services.import_services.bnetza import BnetzaExcelImportService
 
 
@@ -77,17 +78,27 @@ def test_bnetza_excel_import(db: SQLAlchemy, requests_mock: Mocker) -> None:
             'longitude': Decimal('9.6590750'),
         },
         'directions': None,
+        'related_locations': None,
         'regular_hours': None,
         'exceptional_openings': None,
         'exceptional_closings': None,
         'parking_type': None,
         'publish': True,
-        'time_zone': None,
+        'time_zone': 'Europe/Berlin',
         'last_updated': ANY,
         'terms_and_conditions': None,
+        'charging_when_closed': None,
+        'energy_mix': None,
+        'help_phone': None,
     }
 
-    evses = db.session.query(Evse).filter(Evse.location_id == 1).all()
+    evses = (
+        db.session
+        .query(Evse)
+        .join(ChargingStation, ChargingStation.id == Evse.charging_station_id)
+        .filter(ChargingStation.location_id == 1)
+        .all()
+    )
 
     assert len(evses)
     assert evses[0].to_dict() == {
@@ -95,18 +106,14 @@ def test_bnetza_excel_import(db: SQLAlchemy, requests_mock: Mocker) -> None:
         'original_uid': 'BNETZA*81d943a159d326f16932*0*1',
         'evse_id': 'BNETZA*81d943a159d326f16932*0*1',
         'status': EvseStatus.STATIC,
-        'floor_level': None,
+        'presence': PresenceStatus.PRESENT,
         'physical_reference': None,
-        'directions': None,
-        'phone': None,
-        'parking_uid': None,
-        'parking_floor_level': None,
-        'parking_spot_number': None,
         'last_updated': ANY,
+        'status_last_updated': None,
         'max_reservation': None,
-        'capabilities': [],
         'parking_restrictions': [],
         'terms_and_conditions': None,
+        'calibration_info_url': None,
         'related_resources': None,
     }
 
@@ -119,9 +126,9 @@ def test_bnetza_excel_import(db: SQLAlchemy, requests_mock: Mocker) -> None:
         'original_id': '81d943a159d326f16932-0-1-0',
         'standard': ConnectorType.IEC_62196_T2,
         'format': ConnectorFormat.SOCKET,
-        'power_type': None,
-        'max_voltage': None,
-        'max_amperage': None,
+        'power_type': PowerType.AC_3_PHASE,
+        'max_voltage': 400,
+        'max_amperage': 230,
         'max_electric_power': 22000,
         'last_updated': ANY,
         'terms_and_conditions': None,

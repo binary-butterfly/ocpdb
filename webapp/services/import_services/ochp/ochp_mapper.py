@@ -18,14 +18,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from typing import Any
 
-from validataclass.helpers import UnsetValue
-
+from webapp.models.charging_station import Capability
 from webapp.models.connector import ConnectorFormat, ConnectorType, PowerType
-from webapp.models.evse import Capability, EvseStatus, ParkingRestriction
+from webapp.models.evse import EvseStatus, ParkingRestriction
 from webapp.models.image import ImageCategory
 from webapp.models.location import ParkingType
 from webapp.services.import_services.models import (
+    ChargingStationUpdate,
     ConnectorUpdate,
+    EvseRealtimeUpdate,
     EvseUpdate,
     ImageUpdate,
     LocationUpdate,
@@ -193,7 +194,7 @@ class OchpMapper:
         location_update = LocationUpdate(
             source=source_uid,
             uid=charge_point_input.locationId,
-            last_updated=charge_point_input.timestamp or UnsetValue,
+            last_updated=charge_point_input.timestamp,
             name=charge_point_input.locationName,
             address=charge_point_address.strip().replace('  ', ' '),
             postal_code=charge_point_input.chargePointAddress.zipCode,
@@ -202,14 +203,18 @@ class OchpMapper:
             lat=charge_point_input.chargePointLocation.lat,
             lon=charge_point_input.chargePointLocation.lon,
             time_zone=charge_point_input.timeZone,
+            help_phone=charge_point_input.telephoneNumber,
             parking_type=self.map_ochp_location_type_to_parking_type(charge_point_input.location),
-            evses=[
-                self.map_chargepoint_to_evse(single_charge_point_input)
-                for single_charge_point_input in charge_point_inputs
+            charging_pool=[
+                ChargingStationUpdate(
+                    uid=charge_point_input.locationId,
+                    last_updated=charge_point_input.timestamp,
+                    evses=[],
+                )
             ],
-            # ignored: locationNameLang
-            # ignored: relatedLocation
         )
+        for single_charge_point_input in charge_point_inputs:
+            location_update.charging_pool[0].evses.append(self.map_chargepoint_to_evse(single_charge_point_input))
 
         if charge_point_input.openingTimes:
             if charge_point_input.openingTimes.twentyfourseven is not None:
@@ -244,9 +249,8 @@ class OchpMapper:
         evse_update = EvseUpdate(
             uid=charge_point_input.evseId,
             evse_id=charge_point_input.evseId,
-            last_updated=charge_point_input.timestamp or UnsetValue,
+            last_updated=charge_point_input.timestamp,
             status=OchpMapper.map_ochp_static_status_to_evse_status(charge_point_input.status),
-            phone=charge_point_input.telephoneNumber,
             parking_restrictions=[
                 self.map_parking_restriction(restriction) for restriction in charge_point_input.parkingRestriction
             ],
@@ -263,17 +267,18 @@ class OchpMapper:
 
         return evse_update
 
-    def map_evse_status_to_update(self, evse_status: ChargePointStatusInput) -> EvseUpdate:
-        evse_update = EvseUpdate(
+    def map_evse_status_to_update(self, evse_status: ChargePointStatusInput) -> EvseRealtimeUpdate:
+        if evse_status.minor is None:
+            status = self.map_ochp_major_status_to_evse_status(evse_status.major)
+        else:
+            status = self.map_ochp_minor_status_to_evse_status(evse_status.minor)
+
+        evse_update = EvseRealtimeUpdate(
             uid=evse_status.evseId,
             evse_id=evse_status.evseId,
             last_updated=evse_status.ttl,
+            status=status,
         )
-
-        if evse_status.minor is None:
-            evse_update.status = self.map_ochp_major_status_to_evse_status(evse_status.major)
-        else:
-            evse_update.status = self.map_ochp_minor_status_to_evse_status(evse_status.minor)
 
         return evse_update
 
@@ -283,23 +288,22 @@ class OchpMapper:
         ochp_connector: ConnectorInput,
         position: int,
     ) -> ConnectorUpdate:
+        max_electric_power: int | None = None
+        max_voltage: int | None = None
+        if charge_point_input.ratings:
+            max_electric_power = int(charge_point_input.ratings.maximumPower * 1000)
+            if charge_point_input.ratings.nominalVoltage:
+                max_voltage = charge_point_input.ratings.nominalVoltage
+
         connector_update = ConnectorUpdate(
             format=OchpMapper.map_connector_format(ochp_connector.connectorFormat),
             standard=OchpMapper.map_connector_standard(ochp_connector.connectorStandard),
             uid=str(position),
+            max_electric_power=max_electric_power,
+            max_voltage=max_voltage,
+            power_type=OchpMapper.map_charge_point_type_to_power_type(charge_point_input.chargePointType),
+            last_updated=None,
         )
-        if charge_point_input.ratings:
-            connector_update.max_electric_power = int(charge_point_input.ratings.maximumPower * 1000)
-            # SchuKo plugs never have more than 3700 W.
-            if connector_update.standard == ConnectorType.DOMESTIC_F and connector_update.max_electric_power > 3700:
-                connector_update.max_electric_power = 3700
-
-            if charge_point_input.ratings.nominalVoltage:
-                connector_update.voltage = charge_point_input.ratings.nominalVoltage
-                # SchuKo plugs never have more than 230 V.
-                if connector_update.standard == ConnectorType.DOMESTIC_F and connector_update.voltage > 230:
-                    connector_update.voltage = 230
-
         return connector_update
 
     def map_image(self, image_input: ImageInput) -> ImageUpdate:

@@ -19,11 +19,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from datetime import datetime, timezone
 from decimal import Decimal
 
-from validataclass.helpers import UnsetValue
-
 from webapp.models.connector import ConnectorFormat, ConnectorType
 from webapp.models.evse import EvseStatus
-from webapp.services.import_services.models import BusinessUpdate, ConnectorUpdate, EvseUpdate, LocationUpdate
+from webapp.services.import_services.models import (
+    BusinessUpdate,
+    ChargingStationUpdate,
+    ConnectorUpdate,
+    EvseUpdate,
+    LocationUpdate,
+)
 
 from .lichtblick_validators import CircuitInput, CircuitStatus, LocationInput, OperatorInput, Plug
 
@@ -35,7 +39,7 @@ class LichtblickMapper:
         location_input: LocationInput,
     ) -> LocationUpdate:
         # TODO: regular hours
-        return LocationUpdate(
+        location_update = LocationUpdate(
             source='lichtblick',
             uid=location_input.shortcode,
             name=location_input.name,
@@ -45,11 +49,23 @@ class LichtblickMapper:
             lat=Decimal(location_input.lat),
             lon=Decimal(location_input.lon),
             country='DEU',
-            last_updated=datetime.now(tz=timezone.utc),
-            twentyfourseven=UnsetValue if location_input.hours is UnsetValue else location_input.hours.twentyfourseven,
+            last_updated=None,
+            twentyfourseven=None if location_input.hours is None else location_input.hours.twentyfourseven,
             operator=BusinessUpdate(name=operator_input.operatorName),
-            evses=[self.map_circuit_to_evse_update(circuit_input) for circuit_input in location_input.circuits],
+            charging_pool=[
+                ChargingStationUpdate(
+                    uid=location_input.shortcode,
+                    last_updated=None,
+                    evses=[],
+                ),
+            ],
+            time_zone='Europe/Berlin',
         )
+
+        for circuit_input in location_input.circuits:
+            location_update.charging_pool[0].evses = self.map_circuit_to_evse_update(circuit_input)
+
+        return location_update
 
     def map_circuit_to_evse_update(self, circuit_input: CircuitInput) -> EvseUpdate:
         return EvseUpdate(

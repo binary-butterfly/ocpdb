@@ -122,7 +122,7 @@
         });
 
         map.on('click', 'chargepoints', async (e) => {
-            let result = await fetch(window.location.href.split('/static')[0] + '/api/ocpi/2.2/location/' + e.features[0].properties.id)
+            let result = await fetch(window.location.href.split('/static')[0] + 'api/ocpi/3.0/locations/' + e.features[0].properties.id)
             alert(JSON.stringify(await result.json(), null, 2));
         });
 

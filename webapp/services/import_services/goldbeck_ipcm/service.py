@@ -28,7 +28,7 @@ from webapp.common.logging.models import LogMessageType
 from webapp.models.source import Source, SourceStatus
 from webapp.services.import_services.base_import_service import BaseImportService, SourceInfo
 from webapp.services.import_services.goldbeck_ipcm.validators import GoldbeckIpcmChargePoint
-from webapp.services.import_services.models import EvseUpdate, LocationUpdate
+from webapp.services.import_services.models import EvseRealtimeUpdate, LocationUpdate
 
 logger = logging.getLogger(__name__)
 
@@ -72,7 +72,7 @@ class GoldbeckIpcmImportService(BaseImportService, ABC):
         if source.static_status != SourceStatus.ACTIVE:
             return
 
-        evse_updates: list[EvseUpdate] = []
+        evse_updates: list[EvseRealtimeUpdate] = []
         realtime_error_count = 0
         realtime_data_updated_at = datetime.now(timezone.utc)
 

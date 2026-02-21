@@ -35,17 +35,10 @@ from webapp.common.rest import BaseMethodView
 from webapp.dependencies import dependencies
 from webapp.models.evse import EvseStatus
 from webapp.public_api.base_blueprint import BaseBlueprint
-from webapp.shared.ocpi_schema import connector_component, evse_component, geo_location_component, image_component
+from webapp.shared.ocpi_schema import all_evse_components
 
 from .evse_handler import EvseHandler
 from .evse_search_queries import EvseSearchQuery
-
-all_evse_components = [
-    connector_component,
-    evse_component,
-    geo_location_component,
-    image_component,
-]
 
 
 class EvseBlueprint(BaseBlueprint):

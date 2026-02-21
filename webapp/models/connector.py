@@ -60,6 +60,17 @@ class ConnectorType(Enum):
     PANTOGRAPH_TOP_DOWN = 'PANTOGRAPH_TOP_DOWN'
     TESLA_R = 'TESLA_R'
     TESLA_S = 'TESLA_S'
+    MCS = 'MCS'
+    SAE_J3400 = 'SAE_J3400'
+    NEMA_5_20 = 'NEMA_5_20'
+    NEMA_6_30 = 'NEMA_6_30'
+    NEMA_6_50 = 'NEMA_6_50'
+    NEMA_10_30 = 'NEMA_10_30'
+    NEMA_10_50 = 'NEMA_10_50'
+    NEMA_14_30 = 'NEMA_14_30'
+    NEMA_14_50 = 'NEMA_14_50'
+    GBT_AC = 'GBT_AC'
+    GBT_DC = 'GBT_DC'
 
 
 ac_1_phase_connector_types = [
@@ -112,17 +123,15 @@ class Connector(BaseModel):
     evse: Mapped['Evse'] = relationship('Evse', back_populates='connectors')
     evse_id: Mapped[int] = mapped_column(BigInteger, ForeignKey('evse.id', use_alter=True), nullable=False, index=True)
 
-    uid: Mapped[str] = mapped_column(String(64), nullable=False, index=True)  # OCPI: id
+    uid: Mapped[str] = mapped_column(String(64), nullable=False, index=True)
     standard: Mapped[ConnectorType | None] = mapped_column(SqlalchemyEnum(ConnectorType), nullable=True)
     format: Mapped[ConnectorFormat | None] = mapped_column(SqlalchemyEnum(ConnectorFormat), nullable=True)
-    # OCHP: chargePointType, OCPI: power_type
     power_type: Mapped[PowerType | None] = mapped_column(SqlalchemyEnum(PowerType), nullable=True)
-    max_voltage: Mapped[int | None] = mapped_column(Integer, nullable=True)  # OCHP: nominalVoltage, OCPI: max_voltage
-    max_amperage: Mapped[int | None] = mapped_column(Integer, nullable=True)  # OCPI: max_amperage
-    # OCHP: maximumPower, OCPI: max_electric_power
+    max_voltage: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    max_amperage: Mapped[int | None] = mapped_column(Integer, nullable=True)
     max_electric_power: Mapped[int | None] = mapped_column(Integer, nullable=True)
-    last_updated: Mapped[datetime | None] = mapped_column(UtcDateTime(), nullable=True)
-    terms_and_conditions: Mapped[str | None] = mapped_column(String(255), nullable=True)  # OCPI: terms_and_conditions
+    last_updated: Mapped[datetime] = mapped_column(UtcDateTime(), nullable=False)
+    terms_and_conditions: Mapped[str | None] = mapped_column(String(255), nullable=True)
 
     # tariff_ids TODO
 

@@ -23,7 +23,6 @@ from typing import Any
 from zoneinfo import ZoneInfo
 
 from validataclass.dataclasses import Default, validataclass
-from validataclass.helpers import UnsetValue, UnsetValueType
 from validataclass.validators import (
     AnythingValidator,
     BooleanValidator,
@@ -42,10 +41,13 @@ from validataclass.validators import (
 from webapp.common.logging.models import LogMessageType
 from webapp.common.validation import RoundingIntegerValidator
 from webapp.common.validation.replacing_string_validator import ReplacingStringValidator
-from webapp.models.evse import Capability, EvseStatus
+from webapp.models.charging_station import Capability
+from webapp.models.evse import EvseStatus
 from webapp.services.import_services.models import (
     BusinessUpdate,
+    ChargingStationUpdate,
     ConnectorUpdate,
+    EvseRealtimeUpdate,
     EvseUpdate,
     LocationUpdate,
     RegularHoursUpdate,
@@ -89,11 +91,11 @@ class OpendataSwissRealtimeInput:
 
 @validataclass
 class Address:
-    Street: str = ReplacingStringValidator(mapping={'\u200b': ''})
+    Street: str = ReplacingStringValidator(mapping={'\u200b': '', '\t': ' '})
     HouseNum: str | None = StringValidator(), Default(None)
     Floor: str | None = Noneable(StringValidator()), Default(None)
-    PostalCode: str | None = ReplacingStringValidator(mapping={'\xa0': ''}), Default(None)
-    City: str = StringValidator()
+    PostalCode: str | None = ReplacingStringValidator(mapping={'\xa0': '', '\t': ' '}), Default(None)
+    City: str = ReplacingStringValidator(mapping={'\t': ' '})
     Country: str = StringValidator()
     TimeZone: str | None = Noneable(StringValidator()), Default(None)
 
@@ -131,6 +133,12 @@ class Period:
 class OpeningTime:
     on: Weekday = EnumValidator(Weekday)
     Period: list[Period] = ListValidator(DataclassValidator(Period))
+
+    @staticmethod
+    def __pre_validate__(input_data: Any, **kwargs) -> Any:
+        if isinstance(input_data['Period'], dict):
+            input_data['Period'] = [input_data['Period']]
+        return input_data
 
     def to_regular_hours(self) -> list[RegularHoursUpdate]:
         regular_hours: list[RegularHoursUpdate] = []
@@ -190,7 +198,7 @@ class EVSEDataRecord:
         return input_data
 
     def to_location_update(self, location_update: LocationUpdate | None, operator_name: str) -> LocationUpdate:
-        last_updated = self.lastUpdate or UnsetValue
+        last_updated = self.lastUpdate
         if location_update is None:
             if self.Address.HouseNum and self.Address.HouseNum != '0':
                 address = f'{self.Address.Street} {self.Address.HouseNum}'
@@ -204,10 +212,8 @@ class EVSEDataRecord:
                 name = next(iter(item.value for item in self.ChargingStationNames), None)
 
             # Opening Times
-            regular_hours: list[RegularHoursUpdate] | UnsetValueType
-            if self.OpeningTimes is None or self.OpeningTimes == []:
-                regular_hours = UnsetValue
-            else:
+            regular_hours: list[RegularHoursUpdate] | None = None
+            if self.OpeningTimes is not None:
                 regular_hours = []
                 for opening_time in self.OpeningTimes:
                     regular_hours += opening_time.to_regular_hours()
@@ -235,7 +241,14 @@ class EVSEDataRecord:
                 time_zone=self.Address.TimeZone or TIME_ZONE_MAPPING.get(self.Address.Country),
                 regular_hours=regular_hours,
                 last_updated=last_updated,
-                evses=[],
+                help_phone=self.HotlinePhoneNumber,
+                charging_pool=[
+                    ChargingStationUpdate(
+                        uid=self.ChargingStationId,
+                        last_updated=last_updated,
+                        evses=[],
+                    ),
+                ],
             )
 
         capabilities: list[Capability] = []
@@ -249,7 +262,6 @@ class EVSEDataRecord:
             uid=self.EvseID,
             evse_id=self.EvseID,
             floor_level=self.Address.Floor,
-            phone=self.HotlinePhoneNumber,
             capabilities=capabilities,
             last_updated=last_updated,
             connectors=[],
@@ -273,7 +285,7 @@ class EVSEDataRecord:
 
             evse_update.connectors.append(connector_update)
 
-        location_update.evses.append(evse_update)
+        location_update.charging_pool[0].evses.append(evse_update)
 
         return location_update
 
@@ -283,8 +295,8 @@ class EVSEStatusRecord:
     EvseID: str = StringValidator()
     EVSEStatus: SwissEvseStatus = EnumValidator(SwissEvseStatus)
 
-    def to_evse_update(self) -> EvseUpdate:
-        return EvseUpdate(
+    def to_evse_update(self) -> EvseRealtimeUpdate:
+        return EvseRealtimeUpdate(
             uid=self.EvseID,
             evse_id=self.EvseID,
             status=self.EVSEStatus.to_evse_status(),

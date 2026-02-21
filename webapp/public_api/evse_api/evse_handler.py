@@ -42,6 +42,18 @@ class EvseHandler(PublicApiBaseHandler):
     def _map_evse_to_ocpi(self, evse: Evse, strict: bool = False) -> dict:
         evse_dict = evse.to_dict(strict=strict)
 
+        if evse.charging_station:
+            evse_dict['capabilities'] = [c.value for c in evse.charging_station.capabilities]
+            if evse.charging_station.floor_level:
+                evse_dict['floor_level'] = evse.charging_station.floor_level
+            if evse.charging_station.lat is not None and evse.charging_station.lon is not None:
+                evse_dict['coordinates'] = {
+                    'latitude': evse.charging_station.lat,
+                    'longitude': evse.charging_station.lon,
+                }
+            if evse.charging_station.directions:
+                evse_dict['directions'] = evse.charging_station.directions
+
         evse_dict['connectors'] = []
         for connector in evse.connectors:
             evse_dict['connectors'].append(self.filter_none(connector.to_dict(strict=strict)))

@@ -80,6 +80,7 @@ def test_get_evse_strict(
         'uid': '1',
         'evse_id': 'EVSE-1',
         'status': 'AVAILABLE',
+        'presence': 'PRESENT',
         'last_updated': ANY,
         'connectors': [
             {

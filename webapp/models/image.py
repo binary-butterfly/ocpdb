@@ -28,10 +28,12 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy_utc import UtcDateTime
 
 from .base import BaseModel
+from .charging_station_image import ChargingStationImageAssociation
 from .evse_image import EvseImageAssociation
 from .location_image import LocationImageAssociation
 
 if TYPE_CHECKING:
+    from .charging_station import ChargingStation
     from .evse import Evse
     from .location import Location
 
@@ -49,6 +51,11 @@ class ImageCategory(Enum):
 class Image(BaseModel):
     __tablename__ = 'image'
 
+    charging_pool: Mapped[list['ChargingStation']] = relationship(
+        'ChargingStation',
+        secondary=ChargingStationImageAssociation.__table__,
+        back_populates='images',
+    )
     evses: Mapped[list['Evse']] = relationship(
         'Evse',
         secondary=EvseImageAssociation.__table__,
