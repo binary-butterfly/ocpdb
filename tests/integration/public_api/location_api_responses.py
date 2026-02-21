@@ -36,6 +36,7 @@ LOCATIONS_1_RESPONSE = {
             'uid': '1',
             'evse_id': 'EVSE-1',
             'status': 'AVAILABLE',
+            'presence': 'PRESENT',
             'last_updated': ANY,
             'connectors': [
                 {
@@ -54,6 +55,7 @@ LOCATIONS_1_RESPONSE = {
             'uid': '2',
             'evse_id': 'EVSE-1',
             'status': 'AVAILABLE',
+            'presence': 'PRESENT',
             'last_updated': ANY,
             'connectors': [
                 {
@@ -89,6 +91,7 @@ LOCATIONS_2_RESPONSE = {
             'uid': '3',
             'evse_id': 'EVSE-1',
             'status': 'AVAILABLE',
+            'presence': 'PRESENT',
             'last_updated': ANY,
             'connectors': [
                 {
@@ -107,6 +110,7 @@ LOCATIONS_2_RESPONSE = {
             'uid': '4',
             'evse_id': 'EVSE-1',
             'status': 'AVAILABLE',
+            'presence': 'PRESENT',
             'last_updated': ANY,
             'connectors': [
                 {
@@ -143,6 +147,7 @@ LOCATIONS_3_RESPONSE = {
             'uid': '5',
             'evse_id': 'EVSE-1',
             'status': 'AVAILABLE',
+            'presence': 'PRESENT',
             'last_updated': ANY,
             'connectors': [
                 {
@@ -161,6 +166,7 @@ LOCATIONS_3_RESPONSE = {
             'uid': '6',
             'evse_id': 'EVSE-1',
             'status': 'AVAILABLE',
+            'presence': 'PRESENT',
             'last_updated': ANY,
             'connectors': [
                 {

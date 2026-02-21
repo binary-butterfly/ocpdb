@@ -23,9 +23,10 @@ from butterfly_pubsub.giroe import ChargeConnectorStatus
 from pycountry import countries
 
 from webapp.common.config import ConfigHelper
+from webapp.models.charging_station import Capability
 from webapp.models.connector import PowerType
-from webapp.models.evse import Capability, EvseStatus
-from webapp.services.import_services.models import ConnectorUpdate, EvseUpdate, LocationUpdate
+from webapp.models.evse import EvseStatus
+from webapp.services.import_services.models import ChargingStationUpdate, ConnectorUpdate, EvseUpdate, LocationUpdate
 
 from .giroe_validator import ConnectorInput, LocationInput, StationInput
 
@@ -57,23 +58,23 @@ class GiroeMapper:
             lon=location_data.lon,
             last_updated=location_data.modified,
             time_zone='Europe/Berlin',
-            evses=[],
+            charging_pool=[
+                self.map_station_input_to_charging_station_update(station_input)
+                for station_input in location_data.stations
+            ],
         )
-        for station_input in location_data.stations:
-            for connector_input in station_input.connectors:
-                location_update.evses.append(
-                    self.map_station_connector_to_evse_connector(
-                        station_input=station_input,
-                        connector_input=connector_input,
-                    ),
-                )
         return location_update
 
-    def map_station_connector_to_evse_connector(self, station_input: StationInput, connector_input: ConnectorInput):
-        return EvseUpdate(
-            uid=connector_input.uid,
-            evse_id=connector_input.uid,
-            status=self.map_charge_connector_status_to_evse_status(connector_input.status),
+    def map_station_input_to_charging_station_update(self, station_input: StationInput) -> ChargingStationUpdate:
+        return ChargingStationUpdate(
+            uid=station_input.uid,
+            evses=[
+                self.map_station_connector_to_evse_connector(
+                    station_input=station_input,
+                    connector_input=connector_input,
+                )
+                for connector_input in station_input.connectors
+            ],
             capabilities=[
                 Capability.UNLOCK_CAPABLE,
                 Capability.RFID_READER,
@@ -81,6 +82,14 @@ class GiroeMapper:
                 Capability.DEBIT_CARD_PAYABLE,
                 Capability.REMOTE_START_STOP_CAPABLE,
             ],
+            last_updated=station_input.modified,
+        )
+
+    def map_station_connector_to_evse_connector(self, station_input: StationInput, connector_input: ConnectorInput):
+        return EvseUpdate(
+            uid=connector_input.uid,
+            evse_id=connector_input.uid,
+            status=self.map_charge_connector_status_to_evse_status(connector_input.status),
             last_updated=connector_input.modified,
             connectors=[
                 ConnectorUpdate(
@@ -88,7 +97,6 @@ class GiroeMapper:
                     standard=connector_input.standard,
                     format=connector_input.format,
                     power_type=connector_input.power_type,
-                    max_voltage=230 if connector_input.power_type == PowerType.AC_1_PHASE else 400,
                     max_electric_power=connector_input.power,
                     last_updated=connector_input.modified,
                 )

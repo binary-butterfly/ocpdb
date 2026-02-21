@@ -16,8 +16,9 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from validataclass.dataclasses import Default, DefaultUnset, validataclass
-from validataclass.helpers import OptionalUnset, UnsetValue
+from datetime import datetime
+
+from validataclass.dataclasses import Default, validataclass
 from validataclass.validators import (
     AllowEmptyString,
     DataclassValidator,
@@ -40,6 +41,7 @@ from webapp.services.import_services.ocpi.ocpi_validators import (
 class ChargecloudPublicConnectorInput(ConnectorInput):
     max_voltage: int = IntegerValidator(allow_strings=True)
     max_amperage: int = IntegerValidator(allow_strings=True)
+    last_updated: datetime | None = Default(None)
 
     @staticmethod
     def __pre_validate__(input_data: dict) -> dict:
@@ -63,12 +65,19 @@ class ChargecloudPublicEvseInput(EvseInput):
         ),
         Default([]),
     )
+    last_updated: datetime | None = Default(None)
 
     @staticmethod
     def __pre_validate__(input_data: dict) -> dict:
         # SW Stuttgart doesn't provide an 'evse_id' value, but the value of their 'id' field can be used instead
         if 'id' in input_data.keys() and 'evse_id' not in input_data.keys():
             input_data['evse_id'] = input_data['id']
+
+        # Chargecloud public often puts too many chars in a floor_level. Sometimes, one can split it up at space.
+        if 'floor_level' in input_data.keys() and isinstance(input_data['floor_level'], str):
+            if ' ' in input_data['floor_level']:
+                input_data['floor_level'] = input_data['floor_level'].split(' ')[-1]
+            input_data['floor_level'] = input_data['floor_level'][:4]
 
         return input_data
 
@@ -80,31 +89,26 @@ class ChargecloudPublicLocationInput(LocationInput):
         Default([]),
     )
 
-    directions: OptionalUnset[list[DisplayTextInput]] = (
+    directions: list[DisplayTextInput] | None = (
         AllowEmptyString(
             ListValidator(DataclassValidator(DisplayTextInput)),
-            default=UnsetValue,
+            default=None,
         ),
-        DefaultUnset,
+        Default(None),
     )
+    last_updated: datetime | None = Default(None)
 
-    owner: OptionalUnset[BusinessDetailsInput] = (
-        Noneable(
-            DataclassValidator(BusinessDetailsInput),
-            default=UnsetValue,
-        ),
-        DefaultUnset,
-    )
+    owner: BusinessDetailsInput | None = Noneable(DataclassValidator(BusinessDetailsInput)), Default(None)
 
     time_zone: str = StringValidator(max_length=255), Default('Europe/Berlin')
 
     @staticmethod
     def __pre_validate__(input_data: dict) -> dict:
-        # SW Stuttgart uses 2-character country codes where the OCPI spec expects length 3
+        # Chargecloud public uses 2-character country codes where the OCPI spec expects length 3
         if 'country' in input_data.keys() and input_data['country'] == 'DE':
             input_data['country'] = 'DEU'
 
-        # SW Stuttgart just uses a string for directions instead of wrapping it in a list of DisplayText objects
+        # Chargecloud public just uses a string for directions instead of wrapping it in a list of DisplayText objects
         if (
             'directions' in input_data.keys()
             and type(input_data['directions']) is str

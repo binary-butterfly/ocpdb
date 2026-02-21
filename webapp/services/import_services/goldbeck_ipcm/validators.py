@@ -35,7 +35,13 @@ from validataclass.validators import (
 
 from webapp.models.connector import ConnectorFormat, ConnectorType, PowerType
 from webapp.models.evse import EvseStatus
-from webapp.services.import_services.models import BusinessUpdate, ConnectorUpdate, EvseUpdate, LocationUpdate
+from webapp.services.import_services.models import (
+    BusinessUpdate,
+    ChargingStationUpdate,
+    ConnectorUpdate,
+    EvseUpdate,
+    LocationUpdate,
+)
 
 FORMAT_MAPPING: dict[str, ConnectorFormat] = {}
 
@@ -141,7 +147,9 @@ class GoldbeckIpcmChargePoint:
                 lat=self.position.latitude,
                 lon=self.position.longitude,
                 operator=BusinessUpdate(name=self.tenant.name),
-                evses=[],
+                charging_pool=[
+                    ChargingStationUpdate(uid=str(self.postalAddress.id), evses=[]),
+                ],
             )
 
         for outlet in self.outlets:
@@ -164,11 +172,7 @@ class GoldbeckIpcmChargePoint:
                 ],
             )
 
-            # Fix impossible amperage
-            if evse_update.connectors[0].max_electric_power == 11000 and evse_update.connectors[0].max_amperage == 32:
-                evse_update.connectors[0].max_amperage = 16
-
-            location_update.evses.append(evse_update)
+            location_update.charging_pool[0].evses.append(evse_update)
 
         return location_update
 

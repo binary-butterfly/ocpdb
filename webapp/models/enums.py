@@ -1,6 +1,6 @@
 """
 Open ChargePoint DataBase OCPDB
-Copyright (C) 2025 binary butterfly GmbH
+Copyright (C) 2026 binary butterfly GmbH
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published by
@@ -16,20 +16,10 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from webapp.services.import_services.models import BusinessUpdate, SourceInfo
-from webapp.services.import_services.ochp.base_ochp_service import BaseOchpImportService
+from enum import Enum
 
 
-class AlbwerkOchpImportService(BaseOchpImportService):
-    source_info = SourceInfo(
-        uid='ochp_albwerk',
-        name='Albwerk',
-        public_url='https://albwerk.de',
-        source_url='https://echs.e-clearing.net',
-        has_realtime_data=True,
-    )
-
-    def get_operator(self) -> BusinessUpdate | None:
-        return BusinessUpdate(
-            name='Albwerk',
-        )
+class ChargingRateUnit(Enum):
+    W = 'W'
+    KW = 'KW'
+    A = 'A'

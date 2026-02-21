@@ -45,11 +45,12 @@ from webapp.common.json import DefaultJSONEncoder
 from webapp.extensions import db
 
 from .base import BaseModel, Point
+from .enums import ChargingRateUnit
 from .location_image import LocationImageAssociation
 
 if TYPE_CHECKING:
     from .business import Business
-    from .evse import Evse
+    from .charging_station import ChargingStation
     from .image import Image
 
 
@@ -117,8 +118,8 @@ class Location(BaseModel):
         Index('geometry_index', 'geometry', postgresql_using='gist'),
     )
 
-    evses: Mapped[list['Evse']] = relationship(
-        'Evse',
+    charging_pool: Mapped[list['ChargingStation']] = relationship(
+        'ChargingStation',
         back_populates='location',
         cascade='all, delete, delete-orphan',
     )
@@ -151,38 +152,39 @@ class Location(BaseModel):
     suboperator: Mapped[Optional['Business']] = relationship('Business', foreign_keys=[suboperator_id])
     owner: Mapped[Optional['Business']] = relationship('Business', foreign_keys=[owner_id])
 
-    uid: Mapped[str] = mapped_column(String(255), index=True, nullable=False)  # OCHP: locationId   OCPI: id
+    uid: Mapped[str] = mapped_column(String(255), index=True, nullable=False)
     source: Mapped[str] = mapped_column(String(64), index=True, nullable=False)
 
     dynamic_location_id: Mapped[int | None] = mapped_column(BigInteger, nullable=True)
     dynamic_location_probability: Mapped[float | None] = mapped_column(Float, nullable=True)
 
-    name: Mapped[str | None] = mapped_column(String(255), nullable=True)  # OCHP: locationName, OCPI: name
-    # OCHP: chargePointAddress.address, OCPI: address
+    name: Mapped[str | None] = mapped_column(String(255), nullable=True)
     address: Mapped[str | None] = mapped_column(String(255), nullable=True)
-    # OCHP: chargePointAddress.zipCode, OCPI: postal_code
     postal_code: Mapped[str | None] = mapped_column(String(255), nullable=True)
-    city: Mapped[str | None] = mapped_column(String(255), nullable=True)  # OCHP: chargePointAddress.city, OCPI: city
-    state: Mapped[str | None] = mapped_column(String(255), nullable=True)  # OCPI: state
-    # OCHP: chargePointAddress.country, OCPI: country
+    city: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    state: Mapped[str | None] = mapped_column(String(255), nullable=True)
     country: Mapped[str | None] = mapped_column(String(3), nullable=True)
-    # OCHP: chargePointLocation.lat, OCPI: coordinates.latitude
     lat: Mapped[Decimal | None] = mapped_column(Numeric(9, 7), nullable=True)
-    # OCHP: chargePointLocation.lon, OCPI: coordinates.longitude
     lon: Mapped[Decimal | None] = mapped_column(Numeric(10, 7), nullable=True)
 
-    _directions: Mapped[str | None] = mapped_column('directions', Text, nullable=True)  # OCPI: directions
+    _directions: Mapped[str | None] = mapped_column('directions', Text, nullable=True)
     parking_type: Mapped[ParkingType | None] = mapped_column(SqlalchemyEnum(ParkingType), nullable=True)
-    time_zone: Mapped[str | None] = mapped_column(String(32), nullable=True)  # OCHP: timeZone, OCPI: time_zone
+    time_zone: Mapped[str | None] = mapped_column(String(32), nullable=True)
 
-    last_updated: Mapped[datetime | None] = mapped_column(UtcDateTime(), nullable=True, index=True)  # OCHP: timestamp
+    last_updated: Mapped[datetime] = mapped_column(UtcDateTime(), nullable=False, index=True)
 
-    terms_and_conditions: Mapped[str | None] = mapped_column(String(255), nullable=True)  # OCPI: terms_and_conditions
-    # OCHP: openingTimes.twentyfourseven    OCPI: opening_times.twentyfourseven
+    terms_and_conditions: Mapped[str | None] = mapped_column(String(255), nullable=True)
     twentyfourseven: Mapped[bool | None] = mapped_column(Boolean, nullable=True)
+    charging_when_closed: Mapped[bool | None] = mapped_column(Boolean, nullable=True)
+    help_phone: Mapped[str | None] = mapped_column(String(255), nullable=True)
+
+    max_power_unit: Mapped[ChargingRateUnit | None] = mapped_column(SqlalchemyEnum(ChargingRateUnit), nullable=True)
+    max_power_value: Mapped[float | None] = mapped_column(Float, nullable=True)
 
     geometry: Mapped[Point] = mapped_column(Point(), nullable=False)
 
+    _energy_mix: Mapped[str | None] = mapped_column('energy_mix', Text, nullable=True)
+    _related_locations: Mapped[str | None] = mapped_column('related_locations', Text, nullable=True)
     _regular_hours: Mapped[str | None] = mapped_column('regular_hours', Text, nullable=True)
     _exceptional_openings: Mapped[str | None] = mapped_column('exceptional_openings', Text, nullable=True)
     _exceptional_closings: Mapped[str | None] = mapped_column('exceptional_closings', Text, nullable=True)
@@ -200,6 +202,32 @@ class Location(BaseModel):
             self._directions = None
             return
         self._directions = json.dumps(directions, cls=DefaultJSONEncoder)
+
+    @hybrid_property
+    def related_locations(self) -> list[dict] | None:
+        if self._related_locations is None:
+            return None
+        return json.loads(self._related_locations)
+
+    @related_locations.setter
+    def related_locations(self, related_locations: list[dict] | None) -> None:
+        if related_locations is None:
+            self._related_locations = None
+            return
+        self._related_locations = json.dumps(related_locations, cls=DefaultJSONEncoder)
+
+    @hybrid_property
+    def energy_mix(self) -> dict | None:
+        if self._energy_mix is None:
+            return None
+        return json.loads(self._energy_mix)
+
+    @energy_mix.setter
+    def energy_mix(self, energy_mix: dict | None) -> None:
+        if energy_mix is None:
+            self._energy_mix = None
+            return
+        self._energy_mix = json.dumps(energy_mix, cls=DefaultJSONEncoder)
 
     @hybrid_property
     def regular_hours(self) -> list[dict] | None:
@@ -258,10 +286,14 @@ class Location(BaseModel):
             'lon',
             'twentyfourseven',
             'directions',
+            'related_locations',
+            'energy_mix',
             'created',
             'modified',
             'dynamic_location_id',
             'dynamic_location_probability',
+            'max_power_unit',
+            'max_power_value',
         ]
 
         result = super().to_dict(ignore=ignore, **kwargs)
@@ -278,6 +310,8 @@ class Location(BaseModel):
 
         # Additional fields which are not automatically in our result
         result['directions'] = self.directions
+        result['related_locations'] = self.related_locations
+        result['energy_mix'] = self.energy_mix
 
         if self.twentyfourseven is not None:
             result['opening_times'] = {'twentyfourseven': self.twentyfourseven}

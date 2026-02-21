@@ -18,7 +18,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from webapp.models.connector import ConnectorFormat, ConnectorType
 from webapp.models.evse import EvseStatus
-from webapp.services.import_services.models import BusinessUpdate, ConnectorUpdate, EvseUpdate, LocationUpdate
+from webapp.services.import_services.models import (
+    BusinessUpdate,
+    ChargingStationUpdate,
+    ConnectorUpdate,
+    EvseUpdate,
+    LocationUpdate,
+)
 
 from .bnetza_excel_validators import BnetzaConnectorType, BnetzaRowInput
 
@@ -40,7 +46,14 @@ class BnetzaExcelMapper:
             lon=row.lon,
             country='DEU',
             last_updated=row.launch_date,
-            evses=[],
+            time_zone='Europe/Berlin',
+            charging_pool=[
+                ChargingStationUpdate(
+                    uid=location_uid,
+                    evses=[],
+                    last_updated=row.launch_date,
+                ),
+            ],
         )
 
         if row.operator:

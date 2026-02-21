@@ -17,6 +17,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 from webapp.models import Connector, Evse, Location
+from webapp.models.charging_station import ChargingStation
 
 from .base_repository import BaseRepository
 
@@ -36,7 +37,8 @@ class ConnectorRepository(BaseRepository[Connector]):
             .query(Connector)
             .filter(Connector.uid == connector_uid)
             .join(Evse, Evse.id == Connector.evse_id)
-            .join(Location, Location.id == Evse.location_id)
+            .join(ChargingStation, ChargingStation.id == Evse.charging_station_id)
+            .join(Location, Location.id == ChargingStation.location_id)
             .filter(Location.source == source)
             .first()
         )

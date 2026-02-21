@@ -31,10 +31,10 @@ from validataclass.validators import (
     EnumValidator,
     IntegerValidator,
     ListValidator,
+    Noneable,
     StringValidator,
 )
 
-from webapp.common.validation import NoneableToUnsetValue
 from webapp.models.connector import ConnectorFormat, ConnectorType, PowerType
 from webapp.models.evse import EvseStatus
 
@@ -51,22 +51,22 @@ class ConnectorInput:
     power_type: PowerType = EnumValidator(PowerType)
     standard: ConnectorType = EnumValidator(ConnectorType)
     format: ConnectorFormat = EnumValidator(ConnectorFormat)
-    meter_public_key: OptionalUnset[str] = NoneableToUnsetValue(StringValidator(multiline=True)), DefaultUnset()
-    meter_serial_number: OptionalUnset[str] = NoneableToUnsetValue(StringValidator()), DefaultUnset()
+    meter_public_key: str | None = Noneable(StringValidator(multiline=True)), Default(None)
+    meter_serial_number: str | None = Noneable(StringValidator()), Default(None)
 
 
 @validataclass
-class ConnectorPatchInput:
-    modified: OptionalUnset[datetime] = DateTimeValidator(), DefaultUnset()
-    uid: OptionalUnset[str] = StringValidator(), DefaultUnset()
-    ocpp_connector_id: OptionalUnset[int] = IntegerValidator(), DefaultUnset()
-    status: OptionalUnset[EvseStatus] = EnumValidator(EvseStatus), DefaultUnset()
-    power: OptionalUnset[int] = IntegerValidator(), DefaultUnset()
-    power_type: OptionalUnset[PowerType] = EnumValidator(PowerType), DefaultUnset()
-    standard: OptionalUnset[ConnectorType] = EnumValidator(ConnectorType), DefaultUnset()
-    format: OptionalUnset[ConnectorFormat] = EnumValidator(ConnectorFormat), DefaultUnset()
-    meter_public_key: OptionalUnset[str] = StringValidator(multiline=True), DefaultUnset()
-    meter_serial_number: OptionalUnset[str] = StringValidator(), DefaultUnset()
+class ConnectorPatchInput(ConnectorInput):
+    modified: OptionalUnset[datetime] = DefaultUnset
+    uid: OptionalUnset[str] = DefaultUnset
+    ocpp_connector_id: OptionalUnset[int] = DefaultUnset
+    status: OptionalUnset[EvseStatus] = DefaultUnset
+    power: OptionalUnset[int] = DefaultUnset
+    power_type: OptionalUnset[PowerType] = DefaultUnset
+    standard: OptionalUnset[ConnectorType] = DefaultUnset
+    format: OptionalUnset[ConnectorFormat] = DefaultUnset
+    meter_public_key: OptionalUnset[str] = DefaultUnset
+    meter_serial_number: OptionalUnset[str] = DefaultUnset
 
 
 @validataclass
