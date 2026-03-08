@@ -1,5 +1,16 @@
 # Changelog
 
+## Version 2.7.0
+
+Released 2026-03-08
+
+Internal data model changes from OCPI 2.2 to OCPI 3.0. The API is not affected.
+
+### Features
+
+* [OCPI 3.0 Support](https://github.com/binary-butterfly/ocpdb/pull/184)
+
+
 ## Version 2.6.0
 
 Released 2026-02-02
