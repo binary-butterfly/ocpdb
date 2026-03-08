@@ -20,6 +20,7 @@ from pycountry import countries
 from validataclass.helpers import UnsetValue, UnsetValueType
 
 from webapp.models.connector import ConnectorFormat, ConnectorType, PowerType, ac_1_phase_connector_types
+from webapp.models.location import ChargingRateUnit
 from webapp.services.import_services.datex2.german_static.address_line_type_enum import AddressLineTypeEnum
 from webapp.services.import_services.datex2.german_static.connector_input import ConnectorInput as DatexConnectorInput
 from webapp.services.import_services.datex2.german_static.connector_type_enum import ConnectorTypeEnum
@@ -34,6 +35,7 @@ from webapp.services.import_services.datex2.german_static.energy_infrastructure_
     EnergyInfrastructureStationInput,
 )
 from webapp.services.import_services.datex2.german_static.multilingual_string_input import MultilingualStringInput
+from webapp.services.import_services.datex2.german_static.operating_hours_g_input import OperatingHoursGInput
 from webapp.services.import_services.datex2.german_static.organisation_g_input import OrganisationGInput
 from webapp.services.import_services.datex2.german_static.point_location_input import PointLocationInput
 from webapp.services.import_services.datex2.german_static.refill_point_g_input import RefillPointGInput
@@ -41,8 +43,10 @@ from webapp.services.import_services.models import (
     BusinessUpdate,
     ChargingStationUpdate,
     ConnectorUpdate,
+    EnergyMixUpdate,
     EvseUpdate,
     LocationUpdate,
+    MaxPowerUpdate,
 )
 
 
@@ -79,8 +83,16 @@ class GermanStaticDatexMapper:
             charging_pool=[],
         )
 
+        name = self.get_multilanguage_string(energy_infrastructure_site.name)
+        if name is not UnsetValue:
+            location.name = name
+        if energy_infrastructure_site.lastUpdated is not UnsetValue:
+            location.last_updated = energy_infrastructure_site.lastUpdated
+
         self._apply_point_location(energy_infrastructure_site.locationReference.locPointLocation, location)
         self._apply_operator(energy_infrastructure_site.operator, location)
+        self._apply_operating_hours(energy_infrastructure_site.operatingHours, location)
+        self._apply_helpdesk(energy_infrastructure_site.helpdesk, location)
         if energy_infrastructure_site.energyInfrastructureStation is not UnsetValue:
             for station in energy_infrastructure_site.energyInfrastructureStation:
                 self._apply_energy_infrastructure_stations(station, location)
@@ -99,8 +111,8 @@ class GermanStaticDatexMapper:
                 address_fragments.append(self.get_multilanguage_string(address_line.text))
         location.address = ' '.join(address_fragments)
 
-        point_location.postal_code = point_location.locLocationExtensionG.FacilityLocation.address.postcode
-        point_location.city = self.get_multilanguage_string(
+        location.postal_code = point_location.locLocationExtensionG.FacilityLocation.address.postcode
+        location.city = self.get_multilanguage_string(
             point_location.locLocationExtensionG.FacilityLocation.address.city,
         )
         if point_location.locLocationExtensionG.FacilityLocation.address.countryCode:
@@ -108,7 +120,7 @@ class GermanStaticDatexMapper:
                 alpha_2=point_location.locLocationExtensionG.FacilityLocation.address.countryCode,
             ).alpha_3
 
-        point_location.time_zone = point_location.locLocationExtensionG.FacilityLocation.timeZone or 'Europe/Berlin'
+        location.time_zone = point_location.locLocationExtensionG.FacilityLocation.timeZone or 'Europe/Berlin'
 
     def _apply_operator(self, organization: OrganisationGInput | UnsetValueType, location: LocationUpdate):
         if organization is UnsetValue:
@@ -118,6 +130,29 @@ class GermanStaticDatexMapper:
         location.operator = BusinessUpdate(
             name=self.get_multilanguage_string(organization.afacAnOrganisation.name),
         )
+
+    def _apply_operating_hours(self, operating_hours: OperatingHoursGInput | UnsetValueType, location: LocationUpdate):
+        if operating_hours is UnsetValue:
+            return
+        if operating_hours.afacOpenAllHours is not UnsetValue:
+            location.twentyfourseven = True
+
+    def _apply_helpdesk(self, helpdesk: OrganisationGInput | UnsetValueType, location: LocationUpdate):
+        if helpdesk is UnsetValue:
+            return
+        if helpdesk.afacReferenceableOrganisation is UnsetValue:
+            return
+        if helpdesk.afacReferenceableOrganisation.organisationUnit is UnsetValue:
+            return
+        for unit in helpdesk.afacReferenceableOrganisation.organisationUnit:
+            if unit.contactInformation is UnsetValue:
+                continue
+            for contact_info in unit.contactInformation:
+                if contact_info.afacContactInformation is UnsetValue:
+                    continue
+                if contact_info.afacContactInformation.telephoneNumber is not UnsetValue:
+                    location.help_phone = contact_info.afacContactInformation.telephoneNumber
+                    return
 
     def _apply_energy_infrastructure_stations(
         self,
@@ -129,26 +164,36 @@ class GermanStaticDatexMapper:
 
         charge_station = ChargingStationUpdate(
             uid=energy_infrastructure_station.idG,
-            last_updated=energy_infrastructure_station.lastUpdated or None,
+            last_updated=energy_infrastructure_station.lastUpdated or location.last_updated,
             evses=[],
+            max_power=MaxPowerUpdate(
+                unit=ChargingRateUnit.KW,
+                value=energy_infrastructure_station.totalMaximumPower,
+            ),
         )
+
+        charge_station.name = self.get_multilanguage_string(energy_infrastructure_station.name)
 
         location.charging_pool.append(charge_station)
 
         for refill_point in energy_infrastructure_station.refillPoint:
-            self._apply_refill_point(refill_point, charge_station)
+            self._apply_refill_point(refill_point, charge_station, location)
 
-    def _apply_refill_point(self, refill_point: RefillPointGInput, charge_station: ChargingStationUpdate):
+    def _apply_refill_point(
+        self, refill_point: RefillPointGInput, charge_station: ChargingStationUpdate, location: LocationUpdate
+    ):
         if refill_point.aegiElectricChargingPoint is UnsetValue:
             return
 
         evse = EvseUpdate(
             uid=refill_point.aegiElectricChargingPoint.idG,
             evse_id=refill_point.aegiElectricChargingPoint.idG,
-            last_updated=refill_point.aegiElectricChargingPoint.lastUpdated or None,
+            last_updated=refill_point.aegiElectricChargingPoint.lastUpdated or charge_station.last_updated,
             connectors=[],
         )
         charge_station.evses.append(evse)
+
+        self._apply_energy_mix(refill_point.aegiElectricChargingPoint, location)
 
         if refill_point.aegiElectricChargingPoint.connector is UnsetValue:
             return
@@ -169,9 +214,24 @@ class GermanStaticDatexMapper:
             format=ConnectorFormat.CABLE if power_type == PowerType.DC else ConnectorFormat.SOCKET,
             power_type=power_type,
             max_electric_power=int(connector_input.maxPowerAtSocket * 1000),
-            last_updated=charging_point.lastUpdated or None,
+            max_voltage=int(connector_input.voltage) if connector_input.voltage is not UnsetValue else None,
+            max_amperage=int(connector_input.maximumCurrent)
+            if connector_input.maximumCurrent is not UnsetValue
+            else None,
+            last_updated=charging_point.lastUpdated or evse.last_updated,
         )
         evse.connectors.append(connector)
+
+    def _apply_energy_mix(self, charging_point: ElectricChargingPointInput, location: LocationUpdate):
+        if charging_point.electricEnergy is UnsetValue:
+            return
+        for electric_energy in charging_point.electricEnergy:
+            if electric_energy.isGreenEnergy is not UnsetValue:
+                if location.energy_mix is None:
+                    location.energy_mix = EnergyMixUpdate(is_green_energy=electric_energy.isGreenEnergy)
+                else:
+                    location.energy_mix.is_green_energy = electric_energy.isGreenEnergy
+                return
 
     @staticmethod
     def _map_power_type(current_type: CurrentTypeEnum, standard: ConnectorType):
