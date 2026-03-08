@@ -134,6 +134,8 @@ def test_save_location_updates_sets_official_region_code(
             lat=Decimal('52.52'),
             lon=Decimal('13.405'),
             country='DEU',
+            time_zone='Europe/Berlin',
+            charging_pool=[],
         )
     ])
 
@@ -156,6 +158,8 @@ def test_save_location_updates_sets_official_region_code_for_multiple_locations(
             lat=Decimal('52.52'),
             lon=Decimal('13.405'),
             country='DEU',
+            time_zone='Europe/Berlin',
+            charging_pool=[],
         ),
         LocationUpdate(
             uid='munich_location',
@@ -163,6 +167,8 @@ def test_save_location_updates_sets_official_region_code_for_multiple_locations(
             lat=Decimal('48.137'),
             lon=Decimal('11.576'),
             country='DEU',
+            time_zone='Europe/Berlin',
+            charging_pool=[],
         ),
     ])
 
@@ -188,6 +194,8 @@ def test_save_location_updates_no_region_code_for_non_german_location(
             lat=Decimal('48.8566'),
             lon=Decimal('2.3522'),
             country='FRA',
+            time_zone='Europe/Berlin',
+            charging_pool=[],
         )
     ])
 
@@ -210,6 +218,8 @@ def test_save_location_updates_no_region_code_for_location_outside_polygons(
             lat=Decimal('50.0'),
             lon=Decimal('8.0'),
             country='DEU',
+            time_zone='Europe/Berlin',
+            charging_pool=[],
         )
     ])
 
@@ -232,6 +242,8 @@ def test_save_location_updates_preserves_existing_region_code(
             lat=Decimal('52.52'),
             lon=Decimal('13.405'),
             country='DEU',
+            time_zone='Europe/Berlin',
+            charging_pool=[],
         )
     ])
 
@@ -248,6 +260,8 @@ def test_save_location_updates_preserves_existing_region_code(
             lat=Decimal('52.52'),
             lon=Decimal('13.405'),
             country='DEU',
+            time_zone='Europe/Berlin',
+            charging_pool=[],
         )
     ])
 
