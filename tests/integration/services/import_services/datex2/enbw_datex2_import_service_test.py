@@ -23,7 +23,7 @@ from requests_mock import Mocker
 
 from webapp.common.sqlalchemy import SQLAlchemy
 from webapp.dependencies import dependencies
-from webapp.models import Business, Connector, Evse, Location
+from webapp.models import Business, ChargingStation, Connector, Evse, Location
 from webapp.services.import_services.datex2 import EnBWDatex2ImportService
 
 
@@ -50,6 +50,7 @@ def test_enbw_datex2_static_import(
     enbw_datex2_import_service.fetch_static_data()
 
     assert db.session.query(Location).count() == 10
-    assert db.session.query(Evse).count() == 22
-    assert db.session.query(Connector).count() == 22
+    assert db.session.query(ChargingStation).count() == 27
+    assert db.session.query(Evse).count() == 57
+    assert db.session.query(Connector).count() == 57
     assert db.session.query(Business).count() == 1

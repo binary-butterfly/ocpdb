@@ -39,6 +39,7 @@ from webapp.services.import_services.datex2.german_static.point_location_input i
 from webapp.services.import_services.datex2.german_static.refill_point_g_input import RefillPointGInput
 from webapp.services.import_services.models import (
     BusinessUpdate,
+    ChargingStationUpdate,
     ConnectorUpdate,
     EvseUpdate,
     LocationUpdate,
@@ -74,6 +75,8 @@ class GermanStaticDatexMapper:
             uid=energy_infrastructure_site.idG,
             lat=energy_infrastructure_site.locationReference.locAreaLocation.coordinatesForDisplay.latitude,
             lon=energy_infrastructure_site.locationReference.locAreaLocation.coordinatesForDisplay.longitude,
+            time_zone='Europe/Berlin',
+            charging_pool=[],
         )
 
         self._apply_point_location(energy_infrastructure_site.locationReference.locPointLocation, location)
@@ -117,26 +120,35 @@ class GermanStaticDatexMapper:
         )
 
     def _apply_energy_infrastructure_stations(
-        self, energy_infrastructure_station: EnergyInfrastructureStationInput, location: LocationUpdate
+        self,
+        energy_infrastructure_station: EnergyInfrastructureStationInput,
+        location: LocationUpdate,
     ):
-        # TODO: station model
         if energy_infrastructure_station.refillPoint is UnsetValue:
             return
 
-        location.evses = []
-        for refill_point in energy_infrastructure_station.refillPoint:
-            self._apply_refill_point(refill_point, location)
+        charge_station = ChargingStationUpdate(
+            uid=energy_infrastructure_station.idG,
+            last_updated=energy_infrastructure_station.lastUpdated or None,
+            evses=[],
+        )
 
-    def _apply_refill_point(self, refill_point: RefillPointGInput, location: LocationUpdate):
+        location.charging_pool.append(charge_station)
+
+        for refill_point in energy_infrastructure_station.refillPoint:
+            self._apply_refill_point(refill_point, charge_station)
+
+    def _apply_refill_point(self, refill_point: RefillPointGInput, charge_station: ChargingStationUpdate):
         if refill_point.aegiElectricChargingPoint is UnsetValue:
             return
 
         evse = EvseUpdate(
             uid=refill_point.aegiElectricChargingPoint.idG,
             evse_id=refill_point.aegiElectricChargingPoint.idG,
-            last_updated=refill_point.aegiElectricChargingPoint.lastUpdated,
+            last_updated=refill_point.aegiElectricChargingPoint.lastUpdated or None,
+            connectors=[],
         )
-        location.evses.append(evse)
+        charge_station.evses.append(evse)
 
         if refill_point.aegiElectricChargingPoint.connector is UnsetValue:
             return
@@ -157,7 +169,7 @@ class GermanStaticDatexMapper:
             format=ConnectorFormat.CABLE if power_type == PowerType.DC else ConnectorFormat.SOCKET,
             power_type=power_type,
             max_electric_power=int(connector_input.maxPowerAtSocket * 1000),
-            last_updated=charging_point.lastUpdated,
+            last_updated=charging_point.lastUpdated or None,
         )
         evse.connectors.append(connector)
 
