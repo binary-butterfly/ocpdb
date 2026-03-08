@@ -101,6 +101,31 @@ The script does not download or import the data again. If you want to update the
 to trigger the import again. You can use this mechanism for ansible automatization, too: if you drop the geopackage
 at `data/regionalschluessel/vg25.gpkg` via ansible, you won't need to download the file during runtime.
 
+You can run
+
+```bash
+flask location assign-regionalschluessel
+```
+
+to assign regional codes to all locations already in the database. You can limit it to specific
+locations by providing the source id:
+
+```bash
+flask location assign-regionalschluessel --source-id 1
+```
+
+
+#### Update Regionalschlüssel file
+
+In case of an Regionalschlüssel file update, make sure that the new geopackage has the same format as the old one.
+Afterwards, you can run
+
+```bash
+flask location assign-regionalschluessel --re-assign
+```
+
+to re-assign regional codes to all locations.
+
 
 ## System requirements & installatiion
 
