@@ -63,7 +63,7 @@ class EvseSearchQuery(SortingMixin, OffsetPaginationMixin, BaseSearchQuery):
         MultiSelectValidator(StringValidator(min_length=1)),
     )
 
-    location_id: int | None = SearchParamEquals(), IntegerValidator(allow_strings=True)
+    location_id: int | None = SearchParamCustom(), IntegerValidator(allow_strings=True)
 
     last_updated_since: datetime | None = (
         SearchParamGreaterThan('last_updated'),

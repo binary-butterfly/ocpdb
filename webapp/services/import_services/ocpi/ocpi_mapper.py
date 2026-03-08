@@ -18,7 +18,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from webapp.services.import_services.models import (
     BusinessUpdate,
+    ChargingStationUpdate,
     ConnectorUpdate,
+    EvseRealtimeUpdate,
     EvseUpdate,
     ExceptionalPeriodUpdate,
     ImageUpdate,
@@ -50,12 +52,19 @@ class OcpiMapper:
             parking_type=location_input.parking_type,
             time_zone=location_input.time_zone,
             directions=location_input.directions,
+            related_locations=location_input.related_locations,
             last_updated=location_input.last_updated,
-            evses=[],
+            charging_pool=[
+                ChargingStationUpdate(
+                    uid=location_input.id,
+                    last_updated=location_input.last_updated,
+                    evses=[],
+                ),
+            ],
         )
 
         for evse_input in location_input.evses:
-            location_update.evses.append(self.map_evse(evse_input))
+            location_update.charging_pool[0].evses.append(self.map_evse(evse_input))
 
         for business_type in ('operator', 'suboperator', 'owner'):
             if not getattr(location_input, business_type):
@@ -100,7 +109,7 @@ class OcpiMapper:
             last_updated=evse_input.last_updated,
             capabilities=evse_input.capabilities,
             parking_restrictions=evse_input.parking_restrictions,
-            # TODO: directions
+            directions=evse_input.directions,
             connectors=[],
         )
 
@@ -114,17 +123,18 @@ class OcpiMapper:
         return evse_update
 
     @staticmethod
-    def map_location_to_evse_updates(location_input: LocationInput) -> list[EvseUpdate]:
+    def map_location_to_evse_updates(location_input: LocationInput) -> list[EvseRealtimeUpdate]:
         """
         Special function to focus on EVSE status updates
         """
         evse_updates = []
         for evse_input in location_input.evses:
             evse_updates.append(
-                EvseUpdate(
+                EvseRealtimeUpdate(
                     uid=evse_input.evse_id,
                     evse_id=evse_input.evse_id,
                     status=evse_input.status,
+                    last_updated=evse_input.last_updated,
                 ),
             )
         return evse_updates

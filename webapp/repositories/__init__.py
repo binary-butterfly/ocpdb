@@ -17,6 +17,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 from .business_repository import BusinessRepository
+from .charging_station_repository import ChargingStationRepository
 from .connector_repository import ConnectorRepository
 from .evse_repository import EvseRepository
 from .exceptions import ObjectNotFoundException

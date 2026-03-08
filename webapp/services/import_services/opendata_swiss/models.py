@@ -18,8 +18,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from enum import Enum
 
+from webapp.models.charging_station import Capability
 from webapp.models.connector import ConnectorFormat, ConnectorType, PowerType
-from webapp.models.evse import Capability, EvseStatus
+from webapp.models.evse import EvseStatus
 from webapp.models.location import ParkingType
 
 TIME_ZONE_MAPPING: dict[str, str] = {

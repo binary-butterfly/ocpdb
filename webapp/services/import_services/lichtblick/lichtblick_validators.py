@@ -19,8 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from datetime import time
 from enum import Enum
 
-from validataclass.dataclasses import Default, DefaultUnset, validataclass
-from validataclass.helpers import OptionalUnsetNone
+from validataclass.dataclasses import Default, validataclass
 from validataclass.validators import (
     AnythingValidator,
     BooleanValidator,
@@ -34,8 +33,6 @@ from validataclass.validators import (
     TimeFormat,
     TimeValidator,
 )
-
-from webapp.common.validation import NoneableToUnsetValue
 
 
 class Plug(Enum):
@@ -128,10 +125,7 @@ class RegularHours:
 @validataclass
 class Hours:
     twentyfourseven: bool = BooleanValidator()
-    regular_hours: OptionalUnsetNone[list[RegularHours]] = (
-        NoneableToUnsetValue(ListValidator(DataclassValidator(RegularHours))),
-        DefaultUnset(),
-    )
+    regular_hours: list[RegularHours] | None = DataclassValidator(RegularHours), Default(None)
 
 
 @validataclass
@@ -146,7 +140,7 @@ class LocationInput:
     name: str = StringValidator()
     serviceTag: str = StringValidator()
     circuits: list[CircuitInput] = ListValidator(DataclassValidator(CircuitInput))
-    description: OptionalUnsetNone[str] = Noneable(StringValidator(multiline=True)), Default(None)
+    description: str | None = Noneable(StringValidator(multiline=True)), Default(None)
     address: AddressInput = DataclassValidator(AddressInput)
     shortcode: str = StringValidator()
     lat: float = FloatValidator(min_value=-90.0, max_value=90.0)

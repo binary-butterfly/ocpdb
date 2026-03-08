@@ -16,6 +16,7 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+import uuid
 from datetime import datetime, timezone
 from decimal import Decimal
 
@@ -29,7 +30,7 @@ from tests.integration.model_generators.evse import (
     get_full_evse_6,
 )
 from tests.integration.model_generators.source import SOURCE_UID_1, SOURCE_UID_2
-from webapp.models import Location
+from webapp.models import ChargingStation, Location
 
 LOCATION_UID_1 = 'LOCATION-1'
 LOCATION_UID_2 = 'LOCATION-2'
@@ -37,6 +38,20 @@ LOCATION_UID_3 = 'LOCATION-3'
 
 
 def get_location(**kwargs) -> Location:
+    # Auto-wrap evses in a ChargingStation for test convenience
+    evses = kwargs.pop('evses', None)
+    if evses is not None:
+        kwargs.setdefault(
+            'charging_pool',
+            [
+                ChargingStation(
+                    uid=str(uuid.uuid4()),
+                    last_updated=datetime.now(tz=timezone.utc),
+                    evses=evses,
+                ),
+            ],
+        )
+
     default_data = {
         'uid': LOCATION_UID_1,
         'source': SOURCE_UID_1,
@@ -70,9 +85,12 @@ def get_location_3(**kwargs) -> Location:
 
 def get_full_location_1(**kwargs) -> Location:
     return get_location_1(
-        evses=[
-            get_full_evse_1(),
-            get_full_evse_2(),
+        charging_pool=[
+            ChargingStation(
+                uid='CS-1',
+                last_updated=datetime.now(tz=timezone.utc),
+                evses=[get_full_evse_1(), get_full_evse_2()],
+            ),
         ],
         operator=get_business_1(),
         **kwargs,
@@ -81,9 +99,12 @@ def get_full_location_1(**kwargs) -> Location:
 
 def get_full_location_2(**kwargs) -> Location:
     return get_location_2(
-        evses=[
-            get_full_evse_3(),
-            get_full_evse_4(),
+        charging_pool=[
+            ChargingStation(
+                uid='CS-2',
+                last_updated=datetime.now(tz=timezone.utc),
+                evses=[get_full_evse_3(), get_full_evse_4()],
+            ),
         ],
         operator=get_business_1(),
         **kwargs,
@@ -92,9 +113,12 @@ def get_full_location_2(**kwargs) -> Location:
 
 def get_full_location_3(**kwargs) -> Location:
     return get_location_1(
-        evses=[
-            get_full_evse_5(),
-            get_full_evse_6(),
+        charging_pool=[
+            ChargingStation(
+                uid='CS-3',
+                last_updated=datetime.now(tz=timezone.utc),
+                evses=[get_full_evse_5(), get_full_evse_6()],
+            ),
         ],
         operator=get_business_2(),
         source=SOURCE_UID_2,

@@ -50,9 +50,11 @@ def flask_app() -> Generator[App, None, None]:
             connection.execute(flask_sqlalchemy.text('DROP TABLE IF EXISTS regular_hours CASCADE'))
             connection.execute(flask_sqlalchemy.text('DROP TABLE IF EXISTS exceptional_opening_period CASCADE'))
             connection.execute(flask_sqlalchemy.text('DROP TABLE IF EXISTS exceptional_closing_period CASCADE'))
+            # Drop all model tables with CASCADE to handle stale FK constraints from schema changes
+            for table in reversed(flask_sqlalchemy.metadata.sorted_tables):
+                connection.execute(flask_sqlalchemy.text(f'DROP TABLE IF EXISTS {table.name} CASCADE'))
             connection.commit()
 
-        flask_sqlalchemy.drop_all()
         flask_sqlalchemy.create_all()
 
         yield app  # type: ignore

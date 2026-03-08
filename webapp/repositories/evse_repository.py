@@ -24,6 +24,7 @@ from validataclass_search_queries.search_queries import BaseSearchQuery
 
 from webapp.common.sqlalchemy import Query
 from webapp.models import Evse, Location
+from webapp.models.charging_station import ChargingStation
 from webapp.models.evse import EvseStatus
 
 from .base_repository import BaseRepository
@@ -84,23 +85,47 @@ class EvseRepository(BaseRepository[Evse]):
                 'source_uids',
                 'exclude_source_uid',
                 'exclude_source_uids',
+                'location_id',
             ]:
                 continue
 
             query = self._apply_bound_search_filter(query, bound_filter)
 
         if source_uid := getattr(search_query, 'source_uid', None):
-            query = query.join(Location, Location.id == Evse.location_id).filter(Location.source == source_uid)
+            query = (
+                query
+                .join(ChargingStation, ChargingStation.id == Evse.charging_station_id)
+                .join(Location, Location.id == ChargingStation.location_id)
+                .filter(Location.source == source_uid)
+            )
 
         if source_uids := getattr(search_query, 'source_uids', None):
-            query = query.join(Location, Location.id == Evse.location_id).filter(Location.source.in_(source_uids))
+            query = (
+                query
+                .join(ChargingStation, ChargingStation.id == Evse.charging_station_id)
+                .join(Location, Location.id == ChargingStation.location_id)
+                .filter(Location.source.in_(source_uids))
+            )
 
         if exclude_source_uid := getattr(search_query, 'exclude_source_uid', None):
-            query = query.join(Location, Location.id == Evse.location_id).filter(Location.source != exclude_source_uid)
+            query = (
+                query
+                .join(ChargingStation, ChargingStation.id == Evse.charging_station_id)
+                .join(Location, Location.id == ChargingStation.location_id)
+                .filter(Location.source != exclude_source_uid)
+            )
 
         if exclude_source_uids := getattr(search_query, 'exclude_source_uids', None):
-            query = query.join(Location, Location.id == Evse.location_id).filter(
-                Location.source.notin_(exclude_source_uids)
+            query = (
+                query
+                .join(ChargingStation, ChargingStation.id == Evse.charging_station_id)
+                .join(Location, Location.id == ChargingStation.location_id)
+                .filter(Location.source.notin_(exclude_source_uids))
+            )
+
+        if location_id := getattr(search_query, 'location_id', None):
+            query = query.join(ChargingStation, ChargingStation.id == Evse.charging_station_id).filter(
+                ChargingStation.location_id == location_id
             )
 
         return query
@@ -110,7 +135,8 @@ class EvseRepository(BaseRepository[Evse]):
             self.session
             .query(Evse)
             .filter(Evse.uid == uid)
-            .join(Location, Location.id == Evse.location_id)
+            .join(ChargingStation, ChargingStation.id == Evse.charging_station_id)
+            .join(Location, Location.id == ChargingStation.location_id)
             .filter(Location.source == source)
             .all()
         )
@@ -128,14 +154,21 @@ class EvseRepository(BaseRepository[Evse]):
             self.session
             .query(Evse)
             .filter(Evse.uid.in_(uids))
-            .join(Evse.location)
+            .join(Evse.charging_station)
+            .join(ChargingStation.location)
             .filter(Location.source == source_uid)
         )
 
         return query.all()
 
     def fetch_evse_by_location_id(self, location_id: int) -> list[Evse]:
-        return self.session.query(Evse).filter(Evse.location_id == location_id).all()
+        return (
+            self.session
+            .query(Evse)
+            .join(ChargingStation, ChargingStation.id == Evse.charging_station_id)
+            .filter(ChargingStation.location_id == location_id)
+            .all()
+        )
 
     def fetch_evse_uids(self) -> list[str]:
         items = self.session.query(Evse.uid).all()
@@ -143,9 +176,14 @@ class EvseRepository(BaseRepository[Evse]):
         return [item.uid for item in items]
 
     def fetch_extended_evse_uids(self) -> list[tuple[str, int]]:
-        items = self.session.query(Evse.uid, Evse.location_id).all()
+        items = (
+            self.session
+            .query(Evse.uid, ChargingStation.location_id)
+            .join(ChargingStation, ChargingStation.id == Evse.charging_station_id)
+            .all()
+        )
 
-        return [(item.uid, item.location_id) for item in items]
+        return [(item[0], item[1]) for item in items]
 
     def save_evse(self, evse: Evse, *, commit: bool = True):
         self._save_resources(evse, commit=commit)
@@ -155,7 +193,8 @@ class EvseRepository(BaseRepository[Evse]):
             self.session
             .query(Evse.uid.label('evse'), Evse.status, Location.uid.label('location'), Location.source)
             .filter(Evse.status != EvseStatus.STATIC)
-            .join(Evse.location)
+            .join(Evse.charging_station)
+            .join(ChargingStation.location)
             .all()
         )
         result: list[EvseStatusSummary] = []

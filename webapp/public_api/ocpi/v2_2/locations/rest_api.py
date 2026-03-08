@@ -25,7 +25,7 @@ from webapp.dependencies import dependencies
 from webapp.public_api.location_api.location_handler import LocationHandler
 
 
-class OcpiBlueprint(BaseBlueprint):
+class OcpiLocationBlueprint(BaseBlueprint):
     documented = True
     location_handler: LocationHandler
 
@@ -34,7 +34,29 @@ class OcpiBlueprint(BaseBlueprint):
             **self.get_base_handler_dependencies(),
             location_repository=dependencies.get_location_repository(),
         )
-        super().__init__('ocpi', __name__, url_prefix='/api/ocpi/2.2/location')
+        super().__init__('ocpi_locations', __name__, url_prefix='/locations')
+
+        self.add_url_rule(
+            '/<int:location_id>',
+            view_func=LocationsMethodView.as_view(
+                'location',
+                **self.get_base_method_view_dependencies(),
+                location_handler=self.location_handler,
+            ),
+        )
+
+
+class OcpiLegacyLocationBlueprint(BaseBlueprint):
+    """Backward compatibility: /api/ocpi/2.2/location"""
+
+    location_handler: LocationHandler
+
+    def __init__(self):
+        self.location_handler = LocationHandler(
+            **self.get_base_handler_dependencies(),
+            location_repository=dependencies.get_location_repository(),
+        )
+        super().__init__('ocpi_legacy_locations', __name__, url_prefix='/location')
 
         self.add_url_rule(
             '/<int:location_id>',

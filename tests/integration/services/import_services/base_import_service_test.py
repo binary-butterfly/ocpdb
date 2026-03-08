@@ -63,6 +63,8 @@ def test_save_location_updates_simple(db, testing_import_service: BaseImportServ
             source='test',
             lat=Decimal('2.0'),
             lon=Decimal('2.0'),
+            time_zone='Europe/Berlin',
+            charging_pool=[],
         )
     ])
     assert db.session.query(Location).count() == 1

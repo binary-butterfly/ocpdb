@@ -84,6 +84,7 @@ def test_sw_stuttgart_import(db: SQLAlchemy, requests_mock: Mocker) -> None:
                 'genauere Infos finden Sie an der Beschilderung vor Ort.',
             },
         ],
+        'related_locations': None,
         'regular_hours': None,
         'exceptional_openings': None,
         'exceptional_closings': None,
@@ -93,8 +94,11 @@ def test_sw_stuttgart_import(db: SQLAlchemy, requests_mock: Mocker) -> None:
         'last_updated': ANY,
         'publish': True,
         'terms_and_conditions': None,
+        'charging_when_closed': None,
+        'energy_mix': None,
+        'help_phone': None,
     }
-    assert len(sample_location.evses) == 10
+    assert sum(len(cs.evses) for cs in sample_location.charging_pool) == 10
     assert sample_location.operator.to_dict() == {
         'name': 'Stadtwerke Stuttgart GmbH',
         'website': None,

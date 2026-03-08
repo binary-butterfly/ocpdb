@@ -26,6 +26,7 @@ from validataclass_search_queries.search_queries import BaseSearchQuery
 
 from webapp.common.sqlalchemy import Query
 from webapp.models import Business, Evse, Location
+from webapp.models.charging_station import ChargingStation
 
 from .base_repository import BaseRepository
 
@@ -38,7 +39,7 @@ class LocationRepository(BaseRepository[Location]):
 
         if include_children:
             query = query.options(
-                selectinload(Location.evses).selectinload(Evse.connectors),
+                selectinload(Location.charging_pool).selectinload(ChargingStation.evses).selectinload(Evse.connectors),
                 selectinload(Location.operator),
             )
 
@@ -54,7 +55,7 @@ class LocationRepository(BaseRepository[Location]):
         if include_children:
             load_options += [
                 joinedload(Location.operator),
-                selectinload(Location.evses).selectinload(Evse.connectors),
+                selectinload(Location.charging_pool).selectinload(ChargingStation.evses).selectinload(Evse.connectors),
             ]
 
         return self.fetch_resource_by_id(location_id, load_options=load_options)
@@ -63,13 +64,14 @@ class LocationRepository(BaseRepository[Location]):
         query = self.session.query(Location)
 
         if include_children:
+            cs_load = selectinload(Location.charging_pool)
             query = query.options(
-                selectinload(Location.evses).selectinload(Evse.connectors),
+                cs_load.selectinload(ChargingStation.evses).selectinload(Evse.connectors),
                 selectinload(Location.operator).selectinload(Business.logo),
                 selectinload(Location.suboperator).selectinload(Business.logo),
                 selectinload(Location.owner).selectinload(Business.logo),
                 selectinload(Location.images),
-                selectinload(Location.evses).selectinload(Evse.images),
+                cs_load.selectinload(ChargingStation.evses).selectinload(Evse.images),
             )
 
         location = query.filter(Location.uid == location_uid).first()
@@ -99,7 +101,8 @@ class LocationRepository(BaseRepository[Location]):
             "  SUM(CASE WHEN evse.status = 'STATIC' THEN 1 ELSE 0 END) as chargepoint_static_count, "
             '  SUM(CASE WHEN evse.parking_restrictions & 64 = 64 THEN 1 ELSE 0 END) as chargepoint_bike_count '
             'FROM location '
-            'LEFT JOIN evse ON evse.location_id = location.id '
+            'LEFT JOIN charging_station ON charging_station.location_id = location.id '
+            'LEFT JOIN evse ON evse.charging_station_id = charging_station.id '
         )
         if self.session.connection().dialect.name == 'postgresql':
             query += (
@@ -149,13 +152,14 @@ class LocationRepository(BaseRepository[Location]):
             self.session.commit()
 
     def fetch_locations(self, search_query: BaseSearchQuery | None = None) -> PaginatedResult[Location]:
+        cs_load = selectinload(Location.charging_pool)
         options = [
             joinedload(Location.operator).joinedload(Business.logo),
             joinedload(Location.suboperator).joinedload(Business.logo),
             joinedload(Location.owner).joinedload(Business.logo),
             selectinload(Location.images),
-            selectinload(Location.evses).selectinload(Evse.connectors),
-            selectinload(Location.evses).selectinload(Evse.images),
+            cs_load.selectinload(ChargingStation.evses).selectinload(Evse.connectors),
+            cs_load.selectinload(ChargingStation.evses).selectinload(Evse.images),
         ]
 
         query = self.session.query(Location).options(*options)
@@ -183,7 +187,8 @@ class LocationRepository(BaseRepository[Location]):
         if last_updated_since := getattr(search_query, 'last_updated_since', None):
             query = (
                 query
-                .join(Location.evses)
+                .join(Location.charging_pool)
+                .join(ChargingStation.evses)
                 .filter(or_(Location.last_updated >= last_updated_since, Evse.last_updated >= last_updated_since))
                 .distinct()
             )

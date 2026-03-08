@@ -110,9 +110,10 @@ class MatchingService(BaseService):
             )
 
         # evse count factor
+        static_evse_count = sum(len(cs.evses) for cs in static_location.charging_pool)
+        dynamic_evse_count = sum(len(cs.evses) for cs in dynamic_location.charging_pool)
         evse_count_factor = 1 - 0.4 * (
-            abs(len(static_location.evses) - len(dynamic_location.evses))
-            / (abs(len(static_location.evses) - len(dynamic_location.evses)) + 1)
+            abs(static_evse_count - dynamic_evse_count) / (abs(static_evse_count - dynamic_evse_count) + 1)
         )
 
         # weighting modifications

@@ -215,22 +215,6 @@ class ChargePointStatusInput:
     minor: OchpMinorStatus | None = OchpEnumValidator(OchpMinorStatus), Default(None)
     ttl: datetime | None = OchpDateTimeValidator(), Default(None)
 
-    def __post_init__(self):
-        if self.major == OchpMajorStatus.available and self.minor not in [
-            OchpMinorStatus.available,
-            OchpMinorStatus.reserved,
-        ]:
-            raise ValidationError(code='invalid_minor')
-        if self.major == OchpMajorStatus.available and self.minor in [
-            OchpMinorStatus.charging,
-            OchpMinorStatus.blocked,
-            OchpMinorStatus.reserved,
-            OchpMinorStatus.outoforder,
-        ]:
-            raise ValidationError(code='invalid_minor')
-        if self.major == OchpMajorStatus.unknown and self.minor is not None:
-            raise ValidationError(code='invalid_minor')
-
 
 @validataclass
 class GetChargePointListResultCodeInput:

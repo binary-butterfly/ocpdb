@@ -95,6 +95,7 @@ def test_ludwigsburg_fetch_static_data(db: SQLAlchemy, requests_mock: Mocker) ->
             'longitude': Decimal('9.18329'),
         },
         'directions': None,
+        'related_locations': None,
         'regular_hours': None,
         'exceptional_openings': None,
         'exceptional_closings': None,
@@ -104,8 +105,11 @@ def test_ludwigsburg_fetch_static_data(db: SQLAlchemy, requests_mock: Mocker) ->
         'last_updated': ANY,
         'publish': True,
         'terms_and_conditions': None,
+        'charging_when_closed': None,
+        'energy_mix': None,
+        'help_phone': None,
     }
-    assert len(sample_location.evses) == 2
+    assert sum(len(cs.evses) for cs in sample_location.charging_pool) == 2
     assert sample_location.operator.to_dict() == {
         'name': 'sw-ludwigsburg',
         'website': None,

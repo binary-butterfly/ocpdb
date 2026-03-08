@@ -21,7 +21,6 @@ from abc import ABC
 from datetime import datetime, timezone
 
 from validataclass.exceptions import ValidationError
-from validataclass.helpers import UnsetValue, UnsetValueType
 from validataclass.validators import DataclassValidator
 
 from webapp.common.contexts import TelemetryContext
@@ -173,9 +172,9 @@ class BaseOchpImportService(BaseImportService, ABC):
             extra={'attributes': {'type': LogMessageType.IMPORT_LOCATION}},
         )
 
-    def get_operator(self) -> BusinessUpdate | UnsetValueType:
+    def get_operator(self) -> BusinessUpdate | None:
         """
-        This method is for hardcoding an operator at a subclass. Per default, it's UnsetValue, as we get data from lot's
+        This method is for hardcoding an operator at a subclass. Per default, it's None, as we get data from lots
         of operators.
         """
-        return UnsetValue
+        return None

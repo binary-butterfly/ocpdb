@@ -17,6 +17,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 from .business import Business
+from .charging_station import ChargingStation
 from .connector import Connector
 from .evse import Evse
 from .image import Image

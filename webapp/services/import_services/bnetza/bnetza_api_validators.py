@@ -36,13 +36,17 @@ from validataclass.validators import (
 )
 
 from webapp.common.validation import EmptystringToNoneable, ParsedDateValidator, PrintableStringValidator
+from webapp.models.charging_station import Capability
 from webapp.models.connector import ConnectorFormat, ConnectorType, PowerType
-from webapp.models.evse import Capability, EvseStatus
+from webapp.models.enums import ChargingRateUnit
+from webapp.models.evse import EvseStatus
 from webapp.services.import_services.models import (
     BusinessUpdate,
+    ChargingStationUpdate,
     ConnectorUpdate,
     EvseUpdate,
     LocationUpdate,
+    MaxPowerUpdate,
     RegularHoursUpdate,
 )
 
@@ -58,6 +62,7 @@ class BnetzaConnectorType(Enum):
     IEC_60309_2_SINGLE_16_SOCKET = 'AC CEE 3-polig'
     IEC_60309_2_THREE_32_SOCKET = 'AC CEE 5-polig'
     WIRELESS = 'Kabellos/Induktiv'
+    MCS = 'DC Megawatt Charging System (MCS)'
 
     def to_connector_type(self) -> ConnectorType | None:
         return {
@@ -230,7 +235,6 @@ class BnetzaEvse:
         self,
         location_id: int,
         counter: int,
-        capabilities: list[Capability],
         status: EvseStatus,
     ) -> EvseUpdate | None:
         uid = f'BNETZA*{location_id}*{counter}'
@@ -241,7 +245,6 @@ class BnetzaEvse:
         evse_update = EvseUpdate(
             uid=uid,
             evse_id=evse_id,
-            capabilities=capabilities,
             status=status,
             connectors=[],
         )
@@ -318,6 +321,31 @@ class BnetzaChargingStation:
             capabilities += payment_system.to_capabilities()
         capabilities = list(set(capabilities))
 
+        evse_updates: list[EvseUpdate] = []
+        for i, evse in enumerate(self.evses):
+            evse_update = evse.to_evse_update(
+                location_id=self.id,
+                counter=i + 1,
+                status=self.status.operational.to_status(),
+            )
+
+            if evse_update is None:
+                continue
+
+            evse_updates.append(evse_update)
+
+        charging_station_update = ChargingStationUpdate(
+            uid=str(self.id),
+            evses=evse_updates,
+            capabilities=capabilities,
+            go_live_date=self.go_live_date,
+        )
+        if self.max_electric_power_station:
+            charging_station_update.max_power = MaxPowerUpdate(
+                unit=ChargingRateUnit.KW,
+                value=float(self.max_electric_power_station),
+            )
+
         location_update = LocationUpdate(
             uid=str(self.id),
             source='bnetza_api',
@@ -331,7 +359,8 @@ class BnetzaChargingStation:
             operator=BusinessUpdate(
                 name=self.operator.companyName,
             ),
-            evses=[],
+            charging_pool=[charging_station_update],
+            time_zone='Europe/Berlin',
         )
 
         if self.opening_hours_specification == OpeningHoursSpecification.TWENTY_FOUR_SEVEN:
@@ -349,18 +378,5 @@ class BnetzaChargingStation:
                         period_end=opening_day.open_to.hour * 60 + opening_day.open_to.minute,
                     ),
                 )
-
-        for i, evse in enumerate(self.evses):
-            evse_update = evse.to_evse_update(
-                location_id=self.id,
-                counter=i + 1,
-                capabilities=capabilities,
-                status=self.status.operational.to_status(),
-            )
-
-            if evse_update is None:
-                continue
-
-            location_update.evses.append(evse_update)
 
         return location_update
