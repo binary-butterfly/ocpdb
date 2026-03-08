@@ -111,6 +111,11 @@ flask-shell: config
 migrate: config
 	$(FLASK_RUN) flask db upgrade
 
+# Re-assign official region codes (Regionalschlüssel) to all locations
+.PHONY: reassign-regionalschluessel
+reassign-regionalschluessel: config
+	$(FLASK_RUN) flask location assign-regionalschluessel --re-assign
+
 
 # Cleanup
 # -------

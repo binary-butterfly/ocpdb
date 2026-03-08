@@ -79,6 +79,7 @@ services:
       - ./scripts:/scripts
       - ./data/regionalschluessel:/data
     environment:
+      - VG22_GEOPACKAGE_URL=${VG22_GEOPACKAGE_URL:-https://mobidata-bw.de/daten/ipl/verwaltungsgrenzen/DE_VG25.gpkg}
       - POSTGRES_HOST=postgre
       - POSTGRES_USER=ocpdb
       - POSTGRES_PASSWORD=development
@@ -107,32 +108,6 @@ services:
       interval: 1s
       timeout: 1s
       retries: 20
-
-
-  mocked-ochp:
-    <<: *mocked-service-defaults
-    volumes:
-      - ./dev/test_services/mocked_ochp:/app
-
-  mocked-chargeit:
-    <<: *mocked-service-defaults
-    volumes:
-      - ./dev/test_services/mocked_chargeit:/app
-
-  mocked-stadtnavi:
-    <<: *mocked-service-defaults
-    volumes:
-      - ./dev/test_services/mocked_stadtnavi:/app
-
-  mocked-sw-stuttgart:
-    <<: *mocked-service-defaults
-    volumes:
-      - ./dev/test_services/mocked_sw_stuttgart:/app
-
-  mocked-giroe:
-    <<: *mocked-service-defaults
-    volumes:
-      - ./dev/test_services/mocked_giroe:/app
 
 volumes:
   postgres:

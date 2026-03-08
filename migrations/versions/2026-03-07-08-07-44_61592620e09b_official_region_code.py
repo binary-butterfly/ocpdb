@@ -1,8 +1,8 @@
 """official_region_code
 
 Revision ID: 61592620e09b
-Revises: b2c3d4e5f6a7
-Create Date: 2026-02-01 08:07:44.582677
+Revises: b6cdfc8c5c34
+Create Date: 2026-03-07 08:07:44.582677
 
 """
 
@@ -11,7 +11,7 @@ from alembic import op
 
 # revision identifiers, used by Alembic.
 revision = '61592620e09b'
-down_revision = 'b2c3d4e5f6a7'
+down_revision = 'b6cdfc8c5c34'
 branch_labels = None
 depends_on = None
 

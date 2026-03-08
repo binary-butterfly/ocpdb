@@ -39,6 +39,7 @@ from webapp.repositories import (
 )
 from webapp.services.import_services import ImageImportService, ImportServices
 from webapp.services.import_services.generic_import_runner import GenericImportRunner
+from webapp.services.location_service import LocationService
 from webapp.services.matching_service import MatchingService
 
 if TYPE_CHECKING:
@@ -197,6 +198,14 @@ class Dependencies:
         return MatchingService(
             **self.get_base_service_dependencies(),
             location_repository=self.get_location_repository(),
+        )
+
+    @cache_dependency
+    def get_location_service(self) -> LocationService:
+        return LocationService(
+            **self.get_base_service_dependencies(),
+            location_repository=self.get_location_repository(),
+            official_region_code_repository=self.get_official_region_code_repository(),
         )
 
     @cache_dependency
