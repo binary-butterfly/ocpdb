@@ -96,7 +96,7 @@ assigning official regional codes to locations, licenced as
 [Creative Commons Namensnennung 4.0 International](https://creativecommons.org/licenses/by/4.0/). We download the data
 using wget, transform the data using ogr2ogr and store it our Postgis database.
 
-The script does not download or import the data again. If you want to update the data, you can delete
+The script does not download or import the data again, as it that a new version of the data gets a new URL. If you want to update the data, you can delete
 `data/regionalschluessel/vg25.gpkg` in order to trigger the download again, and `data/regionalschluessel/.vg25-imported`
 to trigger the import again. You can use this mechanism for ansible automatization, too: if you drop the geopackage
 at `data/regionalschluessel/vg25.gpkg` via ansible, you won't need to download the file during runtime.
