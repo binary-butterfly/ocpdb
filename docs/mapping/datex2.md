@@ -12,10 +12,10 @@ an `aegiEnergyInfrastructureTablePublication` with a hierarchical structure:
 
 ## Global / Static Values
 
-| Field             | Mapping          | Comment                          |
-|-------------------|------------------|----------------------------------|
-| location.country  | DEU              | Data source is Germany-only      |
-| location.time_zone | Europe/Berlin   | Default, can be overridden by station-level `timeZone` |
+| Field              | Mapping       | Comment                                                |
+|--------------------|---------------|--------------------------------------------------------|
+| location.country   | DEU           | Data source is Germany-only                            |
+| location.time_zone | Europe/Berlin | Default, can be overridden by station-level `timeZone` |
 
 
 # energyInfrastructureSite
@@ -88,19 +88,19 @@ for address details.
 
 Only `street` and `houseNumber` are used for the mapping.
 
-| Key               | Usage                  |
-|-------------------|------------------------|
-| street            | Part of address        |
-| houseNumber       | Part of address        |
-| apartment         | Not mapped             |
-| building          | Not mapped             |
-| poBox             | Not mapped             |
-| unit              | Not mapped             |
-| region            | Not mapped             |
-| town              | Not mapped             |
-| districtTerritory | Not mapped            |
-| floor             | Not mapped             |
-| generalTextLine   | Not mapped             |
+| Key               | Usage           |
+|-------------------|-----------------|
+| street            | Part of address |
+| houseNumber       | Part of address |
+| apartment         | Not mapped      |
+| building          | Not mapped      |
+| poBox             | Not mapped      |
+| unit              | Not mapped      |
+| region            | Not mapped      |
+| town              | Not mapped      |
+| districtTerritory | Not mapped      |
+| floor             | Not mapped      |
+| generalTextLine   | Not mapped      |
 
 
 ## OperatingHoursG
@@ -118,10 +118,10 @@ Only `street` and `houseNumber` are used for the mapping.
 
 `OrganisationG` is used for `operator`, `owner`, and `helpdesk`.
 
-| Field                                 | Type                                      | Cardinality | Mapping       | Comment                           |
-|---------------------------------------|-------------------------------------------|-------------|---------------|-----------------------------------|
-| afacAnOrganisation.name               | [MultilingualString](#MultilingualString) | ? | operator.name | Only used for the `operator` role |
-| afacAnOrganisation.externalIdentifier | [ExternalIdentifier](#ExternalIdentifier) | * |               | Not mapped                        |
+| Field                                 | Type                                      | Cardinality | Mapping                | Comment                                                 |
+|---------------------------------------|-------------------------------------------|-------------|------------------------|---------------------------------------------------------|
+| afacAnOrganisation.name               | [MultilingualString](#MultilingualString) | ?           | operator.name          | Only used for the `operator` role                       |
+| afacAnOrganisation.externalIdentifier | [ExternalIdentifier](#ExternalIdentifier) | *           | operator.emobility_uid | `operatorId` extracted via `extendedValueG`, see below  |
 
 ### Helpdesk Organisation
 
@@ -134,50 +134,51 @@ When used as `helpdesk`, the telephone number is extracted:
 
 ## ExternalIdentifier
 
-| Field             | Type   | Cardinality | Mapping | Comment                                          |
-|-------------------|--------|-------------|---------|--------------------------------------------------|
-| identifier        | string | 1           |         | Not mapped                                       |
-| typeOfIdentifier  | enum   | 1           |         | e.g. `operatorId`, `operatorIdBNetzA`            |
+| Field                           | Type   | Cardinality | Mapping                | Comment                                                                          |
+|---------------------------------|--------|-------------|------------------------|----------------------------------------------------------------------------------|
+| identifier                      | string | 1           | operator.emobility_uid | Only when `typeOfIdentifier.extendedValueG` is `operatorId` and used as operator |
+| typeOfIdentifier.value          | enum   | 1           |                        | Always `extendedG`                                                               |
+| typeOfIdentifier.extendedValueG | enum   | ?           |                        | e.g. `operatorId`, `operatorIdBNetzA`                                            |
 
 
 # energyInfrastructureStation
 
 An `energyInfrastructureStation` maps to a `ChargingStation`. Multiple stations can exist per site.
 
-| Field                                  | Type                                                                        | Cardinality | Mapping                        | Comment                                                 |
-|----------------------------------------|-----------------------------------------------------------------------------|-------------|--------------------------------|---------------------------------------------------------|
-| idG                                    | string                                                                      | 1           | charging_station.uid           |                                                         |
-| versionG                               | string (datetime)                                                           | 1           |                                |                                                         |
-| name                                   | [MultilingualString](#MultilingualString)                                   | ?           | charging_station.name          |                                                         |
-| alias                                  | [MultilingualString](#MultilingualString)                                   | *           |                                | Not mapped                                              |
-| lastUpdated                            | string (datetime)                                                           | ?           | charging_station.last_updated  | Falls back to location.last_updated                     |
-| description                            | [MultilingualString](#MultilingualString)                                   | ?           |                                | Not mapped                                              |
-| additionalInformation                  | [MultilingualString](#MultilingualString)                                   | *           |                                | Not mapped                                              |
-| accessibility                          | [AccessibilityEnum](#AccessibilityEnum)                                     | *           |                                | Not mapped                                              |
-| totalMaximumPower                      | float                                                                       | 1           | charge_station.max_power.value |                                                         |
-| authenticationAndIdentificationMethods | [AuthenticationAndIdentificationEnum](#AuthenticationAndIdentificationEnum) | *           |                                | Not mapped                                              |
-| numberOfRefillPoints                   | integer                                                                     | 1           |                                | Not mapped                                              |
-| userInterfaceLanguage                  | string (2)                                                                  | *           |                                | Not mapped                                              |
-| externalIdentifier                     | [ExternalIdentifier](#ExternalIdentifier)                                   | *           |                                | Not mapped, contains BNetzA identifiers                 |
-| informationWebsite                     | UrlLink                                                                     | *           |                                | Not mapped                                              |
-| photoUrl                               | UrlLink                                                                     | *           |                                | Not mapped                                              |
-| photo                                  | Image                                                                       | *           |                                | Not mapped                                              |
-| operatingHours                         | [OperatingHoursG](#OperatingHoursG)                                         | ?           |                                | Not mapped at station level                             |
-| locationReference                      | [LocationReferenceG](#LocationReferenceG)                                   | ?           |                                | Not mapped at station level (taken from site)           |
-| owner                                  | [OrganisationG](#OrganisationG)                                             | ?           |                                | Not mapped                                              |
-| operator                               | [OrganisationG](#OrganisationG)                                             | ?           |                                | Not mapped at station level (taken from site)           |
-| helpdesk                               | [OrganisationG](#OrganisationG)                                             | ?           |                                | Not mapped at station level                             |
-| applicableForVehicles                  | VehicleCharacteristics                                                      | *           |                                | Not mapped                                              |
-| dimension                              | Dimension                                                                   | ?           |                                | Not mapped                                              |
-| amenities                              | Amenities                                                                   | ?           |                                | Not mapped                                              |
-| supplementalFacility                   | SupplementalFacilityG                                                       | *           |                                | Not mapped                                              |
-| dedicatedParkingSpaces                 | DedicatedParkingSpaces                                                      | *           |                                | Not mapped                                              |
-| serviceType                            | ServiceType                                                                 | *           |                                | Not mapped                                              |
-| energyDistributor                      | OrganisationG                                                               | ?           |                                | Not mapped                                              |
-| mobilityServiceProvider                | OrganisationG                                                               | *           |                                | Not mapped                                              |
-| roamingPlatform                        | OrganisationG                                                               | *           |                                | Not mapped                                              |
-| electricEnergy                         | [ElectricEnergy](#ElectricEnergy)                                           | *           |                                | Not mapped at station level (taken from charging point) |
-| refillPoint                            | [RefillPointG](#refillPoint--aegiElectricChargingPoint)                     | *           | charge_station.evses           | Contains the charging points, see below                 |
+| Field                                  | Type                                                                        | Cardinality | Mapping                        | Comment                                                                                       |
+|----------------------------------------|-----------------------------------------------------------------------------|-------------|--------------------------------|-----------------------------------------------------------------------------------------------|
+| idG                                    | string                                                                      | 1           | charging_station.uid           |                                                                                               |
+| versionG                               | string (datetime)                                                           | 1           |                                |                                                                                               |
+| name                                   | [MultilingualString](#MultilingualString)                                   | ?           | charging_station.name          |                                                                                               |
+| alias                                  | [MultilingualString](#MultilingualString)                                   | *           |                                | Not mapped                                                                                    |
+| lastUpdated                            | string (datetime)                                                           | ?           | charging_station.last_updated  | Falls back to location.last_updated                                                           |
+| description                            | [MultilingualString](#MultilingualString)                                   | ?           |                                | Not mapped                                                                                    |
+| additionalInformation                  | [MultilingualString](#MultilingualString)                                   | *           |                                | Not mapped                                                                                    |
+| accessibility                          | [AccessibilityEnum](#AccessibilityEnum)                                     | *           |                                | Not mapped                                                                                    |
+| totalMaximumPower                      | float                                                                       | 1           | charge_station.max_power.value |                                                                                               |
+| authenticationAndIdentificationMethods | [AuthenticationAndIdentificationEnum](#AuthenticationAndIdentificationEnum) | *           | charging_station.capabilities  | See [AuthenticationAndIdentificationEnum](#AuthenticationAndIdentificationEnum) mapping table |
+| numberOfRefillPoints                   | integer                                                                     | 1           |                                | Not mapped                                                                                    |
+| userInterfaceLanguage                  | string (2)                                                                  | *           | charging_station.user_interface_languages | Stored as pipe-separated string (e.g. `de\|en`)                                      |
+| externalIdentifier                     | [ExternalIdentifier](#ExternalIdentifier)                                   | *           |                                | Not mapped, contains BNetzA identifiers                                                       |
+| informationWebsite                     | UrlLink                                                                     | *           |                                | Not mapped                                                                                    |
+| photoUrl                               | UrlLink                                                                     | *           |                                | Not mapped                                                                                    |
+| photo                                  | Image                                                                       | *           |                                | Not mapped                                                                                    |
+| operatingHours                         | [OperatingHoursG](#OperatingHoursG)                                         | ?           |                                | Not mapped at station level                                                                   |
+| locationReference                      | [LocationReferenceG](#LocationReferenceG)                                   | ?           |                                | Not mapped at station level (taken from site)                                                 |
+| owner                                  | [OrganisationG](#OrganisationG)                                             | ?           |                                | Not mapped                                                                                    |
+| operator                               | [OrganisationG](#OrganisationG)                                             | ?           |                                | Not mapped at station level (taken from site)                                                 |
+| helpdesk                               | [OrganisationG](#OrganisationG)                                             | ?           |                                | Not mapped at station level                                                                   |
+| applicableForVehicles                  | VehicleCharacteristics                                                      | *           |                                | Not mapped                                                                                    |
+| dimension                              | Dimension                                                                   | ?           |                                | Not mapped                                                                                    |
+| amenities                              | Amenities                                                                   | ?           |                                | Not mapped                                                                                    |
+| supplementalFacility                   | SupplementalFacilityG                                                       | *           |                                | Not mapped                                                                                    |
+| dedicatedParkingSpaces                 | DedicatedParkingSpaces                                                      | *           |                                | Not mapped                                                                                    |
+| serviceType                            | [ServiceType](#ServiceTypeEnum)                                             | *           | charging_station.service_type  | See [ServiceTypeEnum](#ServiceTypeEnum) mapping table, first match used                       |
+| energyDistributor                      | OrganisationG                                                               | ?           |                                | Not mapped                                                                                    |
+| mobilityServiceProvider                | OrganisationG                                                               | *           |                                | Not mapped                                                                                    |
+| roamingPlatform                        | OrganisationG                                                               | *           |                                | Not mapped                                                                                    |
+| electricEnergy                         | [ElectricEnergy](#ElectricEnergy)                                           | *           |                                | Not mapped at station level (taken from charging point)                                       |
+| refillPoint                            | [RefillPointG](#refillPoint--aegiElectricChargingPoint)                     | *           | charge_station.evses           | Contains the charging points, see below                                                       |
 
 
 # refillPoint / aegiElectricChargingPoint
@@ -185,43 +186,43 @@ An `energyInfrastructureStation` maps to a `ChargingStation`. Multiple stations 
 A `refillPoint` wraps an `aegiElectricChargingPoint`, which maps to an `EVSE`. Each charging point represents one
 physical charging outlet that can serve one vehicle at a time.
 
-| Field                          | Type                                      | Cardinality | Mapping           | Comment                                                                 |
-|--------------------------------|-------------------------------------------|-------------|-------------------|-------------------------------------------------------------------------|
-| idG                            | string                                    | 1           | evse.uid          | Also mapped to evse.evse_id                                             |
-| versionG                       | string (datetime)                         | 1           |                   |                                                                         |
-| name                           | [MultilingualString](#MultilingualString) | ?           |                   | Not mapped                                                              |
-| alias                          | [MultilingualString](#MultilingualString) | *           |                   | Not mapped                                                              |
-| lastUpdated                    | string (datetime)                         | ?           | evse.last_updated | Falls back to charging_station.last_updated                             |
-| description                    | [MultilingualString](#MultilingualString) | ?           |                   | Not mapped                                                              |
-| additionalInformation          | [MultilingualString](#MultilingualString) | *           |                   | Not mapped                                                              |
-| accessibility                  | [AccessibilityEnum](#AccessibilityEnum)   | *           |                   | Not mapped                                                              |
-| deliveryUnit                   | DeliveryUnitEnum                          | 1           |                   | Not mapped, typically `kWh`                                             |
-| modelType                      | [MultilingualString](#MultilingualString) | ?           |                   | Not mapped                                                              |
-| reservation                    | ReservationTypeEnum                       | ?           |                   | Not mapped                                                              |
-| currentType                    | [CurrentTypeEnum](#CurrentTypeEnum)       | 1           |                   | Used for power type derivation, see [CurrentTypeEnum](#CurrentTypeEnum) |
-| usageType                      | ChargingPointUsageTypeEnum                | *           |                   | Not mapped                                                              |
-| vehicleToGridCommunicationType | VehicleToGridCommunicationTypeEnum        | *           |                   | Not mapped                                                              |
-| numberOfConnectors             | integer                                   | ?           |                   | Not mapped                                                              |
-| availableVoltage               | float                                     | *           |                   | Not mapped                                                              |
-| availableChargingPower         | float                                     | *           |                   | Not mapped                                                              |
-| chargingMode                   | ChargingModeEnum                          | ?           |                   | Not mapped                                                              |
-| smartRechargingServices        | SmartRechargingServicesEnum               | *           |                   | Not mapped                                                              |
-| externalIdentifier             | [ExternalIdentifier](#ExternalIdentifier) | *           |                   | Not mapped                                                              |
-| informationWebsite             | UrlLink                                   | *           |                   | Not mapped                                                              |
-| photoUrl                       | UrlLink                                   | *           |                   | Not mapped                                                              |
-| photo                          | Image                                     | *           |                   | Not mapped                                                              |
-| operatingHours                 | [OperatingHoursG](#OperatingHoursG)       | ?           |                   | Not mapped at charging point level                                      |
-| locationReference              | [LocationReferenceG](#LocationReferenceG) | ?           |                   | Not mapped at charging point level                                      |
-| owner                          | [OrganisationG](#OrganisationG)           | ?           |                   | Not mapped                                                              |
-| operator                       | [OrganisationG](#OrganisationG)           | ?           |                   | Not mapped                                                              |
-| helpdesk                       | [OrganisationG](#OrganisationG)           | ?           |                   | Not mapped                                                              |
-| applicableForVehicles          | VehicleCharacteristics                    | *           |                   | Not mapped                                                              |
-| dimension                      | Dimension                                 | ?           |                   | Not mapped                                                              |
-| amenities                      | Amenities                                 | ?           |                   | Not mapped                                                              |
-| supplementalFacility           | SupplementalFacilityG                     | *           |                   | Not mapped                                                              |
-| dedicatedParkingSpaces         | DedicatedParkingSpaces                    | *           |                   | Not mapped                                                              |
-| connector                      | [Connector](#connector)                   | *           | evse.connectors   |                                                                         |
-| electricEnergy                 | [ElectricEnergy](#ElectricEnergy)         | *           |                   | Contains energy and pricing info, see below                             |
+| Field                          | Type                                      | Cardinality | Mapping                      | Comment                                                                                   |
+|--------------------------------|-------------------------------------------|-------------|------------------------------|-------------------------------------------------------------------------------------------|
+| idG                            | string                                    | 1           | evse.uid                     | Also mapped to evse.evse_id                                                               |
+| versionG                       | string (datetime)                         | 1           |                              |                                                                                           |
+| name                           | [MultilingualString](#MultilingualString) | ?           |                              | Not mapped                                                                                |
+| alias                          | [MultilingualString](#MultilingualString) | *           |                              | Not mapped                                                                                |
+| lastUpdated                    | string (datetime)                         | ?           | evse.last_updated            | Falls back to charging_station.last_updated                                               |
+| description                    | [MultilingualString](#MultilingualString) | ?           |                              | Not mapped                                                                                |
+| additionalInformation          | [MultilingualString](#MultilingualString) | *           |                              | Not mapped                                                                                |
+| accessibility                  | [AccessibilityEnum](#AccessibilityEnum)   | *           |                              | Not mapped                                                                                |
+| deliveryUnit                   | [DeliveryUnitEnum](#DeliveryUnitEnum)     | 1           |                              | Confirms power unit is kW for conversion to W                                             |
+| modelType                      | [MultilingualString](#MultilingualString) | ?           |                              | Not mapped                                                                                |
+| reservation                    | ReservationTypeEnum                       | ?           |                              | Not mapped                                                                                |
+| currentType                    | [CurrentTypeEnum](#CurrentTypeEnum)       | 1           | connector.power_type         | See [CurrentTypeEnum](#CurrentTypeEnum)                                                   |
+| usageType                      | ChargingPointUsageTypeEnum                | *           |                              | Not mapped                                                                                |
+| vehicleToGridCommunicationType | VehicleToGridCommunicationTypeEnum        | *           |                              | Not mapped                                                                                |
+| numberOfConnectors             | integer                                   | ?           |                              | Not mapped                                                                                |
+| availableVoltage               | float                                     | *           | connector.max_voltage        | Fallback when connector-level `voltage` is absent, first value used                       |
+| availableChargingPower         | float                                     | *           | connector.max_electric_power | Fallback when connector-level `maxPowerAtSocket` is 0, kW to W (* 1000), first value used |
+| chargingMode                   | ChargingModeEnum                          | ?           |                              | Not mapped                                                                                |
+| smartRechargingServices        | SmartRechargingServicesEnum               | *           |                              | Not mapped                                                                                |
+| externalIdentifier             | [ExternalIdentifier](#ExternalIdentifier) | *           |                              | Not mapped                                                                                |
+| informationWebsite             | UrlLink                                   | *           |                              | Not mapped                                                                                |
+| photoUrl                       | UrlLink                                   | *           |                              | Not mapped                                                                                |
+| photo                          | Image                                     | *           |                              | Not mapped                                                                                |
+| operatingHours                 | [OperatingHoursG](#OperatingHoursG)       | ?           |                              | Not mapped at charging point level                                                        |
+| locationReference              | [LocationReferenceG](#LocationReferenceG) | ?           |                              | Not mapped at charging point level                                                        |
+| owner                          | [OrganisationG](#OrganisationG)           | ?           |                              | Not mapped                                                                                |
+| operator                       | [OrganisationG](#OrganisationG)           | ?           |                              | Not mapped                                                                                |
+| helpdesk                       | [OrganisationG](#OrganisationG)           | ?           |                              | Not mapped                                                                                |
+| applicableForVehicles          | VehicleCharacteristics                    | *           |                              | Not mapped                                                                                |
+| dimension                      | Dimension                                 | ?           |                              | Not mapped                                                                                |
+| amenities                      | Amenities                                 | ?           |                              | Not mapped                                                                                |
+| supplementalFacility           | SupplementalFacilityG                     | *           |                              | Not mapped                                                                                |
+| dedicatedParkingSpaces         | DedicatedParkingSpaces                    | *           |                              | Not mapped                                                                                |
+| connector                      | [Connector](#connector)                   | *           | evse.connectors              |                                                                                           |
+| electricEnergy                 | [ElectricEnergy](#ElectricEnergy)         | *           |                              | Contains energy and pricing info, see below                                               |
 
 
 ## CurrentTypeEnum
@@ -236,6 +237,17 @@ The `currentType` at the `aegiElectricChargingPoint` level is used to derive the
 
 **Power type derivation logic**: If the current type is `ac`, connectors with 1-phase standards (e.g. domestic sockets,
 `IEC_60309_2_single_16`) are mapped to `AC_1_PHASE`, all others to `AC_3_PHASE`.
+
+
+## DeliveryUnitEnum
+
+The `deliveryUnit` at the `aegiElectricChargingPoint` level indicates the metering unit. It confirms that
+`availableChargingPower` and `maxPowerAtSocket` values are in kW (converted to W by multiplying by 1000).
+
+| Key       | Comment                                  |
+|-----------|------------------------------------------|
+| kWh       | Energy delivered in kilowatt-hours       |
+| extendedG | Extended value                           |
 
 
 # connector
@@ -375,15 +387,42 @@ A `MultilingualString` contains language-tagged values. The first value is used.
 
 # AuthenticationAndIdentificationEnum
 
-Not mapped. Available values from the data source:
+DATEX II `authenticationAndIdentificationMethods` maps to OCPI `Capability`. Multiple methods can map to the same
+capability; duplicates are deduplicated.
 
-| Key             |
-|-----------------|
-| overTheAir      |
-| creditCard      |
-| debitCard       |
-| mifareClassic   |
-| mifareDesfire   |
+| Key             | Mapping                    | Comment                    |
+|-----------------|----------------------------|----------------------------|
+| creditCard      | CREDIT_CARD_PAYABLE        |                            |
+| debitCard       | DEBIT_CARD_PAYABLE         |                            |
+| mifareClassic   | RFID_READER                |                            |
+| mifareDesfire   | RFID_READER                |                            |
+| rfid            | RFID_READER                |                            |
+| activeRFIDChip  | RFID_READER                |                            |
+| nfc             | CONTACTLESS_CARD_SUPPORT   |                            |
+| overTheAir      | REMOTE_START_STOP_CAPABLE  |                            |
+| apps            | REMOTE_START_STOP_CAPABLE  |                            |
+| plc             | IEC15118                   |                            |
+| cashPayment     | CASH                       |                            |
+| pinpad          | PED_TERMINAL               |                            |
+| calypso         | CHIP_CARD_SUPPORT          |                            |
+| phoneSMS        |                            | Not mapped                 |
+| phoneDialog     |                            | Not mapped                 |
+| prepaidCard     |                            | Not mapped                 |
+| website         |                            | Not mapped                 |
+| unlimitedAccess |                            | Not mapped                 |
+| noAccess        |                            | Not mapped                 |
+| extendedG       |                            | Not mapped                 |
+
+
+# ServiceTypeEnum
+
+DATEX II `serviceType` maps to `ServiceType`. The first matching entry from the list is used.
+
+| Key                | Mapping              |
+|--------------------|----------------------|
+| physicalAttendance | PHYSICAL_ATTENDANCE  |
+| unattended         | UNATTENDED           |
+| extendedG          |                      |
 
 
 # AccessibilityEnum

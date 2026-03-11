@@ -19,9 +19,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from pycountry import countries
 from validataclass.helpers import UnsetValue, UnsetValueType
 
+from webapp.models.charging_station import Capability, ServiceType
 from webapp.models.connector import ConnectorFormat, ConnectorType, PowerType, ac_1_phase_connector_types
 from webapp.models.location import ChargingRateUnit
 from webapp.services.import_services.datex2.german_static.address_line_type_enum import AddressLineTypeEnum
+from webapp.services.import_services.datex2.german_static.authentication_and_identification_enum import (
+    AuthenticationAndIdentificationEnum,
+)
+from webapp.services.import_services.datex2.german_static.authentication_and_identification_enum_g_input import (
+    AuthenticationAndIdentificationEnumGInput,
+)
 from webapp.services.import_services.datex2.german_static.connector_input import ConnectorInput as DatexConnectorInput
 from webapp.services.import_services.datex2.german_static.connector_type_enum import ConnectorTypeEnum
 from webapp.services.import_services.datex2.german_static.current_type_enum import CurrentTypeEnum
@@ -34,11 +41,18 @@ from webapp.services.import_services.datex2.german_static.energy_infrastructure_
 from webapp.services.import_services.datex2.german_static.energy_infrastructure_station_input import (
     EnergyInfrastructureStationInput,
 )
+from webapp.services.import_services.datex2.german_static.external_identifier_input import ExternalIdentifierInput
 from webapp.services.import_services.datex2.german_static.multilingual_string_input import MultilingualStringInput
 from webapp.services.import_services.datex2.german_static.operating_hours_g_input import OperatingHoursGInput
 from webapp.services.import_services.datex2.german_static.organisation_g_input import OrganisationGInput
 from webapp.services.import_services.datex2.german_static.point_location_input import PointLocationInput
 from webapp.services.import_services.datex2.german_static.refill_point_g_input import RefillPointGInput
+from webapp.services.import_services.datex2.german_static.service_type_enum import ServiceTypeEnum
+from webapp.services.import_services.datex2.german_static.service_type_input import ServiceTypeInput
+from webapp.services.import_services.datex2.german_static.type_of_identifier_enum import TypeOfIdentifierEnum
+from webapp.services.import_services.datex2.german_static.type_of_identifier_enum_extension_type_g import (
+    TypeOfIdentifierEnumExtensionTypeG,
+)
 from webapp.services.import_services.models import (
     BusinessUpdate,
     ChargingStationUpdate,
@@ -129,7 +143,29 @@ class GermanStaticDatexMapper:
             return
         location.operator = BusinessUpdate(
             name=self.get_multilanguage_string(organization.afacAnOrganisation.name),
+            emobility_uid=self._get_external_identifier(
+                organization.afacAnOrganisation.externalIdentifier,
+                TypeOfIdentifierEnumExtensionTypeG.OPERATORID,
+            ),
         )
+
+    @staticmethod
+    def _get_external_identifier(
+        external_identifiers: list[ExternalIdentifierInput] | UnsetValueType,
+        identifier_type: TypeOfIdentifierEnumExtensionTypeG,
+    ) -> str | None:
+        if external_identifiers is UnsetValue:
+            return None
+        for external_identifier in external_identifiers:
+            if external_identifier.typeOfIdentifier is UnsetValue:
+                continue
+            if external_identifier.typeOfIdentifier.value != TypeOfIdentifierEnum.EXTENDEDG:
+                continue
+            if external_identifier.typeOfIdentifier.extendedValueG is UnsetValue:
+                continue
+            if external_identifier.typeOfIdentifier.extendedValueG == identifier_type:
+                return external_identifier.identifier
+        return None
 
     def _apply_operating_hours(self, operating_hours: OperatingHoursGInput | UnsetValueType, location: LocationUpdate):
         if operating_hours is UnsetValue:
@@ -173,6 +209,15 @@ class GermanStaticDatexMapper:
         )
 
         charge_station.name = self.get_multilanguage_string(energy_infrastructure_station.name)
+        charge_station.capabilities = self._map_capabilities(
+            energy_infrastructure_station.authenticationAndIdentificationMethods,
+        )
+        charge_station.service_type = self._map_service_type(energy_infrastructure_station.serviceType)
+        if (
+            energy_infrastructure_station.userInterfaceLanguage is not UnsetValue
+            and energy_infrastructure_station.userInterfaceLanguage
+        ):
+            charge_station.user_interface_languages = energy_infrastructure_station.userInterfaceLanguage
 
         location.charging_pool.append(charge_station)
 
@@ -208,16 +253,33 @@ class GermanStaticDatexMapper:
         standard = self._map_standard(connector_input.connectorType.value)
         power_type = self._map_power_type(charging_point.currentType.value, standard)
 
+        max_electric_power = int(connector_input.maxPowerAtSocket * 1000)
+        max_voltage = int(connector_input.voltage) if connector_input.voltage is not UnsetValue else None
+        max_amperage = int(connector_input.maximumCurrent) if connector_input.maximumCurrent is not UnsetValue else None
+
+        if (
+            max_voltage is None
+            and charging_point.availableVoltage is not UnsetValue
+            and charging_point.availableVoltage
+        ):
+            max_voltage = int(charging_point.availableVoltage[0])
+
+        if max_electric_power == 0 and (
+            charging_point.availableChargingPower is not UnsetValue and charging_point.availableChargingPower
+        ):
+            max_electric_power = int(charging_point.availableChargingPower[0] * 1000)
+
+        if max_amperage is None and max_voltage and max_electric_power:
+            max_amperage = int(max_electric_power / max_voltage)
+
         connector = ConnectorUpdate(
             uid=str(i),
             standard=standard,
             format=ConnectorFormat.CABLE if power_type == PowerType.DC else ConnectorFormat.SOCKET,
             power_type=power_type,
-            max_electric_power=int(connector_input.maxPowerAtSocket * 1000),
-            max_voltage=int(connector_input.voltage) if connector_input.voltage is not UnsetValue else None,
-            max_amperage=int(connector_input.maximumCurrent)
-            if connector_input.maximumCurrent is not UnsetValue
-            else None,
+            max_electric_power=max_electric_power,
+            max_voltage=max_voltage,
+            max_amperage=max_amperage,
             last_updated=charging_point.lastUpdated or evse.last_updated,
         )
         evse.connectors.append(connector)
@@ -232,6 +294,49 @@ class GermanStaticDatexMapper:
                 else:
                     location.energy_mix.is_green_energy = electric_energy.isGreenEnergy
                 return
+
+    _authentication_to_capability_map: dict[AuthenticationAndIdentificationEnum, Capability] = {
+        AuthenticationAndIdentificationEnum.CREDITCARD: Capability.CREDIT_CARD_PAYABLE,
+        AuthenticationAndIdentificationEnum.DEBITCARD: Capability.DEBIT_CARD_PAYABLE,
+        AuthenticationAndIdentificationEnum.MIFARECLASSIC: Capability.RFID_READER,
+        AuthenticationAndIdentificationEnum.MIFAREDESFIRE: Capability.RFID_READER,
+        AuthenticationAndIdentificationEnum.RFID: Capability.RFID_READER,
+        AuthenticationAndIdentificationEnum.ACTIVERFIDCHIP: Capability.RFID_READER,
+        AuthenticationAndIdentificationEnum.NFC: Capability.CONTACTLESS_CARD_SUPPORT,
+        AuthenticationAndIdentificationEnum.OVERTHEAIR: Capability.REMOTE_START_STOP_CAPABLE,
+        AuthenticationAndIdentificationEnum.APPS: Capability.REMOTE_START_STOP_CAPABLE,
+        AuthenticationAndIdentificationEnum.PLC: Capability.IEC15118,
+        AuthenticationAndIdentificationEnum.CASHPAYMENT: Capability.CASH,
+        AuthenticationAndIdentificationEnum.PINPAD: Capability.PED_TERMINAL,
+        AuthenticationAndIdentificationEnum.CALYPSO: Capability.CHIP_CARD_SUPPORT,
+    }
+
+    @classmethod
+    def _map_capabilities(
+        cls,
+        methods: list[AuthenticationAndIdentificationEnumGInput] | UnsetValueType,
+    ) -> list[Capability] | None:
+        if methods is UnsetValue:
+            return None
+        capabilities: set[Capability] = set()
+        for method in methods:
+            capability = cls._authentication_to_capability_map.get(method.value)
+            if capability is not None:
+                capabilities.add(capability)
+        return sorted(capabilities, key=lambda c: c.value) if capabilities else None
+
+    _service_type_map: dict[ServiceTypeEnum, ServiceType] = {
+        ServiceTypeEnum.PHYSICALATTENDANCE: ServiceType.PHYSICAL_ATTENDANCE,
+        ServiceTypeEnum.UNATTENDED: ServiceType.UNATTENDED,
+    }
+
+    @classmethod
+    def _map_service_type(cls, service_types: list[ServiceTypeInput]) -> ServiceType | None:
+        for service_type_input in service_types:
+            service_type = cls._service_type_map.get(service_type_input.serviceType.value)
+            if service_type is not None:
+                return service_type
+        return None
 
     @staticmethod
     def _map_power_type(current_type: CurrentTypeEnum, standard: ConnectorType):

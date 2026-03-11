@@ -100,4 +100,5 @@ def test_sw_stuttgart_import(db: SQLAlchemy, requests_mock: Mocker) -> None:
     assert sample_location.operator.to_dict() == {
         'name': 'Stadtwerke Stuttgart GmbH',
         'website': None,
+        'emobility_uid': None,
     }
