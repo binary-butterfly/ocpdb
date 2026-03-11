@@ -45,7 +45,7 @@ CREATE SEQUENCE public.regionalschluessel_id_seq
     INCREMENT BY 1
     NO MINVALUE
     NO MAXVALUE
-    CACHE 0;
+    CACHE 1;
 
 
 ALTER TABLE public.regionalschluessel_id_seq OWNER TO ocpdb;
