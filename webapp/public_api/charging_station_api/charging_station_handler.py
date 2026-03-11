@@ -57,11 +57,11 @@ class ChargingStationHandler(PublicApiBaseHandler):
             if charging_station.go_live_date:
                 cs_dict['go_live_date'] = charging_station.go_live_date
 
-        if charging_station.max_power_unit and charging_station.max_power_value:
-            cs_dict['max_power'] = {
+        if charging_station.max_power_unit is not None or charging_station.max_power_value is not None:
+            cs_dict['max_power'] = self.filter_none({
                 'unit': charging_station.max_power_unit,
                 'value': charging_station.max_power_value,
-            }
+            })
 
         capabilities = [c.value for c in charging_station.capabilities]
         if capabilities:

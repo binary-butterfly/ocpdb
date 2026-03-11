@@ -19,7 +19,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from webapp.common.base_blueprint import BaseBlueprint
 
 from .businesses import OcpiBusinessBlueprint
-from .charging_stations import OcpiChargingStationBlueprint
 from .connectors import OcpiConnectorBlueprint
 from .evses import OcpiEvseBlueprint
 from .locations import OcpiLegacyLocationBlueprint, OcpiLocationBlueprint
@@ -28,7 +27,6 @@ from .locations import OcpiLegacyLocationBlueprint, OcpiLocationBlueprint
 class Ocpi22Blueprint(BaseBlueprint):
     blueprints: list[type[BaseBlueprint]] = [
         OcpiBusinessBlueprint,
-        OcpiChargingStationBlueprint,
         OcpiConnectorBlueprint,
         OcpiEvseBlueprint,
         OcpiLocationBlueprint,

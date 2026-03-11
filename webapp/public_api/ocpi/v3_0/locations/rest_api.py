@@ -34,7 +34,7 @@ from validataclass.validators import DataclassValidator
 from webapp.common.rest import BaseMethodView
 from webapp.dependencies import dependencies
 from webapp.public_api.base_blueprint import BaseBlueprint
-from webapp.public_api.location_api.location_search_queries import LocationSearchQuery
+from webapp.shared.location_search_queries import LocationSearchQuery
 from webapp.shared.ocpi_schema import all_ocpi_30_location_components
 
 from .handler import Ocpi30LocationHandler
