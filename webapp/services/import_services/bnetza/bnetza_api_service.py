@@ -62,7 +62,7 @@ class BnetzaApiImportService(BaseImportService):
 
         response_input: BnetzaResponseInput = self.response_validator.validate(response_data)
 
-        location_updates: list[LocationUpdate] = []
+        location_updates_by_coordinates: dict[tuple, LocationUpdate] = {}
         ignore_operators: list[str] = self.config.get('ignore_operators', [])
 
         for charging_station_dict in response_input.chargingStations:
@@ -87,10 +87,18 @@ class BnetzaApiImportService(BaseImportService):
             if charging_station.operator.companyName in ignore_operators:
                 continue
 
-            location_updates.append(charging_station.to_location_update())
+            coordinate_key = (charging_station.coordinates.latitude, charging_station.coordinates.longitude)
+
+            if coordinate_key in location_updates_by_coordinates:
+                # Append charging station to existing location
+                location_update = charging_station.to_location_update()
+                location_updates_by_coordinates[coordinate_key].charging_pool.extend(location_update.charging_pool)
+            else:
+                location_updates_by_coordinates[coordinate_key] = charging_station.to_location_update()
+
             static_success_count += 1
 
-        self.save_location_updates(location_updates)
+        self.save_location_updates(list(location_updates_by_coordinates.values()))
 
         self.update_source(
             source=source,
