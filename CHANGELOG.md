@@ -1,5 +1,14 @@
 # Changelog
 
+## Version 2.7.2
+
+Released 2026-03-12
+
+### Fixes
+
+* [Further ocpi 3 0 improvements](https://github.com/binary-butterfly/ocpdb/pull/188)
+
+
 ## Version 2.7.1
 
 Released 2026-03-12
