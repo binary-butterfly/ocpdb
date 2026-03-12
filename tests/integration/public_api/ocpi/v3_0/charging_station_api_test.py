@@ -39,7 +39,7 @@ def test_get_ocpi_30_charging_stations_strict(
     assert response.json['total_count'] == 2
     assert len(response.json['items']) == 2
     for item in response.json['items']:
-        assert 'uid' in item
+        assert 'id' in item
         assert 'evses' in item
         assert 'last_updated' in item
         assert 'original_uid' not in item
@@ -57,7 +57,7 @@ def test_get_ocpi_30_charging_station_strict(
     )
     assert response.status_code == HTTPStatus.OK
     assert response.json == {
-        'uid': '1',
+        'id': '1',
         'last_updated': ANY,
         'evses': [
             {
@@ -144,6 +144,6 @@ def test_get_ocpi_30_charging_station_non_strict(
     )
     assert response.status_code == HTTPStatus.OK
     data = response.json
-    assert 'uid' in data
+    assert 'id' in data
     assert 'evses' in data
     assert 'original_uid' in data

@@ -722,9 +722,14 @@ charging_station_schema = JsonSchema(
     description='The ChargingStation object groups EVSEs that belong to the same physical charging station. '
     'It always belongs to a Location object.',
     properties={
-        'uid': StringField(
+        'id': StringField(
             maxLength=36,
             description='Unique identifier of the ChargingStation within the Location.',
+        ),
+        'original_uid': StringField(
+            maxLength=36,
+            description='Original unique identifier of the ChargingStation within the Location.',
+            required=False,
         ),
         'capabilities': ArrayField(
             items=EnumField(enum=Capability),
