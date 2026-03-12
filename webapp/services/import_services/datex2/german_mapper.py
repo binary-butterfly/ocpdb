@@ -16,12 +16,17 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+from datetime import datetime
+
 from pycountry import countries
 from validataclass.helpers import UnsetValue, UnsetValueType
 
 from webapp.models.charging_station import Capability, ServiceType
 from webapp.models.connector import ConnectorFormat, ConnectorType, PowerType, ac_1_phase_connector_types
+from webapp.models.evse import EvseStatus
 from webapp.models.location import ChargingRateUnit
+from webapp.services.import_services.datex2.german_realtime.refill_point_status_enum import RefillPointStatusEnum
+from webapp.services.import_services.datex2.german_realtime.refill_point_status_g_input import RefillPointStatusGInput
 from webapp.services.import_services.datex2.german_static.address_line_type_enum import AddressLineTypeEnum
 from webapp.services.import_services.datex2.german_static.authentication_and_identification_enum import (
     AuthenticationAndIdentificationEnum,
@@ -58,6 +63,7 @@ from webapp.services.import_services.models import (
     ChargingStationUpdate,
     ConnectorUpdate,
     EnergyMixUpdate,
+    EvseRealtimeUpdate,
     EvseUpdate,
     LocationUpdate,
     MaxPowerUpdate,
@@ -384,6 +390,47 @@ class GermanStaticDatexMapper:
             ConnectorTypeEnum.TESLAR: ConnectorType.TESLA_R,
             ConnectorTypeEnum.TESLAS: ConnectorType.TESLA_S,
         }.get(connector_type, UnsetValue)
+
+    _refill_point_status_map: dict[RefillPointStatusEnum, EvseStatus] = {
+        RefillPointStatusEnum.AVAILABLE: EvseStatus.AVAILABLE,
+        RefillPointStatusEnum.BLOCKED: EvseStatus.BLOCKED,
+        RefillPointStatusEnum.CHARGING: EvseStatus.CHARGING,
+        RefillPointStatusEnum.FAULTED: EvseStatus.OUTOFORDER,
+        RefillPointStatusEnum.INOPERATIVE: EvseStatus.INOPERATIVE,
+        RefillPointStatusEnum.OCCUPIED: EvseStatus.CHARGING,
+        RefillPointStatusEnum.OUTOFORDER: EvseStatus.OUTOFORDER,
+        RefillPointStatusEnum.OUTOFSTOCK: EvseStatus.OUTOFORDER,
+        RefillPointStatusEnum.PLANNED: EvseStatus.PLANNED,
+        RefillPointStatusEnum.REMOVED: EvseStatus.REMOVED,
+        RefillPointStatusEnum.RESERVED: EvseStatus.RESERVED,
+        RefillPointStatusEnum.UNAVAILABLE: EvseStatus.INOPERATIVE,
+        RefillPointStatusEnum.UNKNOWN: EvseStatus.UNKNOWN,
+    }
+
+    def map_energy_infrastructure_station_status(
+        self,
+        refill_point_status_g: RefillPointStatusGInput,
+    ) -> EvseRealtimeUpdate | None:
+        refill_point_status = refill_point_status_g.aegiRefillPointStatus
+        if refill_point_status is UnsetValue:
+            refill_point_status = refill_point_status_g.aegiElectricChargingPointStatus
+        if refill_point_status is UnsetValue:
+            return None
+
+        status = self._refill_point_status_map.get(refill_point_status.status.value)
+        if status is None:
+            return None
+
+        last_updated = None
+        if refill_point_status.lastUpdated is not UnsetValue:
+            last_updated = datetime.fromisoformat(refill_point_status.lastUpdated)
+
+        return EvseRealtimeUpdate(
+            uid=refill_point_status.reference.idG,
+            evse_id=refill_point_status.reference.idG,
+            status=status,
+            last_updated=last_updated,
+        )
 
     @staticmethod
     def get_multilanguage_string(values: MultilingualStringInput | UnsetValueType) -> str | UnsetValueType:

@@ -20,23 +20,27 @@ import logging
 from datetime import datetime, timezone
 
 from validataclass.exceptions import ValidationError
+from validataclass.helpers import UnsetValue
 from validataclass.validators import DataclassValidator
 
 from webapp.common.logging.models import LogMessageType
 from webapp.models import SourceStatus
 from webapp.services.import_services.base_import_service import BaseImportService
 from webapp.services.import_services.datex2.german_mapper import GermanStaticDatexMapper
-from webapp.services.import_services.datex2.german_static.d_a_t_e_x_i_i3_d2_payload_input import DATEXII3D2PayloadInput
 from webapp.services.import_services.datex2.german_static.energy_infrastructure_site_input import (
     EnergyInfrastructureSiteInput,
 )
 from webapp.services.import_services.models import LocationUpdate, SourceInfo
 
+from .german_realtime.d_a_t_e_x_i_i3_d2_payload_input import DATEXII3D2PayloadInput as DATEXII3D2RealtimePayloadInput
+from .german_static.d_a_t_e_x_i_i3_d2_payload_input import DATEXII3D2PayloadInput as DATEXII3D2StaticPayloadInput
+
 logger = logging.getLogger(__name__)
 
 
 class EnBWDatex2ImportService(BaseImportService):
-    german_static_datex_validator = DataclassValidator(DATEXII3D2PayloadInput)
+    german_static_datex_validator = DataclassValidator(DATEXII3D2StaticPayloadInput)
+    german_realtime_datex_validator = DataclassValidator(DATEXII3D2RealtimePayloadInput)
     energy_infrastructure_site_validator = DataclassValidator(EnergyInfrastructureSiteInput)
     german_static_datex_mapper = GermanStaticDatexMapper()
 
@@ -115,6 +119,80 @@ class EnBWDatex2ImportService(BaseImportService):
         logger.info(
             f'Successfully updated {self.source_info.uid} static data with {success_count} valid '
             f'locations and {error_count} failed locations.',
+            extra={'attributes': {'type': LogMessageType.IMPORT_LOCATION}},
+        )
+
+    def fetch_realtime_data(self):
+        source = self.get_source()
+        if source.static_status != SourceStatus.ACTIVE:
+            return
+
+        realtime_error_count = 0
+        realtime_success_count = 0
+        realtime_data_updated_at = datetime.now(timezone.utc)
+        data = self.request_data(self.config.get('realtime_subscription_id'))
+
+        try:
+            realtime_data = {'payload': data['messageContainer']['payload'][0]}
+        except (KeyError, IndexError, TypeError):
+            logger.error(
+                'missing messageContainer or payload in datex2_enbw realtime data',
+                extra={'attributes': {'type': LogMessageType.IMPORT_SOURCE}},
+            )
+            self.update_source(source, realtime_status=SourceStatus.FAILED)
+            return
+
+        try:
+            datex_input = self.german_realtime_datex_validator.validate(realtime_data)
+        except ValidationError as e:
+            logger.error(
+                f'invalid datex2_enbw realtime data: {e.to_dict()}',
+                extra={'attributes': {'type': LogMessageType.IMPORT_SOURCE}},
+            )
+            self.update_source(source, realtime_status=SourceStatus.FAILED)
+            return
+
+        if (
+            datex_input.payload is UnsetValue
+            or datex_input.payload.aegiEnergyInfrastructureStatusPublication is UnsetValue
+            or datex_input.payload.aegiEnergyInfrastructureStatusPublication.energyInfrastructureSiteStatus
+            is UnsetValue
+        ):
+            logger.error(
+                'missing payload or aegiEnergyInfrastructureStatusPublication in datex2_enbw realtime data',
+                extra={'attributes': {'type': LogMessageType.IMPORT_SOURCE}},
+            )
+            self.update_source(source, realtime_status=SourceStatus.FAILED)
+            return
+
+        evse_updates = []
+        for site_status in datex_input.payload.aegiEnergyInfrastructureStatusPublication.energyInfrastructureSiteStatus:
+            if site_status.energyInfrastructureStationStatus is UnsetValue:
+                continue
+            for station_status in site_status.energyInfrastructureStationStatus:
+                if station_status.refillPointStatus is UnsetValue:
+                    continue
+                for refill_point_status_g in station_status.refillPointStatus:
+                    evse_update = self.german_static_datex_mapper.map_energy_infrastructure_station_status(
+                        refill_point_status_g,
+                    )
+                    if evse_update is None:
+                        realtime_error_count += 1
+                        continue
+                    evse_updates.append(evse_update)
+                    realtime_success_count += 1
+
+        self.save_evse_updates(evse_updates)
+
+        self.update_source(
+            source=source,
+            realtime_status=SourceStatus.ACTIVE,
+            realtime_error_count=realtime_error_count,
+            realtime_data_updated_at=realtime_data_updated_at,
+        )
+        logger.info(
+            f'Successfully updated {self.source_info.uid} realtime with {realtime_success_count} valid EVSEs '
+            f'and {realtime_error_count} failed EVSEs.',
             extra={'attributes': {'type': LogMessageType.IMPORT_LOCATION}},
         )
 
