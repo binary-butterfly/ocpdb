@@ -17,7 +17,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 import json
-from datetime import date, datetime
+from datetime import date, datetime, time
 from decimal import Decimal
 from enum import Enum
 
@@ -30,6 +30,8 @@ class DefaultJSONEncoder(json.JSONEncoder):
     def default(self, obj):
         if isinstance(obj, datetime):
             return obj.strftime('%Y-%m-%dT%H:%M:%SZ')
+        if isinstance(obj, time):
+            return obj.strftime('%H:%M:%S')
         if isinstance(obj, date):
             return obj.isoformat()
         if isinstance(obj, Decimal):

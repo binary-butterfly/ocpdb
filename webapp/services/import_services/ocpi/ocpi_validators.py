@@ -71,12 +71,6 @@ class RegularHoursInput(ValidataclassMixin):
     period_begin: time = TimeValidator(time_format=TimeFormat.NO_SECONDS)
     period_end: time = TimeValidator(time_format=TimeFormat.NO_SECONDS)
 
-    def to_dict(self, *args, **kwargs) -> dict:
-        result = super().to_dict(*args, **kwargs)
-        result['period_begin'] = self.period_begin.hour * 3600 + self.period_begin.minute * 60
-        result['period_end'] = self.period_end.hour * 3600 + self.period_end.minute * 60
-        return result
-
 
 @validataclass
 class ExceptionalPeriodInput(ValidataclassMixin):

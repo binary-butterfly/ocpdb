@@ -149,16 +149,16 @@ class OpeningTime:
                     regular_hours.append(
                         RegularHoursUpdate(
                             weekday=i,
-                            period_begin=period.begin.hour * 3600 + period.begin.minute * 60,
-                            period_end=period.end.hour * 3600 + period.end.minute * 60,
+                            period_begin=period.begin,
+                            period_end=period.end,
                         )
                     )
             else:
                 regular_hours.append(
                     RegularHoursUpdate(
                         weekday=self.on.to_weekday(),
-                        period_begin=period.begin.hour * 3600 + period.begin.minute * 60,
-                        period_end=period.end.hour * 3600 + period.end.minute * 60,
+                        period_begin=period.begin,
+                        period_end=period.end,
                     ),
                 )
         return regular_hours
