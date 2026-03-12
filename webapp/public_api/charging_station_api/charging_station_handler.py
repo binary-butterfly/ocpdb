@@ -47,40 +47,7 @@ class ChargingStationHandler(PublicApiBaseHandler):
         return self._map_charging_station_to_ocpi(charging_station, strict=strict)
 
     def _map_charging_station_to_ocpi(self, charging_station: ChargingStation, strict: bool = False) -> dict:
-        cs_dict: dict = {
-            'uid': str(charging_station.id),
-            'last_updated': charging_station.last_updated,
-        }
-
-        if not strict:
-            cs_dict['original_uid'] = charging_station.uid
-            if charging_station.go_live_date:
-                cs_dict['go_live_date'] = charging_station.go_live_date
-
-        if charging_station.max_power_unit is not None or charging_station.max_power_value is not None:
-            cs_dict['max_power'] = self.filter_none({
-                'unit': charging_station.max_power_unit,
-                'value': charging_station.max_power_value,
-            })
-
-        capabilities = [c.value for c in charging_station.capabilities]
-        if capabilities:
-            cs_dict['capabilities'] = capabilities
-
-        if charging_station.floor_level:
-            cs_dict['floor_level'] = charging_station.floor_level
-
-        if charging_station.lat is not None and charging_station.lon is not None:
-            cs_dict['coordinates'] = {
-                'latitude': charging_station.lat,
-                'longitude': charging_station.lon,
-            }
-
-        if charging_station.directions:
-            cs_dict['directions'] = charging_station.directions
-
-        if charging_station.physical_reference:
-            cs_dict['physical_reference'] = charging_station.physical_reference
+        cs_dict = charging_station.to_dict(strict=strict)
 
         for image in charging_station.images:
             if 'images' not in cs_dict:

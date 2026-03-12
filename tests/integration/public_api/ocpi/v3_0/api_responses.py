@@ -31,9 +31,9 @@ OCPI_30_LOCATION_1_RESPONSE = {
     'opening_times': {'twentyfourseven': True},
     'coordinates': {'latitude': '52.5200300', 'longitude': '13.4048900'},
     'operator': {'name': 'Electro Inc'},
-    'charging_stations': [
+    'charging_pool': [
         {
-            'uid': '1',
+            'id': '1',
             'last_updated': ANY,
             'evses': [
                 {
@@ -92,9 +92,9 @@ OCPI_30_LOCATION_2_RESPONSE = {
     'opening_times': {'twentyfourseven': True},
     'coordinates': {'latitude': '52.5200300', 'longitude': '13.4048900'},
     'operator': {'name': 'Electro Inc'},
-    'charging_stations': [
+    'charging_pool': [
         {
-            'uid': '2',
+            'id': '2',
             'last_updated': ANY,
             'evses': [
                 {
@@ -153,9 +153,9 @@ OCPI_30_LOCATION_3_RESPONSE = {
     'opening_times': {'twentyfourseven': True},
     'coordinates': {'latitude': '52.5200300', 'longitude': '13.4048900'},
     'operator': {'name': 'Power Inc'},
-    'charging_stations': [
+    'charging_pool': [
         {
-            'uid': '3',
+            'id': '3',
             'last_updated': ANY,
             'evses': [
                 {

@@ -136,9 +136,29 @@ class ChargingStation(BaseModel):
             'modified',
             'lat',
             'lon',
+            'max_power_unit',
+            'max_power_value',
+            'go_live_date',
+            'uid',
+            'evses',
+            'images',
         ]
 
         result = super().to_dict(*args, ignore=ignore, **kwargs)
+
+        # OCPI id has to be a string
+        result['id'] = str(self.id)
+
+        if not strict:
+            result['original_uid'] = self.uid
+            if self.go_live_date:
+                result['go_live_date'] = self.go_live_date
+
+            if self.max_power_unit is not None or self.max_power_value is not None:
+                result['max_power'] = {
+                    'unit': self.max_power_unit,
+                    'value': self.max_power_value,
+                }
 
         if self.lat is not None and self.lon is not None:
             result['coordinates'] = {

@@ -113,7 +113,7 @@ def test_get_ocpi_30_locations_by_bounding_box(
     assert response.json['total_count'] == 1
     assert len(response.json['items']) == 1
     assert response.json['items'][0]['id'] == '1'
-    assert 'charging_stations' in response.json['items'][0]
+    assert 'charging_pool' in response.json['items'][0]
 
 
 def test_get_ocpi_30_locations_by_last_updated_since(
@@ -178,6 +178,6 @@ def test_get_ocpi_30_location_non_strict(
     # Non-strict should include extra fields
     assert 'source' in data
     assert 'original_id' in data
-    assert 'charging_stations' in data
-    assert len(data['charging_stations']) == 1
-    assert len(data['charging_stations'][0]['evses']) == 2
+    assert 'charging_pool' in data
+    assert len(data['charging_pool']) == 1
+    assert len(data['charging_pool'][0]['evses']) == 2
