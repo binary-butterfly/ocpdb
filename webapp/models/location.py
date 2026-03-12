@@ -292,6 +292,9 @@ class Location(BaseModel):
             'modified',
             'dynamic_location_id',
             'dynamic_location_probability',
+            'regular_hours',
+            'exceptional_openings',
+            'exceptional_closings',
             'max_power_unit',
             'max_power_value',
         ]
@@ -308,13 +311,32 @@ class Location(BaseModel):
             result['original_id'] = self.uid
             result['source'] = self.source
 
+            if self.max_power_unit is not None or self.max_power_value is not None:
+                result['max_power'] = {
+                    'unit': self.max_power_unit,
+                    'value': self.max_power_value,
+                }
+
         # Additional fields which are not automatically in our result
         result['directions'] = self.directions
         result['related_locations'] = self.related_locations
         result['energy_mix'] = self.energy_mix
 
+        if (
+            self.twentyfourseven is not None
+            or self.regular_hours
+            or self.exceptional_openings
+            or self.exceptional_closings
+        ):
+            result['opening_times'] = {}
         if self.twentyfourseven is not None:
-            result['opening_times'] = {'twentyfourseven': self.twentyfourseven}
+            result['opening_times']['twentyfourseven'] = self.twentyfourseven
+        if self.regular_hours:
+            result['opening_times']['regular_hours'] = self.regular_hours
+        if self.exceptional_openings:
+            result['opening_times']['exceptional_openings'] = self.exceptional_openings
+        if self.exceptional_closings:
+            result['opening_times']['exceptional_closings'] = self.exceptional_closings
 
         result['coordinates'] = {
             'latitude': self.lat,
