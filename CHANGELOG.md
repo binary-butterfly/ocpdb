@@ -1,5 +1,16 @@
 # Changelog
 
+## Version 2.7.1
+
+Released 2026-03-12
+
+### Fixes
+
+* [OCPI 3.0 improvements](https://github.com/binary-butterfly/ocpdb/pull/185)
+* [More compliant OCPI periods, fix bnetza time](https://github.com/binary-butterfly/ocpdb/pull/186)
+* [group bnetza locations](https://github.com/binary-butterfly/ocpdb/pull/187)
+
+
 ## Version 2.7.0
 
 Released 2026-03-08
