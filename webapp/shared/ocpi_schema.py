@@ -20,6 +20,7 @@ from flask_openapi.decorator import Schema as Component
 from flask_openapi.schema import (
     ArrayField,
     BooleanField,
+    DateField,
     DateTimeField,
     DecimalField,
     EnumField,
@@ -34,6 +35,7 @@ from flask_openapi.schema import (
 
 from webapp.models.charging_station import Capability
 from webapp.models.connector import ConnectorFormat, ConnectorType, PowerType
+from webapp.models.enums import ChargingRateUnit
 from webapp.models.evse import EvseStatus, ParkingRestriction, PresenceStatus
 from webapp.models.image import ImageCategory
 from webapp.models.location import EnergySourceCategory, EnvironmentalImpactCategory, Facility, ParkingType, TokenType
@@ -426,6 +428,32 @@ image_example = {}
 image_component = Component('Image', image_schema, image_example)
 
 
+max_power_schema = JsonSchema(
+    title='MaxPower',
+    description='Maximum power of a Location or ChargingStation.',
+    properties={
+        'unit': EnumField(
+            enum=ChargingRateUnit,
+            required=False,
+            description='Unit of the maximum power value.',
+        ),
+        'value': NumericField(
+            required=False,
+            description='Maximum power value.',
+        ),
+    },
+)
+
+
+max_power_example = {
+    'unit': 'KW',
+    'value': 150,
+}
+
+
+max_power_component = Component('MaxPower', max_power_schema, max_power_example)
+
+
 location_schema = JsonSchema(
     title='Location',
     description='The Location object describes the location and its properties where a group of EVSEs that belong together are installed. '
@@ -444,9 +472,9 @@ location_schema = JsonSchema(
             description="ID of the CPO that 'owns' this Location (following the ISO-15118 standard).\n*In OCPI, this field is required. Most sources don't have it, though, so we cannot output it in OCPDB.*",
             required=False,
         ),
-        'id': IntegerField(
-            minimum=1,
-            description='Unique internal ID which identifies the location',
+        'id': StringField(
+            maxLength=36,
+            description='Unique internal ID which identifies the location.',
         ),
         'publish': BooleanField(
             description='Defines if a Location may be published on an website or app etc. When this is set to false, only tokens '
@@ -541,6 +569,11 @@ location_schema = JsonSchema(
             obj='EnergyMix',
             required=False,
             description='Details on the energy supplied at this location.',
+        ),
+        'max_power': Reference(
+            obj='MaxPower',
+            required=False,
+            description='Maximum power available at this location.',
         ),
         'last_updated': DateTimeField(
             description='Timestamp when this Location or one of its EVSEs or Connectors were last updated (or created).',
@@ -675,6 +708,7 @@ all_location_components = [
     hours_component,
     image_component,
     location_component,
+    max_power_component,
     publish_token_type_component,
     regular_hours_component,
     status_schedule_component,
@@ -725,6 +759,15 @@ charging_station_schema = JsonSchema(
             minItems=1,
             description='List of EVSEs that belong to this ChargingStation.',
         ),
+        'max_power': Reference(
+            obj='MaxPower',
+            required=False,
+            description='Maximum power available at this ChargingStation.',
+        ),
+        'go_live_date': DateField(
+            required=False,
+            description='Date when the ChargingStation went or will go live.',
+        ),
         'last_updated': DateTimeField(
             description='Timestamp when this ChargingStation or one of its EVSEs was last updated (or created).',
         ),
@@ -742,11 +785,7 @@ ocpi_30_location_schema = JsonSchema(
     'The Location describes the location and its properties where a group of ChargingStations that belong together '
     'are installed.',
     properties={
-        **{k: v for k, v in location_schema.properties.items() if k not in ('evses', 'id')},
-        'id': StringField(
-            maxLength=36,
-            description='Unique internal ID which identifies the location.',
-        ),
+        **{k: v for k, v in location_schema.properties.items() if k != 'evses'},
         'charging_stations': ArrayField(
             items=Reference(obj='ChargingStation'),
             required=False,
@@ -786,6 +825,7 @@ all_charging_station_components = [
     evse_component,
     geo_location_component,
     image_component,
+    max_power_component,
 ]
 
 
@@ -803,6 +843,7 @@ all_ocpi_30_location_components = [
     geo_location_component,
     hours_component,
     image_component,
+    max_power_component,
     ocpi_30_location_component,
     publish_token_type_component,
     regular_hours_component,

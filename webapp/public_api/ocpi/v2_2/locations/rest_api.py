@@ -18,11 +18,25 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from flask import jsonify
 from flask_cors import cross_origin
+from flask_openapi.decorator import (
+    ExampleListReference,
+    ExampleReference,
+    Parameter,
+    Response,
+    ResponseData,
+    SchemaListReference,
+    SchemaReference,
+    document,
+)
+from flask_openapi.schema import AnyOfField, BooleanField, DateTimeField, IntegerField, NumericField, StringField
+from validataclass.validators import DataclassValidator
 
 from webapp.common.base_blueprint import BaseBlueprint
 from webapp.common.rest import BaseMethodView
 from webapp.dependencies import dependencies
 from webapp.public_api.location_api.location_handler import LocationHandler
+from webapp.shared.location_search_queries import LocationSearchQuery
+from webapp.shared.ocpi_schema import all_location_components
 
 
 class OcpiLocationBlueprint(BaseBlueprint):
@@ -37,8 +51,16 @@ class OcpiLocationBlueprint(BaseBlueprint):
         super().__init__('ocpi_locations', __name__, url_prefix='/locations')
 
         self.add_url_rule(
+            '',
+            view_func=LocationListMethodView.as_view(
+                'locations',
+                **self.get_base_method_view_dependencies(),
+                location_handler=self.location_handler,
+            ),
+        )
+        self.add_url_rule(
             '/<int:location_id>',
-            view_func=LocationsMethodView.as_view(
+            view_func=LocationItemMethodView.as_view(
                 'location',
                 **self.get_base_method_view_dependencies(),
                 location_handler=self.location_handler,
@@ -60,7 +82,7 @@ class OcpiLegacyLocationBlueprint(BaseBlueprint):
 
         self.add_url_rule(
             '/<int:location_id>',
-            view_func=LocationsMethodView.as_view(
+            view_func=LocationItemMethodView.as_view(
                 'location',
                 **self.get_base_method_view_dependencies(),
                 location_handler=self.location_handler,
@@ -76,7 +98,91 @@ class OcpiBaseMethodView(BaseMethodView):
         self.location_handler = location_handler
 
 
-class LocationsMethodView(OcpiBaseMethodView):
+class LocationListMethodView(OcpiBaseMethodView):
+    search_query_validator = DataclassValidator(LocationSearchQuery)
+
+    @document(
+        description='Get list of Locations',
+        query=[
+            Parameter(
+                'sorted_by',
+                schema=AnyOfField(allowed_values=['name', 'created', 'modified'], required=False, default='name'),
+            ),
+            Parameter('name', schema=StringField(required=False)),
+            Parameter('source_uid', schema=StringField(required=False), example='bnetza_api'),
+            Parameter(
+                'source_uids',
+                schema=StringField(required=False),
+                example='bnetza_api,something_else',
+                description='Comma separated list of sources',
+            ),
+            Parameter(
+                'exclude_source_uid',
+                schema=StringField(required=False),
+                example='bnetza_api',
+                description='Sources to exclude',
+            ),
+            Parameter(
+                'exclude_source_uids',
+                schema=StringField(required=False),
+                example='bnetza_api,something_else',
+                description='Comma separated list of sources which should be excluded',
+            ),
+            Parameter('address', schema=StringField(required=False), example='Erlenweg', description='Contain query'),
+            Parameter('postal_code', schema=StringField(required=False), example='59423'),
+            Parameter('city', schema=StringField(required=False), example='Bad Gateway', description='Contain query'),
+            Parameter('country', schema=StringField(required=False), example='59423'),
+            Parameter('operator_name', schema=StringField(required=False), example='Electro Inc'),
+            Parameter(
+                'lat',
+                schema=NumericField(required=False),
+                example='51.58',
+                description='Radius, lat and lon always have to be set together.',
+            ),
+            Parameter(
+                'lon',
+                schema=NumericField(required=False),
+                example='7.67',
+                description='Radius, lat and lon always have to be set together.',
+            ),
+            Parameter(
+                'radius',
+                schema=IntegerField(required=False),
+                example='1000',
+                description='In meter. Radius, lat and lon always have to be set together.',
+            ),
+            Parameter('lat_min', schema=NumericField(), example=55.0, description='Bounding box'),
+            Parameter('lat_max', schema=NumericField(), example=55.5, description='Bounding box'),
+            Parameter('lon_min', schema=NumericField(), example=5.0, description='Bounding box'),
+            Parameter('lon_max', schema=NumericField(), example=5.5, description='Bounding box'),
+            Parameter('last_updated_since', schema=DateTimeField(), example='2023-01-01T00:00:00Z'),
+            Parameter('limit', schema=IntegerField(maximum=1000, required=False, default=100)),
+            Parameter(
+                'strict',
+                schema=BooleanField(),
+                description='If set to true, all additional fields will be omitted for full OCPI compatibility.',
+            ),
+        ],
+        response=[Response(ResponseData(SchemaListReference('Location'), ExampleListReference('Location')))],
+        components=all_location_components,
+    )
+    @cross_origin()
+    def get(self):
+        search_query = self.validate_query_args(self.search_query_validator)
+        locations = self.location_handler.get_locations(
+            search_query,
+            strict=self.request_helper.get_query_args().get('strict') == 'true',
+        )
+        return self.jsonify_paginated_response(locations, search_query)
+
+
+class LocationItemMethodView(OcpiBaseMethodView):
+    @document(
+        description='Get single Location',
+        path=[Parameter('location_id', schema=IntegerField(minimum=1))],
+        response=[Response(ResponseData(SchemaReference('Location'), ExampleReference('Location')))],
+        components=all_location_components,
+    )
     @cross_origin()
     def get(self, location_id: int):
         location = self.location_handler.get_location(location_id)

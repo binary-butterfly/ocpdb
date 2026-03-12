@@ -20,8 +20,8 @@ from validataclass_search_queries.pagination import PaginatedResult
 
 from webapp.models import Location
 from webapp.public_api.base_handler import PublicApiBaseHandler
-from webapp.public_api.location_api.location_search_queries import LocationSearchQuery
 from webapp.repositories import LocationRepository
+from webapp.shared.location_search_queries import LocationSearchQuery
 
 
 class Ocpi30LocationHandler(PublicApiBaseHandler):
@@ -61,11 +61,11 @@ class Ocpi30LocationHandler(PublicApiBaseHandler):
                 location_dict['opening_times'] = {}
             location_dict['opening_times']['exceptional_closings'] = location.exceptional_closings
 
-        if location.max_power_unit is not None and location.max_power_value is not None:
-            location_dict['max_power'] = {
-                'unit': location.max_power_unit.value,
+        if location.max_power_unit is not None or location.max_power_value is not None:
+            location_dict['max_power'] = self.filter_none({
+                'unit': location.max_power_unit,
                 'value': location.max_power_value,
-            }
+            })
 
         location_dict['charging_stations'] = []
         for charging_station in location.charging_pool:
@@ -79,11 +79,11 @@ class Ocpi30LocationHandler(PublicApiBaseHandler):
                 if charging_station.go_live_date:
                     cs_dict['go_live_date'] = charging_station.go_live_date
 
-            if charging_station.max_power_unit and charging_station.max_power_value:
-                cs_dict['max_power'] = {
+            if charging_station.max_power_unit is not None or charging_station.max_power_value is not None:
+                cs_dict['max_power'] = self.filter_none({
                     'unit': charging_station.max_power_unit,
                     'value': charging_station.max_power_value,
-                }
+                })
 
             capabilities = [c.value for c in charging_station.capabilities]
             if capabilities:

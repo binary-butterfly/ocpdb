@@ -20,8 +20,8 @@ from validataclass_search_queries.pagination import PaginatedResult
 
 from webapp.models import Location
 from webapp.public_api.base_handler import PublicApiBaseHandler
-from webapp.public_api.location_api.location_search_queries import LocationSearchQuery
 from webapp.repositories import LocationRepository
+from webapp.shared.location_search_queries import LocationSearchQuery
 
 
 class LocationHandler(PublicApiBaseHandler):
