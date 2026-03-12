@@ -1,8 +1,8 @@
 # DATEX II German Energy Infrastructure
 
 This documents the mapping between the
-[DATEX II German Energy Infrastructure Profile](https://www.mdm-portal.de/) (JSON) and
-[OCPI 2.2.1 Locations / EVSEs / Connectors](https://github.com/ocpi/ocpi/blob/release-2.2.1-bugfixes/mod_locations.asciidoc#131-location-object).
+[DATEX II German Energy Infrastructure Profile](https://www.mdm-portal.de/) (JSON) and OCPI 3.0-preview
+Locations / ChargingStations / EVSEs / Connectors.
 
 It is an extension to the `_general.md`.
 
