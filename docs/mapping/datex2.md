@@ -6,9 +6,14 @@ This documents the mapping between the
 
 It is an extension to the `_general.md`.
 
-DATEX II provides static data for charging infrastructure in Germany. The data is delivered as a JSON payload containing
-an `aegiEnergyInfrastructureTablePublication` with a hierarchical structure:
-`energyInfrastructureSite` -> `energyInfrastructureStation` -> `refillPoint` -> `aegiElectricChargingPoint` -> `connector`.
+DATEX II provides static and realtime data for charging infrastructure in Germany.
+
+Static data is delivered as a JSON payload containing an `aegiEnergyInfrastructureTablePublication` with a hierarchical
+structure: `energyInfrastructureSite` -> `energyInfrastructureStation` -> `refillPoint` -> `aegiElectricChargingPoint`
+-> `connector`.
+
+Realtime data is delivered as an `aegiEnergyInfrastructureStatusPublication` containing `energyInfrastructureSiteStatus`
+-> `energyInfrastructureStationStatus` -> `refillPointStatus` entries that reference the static data by ID.
 
 ## Global / Static Values
 
@@ -440,3 +445,69 @@ Not mapped. Available values:
 | openSpace        |
 | onStreet         |
 | onCompanySite    |
+
+
+---
+
+# Realtime Data
+
+## refillPointStatus
+
+A `refillPointStatus` (within `energyInfrastructureStationStatus`) maps to an `EvseRealtimeUpdate`. The mapper tries
+`aegiRefillPointStatus` first, falling back to `aegiElectricChargingPointStatus`. Both share the same structure for the
+fields used in the mapping.
+
+| Field                | Type                                                  | Cardinality | Mapping            | Comment                                                    |
+|----------------------|-------------------------------------------------------|-------------|--------------------|------------------------------------------------------------|
+| aegiRefillPointStatus              | [RefillPointStatus](#RefillPointStatus)  | ?           |                    | Primary source, see below                                  |
+| aegiElectricChargingPointStatus    | [ElectricChargingPointStatus](#RefillPointStatus) | ? |                    | Fallback if `aegiRefillPointStatus` is absent               |
+
+
+## RefillPointStatus
+
+Both `RefillPointStatusInput` and `ElectricChargingPointStatusInput` share these mapped fields.
+
+| Field              | Type                                                      | Cardinality | Mapping              | Comment                                                    |
+|--------------------|-----------------------------------------------------------|-------------|----------------------|------------------------------------------------------------|
+| reference.idG      | string                                                    | 1           | evse.uid, evse.evse_id | References the static EVSE by its ID                     |
+| status             | [RefillPointStatusEnum](#RefillPointStatusEnum-realtime)  | 1           | evse.status          | See mapping table below                                    |
+| lastUpdated        | string (datetime)                                         | ?           | evse.last_updated    | Parsed via `datetime.fromisoformat`                        |
+| openingStatus      | OpeningStatusEnum                                         | ?           |                      | Not mapped                                                 |
+| operationStatus    | OperationStatusEnum                                       | ?           |                      | Not mapped                                                 |
+| statusDescription  | [MultilingualString](#MultilingualString)                 | ?           |                      | Not mapped                                                 |
+| fault              | Fault                                                     | ?           |                      | Not mapped                                                 |
+| newOperatingHours  | OperatingHoursG                                           | ?           |                      | Not mapped                                                 |
+| energyRateUpdate   | EnergyRateUpdate                                          | *           |                      | Not mapped                                                 |
+| waitingTime        | DurationValue                                             | ?           |                      | Not mapped                                                 |
+| plannedRefillPointStatus | PlannedRefillPointStatus                            | *           |                      | Not mapped                                                 |
+
+`ElectricChargingPointStatusInput` additionally has these unmapped fields:
+
+| Field                        | Type    | Cardinality | Mapping | Comment    |
+|------------------------------|---------|-------------|---------|------------|
+| remainingChargingTime        | float   | ?           |         | Not mapped |
+| currentVoltage               | float   | ?           |         | Not mapped |
+| currentChargingPower         | float   | ?           |         | Not mapped |
+| nextAvailableChargingSlots   | string  | *           |         | Not mapped |
+
+
+## RefillPointStatusEnum (realtime)
+
+DATEX II `refillPointStatus.status` maps to OCPI `EvseStatus`.
+
+| Key          | Mapping      | Comment                           |
+|--------------|--------------|-----------------------------------|
+| available    | AVAILABLE    |                                   |
+| blocked      | BLOCKED      |                                   |
+| charging     | CHARGING     |                                   |
+| faulted      | OUTOFORDER   | Treated as out of order           |
+| inoperative  | INOPERATIVE  |                                   |
+| occupied     | CHARGING     | Treated as charging               |
+| outOfOrder   | OUTOFORDER   |                                   |
+| outOfStock   | OUTOFORDER   | Treated as out of order           |
+| planned      | PLANNED      |                                   |
+| removed      | REMOVED      |                                   |
+| reserved     | RESERVED     |                                   |
+| unavailable  | INOPERATIVE  | Treated as inoperative            |
+| unknown      | UNKNOWN      |                                   |
+| extendedG    |              | Not mapped (returns `None`)       |
