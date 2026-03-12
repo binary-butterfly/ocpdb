@@ -274,7 +274,7 @@ class BnetzaStatus:
 
 @validataclass
 class OpeningDay:
-    day: BnetzaWeekday | None = Noneable(EnumValidator(BnetzaWeekday)), Default(None)
+    weekday: BnetzaWeekday | None = Noneable(EnumValidator(BnetzaWeekday)), Default(None)
     open_from: time = TimeValidator(time_format=TimeFormat.NO_SECONDS)
     open_to: time = TimeValidator(time_format=TimeFormat.NO_SECONDS)
 
@@ -369,13 +369,13 @@ class BnetzaChargingStation:
             location_update.twentyfourseven = False
             location_update.regular_hours = []
             for opening_day in self.opening_days:
-                if opening_day.day is None:
+                if opening_day.weekday is None:
                     continue
                 location_update.regular_hours.append(
                     RegularHoursUpdate(
-                        weekday=opening_day.day.to_integer_weekday(),
-                        period_begin=opening_day.open_from.hour * 60 + opening_day.open_from.minute,
-                        period_end=opening_day.open_to.hour * 60 + opening_day.open_to.minute,
+                        weekday=opening_day.weekday.to_integer_weekday(),
+                        period_begin=opening_day.open_from,
+                        period_end=opening_day.open_to,
                     ),
                 )
 

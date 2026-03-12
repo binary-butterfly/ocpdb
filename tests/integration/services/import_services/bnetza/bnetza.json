@@ -546,6 +546,41 @@
       "id": 1000010,
       "max_electric_power_station": 44,
       "opening_days": [
+        {
+          "weekday": "Montag",
+          "open_from": "06:00",
+          "open_to": "22:00"
+        },
+        {
+          "weekday": "Dienstag",
+          "open_from": "06:00",
+          "open_to": "22:00"
+        },
+        {
+          "weekday": "Mittwoch",
+          "open_from": "06:00",
+          "open_to": "22:00"
+        },
+        {
+          "weekday": "Donnerstag",
+          "open_from": "06:00",
+          "open_to": "22:00"
+        },
+        {
+          "weekday": "Freitag",
+          "open_from": "06:00",
+          "open_to": "22:00"
+        },
+        {
+          "weekday": "Samstag",
+          "open_from": "06:00",
+          "open_to": "22:00"
+        },
+        {
+          "weekday": "Sonntag",
+          "open_from": "06:00",
+          "open_to": "22:00"
+        }
       ],
       "opening_hours_specification": "Keine Angabe",
       "operator": {

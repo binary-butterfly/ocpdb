@@ -17,7 +17,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 from dataclasses import asdict, dataclass
-from datetime import date, datetime
+from datetime import date, datetime, time
 from decimal import Decimal
 from math import sqrt
 
@@ -382,8 +382,14 @@ class ChargingStationUpdate(BaseUpdate):
 @dataclass(kw_only=True)
 class RegularHoursUpdate(BaseUpdate):
     weekday: int
-    period_begin: int
-    period_end: int
+    period_begin: time
+    period_end: time
+
+    def to_dict(self) -> dict:
+        result = super().to_dict()
+        result['period_begin'] = self.period_begin.strftime('%H:%M')
+        result['period_end'] = self.period_end.strftime('%H:%M')
+        return result
 
 
 @dataclass(kw_only=True)

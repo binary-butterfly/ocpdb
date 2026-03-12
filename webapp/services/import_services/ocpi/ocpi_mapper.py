@@ -81,7 +81,13 @@ class OcpiMapper:
             if location_input.opening_times.regular_hours:
                 location_update.regular_hours = []
                 for regular_hour_input in location_input.opening_times.regular_hours:
-                    location_update.regular_hours.append(RegularHoursUpdate(**regular_hour_input.to_dict()))
+                    location_update.regular_hours.append(
+                        RegularHoursUpdate(
+                            weekday=regular_hour_input.weekday,
+                            period_begin=regular_hour_input.period_begin,
+                            period_end=regular_hour_input.period_end,
+                        ),
+                    )
 
             if location_input.opening_times.exceptional_openings:
                 location_update.exceptional_openings = []

@@ -225,10 +225,8 @@ class OchpMapper:
                     location_update.regular_hours.append(
                         RegularHoursUpdate(
                             weekday=regular_hour_input.weekday,
-                            period_begin=regular_hour_input.periodBegin.hour * 3600
-                            + regular_hour_input.periodBegin.minute * 60,
-                            period_end=regular_hour_input.periodEnd.hour * 3600
-                            + regular_hour_input.periodEnd.minute * 60,
+                            period_begin=regular_hour_input.periodBegin,
+                            period_end=regular_hour_input.periodEnd,
                         ),
                     )
 
