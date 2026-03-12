@@ -24,7 +24,7 @@ from requests_mock import Mocker
 from webapp.common.flask_app import App
 from webapp.common.sqlalchemy import SQLAlchemy
 from webapp.dependencies import dependencies
-from webapp.models import Location
+from webapp.models import ChargingStation, Location
 from webapp.services.import_services.bnetza.bnetza_api_service import BnetzaApiImportService
 
 
@@ -43,7 +43,8 @@ def test_bnetza_api_service(db: SQLAlchemy, mocked_bnetza_api_request: None):
 
     bnetza_import_service.fetch_static_data()
 
-    assert db.session.query(Location).count() == 918
+    assert db.session.query(Location).count() == 721
+    assert db.session.query(ChargingStation).count() == 918
 
 
 def test_filtered_bnetza_api_service(flask_app: App, db: SQLAlchemy, mocked_bnetza_api_request: None):
@@ -52,4 +53,4 @@ def test_filtered_bnetza_api_service(flask_app: App, db: SQLAlchemy, mocked_bnet
 
     bnetza_import_service.fetch_static_data()
 
-    assert db.session.query(Location).count() == 445
+    assert db.session.query(Location).count() == 373
