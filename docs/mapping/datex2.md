@@ -1,15 +1,15 @@
 # DATEX II German Energy Infrastructure
 
 This documents the mapping between the
-[DATEX II German Energy Infrastructure Profile](https://www.mdm-portal.de/) (JSON) and OCPI 3.0-preview
-Locations / ChargingStations / EVSEs / Connectors.
+[DATEX II German Energy Infrastructure Profile](https://github.com/MobilithekDE/AFIR-DATEX-II-Recharging-Profil/)
+(JSON) and OCPI 3.0-preview Locations / ChargingStations / EVSEs / Connectors.
 
 It is an extension to the `_general.md`.
 
 DATEX II provides static and realtime data for charging infrastructure in Germany.
 
 Static data is delivered as a JSON payload containing an `aegiEnergyInfrastructureTablePublication` with a hierarchical
-structure: `energyInfrastructureSite` -> `energyInfrastructureStation` -> `refillPoint` -> `aegiElectricChargingPoint`
+structure: `energyInfrastructureSite` -> `energyInfrastructureStation` -> `refillPoint` / `aegiElectricChargingPoint`
 -> `connector`.
 
 Realtime data is delivered as an `aegiEnergyInfrastructureStatusPublication` containing `energyInfrastructureSiteStatus`
@@ -179,9 +179,9 @@ An `energyInfrastructureStation` maps to a `ChargingStation`. Multiple stations 
 | supplementalFacility                   | SupplementalFacilityG                                                       | *           |                                           | Not mapped                                                                                    |
 | dedicatedParkingSpaces                 | DedicatedParkingSpaces                                                      | *           |                                           | Not mapped                                                                                    |
 | serviceType                            | [ServiceType](#ServiceTypeEnum)                                             | *           | charging_station.service_type             | See [ServiceTypeEnum](#ServiceTypeEnum) mapping table, first match used                       |
-| energyDistributor                      | OrganisationG                                                               | ?           |                                           | Not mapped                                                                                    |
-| mobilityServiceProvider                | OrganisationG                                                               | *           |                                           | Not mapped                                                                                    |
-| roamingPlatform                        | OrganisationG                                                               | *           |                                           | Not mapped                                                                                    |
+| energyDistributor                      | [OrganisationG](#OrganisationG)                                             | ?           |                                           | Not mapped                                                                                    |
+| mobilityServiceProvider                | [OrganisationG](#OrganisationG)                                             | *           |                                           | Not mapped                                                                                    |
+| roamingPlatform                        | [OrganisationG](#OrganisationG)                                             | *           |                                           | Not mapped                                                                                    |
 | electricEnergy                         | [ElectricEnergy](#ElectricEnergy)                                           | *           |                                           | Not mapped at station level (taken from charging point)                                       |
 | refillPoint                            | [RefillPointG](#refillPoint--aegiElectricChargingPoint)                     | *           | charge_station.evses                      | Contains the charging points, see below                                                       |
 
