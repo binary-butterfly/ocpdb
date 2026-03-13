@@ -21,7 +21,7 @@ from datetime import date, datetime, time
 from decimal import Decimal
 from math import sqrt
 
-from webapp.models.charging_station import Capability
+from webapp.models.charging_station import Capability, ServiceType
 from webapp.models.connector import ConnectorFormat, ConnectorType, PowerType
 from webapp.models.evse import EvseStatus, ParkingRestriction, PresenceStatus
 from webapp.models.image import ImageCategory
@@ -69,6 +69,7 @@ class BusinessUpdate(BaseUpdate):
     logo: ImageUpdate | None = None
     name: str | None = None
     website: str | None = None
+    emobility_uid: str | None = None
 
 
 @dataclass(kw_only=True)
@@ -360,6 +361,8 @@ class ChargingStationUpdate(BaseUpdate):
     evses: list[EvseUpdate]
 
     capabilities: list[Capability] | None = None
+    service_type: ServiceType | None = None
+    user_interface_languages: list[str] | None = None
     floor_level: str | None = None
     physical_reference: str | None = None
     last_updated: datetime | None = None
