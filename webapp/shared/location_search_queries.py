@@ -64,6 +64,7 @@ class LocationSearchQuery(SortingMixin, OffsetPaginationMixin, BaseSearchQuery):
     address: str | None = SearchParamContains(), StringValidator()
     city: str | None = SearchParamContains(), StringValidator()
     country: str | None = SearchParamEquals(), StringValidator(min_length=3, max_length=3)
+    official_region_code: str | None = SearchParamEquals(), StringValidator(min_length=1, max_length=36)
 
     operator_name: str | None = SearchParamContains(), StringValidator()
 

@@ -16,12 +16,14 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+import logging
 from abc import ABC, abstractmethod
 from datetime import datetime, timezone
 
 from celery.schedules import crontab
 
 from webapp.common.contexts import TelemetryContext
+from webapp.common.logging.models import LogMessageType
 from webapp.common.remote_mixin import RemoteMixin
 from webapp.models import Business, ChargingStation, Connector, Evse, Image, Location, Source
 from webapp.models.source import SourceStatus
@@ -30,6 +32,7 @@ from webapp.repositories import (
     EvseRepository,
     LocationRepository,
     ObjectNotFoundException,
+    OfficialRegionCodeRepository,
     SourceRepository,
 )
 from webapp.repositories.business_repository import BusinessRepository
@@ -45,6 +48,8 @@ from webapp.services.import_services.models import (
     SourceInfo,
 )
 
+logger = logging.getLogger(__name__)
+
 
 class BaseImportService(BaseService, RemoteMixin, ABC):
     source_repository: SourceRepository
@@ -53,6 +58,7 @@ class BaseImportService(BaseService, RemoteMixin, ABC):
     connector_repository: ConnectorRepository
     business_repository: BusinessRepository
     image_repository: ImageRepository
+    official_region_code_repository: OfficialRegionCodeRepository
 
     schedule: crontab | None = None
     required_config_keys: list[str] = []
@@ -74,6 +80,7 @@ class BaseImportService(BaseService, RemoteMixin, ABC):
         connector_repository: ConnectorRepository,
         business_repository: BusinessRepository,
         image_repository: ImageRepository,
+        official_region_code_repository: OfficialRegionCodeRepository,
         **kwargs,
     ):
         super().__init__(*args, **kwargs)
@@ -83,6 +90,7 @@ class BaseImportService(BaseService, RemoteMixin, ABC):
         self.connector_repository = connector_repository
         self.business_repository = business_repository
         self.image_repository = image_repository
+        self.official_region_code_repository = official_region_code_repository
 
     def save_evse_updates(self, evse_updates: list[EvseUpdate | EvseRealtimeUpdate]):
         """
@@ -113,6 +121,8 @@ class BaseImportService(BaseService, RemoteMixin, ABC):
         self.evse_repository.session.commit()
 
     def save_location_updates(self, location_updates: list[LocationUpdate]):
+        available_official_region_code_databases = self.official_region_code_repository.available_databases_by_country()
+
         # get old location ids
         old_location_ids = self.location_repository.fetch_location_ids_by_source(self.source_info.uid)
 
@@ -125,7 +135,13 @@ class BaseImportService(BaseService, RemoteMixin, ABC):
         # evse_uids = {item[0]: item[1] for item in self.evse_repository.fetch_extended_evse_uids()}
 
         for location_update in location_updates:
-            self.save_location_update(location_update, businesses_by_name, old_location_ids, images_by_url)
+            self.save_location_update(
+                location_update=location_update,
+                businesses_by_name=businesses_by_name,
+                old_location_ids=old_location_ids,
+                images_by_url=images_by_url,
+                available_official_region_code_databases=available_official_region_code_databases,
+            )
 
         # delete locations which are not part of the updated dataset anymore
         for old_location_id in old_location_ids:
@@ -139,6 +155,7 @@ class BaseImportService(BaseService, RemoteMixin, ABC):
         businesses_by_name: dict[str, Business] | None = None,
         old_location_ids: list[int] | None = None,
         images_by_url: dict[str, Image] | None = None,
+        available_official_region_code_databases: list[str] | None = None,
     ):
         try:
             location = self.location_repository.fetch_location_by_uid(
@@ -191,6 +208,30 @@ class BaseImportService(BaseService, RemoteMixin, ABC):
                 ),
             )
         location.charging_pool = new_charging_stations
+
+        # Fetch official regional code if not set, if all required fields are available and if country is supported
+        if (
+            not location.official_region_code
+            and location.lat
+            and location.lon
+            and location.country
+            and available_official_region_code_databases
+            and location.country in available_official_region_code_databases
+        ):
+            try:
+                location.official_region_code = (
+                    self.official_region_code_repository.fetch_official_region_code_by_coordinates(
+                        country=location.country,
+                        lat=location.lat,
+                        lon=location.lon,
+                    )
+                )
+            except ObjectNotFoundException:
+                # As we query for locations in Germany, we do expect a regionalschluessel to be present
+                logger.warning(
+                    f'Cannot find official regional code for location {location.country} {location.lat} / {location.lon}',
+                    extra={'attributes': {'type': LogMessageType.IMPORT_SOURCE}},
+                )
 
         self.location_repository.save_location(location)
 
