@@ -36,7 +36,12 @@ At [api.ocpdb.de](https://api.ocpdb.de/documentation/public.html) you will find 
 
 ## Command line interface
 
-The application provides a simple command line interface:
+The application provides a simple command line interface. You can access any cli command from within the container. The
+makefile provides a shortcut to run the cli:
+
+```bash
+make docker-run CMD="flask db upgrade"
+```
 
 ### Import all sources
 

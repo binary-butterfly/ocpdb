@@ -56,7 +56,7 @@ services:
   postgre:
     image: postgis/postgis:15-3.5-alpine
     ports:
-      - '5432:5432'
+      - '5442:5432'
     volumes:
       - postgres:/var/lib/postgresql/data/
       - ./scripts:/scripts
@@ -79,12 +79,12 @@ services:
       - ./scripts:/scripts
       - ./data/regionalschluessel:/data
     environment:
-      - VG22_GEOPACKAGE_URL=${VG22_GEOPACKAGE_URL:-https://mobidata-bw.de/daten/ipl/verwaltungsgrenzen/DE_VG25.gpkg}
+      - VG25_GEOPACKAGE_URL=${VG22_GEOPACKAGE_URL:-https://mobidata-bw.de/daten/ipl/verwaltungsgrenzen/DE_VG25.gpkg}
       - VG25_GEOPACKAGE_WGET_USER_AGENT='OCPDB development'
       - PGHOST=postgre
-      - POSTGRES_USER=ocpdb
-      - POSTGRES_PASSWORD=development
-      - POSTGRES_DB=ocpdb
+      - PGUSER=ocpdb
+      - PGPASSWORD=development
+      - PGDATABASE=ocpdb
     depends_on:
       postgre:
         condition: service_healthy
