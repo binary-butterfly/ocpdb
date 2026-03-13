@@ -91,17 +91,19 @@ flask match run
 OCPDB extends the Location data model with a new field `official_regional_code` in non-strict mode. This field provides
 the official regional code of a location, if available. Following regional codes are used:
 
-- DEU: Regionalschlüssel
+- DEU: [Regionalschlüssel](https://de.wikipedia.org/wiki/Amtlicher_Gemeindeschl%C3%BCssel#Regionalschl%C3%BCssel)
 
 
 ### Setup DEU: Regionalschlüssel
 
-In Germany, we use the dataset Verwaltungsgebiete 1:25 000 by Bundesamt für Kartographie und Geodäsie (BKG) for
+In Germany, we use the [dataset Verwaltungsgebiete 1:25 000 (VG25) by Bundesamt für Kartographie und Geodäsie (BKG)](https://gdz.bkg.bund.de/index.php/default/digitale-geodaten/verwaltungsgebiete.html) for
 assigning official regional codes to locations, licenced as
 [Creative Commons Namensnennung 4.0 International](https://creativecommons.org/licenses/by/4.0/). We download the data
 using wget, transform the data using ogr2ogr and store it our Postgis database.
 
-The script does not download or import the data again, as it that a new version of the data gets a new URL. If you want to update the data, you can delete
+The script assumes that a once-only import is sufficient. You must delete the `data/regionalschluessel/.vg25-imported` "marker file" (and re-run the script) to trigger a re-import.
+
+It also assumes that the data at the VG25 URL is immutable, the data will be downloaded only once. You must delete `data/regionalschluessel/vg25.gpkg` (and re-run the script) to trigger a re-download.
 `data/regionalschluessel/vg25.gpkg` in order to trigger the download again, and `data/regionalschluessel/.vg25-imported`
 to trigger the import again. You can use this mechanism for ansible automatization, too: if you drop the geopackage
 at `data/regionalschluessel/vg25.gpkg` via ansible, you won't need to download the file during runtime.
