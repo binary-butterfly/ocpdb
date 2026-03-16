@@ -49,10 +49,11 @@ def testing_import_service():
         **dependencies.get_base_service_dependencies(),
         location_repository=dependencies.get_location_repository(),
         evse_repository=dependencies.get_evse_repository(),
-        connector_repository=dependencies.get_evse_repository(),
+        connector_repository=dependencies.get_connector_repository(),
         business_repository=dependencies.get_business_repository(),
         image_repository=dependencies.get_image_repository(),
         source_repository=dependencies.get_source_repository(),
+        official_region_code_repository=dependencies.get_official_region_code_repository(),
     )
 
 

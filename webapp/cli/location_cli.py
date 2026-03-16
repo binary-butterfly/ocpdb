@@ -1,6 +1,6 @@
 """
 Open ChargePoint DataBase OCPDB
-Copyright (C) 2024 binary butterfly GmbH
+Copyright (C) 2026 binary butterfly GmbH
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published by
@@ -16,19 +16,16 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-import json
+import click
+from flask.cli import AppGroup
 
-from flask import Flask, jsonify
+from webapp.dependencies import dependencies
 
-app = Flask('mocked_sw_stuttgart')
-
-
-@app.route('/SW-Stuttgart')
-def get_locations():
-    with open('./full_data.json') as json_file:
-        json_data = json.loads(json_file.read())
-    return jsonify(json_data), 200
+location_cli = AppGroup('location')
 
 
-if __name__ == "__main__":
-    app.run(debug=True, host='0.0.0.0')
+@location_cli.command('assign-regionalschluessel', help='Assigns official region codes to locations')
+@click.option('-s', '--source-id', default=None, help='Limit to a specific source')
+@click.option('--re-assign', is_flag=True, default=False, help='Re-assign existing official region codes')
+def assign_regionalschluessel(source_id: str | None, re_assign: bool):
+    dependencies.get_location_service().assign_official_region_codes(source_id=source_id, re_assign=re_assign)
