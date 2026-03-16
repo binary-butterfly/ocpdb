@@ -27,13 +27,14 @@ from webapp.common.logging.models import LogMessageType
 from webapp.models import SourceStatus
 from webapp.services.import_services.base_import_service import BaseImportService
 from webapp.services.import_services.datex2.german_mapper import GermanStaticDatexMapper
-from webapp.services.import_services.datex2.german_static.energy_infrastructure_site_input import (
-    EnergyInfrastructureSiteInput,
-)
 from webapp.services.import_services.models import LocationUpdate, SourceInfo
-
-from .german_realtime.d_a_t_e_x_i_i3_d2_payload_input import DATEXII3D2PayloadInput as DATEXII3D2RealtimePayloadInput
-from .german_static.d_a_t_e_x_i_i3_d2_payload_input import DATEXII3D2PayloadInput as DATEXII3D2StaticPayloadInput
+from webapp.shared.datex2.german_realtime.d_a_t_e_x_i_i3_d2_payload_input import (
+    DATEXII3D2PayloadInput as DATEXII3D2RealtimePayloadInput,
+)
+from webapp.shared.datex2.german_static.d_a_t_e_x_i_i3_d2_payload_input import (
+    DATEXII3D2PayloadInput as DATEXII3D2StaticPayloadInput,
+)
+from webapp.shared.datex2.german_static.energy_infrastructure_site_input import EnergyInfrastructureSiteInput
 
 logger = logging.getLogger(__name__)
 

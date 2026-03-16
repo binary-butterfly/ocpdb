@@ -19,6 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from webapp.common.base_blueprint import BaseBlueprint
 
 from .business_api import BusinessBlueprint
+from .datex2_api import Datex2Blueprint
 from .evse_api import EvseBlueprint
 from .location_api import LocationBlueprint
 from .ocpi import Ocpi22Blueprint, Ocpi30Blueprint
@@ -31,6 +32,7 @@ class PublicApi(BaseBlueprint):
     blueprints: list[type[BaseBlueprint]] = [
         TilesBlueprint,
         BusinessBlueprint,
+        Datex2Blueprint,
         Ocpi22Blueprint,
         Ocpi30Blueprint,
         LocationBlueprint,
