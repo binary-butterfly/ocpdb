@@ -1,5 +1,19 @@
 # Changelog
 
+## Version 2.8.0
+
+Released 2026-03-16
+
+### Features
+
+* [Official region code Support for Germany (Regionalschlüssel)](https://github.com/binary-butterfly/ocpdb/pull/183)
+
+
+### Maintenance
+
+* [Update dependencies](https://github.com/binary-butterfly/ocpdb/pull/189)
+
+
 ## Version 2.7.2
 
 Released 2026-03-12
