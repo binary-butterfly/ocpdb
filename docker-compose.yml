@@ -79,7 +79,7 @@ services:
       - ./scripts:/scripts
       - ./data/regionalschluessel:/data
     environment:
-      - VG25_GEOPACKAGE_URL=${VG22_GEOPACKAGE_URL:-https://mobidata-bw.de/daten/ipl/verwaltungsgrenzen/DE_VG25.gpkg}
+      - VG25_GEOPACKAGE_URL=${VG25_GEOPACKAGE_URL:-https://mobidata-bw.de/daten/ipl/verwaltungsgrenzen/DE_VG25.gpkg}
       - VG25_GEOPACKAGE_WGET_USER_AGENT='OCPDB development'
       - PGHOST=postgre
       - PGUSER=ocpdb
