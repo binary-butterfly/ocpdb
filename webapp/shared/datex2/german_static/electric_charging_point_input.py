@@ -6,7 +6,6 @@ Use of this source code is governed by an MIT-style license that can be found in
 from validataclass.dataclasses import Default, ValidataclassMixin, validataclass
 from validataclass.helpers import UnsetValue, UnsetValueType
 from validataclass.validators import (
-    AnythingValidator,
     DataclassValidator,
     FloatValidator,
     IntegerValidator,
@@ -124,10 +123,6 @@ class ElectricChargingPointInput(ValidataclassMixin):
     )
     dimension: DimensionInput | UnsetValueType = DataclassValidator(DimensionInput), Default(UnsetValue)
     amenities: AmenitiesInput | UnsetValueType = DataclassValidator(AmenitiesInput), Default(UnsetValue)
-    supplementalFacility: list | UnsetValueType = (
-        ListValidator(AnythingValidator(allowed_types=[dict])),
-        Default(UnsetValue),
-    )
     dedicatedParkingSpaces: list[DedicatedParkingSpacesInput] | UnsetValueType = (
         ListValidator(DataclassValidator(DedicatedParkingSpacesInput)),
         Default(UnsetValue),

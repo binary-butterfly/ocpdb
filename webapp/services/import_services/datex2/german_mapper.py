@@ -17,6 +17,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 from datetime import datetime
+from decimal import Decimal
 
 from pycountry import countries
 from validataclass.helpers import UnsetValue, UnsetValueType
@@ -97,8 +98,8 @@ class GermanStaticDatexMapper:
         location = LocationUpdate(
             source=source,
             uid=energy_infrastructure_site.idG,
-            lat=energy_infrastructure_site.locationReference.locAreaLocation.coordinatesForDisplay.latitude,
-            lon=energy_infrastructure_site.locationReference.locAreaLocation.coordinatesForDisplay.longitude,
+            lat=Decimal(energy_infrastructure_site.locationReference.locAreaLocation.coordinatesForDisplay.latitude),
+            lon=Decimal(energy_infrastructure_site.locationReference.locAreaLocation.coordinatesForDisplay.longitude),
             time_zone='Europe/Berlin',
             charging_pool=[],
         )
@@ -254,7 +255,11 @@ class GermanStaticDatexMapper:
             self._apply_connector(connector, i, refill_point.aegiElectricChargingPoint, evse)
 
     def _apply_connector(
-        self, connector_input: DatexConnectorInput, i: int, charging_point: ElectricChargingPointInput, evse: EvseUpdate
+        self,
+        connector_input: DatexConnectorInput,
+        i: int,
+        charging_point: ElectricChargingPointInput,
+        evse: EvseUpdate,
     ):
         standard = self._map_standard(connector_input.connectorType.value)
         power_type = self._map_power_type(charging_point.currentType.value, standard)
@@ -358,7 +363,7 @@ class GermanStaticDatexMapper:
         return PowerType.AC_3_PHASE
 
     @staticmethod
-    def _map_standard(connector_type: ConnectorTypeEnum) -> ConnectorType | UnsetValueType:
+    def _map_standard(connector_type: ConnectorTypeEnum) -> ConnectorType | None:
         return {
             ConnectorTypeEnum.CEE3: ConnectorType.IEC_60309_2_single_16,
             ConnectorTypeEnum.CEE5: ConnectorType.IEC_60309_2_three_32,
@@ -389,7 +394,7 @@ class GermanStaticDatexMapper:
             ConnectorTypeEnum.TESLACONNECTORAMERICA: ConnectorType.TESLA_S,
             ConnectorTypeEnum.TESLAR: ConnectorType.TESLA_R,
             ConnectorTypeEnum.TESLAS: ConnectorType.TESLA_S,
-        }.get(connector_type, UnsetValue)
+        }.get(connector_type, None)
 
     _refill_point_status_map: dict[RefillPointStatusEnum, EvseStatus] = {
         RefillPointStatusEnum.AVAILABLE: EvseStatus.AVAILABLE,

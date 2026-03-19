@@ -27,6 +27,7 @@ SOURCES:
   datex2_enbw:
     auto_fetch: false
     static_subscription_id: 12345
+    realtime_subscription_id: 67890
 
 
 # This is a template. You can rename it to the config value LOGGING and adapt it to your needs.

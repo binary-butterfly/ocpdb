@@ -6,6 +6,7 @@ Use of this source code is governed by an MIT-style license that can be found in
 from validataclass.dataclasses import Default, ValidataclassMixin, validataclass
 from validataclass.helpers import UnsetValue, UnsetValueType
 from validataclass.validators import (
+    AnythingValidator,
     BooleanValidator,
     DataclassValidator,
     IntegerValidator,
@@ -13,7 +14,6 @@ from validataclass.validators import (
     StringValidator,
 )
 
-from .energy_infrastructure_station_status_input import EnergyInfrastructureStationStatusInput
 from .extension_type_g_input import ExtensionTypeGInput
 from .facility_object_versioned_reference_g_input import FacilityObjectVersionedReferenceGInput
 from .fault_input import FaultInput
@@ -57,8 +57,8 @@ class EnergyInfrastructureSiteStatusInput(ValidataclassMixin):
         ListValidator(DataclassValidator(SupplementalFacilityStatusInput)),
         Default(UnsetValue),
     )
-    energyInfrastructureStationStatus: list[EnergyInfrastructureStationStatusInput] | UnsetValueType = (
-        ListValidator(DataclassValidator(EnergyInfrastructureStationStatusInput)),
+    energyInfrastructureStationStatus: list[dict] | UnsetValueType = (
+        ListValidator(AnythingValidator(allowed_types=[dict])),
         Default(UnsetValue),
     )
     serviceType: list[ServiceTypeInput] | UnsetValueType = (

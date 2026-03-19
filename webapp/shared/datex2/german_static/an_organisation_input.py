@@ -5,13 +5,7 @@ Use of this source code is governed by an MIT-style license that can be found in
 
 from validataclass.dataclasses import Default, ValidataclassMixin, validataclass
 from validataclass.helpers import UnsetValue, UnsetValueType
-from validataclass.validators import (
-    AnythingValidator,
-    BooleanValidator,
-    DataclassValidator,
-    ListValidator,
-    StringValidator,
-)
+from validataclass.validators import BooleanValidator, DataclassValidator, ListValidator, StringValidator
 
 from .extension_type_g_input import ExtensionTypeGInput
 from .external_identifier_input import ExternalIdentifierInput
@@ -63,10 +57,6 @@ class AnOrganisationInput(ValidataclassMixin):
     )
     externalIdentifier: list[ExternalIdentifierInput] | UnsetValueType = (
         ListValidator(DataclassValidator(ExternalIdentifierInput)),
-        Default(UnsetValue),
-    )
-    subOrganisation: list | UnsetValueType = (
-        ListValidator(AnythingValidator(allowed_types=[dict])),
         Default(UnsetValue),
     )
     afacOrganisationExtensionG: ExtensionTypeGInput | UnsetValueType = (

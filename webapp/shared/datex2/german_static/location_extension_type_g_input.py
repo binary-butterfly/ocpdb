@@ -12,7 +12,7 @@ from .facility_location_input import FacilityLocationInput
 
 @validataclass
 class LocationExtensionTypeGInput(ValidataclassMixin):
-    facilityLocation: FacilityLocationInput | UnsetValueType = (
+    FacilityLocation: FacilityLocationInput | UnsetValueType = (
         DataclassValidator(FacilityLocationInput),
         Default(UnsetValue),
     )

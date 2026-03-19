@@ -24,14 +24,19 @@ from requests_mock import Mocker
 from webapp.common.sqlalchemy import SQLAlchemy
 from webapp.dependencies import dependencies
 from webapp.models import Business, ChargingStation, Connector, Evse, Location
+from webapp.models.evse import EvseStatus
 from webapp.services.import_services.datex2 import EnBWDatex2ImportService
+
+
+def _load_test_data(filename: str) -> str:
+    json_path = Path(Path(__file__).parent, 'data', filename)
+    with json_path.open() as json_file:
+        return json_file.read()
 
 
 @pytest.fixture
 def enbw_datex2_import_service(requests_mock: Mocker) -> EnBWDatex2ImportService:
-    json_path = Path(Path(__file__).parent, 'data', 'datex2_enbw_reduced.json')
-    with json_path.open() as json_file:
-        json_data = json_file.read()
+    json_data = _load_test_data('datex2_enbw_static_reduced.json')
 
     requests_mock.get(
         'https://mobilithek.info:8443/mobilithek/api/v1.0/subscription?subscriptionID=12345',
@@ -54,3 +59,66 @@ def test_enbw_datex2_static_import(
     assert db.session.query(Evse).count() == 57
     assert db.session.query(Connector).count() == 57
     assert db.session.query(Business).count() == 1
+
+
+def test_enbw_datex2_realtime_import(db: SQLAlchemy, requests_mock: Mocker) -> None:
+    """
+    Test for EnBWDatex2ImportService.fetch_realtime_data().
+
+    First imports static data to populate the database,
+    then tests realtime update functionality.
+    """
+    static_data = _load_test_data('datex2_enbw_static_reduced.json')
+    realtime_data = _load_test_data('datex2_enbw_realtime_reduced.json')
+
+    requests_mock.get(
+        'https://mobilithek.info:8443/mobilithek/api/v1.0/subscription?subscriptionID=12345',
+        status_code=200,
+        text=static_data,
+        headers={'Content-Type': 'application/json'},
+    )
+    requests_mock.get(
+        'https://mobilithek.info:8443/mobilithek/api/v1.0/subscription?subscriptionID=67890',
+        status_code=200,
+        text=realtime_data,
+        headers={'Content-Type': 'application/json'},
+    )
+
+    enbw_service: EnBWDatex2ImportService = dependencies.get_import_services().importer_by_uid['datex2_enbw']
+
+    # First populate database with static data
+    enbw_service.fetch_static_data()
+
+    # Verify all EVSEs start with UNKNOWN status after static import
+    assert db.session.query(Evse).filter(Evse.status == EvseStatus.UNKNOWN).count() == 57
+
+    # Run realtime update
+    enbw_service.fetch_realtime_data()
+
+    db.session.expire_all()
+
+    # Verify EVSE statuses updated from realtime data
+    # available -> AVAILABLE (status changed from UNKNOWN)
+    evse_available = db.session.query(Evse).filter(Evse.uid == 'DE*EBW*E914082*2').first()
+    assert evse_available is not None
+    assert evse_available.status == EvseStatus.AVAILABLE
+
+    # charging -> CHARGING
+    evse_charging = db.session.query(Evse).filter(Evse.uid == 'DE*EBW*E914082*1').first()
+    assert evse_charging is not None
+    assert evse_charging.status == EvseStatus.CHARGING
+
+    # faulted -> OUTOFORDER
+    evse_faulted = db.session.query(Evse).filter(Evse.uid == 'DE*EBW*E914081*1').first()
+    assert evse_faulted is not None
+    assert evse_faulted.status == EvseStatus.OUTOFORDER
+
+    # occupied -> CHARGING
+    evse_occupied = db.session.query(Evse).filter(Evse.uid == 'DE*EBW*E909938*3').first()
+    assert evse_occupied is not None
+    assert evse_occupied.status == EvseStatus.CHARGING
+
+    # EVSEs not in realtime data should remain UNKNOWN
+    evse_unchanged = db.session.query(Evse).filter(Evse.uid == 'DE*EBW*E916701*2').first()
+    assert evse_unchanged is not None
+    assert evse_unchanged.status == EvseStatus.UNKNOWN

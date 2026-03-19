@@ -31,6 +31,9 @@ from webapp.services.import_services.models import LocationUpdate, SourceInfo
 from webapp.shared.datex2.german_realtime.d_a_t_e_x_i_i3_d2_payload_input import (
     DATEXII3D2PayloadInput as DATEXII3D2RealtimePayloadInput,
 )
+from webapp.shared.datex2.german_realtime.energy_infrastructure_station_status_input import (
+    EnergyInfrastructureStationStatusInput,
+)
 from webapp.shared.datex2.german_static.d_a_t_e_x_i_i3_d2_payload_input import (
     DATEXII3D2PayloadInput as DATEXII3D2StaticPayloadInput,
 )
@@ -43,6 +46,7 @@ class EnBWDatex2ImportService(BaseImportService):
     german_static_datex_validator = DataclassValidator(DATEXII3D2StaticPayloadInput)
     german_realtime_datex_validator = DataclassValidator(DATEXII3D2RealtimePayloadInput)
     energy_infrastructure_site_validator = DataclassValidator(EnergyInfrastructureSiteInput)
+    energy_infrastructure_station_status_validator = DataclassValidator(EnergyInfrastructureStationStatusInput)
     german_static_datex_mapper = GermanStaticDatexMapper()
 
     source_info = SourceInfo(
@@ -62,9 +66,6 @@ class EnBWDatex2ImportService(BaseImportService):
         location_updates: list[LocationUpdate] = []
         static_data_updated_at = datetime.now(timezone.utc)
         data = self.request_data(self.config.get('static_subscription_id'))
-
-        # with open('/app/tests/integration/services/import_services/datex2/data/datex2_enbw_reduced.json', 'r', encoding='utf-8') as f:
-        #    data = json.loads(f.read())
 
         try:
             datex_input = self.german_static_datex_validator.validate(data)
@@ -97,7 +98,7 @@ class EnBWDatex2ImportService(BaseImportService):
                 )
             except ValidationError as e:
                 logger.warning(
-                    f'opendata swiss EVSEDataRecord {energy_infrastructure_site_dict} has error: {e.to_dict()}',
+                    f'DATEX2 EnergyInfrastructureSite {energy_infrastructure_site_dict} has error: {e.to_dict()}',
                     extra={'attributes': {'type': LogMessageType.IMPORT_SOURCE}},
                 )
                 error_count += 1
@@ -106,6 +107,8 @@ class EnBWDatex2ImportService(BaseImportService):
             location_update = self.german_static_datex_mapper.map_energy_infrastructure_site_to_location(
                 self.source_info.uid, energy_infrastructure_site_input
             )
+            if location_update is None:
+                continue
             location_updates.append(location_update)
             success_count += 1
 
@@ -170,7 +173,16 @@ class EnBWDatex2ImportService(BaseImportService):
         for site_status in datex_input.payload.aegiEnergyInfrastructureStatusPublication.energyInfrastructureSiteStatus:
             if site_status.energyInfrastructureStationStatus is UnsetValue:
                 continue
-            for station_status in site_status.energyInfrastructureStationStatus:
+            for station_status_dict in site_status.energyInfrastructureStationStatus:
+                try:
+                    station_status = self.energy_infrastructure_station_status_validator.validate(station_status_dict)
+                except ValidationError as e:
+                    logger.warning(
+                        f'DATEX2 EnergyInfrastructureStationStatus {station_status_dict} has error: {e.to_dict()}',
+                        extra={'attributes': {'type': LogMessageType.IMPORT_SOURCE}},
+                    )
+                    realtime_error_count += 1
+                    continue
                 if station_status.refillPointStatus is UnsetValue:
                     continue
                 for refill_point_status_g in station_status.refillPointStatus:
