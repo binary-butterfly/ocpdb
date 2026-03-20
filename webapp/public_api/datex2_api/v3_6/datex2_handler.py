@@ -25,20 +25,20 @@ from webapp.shared.datex2.german_static.d_a_t_e_x_i_i3_d2_payload_input import (
     DATEXII3D2PayloadInput as DATEXII3D2StaticPayloadInput,
 )
 
-from .datex2_realtime_mapper import DatexRealtimeExportMapper
-from .datex2_static_mapper import DatexStaticExportMapper
+from .datex2_realtime_mapper import DatexV36RealtimeExportMapper
+from .datex2_static_mapper import DatexV36StaticExportMapper
 
 
-class Datex2Handler(PublicApiBaseHandler):
+class Datex2V36Handler(PublicApiBaseHandler):
     location_repository: LocationRepository
-    datex_static_export_mapper: DatexStaticExportMapper
-    datex_realtime_export_mapper: DatexRealtimeExportMapper
+    datex_static_export_mapper: DatexV36StaticExportMapper
+    datex_realtime_export_mapper: DatexV36RealtimeExportMapper
 
     def __init__(self, *args, location_repository: LocationRepository, **kwargs):
         super().__init__(*args, **kwargs)
         self.location_repository = location_repository
-        self.datex_static_export_mapper = DatexStaticExportMapper()
-        self.datex_realtime_export_mapper = DatexRealtimeExportMapper()
+        self.datex_static_export_mapper = DatexV36StaticExportMapper()
+        self.datex_realtime_export_mapper = DatexV36RealtimeExportMapper()
 
     def get_datex2_payload(self) -> DATEXII3D2StaticPayloadInput:
         locations = self.location_repository.fetch_all_locations_with_children()

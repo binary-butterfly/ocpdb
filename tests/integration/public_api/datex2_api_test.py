@@ -29,8 +29,8 @@ from webapp.models.evse import EvseStatus
 
 
 class Datex2StaticApiTest:
+    @staticmethod
     def test_get_static_empty(
-        self,
         db: SQLAlchemy,
         test_client: OpenApiFlaskClient,
     ) -> None:
@@ -52,8 +52,8 @@ class Datex2StaticApiTest:
             {'idG': '1', 'versionG': '1', 'energyInfrastructureSite': []}
         ]
 
+    @staticmethod
     def test_get_static_with_location(
-        self,
         db: SQLAlchemy,
         test_client: OpenApiFlaskClient,
     ) -> None:
@@ -75,8 +75,8 @@ class Datex2StaticApiTest:
         assert site['additionalInformation'] == [{'values': [{'lang': 'de', 'value': 'Test Location'}]}]
         assert site['operatingHours'] == {'afacOpenAllHours': {}}
 
+    @staticmethod
     def test_get_static_location_reference(
-        self,
         db: SQLAlchemy,
         test_client: OpenApiFlaskClient,
     ) -> None:
@@ -108,8 +108,8 @@ class Datex2StaticApiTest:
         assert address_lines[1]['type'] == {'value': 'houseNumber'}
         assert address_lines[1]['text'] == {'values': [{'lang': 'de', 'value': '123'}]}
 
+    @staticmethod
     def test_get_static_operator(
-        self,
         db: SQLAlchemy,
         test_client: OpenApiFlaskClient,
     ) -> None:
@@ -129,8 +129,8 @@ class Datex2StaticApiTest:
             },
         }
 
+    @staticmethod
     def test_get_static_station_and_evse(
-        self,
         db: SQLAlchemy,
         test_client: OpenApiFlaskClient,
     ) -> None:
@@ -160,8 +160,8 @@ class Datex2StaticApiTest:
         assert charging_point['currentType'] == {'value': 'ac'}
         assert charging_point['numberOfConnectors'] == 1
 
+    @staticmethod
     def test_get_static_connector_details(
-        self,
         db: SQLAlchemy,
         test_client: OpenApiFlaskClient,
     ) -> None:
@@ -189,8 +189,8 @@ class Datex2StaticApiTest:
         assert connector['voltage'] == 400.0
         assert connector['maximumCurrent'] == 32.0
 
+    @staticmethod
     def test_get_static_dc_connector(
-        self,
         db: SQLAlchemy,
         test_client: OpenApiFlaskClient,
     ) -> None:
@@ -214,8 +214,8 @@ class Datex2StaticApiTest:
         assert connector['voltage'] == 400.0
         assert connector['maximumCurrent'] == 350.0
 
+    @staticmethod
     def test_get_static_location_without_name(
-        self,
         db: SQLAlchemy,
         test_client: OpenApiFlaskClient,
     ) -> None:
@@ -230,8 +230,8 @@ class Datex2StaticApiTest:
         ][0]
         assert 'additionalInformation' not in site
 
+    @staticmethod
     def test_get_static_multiple_locations(
-        self,
         db: SQLAlchemy,
         test_client: OpenApiFlaskClient,
     ) -> None:
@@ -251,8 +251,8 @@ class Datex2StaticApiTest:
 
 
 class Datex2RealtimeApiTest:
+    @staticmethod
     def test_get_realtime_empty(
-        self,
         db: SQLAlchemy,
         test_client: OpenApiFlaskClient,
     ) -> None:
@@ -263,8 +263,8 @@ class Datex2RealtimeApiTest:
 
         assert 'payload' in data
 
+    @staticmethod
     def test_get_realtime_payload_structure(
-        self,
         db: SQLAlchemy,
         test_client: OpenApiFlaskClient,
     ) -> None:
@@ -281,8 +281,8 @@ class Datex2RealtimeApiTest:
         assert status_pub['lang'] == 'de'
         assert status_pub['publicationCreator'] == {'country': 'DE', 'nationalIdentifier': 'OCPDB'}
 
+    @staticmethod
     def test_get_realtime_with_location(
-        self,
         db: SQLAlchemy,
         test_client: OpenApiFlaskClient,
     ) -> None:
@@ -302,8 +302,8 @@ class Datex2RealtimeApiTest:
         assert site_status['reference']['idG'] == 'LOCATION-1'
         assert site_status['lastUpdated'] == ANY
 
+    @staticmethod
     def test_get_realtime_station_status(
-        self,
         db: SQLAlchemy,
         test_client: OpenApiFlaskClient,
     ) -> None:
@@ -323,8 +323,8 @@ class Datex2RealtimeApiTest:
         assert station_status['reference']['targetClass'] == 'FacilityObject'
         assert station_status['reference']['idG'] == 'CS-1'
 
+    @staticmethod
     def test_get_realtime_evse_status(
-        self,
         db: SQLAlchemy,
         test_client: OpenApiFlaskClient,
     ) -> None:
@@ -346,8 +346,8 @@ class Datex2RealtimeApiTest:
         assert refill_status['status'] == {'value': 'available'}
         assert 'lastUpdated' in refill_status
 
+    @staticmethod
     def test_get_realtime_evse_status_mapping(
-        self,
         db: SQLAlchemy,
         test_client: OpenApiFlaskClient,
     ) -> None:
@@ -377,8 +377,8 @@ class Datex2RealtimeApiTest:
             'EVSE-2': 'outOfOrder',
         }
 
+    @staticmethod
     def test_get_realtime_skips_static_evse(
-        self,
         db: SQLAlchemy,
         test_client: OpenApiFlaskClient,
     ) -> None:
@@ -402,8 +402,8 @@ class Datex2RealtimeApiTest:
         assert len(refill_statuses) == 1
         assert refill_statuses[0]['aegiRefillPointStatus']['reference']['idG'] == 'EVSE-1'
 
+    @staticmethod
     def test_get_realtime_skips_station_with_all_unmappable_evses(
-        self,
         db: SQLAlchemy,
         test_client: OpenApiFlaskClient,
     ) -> None:
@@ -426,8 +426,8 @@ class Datex2RealtimeApiTest:
 
         assert len(site_statuses) == 0
 
+    @staticmethod
     def test_get_realtime_multiple_locations(
-        self,
         db: SQLAlchemy,
         test_client: OpenApiFlaskClient,
     ) -> None:
@@ -445,8 +445,8 @@ class Datex2RealtimeApiTest:
         site_ids = {ss['reference']['idG'] for ss in site_statuses}
         assert site_ids == {'LOCATION-1', 'LOCATION-2'}
 
+    @staticmethod
     def test_get_realtime_evse_status_last_updated_fallback(
-        self,
         db: SQLAlchemy,
         test_client: OpenApiFlaskClient,
     ) -> None:

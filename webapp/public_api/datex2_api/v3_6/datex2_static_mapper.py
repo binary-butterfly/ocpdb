@@ -85,7 +85,7 @@ from webapp.shared.datex2.german_static.type_of_identifier_enum_extension_type_g
 from webapp.shared.datex2.german_static.type_of_identifier_enum_g_input import TypeOfIdentifierEnumGInput
 
 
-class DatexStaticExportMapper:
+class DatexV36StaticExportMapper:
     _connector_type_map: dict[ConnectorType, ConnectorTypeEnum] = {
         ConnectorType.CHADEMO: ConnectorTypeEnum.CHADEMO,
         ConnectorType.DOMESTIC_A: ConnectorTypeEnum.DOMESTICA,
@@ -415,7 +415,7 @@ class DatexStaticExportMapper:
     @staticmethod
     def _build_operator(business: Business) -> OrganisationGInput:
         org = AnOrganisationInput(
-            name=DatexStaticExportMapper._build_multilingual_string(business.name),
+            name=DatexV36StaticExportMapper._build_multilingual_string(business.name),
         )
 
         if business.emobility_uid:
@@ -437,7 +437,7 @@ class DatexStaticExportMapper:
         version_g: str,
         operator: Business | None,
     ) -> OrganisationGInput:
-        name = DatexStaticExportMapper._build_multilingual_string(operator.name if operator else 'Helpdesk')
+        name = DatexV36StaticExportMapper._build_multilingual_string(operator.name if operator else 'Helpdesk')
 
         return OrganisationGInput(
             afacReferenceableOrganisation=ReferenceableOrganisationInput(

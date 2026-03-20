@@ -43,7 +43,7 @@ from webapp.shared.datex2.german_realtime.refill_point_status_g_input import Ref
 from webapp.shared.datex2.german_realtime.refill_point_status_input import RefillPointStatusInput
 
 
-class DatexRealtimeExportMapper:
+class DatexV36RealtimeExportMapper:
     _evse_status_to_refill_point_status_map: dict[EvseStatus, RefillPointStatusEnum] = {
         EvseStatus.AVAILABLE: RefillPointStatusEnum.AVAILABLE,
         EvseStatus.BLOCKED: RefillPointStatusEnum.BLOCKED,

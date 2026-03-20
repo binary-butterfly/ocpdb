@@ -16,14 +16,4 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from webapp.public_api.base_blueprint import BaseBlueprint
-
-from .v3_6 import Datex2V36Blueprint
-
-
-class Datex2Blueprint(BaseBlueprint):
-    documented = True
-
-    def __init__(self):
-        super().__init__('datex2', __name__, url_prefix='/api/public/datex')
-        self.register_blueprint(Datex2V36Blueprint())
+from .datex2_rest_api import Datex2V36Blueprint
