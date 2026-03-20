@@ -19,6 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from flask import jsonify
 from flask_cors import cross_origin
 
+from webapp.common.dataclass import filter_unset_value
 from webapp.common.rest import BaseMethodView
 from webapp.dependencies import dependencies
 from webapp.public_api.base_blueprint import BaseBlueprint
@@ -67,7 +68,8 @@ class Datex2StaticMethodView(BaseMethodView):
     @cross_origin()
     def get(self):
         result = self.datex2_handler.get_datex2_payload()
-        return jsonify(result)
+
+        return jsonify(filter_unset_value(result.to_dict()))
 
 
 class Datex2RealtimeMethodView(BaseMethodView):
@@ -80,4 +82,5 @@ class Datex2RealtimeMethodView(BaseMethodView):
     @cross_origin()
     def get(self):
         result = self.datex2_handler.get_datex2_realtime_payload()
-        return jsonify(result)
+
+        return jsonify(filter_unset_value(result.to_dict()))

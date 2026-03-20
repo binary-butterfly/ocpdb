@@ -16,11 +16,8 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from __future__ import annotations
-
 import re
 from datetime import datetime, timezone
-from decimal import Decimal
 
 from pycountry import countries
 from validataclass.helpers import UnsetValue
@@ -51,6 +48,7 @@ from webapp.shared.datex2.german_static.contact_information_g_input import Conta
 from webapp.shared.datex2.german_static.contact_information_input import ContactInformationInput
 from webapp.shared.datex2.german_static.current_type_enum import CurrentTypeEnum
 from webapp.shared.datex2.german_static.current_type_enum_g_input import CurrentTypeEnumGInput
+from webapp.shared.datex2.german_static.d_a_t_e_x_i_i3_d2_payload_input import DATEXII3D2PayloadInput
 from webapp.shared.datex2.german_static.delivery_unit_enum import DeliveryUnitEnum
 from webapp.shared.datex2.german_static.delivery_unit_enum_g_input import DeliveryUnitEnumGInput
 from webapp.shared.datex2.german_static.electric_charging_point_input import ElectricChargingPointInput
@@ -87,7 +85,7 @@ from webapp.shared.datex2.german_static.type_of_identifier_enum_extension_type_g
 from webapp.shared.datex2.german_static.type_of_identifier_enum_g_input import TypeOfIdentifierEnumGInput
 
 
-class DatexExportMapper:
+class DatexStaticExportMapper:
     _connector_type_map: dict[ConnectorType, ConnectorTypeEnum] = {
         ConnectorType.CHADEMO: ConnectorTypeEnum.CHADEMO,
         ConnectorType.DOMESTIC_A: ConnectorTypeEnum.DOMESTICA,
@@ -146,7 +144,7 @@ class DatexExportMapper:
         ConnectorFormat.CABLE: ConnectorFormatTypeEnum.CABLEMODE3,
     }
 
-    def map_locations_to_payload(self, locations: list[Location]) -> PayloadPublicationGInput:
+    def map_locations_to_static_payload(self, locations: list[Location]) -> DATEXII3D2PayloadInput:
         now = datetime.now(tz=timezone.utc).isoformat()
 
         sites = []
@@ -155,7 +153,7 @@ class DatexExportMapper:
             if site is not None:
                 sites.append(site)
 
-        return PayloadPublicationGInput(
+        payload = PayloadPublicationGInput(
             modelBaseVersionG='3',
             versionG='3.6',
             profileNameG='Afir Energy Infrastructure',
@@ -176,6 +174,7 @@ class DatexExportMapper:
                 ],
             ),
         )
+        return DATEXII3D2PayloadInput(payload=payload)
 
     def _map_location_to_site(self, location: Location) -> EnergyInfrastructureSiteInput | None:
         if location.lat is None or location.lon is None:
@@ -331,30 +330,30 @@ class DatexExportMapper:
 
     def _build_site_location_reference(self, location: Location) -> LocationReferenceGInput:
         coordinates = PointCoordinatesInput(
-            latitude=Decimal(str(float(location.lat))),
-            longitude=Decimal(str(float(location.lon))),
+            latitude=float(location.lat),
+            longitude=float(location.lon),
         )
 
         return LocationReferenceGInput(
             locAreaLocation=AreaLocationInput(coordinatesForDisplay=coordinates),
             locPointLocation=PointLocationInput(
                 locLocationExtensionG=LocationExtensionTypeGInput(
-                    facilityLocation=self._build_facility_location(location),
+                    FacilityLocation=self._build_facility_location(location),
                 ),
             ),
         )
 
     def _build_station_location_reference(self, location: Location) -> LocationReferenceGInput:
         coordinates = PointCoordinatesInput(
-            latitude=Decimal(str(float(location.lat))),
-            longitude=Decimal(str(float(location.lon))),
+            latitude=float(location.lat),
+            longitude=float(location.lon),
         )
 
         return LocationReferenceGInput(
             locPointLocation=PointLocationInput(
                 coordinatesForDisplay=coordinates,
                 locLocationExtensionG=LocationExtensionTypeGInput(
-                    facilityLocation=self._build_facility_location(location, include_timezone=True),
+                    FacilityLocation=self._build_facility_location(location, include_timezone=True),
                 ),
             ),
         )
@@ -416,7 +415,7 @@ class DatexExportMapper:
     @staticmethod
     def _build_operator(business: Business) -> OrganisationGInput:
         org = AnOrganisationInput(
-            name=DatexExportMapper._build_multilingual_string(business.name),
+            name=DatexStaticExportMapper._build_multilingual_string(business.name),
         )
 
         if business.emobility_uid:
@@ -438,7 +437,7 @@ class DatexExportMapper:
         version_g: str,
         operator: Business | None,
     ) -> OrganisationGInput:
-        name = DatexExportMapper._build_multilingual_string(operator.name if operator else 'Helpdesk')
+        name = DatexStaticExportMapper._build_multilingual_string(operator.name if operator else 'Helpdesk')
 
         return OrganisationGInput(
             afacReferenceableOrganisation=ReferenceableOrganisationInput(

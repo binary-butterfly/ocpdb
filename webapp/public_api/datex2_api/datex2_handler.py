@@ -18,29 +18,34 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from webapp.public_api.base_handler import PublicApiBaseHandler
 from webapp.repositories import LocationRepository
-from webapp.shared.datex2.datex_serializer import datex_to_dict
+from webapp.shared.datex2.german_realtime.d_a_t_e_x_i_i3_d2_payload_input import (
+    DATEXII3D2PayloadInput as DATEXII3D2RealtimePayloadInput,
+)
+from webapp.shared.datex2.german_static.d_a_t_e_x_i_i3_d2_payload_input import (
+    DATEXII3D2PayloadInput as DATEXII3D2StaticPayloadInput,
+)
 
-from .datex2_mapper import DatexExportMapper
 from .datex2_realtime_mapper import DatexRealtimeExportMapper
+from .datex2_static_mapper import DatexStaticExportMapper
 
 
 class Datex2Handler(PublicApiBaseHandler):
     location_repository: LocationRepository
-    datex_export_mapper: DatexExportMapper
+    datex_static_export_mapper: DatexStaticExportMapper
     datex_realtime_export_mapper: DatexRealtimeExportMapper
 
     def __init__(self, *args, location_repository: LocationRepository, **kwargs):
         super().__init__(*args, **kwargs)
         self.location_repository = location_repository
-        self.datex_export_mapper = DatexExportMapper()
+        self.datex_static_export_mapper = DatexStaticExportMapper()
         self.datex_realtime_export_mapper = DatexRealtimeExportMapper()
 
-    def get_datex2_payload(self) -> dict:
+    def get_datex2_payload(self) -> DATEXII3D2StaticPayloadInput:
         locations = self.location_repository.fetch_all_locations_with_children()
-        payload = self.datex_export_mapper.map_locations_to_payload(locations)
-        return {'payload': datex_to_dict(payload)}
 
-    def get_datex2_realtime_payload(self) -> dict:
+        return self.datex_static_export_mapper.map_locations_to_static_payload(locations)
+
+    def get_datex2_realtime_payload(self) -> DATEXII3D2RealtimePayloadInput:
         locations = self.location_repository.fetch_all_locations_with_children()
-        message_container = self.datex_realtime_export_mapper.map_locations_to_realtime_payload(locations)
-        return {'messageContainer': datex_to_dict(message_container)}
+
+        return self.datex_realtime_export_mapper.map_locations_to_realtime_payload(locations)

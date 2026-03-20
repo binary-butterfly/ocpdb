@@ -38,6 +38,7 @@ class Datex2StaticApiTest:
 
         assert response.status_code == HTTPStatus.OK
         data = response.json
+
         assert 'payload' in data
         payload = data['payload']
         assert payload['versionG'] == '3.6'
@@ -92,7 +93,7 @@ class Datex2StaticApiTest:
         assert location_ref['locAreaLocation']['coordinatesForDisplay']['latitude'] == 52.52003
         assert location_ref['locAreaLocation']['coordinatesForDisplay']['longitude'] == 13.40489
 
-        facility_location = location_ref['locPointLocation']['locLocationExtensionG']['facilityLocation']
+        facility_location = location_ref['locPointLocation']['locLocationExtensionG']['FacilityLocation']
         address = facility_location['address']
         assert address['postcode'] == '12345'
         assert address['city'] == {'values': [{'lang': 'de', 'value': 'Test City'}]}
@@ -259,10 +260,8 @@ class Datex2RealtimeApiTest:
 
         assert response.status_code == HTTPStatus.OK
         data = response.json
-        assert 'messageContainer' in data
 
-        mc = data['messageContainer']
-        assert 'payload' in mc
+        assert 'payload' in data
 
     def test_get_realtime_payload_structure(
         self,
@@ -272,7 +271,7 @@ class Datex2RealtimeApiTest:
         response = test_client.get(path='/api/public/datex/v3.6/recharging/realtime')
 
         assert response.status_code == HTTPStatus.OK
-        payload = response.json['messageContainer']['payload']
+        payload = response.json['payload']
 
         assert payload['versionG'] == '3.6'
         assert payload['profileNameG'] == 'AFIR Energy Infrastructure'
@@ -293,7 +292,7 @@ class Datex2RealtimeApiTest:
         response = test_client.get(path='/api/public/datex/v3.6/recharging/realtime')
 
         assert response.status_code == HTTPStatus.OK
-        status_pub = response.json['messageContainer']['payload']['aegiEnergyInfrastructureStatusPublication']
+        status_pub = response.json['payload']['aegiEnergyInfrastructureStatusPublication']
 
         site_statuses = status_pub['energyInfrastructureSiteStatus']
         assert len(site_statuses) == 1
@@ -313,7 +312,7 @@ class Datex2RealtimeApiTest:
 
         response = test_client.get(path='/api/public/datex/v3.6/recharging/realtime')
 
-        site_status = response.json['messageContainer']['payload']['aegiEnergyInfrastructureStatusPublication'][
+        site_status = response.json['payload']['aegiEnergyInfrastructureStatusPublication'][
             'energyInfrastructureSiteStatus'
         ][0]
 
@@ -334,7 +333,7 @@ class Datex2RealtimeApiTest:
 
         response = test_client.get(path='/api/public/datex/v3.6/recharging/realtime')
 
-        station_status = response.json['messageContainer']['payload']['aegiEnergyInfrastructureStatusPublication'][
+        station_status = response.json['payload']['aegiEnergyInfrastructureStatusPublication'][
             'energyInfrastructureSiteStatus'
         ][0]['energyInfrastructureStationStatus'][0]
 
@@ -365,7 +364,7 @@ class Datex2RealtimeApiTest:
 
         response = test_client.get(path='/api/public/datex/v3.6/recharging/realtime')
 
-        refill_statuses = response.json['messageContainer']['payload']['aegiEnergyInfrastructureStatusPublication'][
+        refill_statuses = response.json['payload']['aegiEnergyInfrastructureStatusPublication'][
             'energyInfrastructureSiteStatus'
         ][0]['energyInfrastructureStationStatus'][0]['refillPointStatus']
 
@@ -396,7 +395,7 @@ class Datex2RealtimeApiTest:
 
         response = test_client.get(path='/api/public/datex/v3.6/recharging/realtime')
 
-        refill_statuses = response.json['messageContainer']['payload']['aegiEnergyInfrastructureStatusPublication'][
+        refill_statuses = response.json['payload']['aegiEnergyInfrastructureStatusPublication'][
             'energyInfrastructureSiteStatus'
         ][0]['energyInfrastructureStationStatus'][0]['refillPointStatus']
 
@@ -421,7 +420,7 @@ class Datex2RealtimeApiTest:
 
         response = test_client.get(path='/api/public/datex/v3.6/recharging/realtime')
 
-        site_statuses = response.json['messageContainer']['payload']['aegiEnergyInfrastructureStatusPublication'][
+        site_statuses = response.json['payload']['aegiEnergyInfrastructureStatusPublication'][
             'energyInfrastructureSiteStatus'
         ]
 
@@ -438,7 +437,7 @@ class Datex2RealtimeApiTest:
         response = test_client.get(path='/api/public/datex/v3.6/recharging/realtime')
 
         assert response.status_code == HTTPStatus.OK
-        site_statuses = response.json['messageContainer']['payload']['aegiEnergyInfrastructureStatusPublication'][
+        site_statuses = response.json['payload']['aegiEnergyInfrastructureStatusPublication'][
             'energyInfrastructureSiteStatus'
         ]
         assert len(site_statuses) == 2
@@ -467,7 +466,7 @@ class Datex2RealtimeApiTest:
 
         response = test_client.get(path='/api/public/datex/v3.6/recharging/realtime')
 
-        refill_statuses = response.json['messageContainer']['payload']['aegiEnergyInfrastructureStatusPublication'][
+        refill_statuses = response.json['payload']['aegiEnergyInfrastructureStatusPublication'][
             'energyInfrastructureSiteStatus'
         ][0]['energyInfrastructureStationStatus'][0]['refillPointStatus']
 
