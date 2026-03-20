@@ -241,13 +241,8 @@ class DatexV36StaticExportMapper:
             refillPoint=refill_points,
         )
 
-        if location.twentyfourseven:
-            station.operatingHours = OperatingHoursGInput(afacOpenAllHours=OpenAllHoursInput())
-
-        station.locationReference = self._build_station_location_reference(location)
-
-        if location.operator:
-            station.operator = self._build_operator(location.operator)
+        if charging_station.lat and charging_station.lon:
+            station.locationReference = self._build_station_location_reference(location)
 
         capabilities = charging_station.capabilities
         if capabilities:
@@ -343,17 +338,17 @@ class DatexV36StaticExportMapper:
             ),
         )
 
-    def _build_station_location_reference(self, location: Location) -> LocationReferenceGInput:
+    def _build_station_location_reference(self, charging_station: ChargingStation) -> LocationReferenceGInput:
         coordinates = PointCoordinatesInput(
-            latitude=float(location.lat),
-            longitude=float(location.lon),
+            latitude=float(charging_station.lat),
+            longitude=float(charging_station.lon),
         )
 
         return LocationReferenceGInput(
             locPointLocation=PointLocationInput(
                 coordinatesForDisplay=coordinates,
                 locLocationExtensionG=LocationExtensionTypeGInput(
-                    FacilityLocation=self._build_facility_location(location, include_timezone=True),
+                    FacilityLocation=self._build_facility_location(coordinates, include_timezone=True),
                 ),
             ),
         )

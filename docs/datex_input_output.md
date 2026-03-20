@@ -57,40 +57,40 @@ significant differences at every level of the hierarchy.
 - `totalMaximumPower` — preserved
 - `numberOfRefillPoints` — preserved
 - `userInterfaceLanguage` — preserved
-- `operatingHours` — preserved
-- `locationReference.locPointLocation.coordinatesForDisplay` — preserved (but see note below about coordinate origin)
-- `locationReference.locPointLocation.locLocationExtensionG.FacilityLocation.timeZone` — preserved
-- `locationReference.locPointLocation.locLocationExtensionG.FacilityLocation.address` — preserved
-- `operator.afacAnOrganisation.name` — preserved
 - `serviceType` — preserved
 
 
 ### Dropped fields
 
-| Field                                           | Notes                                                                                        |
-|-------------------------------------------------|----------------------------------------------------------------------------------------------|
-| `accessibility`                                 | Empty arrays in input, not present in output                                                 |
-| `externalIdentifier`                            | BNetzA external identifiers (e.g. `operatorIdBNetzA` with values like `1121151`) are dropped |
-| `supplementalFacility`                          | Empty arrays in input, not present in output                                                 |
-| `locationReference...FacilityLocation.nutsArea` | NUTS region codes (e.g. `DE1`, `DE4`, `DED`) are dropped                                     |
+| Field                                            | Notes                                                                                                               |
+|--------------------------------------------------|---------------------------------------------------------------------------------------------------------------------|
+| `accessibility`                                  | Empty arrays in input, not present in output                                                                        |
+| `externalIdentifier`                             | BNetzA external identifiers (e.g. `operatorIdBNetzA` with values like `1121151`) are dropped                        |
+| `supplementalFacility`                           | Empty arrays in input, not present in output                                                                        |
+| `operatingHours`                                 | Not output at station level (only at site level)                                                                    |
+| `operator`                                       | Not output at station level (only at site level)                                                                    |
+| `locationReference`                              | Only present when station has its own coordinates; otherwise dropped entirely (see coordinate handling note below)  |
+| `locationReference...FacilityLocation.nutsArea`  | NUTS region codes (e.g. `DE1`, `DE4`, `DED`) are dropped even when locationReference is present                     |
+| `locationReference...FacilityLocation.address`   | Station-level address and timezone are not output even when locationReference is present                            |
 
 
 ### Modified fields
 
-| Field                                            | Input                                                 | Output                                                       |
-|--------------------------------------------------|-------------------------------------------------------|--------------------------------------------------------------|
-| `versionG`                                       | Original source timestamp                             | Replaced with OCPDB internal timestamp                       |
-| `authenticationAndIdentificationMethods`         | Specific RFID types: `mifareClassic`, `mifareDesfire` | Consolidated to generic `rfid`; order may change             |
-| `operator.afacAnOrganisation.externalIdentifier` | Two identifiers: `operatorId` + `operatorIdBNetzA`    | Only `operatorId` kept                                       |
-| `coordinatesForDisplay` (station-level)          | Station's own coordinates (may differ from site)      | Uses site-level coordinates instead of station-specific ones |
+| Field                                    | Input                                                 | Output                                                   |
+|------------------------------------------|-------------------------------------------------------|----------------------------------------------------------|
+| `versionG`                               | Original source timestamp                             | Replaced with OCPDB internal timestamp                   |
+| `authenticationAndIdentificationMethods` | Specific RFID types: `mifareClassic`, `mifareDesfire` | Consolidated to generic `rfid`; order may change         |
 
 
 ### Coordinate handling
 
-In the input, stations can have their own coordinates that differ from the site-level coordinates. For example,
-the Freiberg site has site coordinates `(50.9161, 13.3468)` but its station has coordinates
-`(50.921764, 13.32119)`. In the output, the station coordinates are replaced with the site-level coordinates
-`(50.9161, 13.3468)`, losing station-specific positioning.
+Station-level `locationReference` is only output when the station has its own coordinates (`lat`/`lon`). When
+present, it contains only `coordinatesForDisplay` — the station-level address, timezone, and NUTS area from the
+input are not included.
+
+In the input, stations typically repeat the site-level coordinates. In the current output, station-level
+coordinates are omitted entirely if the station does not have its own coordinates in the database. This means
+station-level location information from the input (including address, timezone, and NUTS codes) is lost.
 
 
 ## Refill point level (`aegiElectricChargingPoint`)
@@ -115,9 +115,9 @@ the Freiberg site has site coordinates `(50.9161, 13.3468)` but its station has 
 
 ### Dropped fields
 
-| Field                         | Notes                                                                                                                                                                                                 |
-|-------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `electricEnergy[].energyRate` | Entire pricing information dropped: `ratePolicy`, `lastUpdated`, `applicableCurrency`, `payment.paymentMeans`, `energyPrice` (pricePerKWh, pricePerMinute values, tax info, time-based applicability) |
+| Field                         | Notes                                                                                                                                                                                                                       |
+|-------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `electricEnergy[].energyRate` | Entire pricing information dropped: `ratePolicy`, `lastUpdated`, `applicableCurrency`, `payment.paymentMeans`, `energyPrice` (pricePerKWh, pricePerMinute values, tax info, time-based applicability). Will be added later. |
 
 
 ## Connector level
@@ -146,9 +146,11 @@ The main categories of information lost during the import/export cycle:
 3. **Site descriptions** — `additionalInformation` text labels
 4. **BNetzA identifiers** — `operatorIdBNetzA` external identifiers at both operator and station level
 5. **NUTS region codes** — Regional classification codes
-6. **Station-specific coordinates** — Replaced by site-level coordinates
-7. **Source identity** — Original publication creator and table IDs replaced by OCPDB values
-8. **Authentication method granularity** — Specific RFID types (`mifareClassic`, `mifareDesfire`) consolidated to generic `rfid`
+6. **Station-level location details** — Station-level address, timezone, and NUTS area are dropped; coordinates are only output when the station has its own lat/lon in the database
+7. **Station-level operating hours** — Not output at station level (only at site level)
+8. **Station-level operator** — Not output at station level (only at site level)
+9. **Source identity** — Original publication creator and table IDs replaced by OCPDB values
+10. **Authentication method granularity** — Specific RFID types (`mifareClassic`, `mifareDesfire`) consolidated to generic `rfid`
 
 
 ## Summary of data enrichment

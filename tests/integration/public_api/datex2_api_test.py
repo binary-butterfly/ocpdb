@@ -149,7 +149,6 @@ class Datex2StaticApiTest:
         station = stations[0]
         assert station['idG'] == 'CS-1'
         assert station['numberOfRefillPoints'] == 2
-        assert station['operatingHours'] == {'afacOpenAllHours': {}}
 
         refill_points = station['refillPoint']
         assert len(refill_points) == 2
