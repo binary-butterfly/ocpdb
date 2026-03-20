@@ -16,5 +16,17 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from .base_datex2_import_service import BaseDatex2ImportService
-from .enbw_datex2_import_service import EnBWDatex2ImportService
+from webapp.services.import_services.datex2.base_datex2_import_service import BaseDatex2ImportService
+from webapp.services.import_services.models import SourceInfo
+
+
+class EnBWDatex2ImportService(BaseDatex2ImportService):
+    source_info = SourceInfo(
+        uid='datex2_enbw',
+        name='EnBW Datex II',
+        public_url='https://mobilithek.info/offers/907574882292453376',
+        source_url='https://mobilithek.info/offers/907574882292453376',
+        attribution_contributor='EnBW AG',
+        attribution_license='CC BY 4.0',
+        has_realtime_data=True,
+    )

@@ -17,6 +17,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 import logging
+from abc import ABC
 from datetime import datetime, timezone
 
 from validataclass.exceptions import ValidationError
@@ -27,7 +28,7 @@ from webapp.common.logging.models import LogMessageType
 from webapp.models import SourceStatus
 from webapp.services.import_services.base_import_service import BaseImportService
 from webapp.services.import_services.datex2.german_mapper import GermanStaticDatexMapper
-from webapp.services.import_services.models import LocationUpdate, SourceInfo
+from webapp.services.import_services.models import LocationUpdate
 from webapp.shared.datex2.german_realtime.d_a_t_e_x_i_i3_d2_payload_input import (
     DATEXII3D2PayloadInput as DATEXII3D2RealtimePayloadInput,
 )
@@ -42,22 +43,12 @@ from webapp.shared.datex2.german_static.energy_infrastructure_site_input import 
 logger = logging.getLogger(__name__)
 
 
-class EnBWDatex2ImportService(BaseImportService):
+class BaseDatex2ImportService(BaseImportService, ABC):
     german_static_datex_validator = DataclassValidator(DATEXII3D2StaticPayloadInput)
     german_realtime_datex_validator = DataclassValidator(DATEXII3D2RealtimePayloadInput)
     energy_infrastructure_site_validator = DataclassValidator(EnergyInfrastructureSiteInput)
     energy_infrastructure_station_status_validator = DataclassValidator(EnergyInfrastructureStationStatusInput)
     german_static_datex_mapper = GermanStaticDatexMapper()
-
-    source_info = SourceInfo(
-        uid='datex2_enbw',
-        name='EnBW Datex II',
-        public_url='https://mobilithek.info/offers/907574882292453376',
-        source_url='https://mobilithek.info/offers/907574882292453376',
-        attribution_contributor='EnBW AG',
-        attribution_license='CC BY 4.0',
-        has_realtime_data=True,
-    )
 
     def fetch_static_data(self):
         source = self.get_source()
@@ -71,7 +62,7 @@ class EnBWDatex2ImportService(BaseImportService):
             datex_input = self.german_static_datex_validator.validate(data)
         except ValidationError as e:
             logger.error(
-                f'missing payload or aegiEnergyInfrastructureTablePublication in datex2_enbw static data {data}: {e.to_dict()}',
+                f'missing payload or aegiEnergyInfrastructureTablePublication in {self.source_info.uid} static data {data}: {e.to_dict()}',
                 extra={'attributes': {'type': LogMessageType.IMPORT_SOURCE}},
             )
             self.update_source(source, static_status=SourceStatus.FAILED, realtime_status=SourceStatus.FAILED)
@@ -83,7 +74,7 @@ class EnBWDatex2ImportService(BaseImportService):
             or len(datex_input.payload.aegiEnergyInfrastructureTablePublication.energyInfrastructureTable) != 1
         ):
             logger.error(
-                f'missing payload or aegiEnergyInfrastructureTablePublication in datex2_enbw static data {data}',
+                f'missing payload or aegiEnergyInfrastructureTablePublication in {self.source_info.uid} static data {data}',
                 extra={'attributes': {'type': LogMessageType.IMPORT_SOURCE}},
             )
             self.update_source(source, static_status=SourceStatus.FAILED, realtime_status=SourceStatus.FAILED)
@@ -140,7 +131,7 @@ class EnBWDatex2ImportService(BaseImportService):
             realtime_data = {'payload': data['messageContainer']['payload'][0]}
         except (KeyError, IndexError, TypeError):
             logger.error(
-                'missing messageContainer or payload in datex2_enbw realtime data',
+                f'missing messageContainer or payload in {self.source_info.uid} realtime data',
                 extra={'attributes': {'type': LogMessageType.IMPORT_SOURCE}},
             )
             self.update_source(source, realtime_status=SourceStatus.FAILED)
@@ -150,7 +141,7 @@ class EnBWDatex2ImportService(BaseImportService):
             datex_input = self.german_realtime_datex_validator.validate(realtime_data)
         except ValidationError as e:
             logger.error(
-                f'invalid datex2_enbw realtime data: {e.to_dict()}',
+                f'invalid {self.source_info.uid} realtime data: {e.to_dict()}',
                 extra={'attributes': {'type': LogMessageType.IMPORT_SOURCE}},
             )
             self.update_source(source, realtime_status=SourceStatus.FAILED)
@@ -163,7 +154,7 @@ class EnBWDatex2ImportService(BaseImportService):
             is UnsetValue
         ):
             logger.error(
-                'missing payload or aegiEnergyInfrastructureStatusPublication in datex2_enbw realtime data',
+                f'missing payload or aegiEnergyInfrastructureStatusPublication in {self.source_info.uid} realtime data',
                 extra={'attributes': {'type': LogMessageType.IMPORT_SOURCE}},
             )
             self.update_source(source, realtime_status=SourceStatus.FAILED)
