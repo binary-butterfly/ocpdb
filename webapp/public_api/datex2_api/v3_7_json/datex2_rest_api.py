@@ -18,11 +18,19 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from flask import jsonify
 from flask_cors import cross_origin
+from flask_openapi.decorator import (
+    ExampleReference,
+    Response,
+    ResponseData,
+    SchemaReference,
+    document,
+)
 
 from webapp.common.dataclass import filter_unset_value
 from webapp.common.rest import BaseMethodView
 from webapp.dependencies import dependencies
 from webapp.public_api.base_blueprint import BaseBlueprint
+from webapp.shared.datex2.v3_7_json_static.schema import all_datex2_v37_static_components
 
 from .datex2_handler import Datex2V37JSONHandler
 
@@ -56,6 +64,18 @@ class Datex2V37JSONStaticMethodView(BaseMethodView):
         super().__init__(*args, **kwargs)
         self.datex2_handler = datex2_handler
 
+    @document(
+        description='Get static DATEX II v3.7 energy infrastructure data',
+        response=[
+            Response(
+                ResponseData(
+                    SchemaReference('Datex2V37StaticPayload'),
+                    ExampleReference('Datex2V37StaticPayload'),
+                ),
+            ),
+        ],
+        components=all_datex2_v37_static_components,
+    )
     @cross_origin()
     def get(self):
         result = self.datex2_handler.get_datex2_payload()

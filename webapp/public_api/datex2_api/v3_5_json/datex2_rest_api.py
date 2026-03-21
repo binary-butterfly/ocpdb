@@ -18,11 +18,20 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from flask import jsonify
 from flask_cors import cross_origin
+from flask_openapi.decorator import (
+    ExampleReference,
+    Response,
+    ResponseData,
+    SchemaReference,
+    document,
+)
 
 from webapp.common.dataclass import filter_unset_value
 from webapp.common.rest import BaseMethodView
 from webapp.dependencies import dependencies
 from webapp.public_api.base_blueprint import BaseBlueprint
+from webapp.shared.datex2.v3_5_json_realtime.schema import all_datex2_v35_realtime_components
+from webapp.shared.datex2.v3_5_json_static.schema import all_datex2_v35_static_components
 
 from .datex2_handler import Datex2V35JSONHandler
 
@@ -65,6 +74,18 @@ class Datex2V35JSONStaticMethodView(BaseMethodView):
         super().__init__(*args, **kwargs)
         self.datex2_handler = datex2_handler
 
+    @document(
+        description='Get static DATEX II v3.5 energy infrastructure data. Warning: this endpoint is experimental!',
+        response=[
+            Response(
+                ResponseData(
+                    SchemaReference('Datex2V35StaticPayload'),
+                    ExampleReference('Datex2V35StaticPayload'),
+                ),
+            ),
+        ],
+        components=all_datex2_v35_static_components,
+    )
     @cross_origin()
     def get(self):
         result = self.datex2_handler.get_datex2_payload()
@@ -79,6 +100,18 @@ class Datex2V35JSONRealtimeMethodView(BaseMethodView):
         super().__init__(*args, **kwargs)
         self.datex2_handler = datex2_handler
 
+    @document(
+        description='Get realtime DATEX II v3.5 energy infrastructure status data. Warning: this endpoint is experimental!',
+        response=[
+            Response(
+                ResponseData(
+                    SchemaReference('Datex2V35RealtimePayload'),
+                    ExampleReference('Datex2V35RealtimePayload'),
+                ),
+            ),
+        ],
+        components=all_datex2_v35_realtime_components,
+    )
     @cross_origin()
     def get(self):
         result = self.datex2_handler.get_datex2_realtime_payload()
