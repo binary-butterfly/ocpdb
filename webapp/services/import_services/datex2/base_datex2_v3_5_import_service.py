@@ -29,16 +29,16 @@ from webapp.models import SourceStatus
 from webapp.services.import_services.base_import_service import BaseImportService
 from webapp.services.import_services.datex2.german_mapper import GermanStaticDatexMapper
 from webapp.services.import_services.models import LocationUpdate
-from webapp.shared.datex2.v3_5_json_realtime.d_a_t_e_x_i_i3_d2_payload_input import (
+from webapp.shared.datex2.v3_5_json_realtime.models.d_a_t_e_x_i_i3_d2_payload_input import (
     DATEXII3D2PayloadInput as DATEXII3D2RealtimePayloadInput,
 )
-from webapp.shared.datex2.v3_5_json_realtime.energy_infrastructure_station_status_input import (
+from webapp.shared.datex2.v3_5_json_realtime.models.energy_infrastructure_station_status_input import (
     EnergyInfrastructureStationStatusInput,
 )
-from webapp.shared.datex2.v3_5_json_static.d_a_t_e_x_i_i3_d2_payload_input import (
+from webapp.shared.datex2.v3_5_json_static.models.d_a_t_e_x_i_i3_d2_payload_input import (
     DATEXII3D2PayloadInput as DATEXII3D2StaticPayloadInput,
 )
-from webapp.shared.datex2.v3_5_json_static.energy_infrastructure_site_input import EnergyInfrastructureSiteInput
+from webapp.shared.datex2.v3_5_json_static.models.energy_infrastructure_site_input import EnergyInfrastructureSiteInput
 
 logger = logging.getLogger(__name__)
 

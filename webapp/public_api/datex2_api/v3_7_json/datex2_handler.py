@@ -18,7 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from webapp.public_api.base_handler import PublicApiBaseHandler
 from webapp.repositories import LocationRepository
-from webapp.shared.datex2.v3_7_json_static.d_a_t_e_x_i_i3_d2_payload_input import DATEXII3D2PayloadInput
+from webapp.shared.datex2.v3_7_json_static.models.d_a_t_e_x_i_i3_d2_payload_input import DATEXII3D2PayloadInput
 
 from .datex2_static_mapper import DatexV37JSONStaticExportMapper
 

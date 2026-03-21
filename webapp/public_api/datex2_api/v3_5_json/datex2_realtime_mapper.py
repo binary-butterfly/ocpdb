@@ -20,25 +20,25 @@ from datetime import datetime, timezone
 
 from webapp.models.evse import Evse, EvseStatus
 from webapp.models.location import Location
-from webapp.shared.datex2.v3_5_json_realtime.d_a_t_e_x_i_i3_d2_payload_input import DATEXII3D2PayloadInput
-from webapp.shared.datex2.v3_5_json_realtime.energy_infrastructure_site_status_input import (
+from webapp.shared.datex2.v3_5_json_realtime.models.d_a_t_e_x_i_i3_d2_payload_input import DATEXII3D2PayloadInput
+from webapp.shared.datex2.v3_5_json_realtime.models.energy_infrastructure_site_status_input import (
     EnergyInfrastructureSiteStatusInput,
 )
-from webapp.shared.datex2.v3_5_json_realtime.energy_infrastructure_station_status_input import (
+from webapp.shared.datex2.v3_5_json_realtime.models.energy_infrastructure_station_status_input import (
     EnergyInfrastructureStationStatusInput,
 )
-from webapp.shared.datex2.v3_5_json_realtime.energy_infrastructure_status_publication_input import (
+from webapp.shared.datex2.v3_5_json_realtime.models.energy_infrastructure_status_publication_input import (
     EnergyInfrastructureStatusPublicationInput,
 )
-from webapp.shared.datex2.v3_5_json_realtime.facility_object_versioned_reference_g_input import (
+from webapp.shared.datex2.v3_5_json_realtime.models.facility_object_versioned_reference_g_input import (
     FacilityObjectVersionedReferenceGInput,
 )
-from webapp.shared.datex2.v3_5_json_realtime.international_identifier_input import InternationalIdentifierInput
-from webapp.shared.datex2.v3_5_json_realtime.payload_publication_g_input import PayloadPublicationGInput
-from webapp.shared.datex2.v3_5_json_realtime.refill_point_status_enum import RefillPointStatusEnum
-from webapp.shared.datex2.v3_5_json_realtime.refill_point_status_enum_g_input import RefillPointStatusEnumGInput
-from webapp.shared.datex2.v3_5_json_realtime.refill_point_status_g_input import RefillPointStatusGInput
-from webapp.shared.datex2.v3_5_json_realtime.refill_point_status_input import RefillPointStatusInput
+from webapp.shared.datex2.v3_5_json_realtime.models.international_identifier_input import InternationalIdentifierInput
+from webapp.shared.datex2.v3_5_json_realtime.models.payload_publication_g_input import PayloadPublicationGInput
+from webapp.shared.datex2.v3_5_json_realtime.models.refill_point_status_enum import RefillPointStatusEnum
+from webapp.shared.datex2.v3_5_json_realtime.models.refill_point_status_enum_g_input import RefillPointStatusEnumGInput
+from webapp.shared.datex2.v3_5_json_realtime.models.refill_point_status_g_input import RefillPointStatusGInput
+from webapp.shared.datex2.v3_5_json_realtime.models.refill_point_status_input import RefillPointStatusInput
 
 
 class DatexV35JSONRealtimeExportMapper:

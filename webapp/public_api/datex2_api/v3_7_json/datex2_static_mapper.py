@@ -26,48 +26,54 @@ from webapp.models.charging_station import Capability, ChargingStation
 from webapp.models.connector import Connector, ConnectorFormat, ConnectorType
 from webapp.models.evse import Evse
 from webapp.models.location import Location
-from webapp.shared.datex2.v3_7_json_static.address_input import AddressInput
-from webapp.shared.datex2.v3_7_json_static.address_line_input import AddressLineInput
-from webapp.shared.datex2.v3_7_json_static.address_line_type_enum import AddressLineTypeEnum
-from webapp.shared.datex2.v3_7_json_static.address_line_type_enum_g_input import AddressLineTypeEnumGInput
-from webapp.shared.datex2.v3_7_json_static.authentication_and_identification_enum import (
+from webapp.shared.datex2.v3_7_json_static.models.address_input import AddressInput
+from webapp.shared.datex2.v3_7_json_static.models.address_line_input import AddressLineInput
+from webapp.shared.datex2.v3_7_json_static.models.address_line_type_enum import AddressLineTypeEnum
+from webapp.shared.datex2.v3_7_json_static.models.address_line_type_enum_g_input import AddressLineTypeEnumGInput
+from webapp.shared.datex2.v3_7_json_static.models.authentication_and_identification_enum import (
     AuthenticationAndIdentificationEnum,
 )
-from webapp.shared.datex2.v3_7_json_static.authentication_and_identification_enum_g_input import (
+from webapp.shared.datex2.v3_7_json_static.models.authentication_and_identification_enum_g_input import (
     AuthenticationAndIdentificationEnumGInput,
 )
-from webapp.shared.datex2.v3_7_json_static.connector_format_type_enum import ConnectorFormatTypeEnum
-from webapp.shared.datex2.v3_7_json_static.connector_format_type_enum_g_input import ConnectorFormatTypeEnumGInput
-from webapp.shared.datex2.v3_7_json_static.connector_input import ConnectorInput as DatexConnectorInput
-from webapp.shared.datex2.v3_7_json_static.connector_type_enum import ConnectorTypeEnum
-from webapp.shared.datex2.v3_7_json_static.connector_type_enum_g_input import ConnectorTypeEnumGInput
-from webapp.shared.datex2.v3_7_json_static.d_a_t_e_x_i_i3_d2_payload_input import DATEXII3D2PayloadInput
-from webapp.shared.datex2.v3_7_json_static.electric_charging_point_input import ElectricChargingPointInput
-from webapp.shared.datex2.v3_7_json_static.electric_energy_mix_input import ElectricEnergyMixInput
-from webapp.shared.datex2.v3_7_json_static.energy_infrastructure_site_input import EnergyInfrastructureSiteInput
-from webapp.shared.datex2.v3_7_json_static.energy_infrastructure_station_input import EnergyInfrastructureStationInput
-from webapp.shared.datex2.v3_7_json_static.energy_infrastructure_table_input import EnergyInfrastructureTableInput
-from webapp.shared.datex2.v3_7_json_static.energy_infrastructure_table_publication_input import (
+from webapp.shared.datex2.v3_7_json_static.models.connector_format_type_enum import ConnectorFormatTypeEnum
+from webapp.shared.datex2.v3_7_json_static.models.connector_format_type_enum_g_input import (
+    ConnectorFormatTypeEnumGInput,
+)
+from webapp.shared.datex2.v3_7_json_static.models.connector_input import ConnectorInput as DatexConnectorInput
+from webapp.shared.datex2.v3_7_json_static.models.connector_type_enum import ConnectorTypeEnum
+from webapp.shared.datex2.v3_7_json_static.models.connector_type_enum_g_input import ConnectorTypeEnumGInput
+from webapp.shared.datex2.v3_7_json_static.models.d_a_t_e_x_i_i3_d2_payload_input import DATEXII3D2PayloadInput
+from webapp.shared.datex2.v3_7_json_static.models.electric_charging_point_input import ElectricChargingPointInput
+from webapp.shared.datex2.v3_7_json_static.models.electric_energy_mix_input import ElectricEnergyMixInput
+from webapp.shared.datex2.v3_7_json_static.models.energy_infrastructure_site_input import EnergyInfrastructureSiteInput
+from webapp.shared.datex2.v3_7_json_static.models.energy_infrastructure_station_input import (
+    EnergyInfrastructureStationInput,
+)
+from webapp.shared.datex2.v3_7_json_static.models.energy_infrastructure_table_input import (
+    EnergyInfrastructureTableInput,
+)
+from webapp.shared.datex2.v3_7_json_static.models.energy_infrastructure_table_publication_input import (
     EnergyInfrastructureTablePublicationInput,
 )
-from webapp.shared.datex2.v3_7_json_static.facility_location_input import FacilityLocationInput
-from webapp.shared.datex2.v3_7_json_static.international_identifier_input import InternationalIdentifierInput
-from webapp.shared.datex2.v3_7_json_static.location_reference_extension_type_g_input import (
+from webapp.shared.datex2.v3_7_json_static.models.facility_location_input import FacilityLocationInput
+from webapp.shared.datex2.v3_7_json_static.models.international_identifier_input import InternationalIdentifierInput
+from webapp.shared.datex2.v3_7_json_static.models.location_reference_extension_type_g_input import (
     LocationReferenceExtensionTypeGInput,
 )
-from webapp.shared.datex2.v3_7_json_static.location_reference_g_input import LocationReferenceGInput
-from webapp.shared.datex2.v3_7_json_static.multi_lingual_string_value_input import MultiLingualStringValueInput
-from webapp.shared.datex2.v3_7_json_static.multilingual_string_input import MultilingualStringInput
-from webapp.shared.datex2.v3_7_json_static.open_all_hours_input import OpenAllHoursInput
-from webapp.shared.datex2.v3_7_json_static.operating_hours_g_input import OperatingHoursGInput
-from webapp.shared.datex2.v3_7_json_static.organisation_g_input import OrganisationGInput
-from webapp.shared.datex2.v3_7_json_static.organisation_specification_input import OrganisationSpecificationInput
-from webapp.shared.datex2.v3_7_json_static.organisation_unit_input import OrganisationUnitInput
-from webapp.shared.datex2.v3_7_json_static.payload_publication_g_input import PayloadPublicationGInput
-from webapp.shared.datex2.v3_7_json_static.point_by_coordinates_input import PointByCoordinatesInput
-from webapp.shared.datex2.v3_7_json_static.point_coordinates_input import PointCoordinatesInput
-from webapp.shared.datex2.v3_7_json_static.point_location_input import PointLocationInput
-from webapp.shared.datex2.v3_7_json_static.refill_point_g_input import RefillPointGInput
+from webapp.shared.datex2.v3_7_json_static.models.location_reference_g_input import LocationReferenceGInput
+from webapp.shared.datex2.v3_7_json_static.models.multi_lingual_string_value_input import MultiLingualStringValueInput
+from webapp.shared.datex2.v3_7_json_static.models.multilingual_string_input import MultilingualStringInput
+from webapp.shared.datex2.v3_7_json_static.models.open_all_hours_input import OpenAllHoursInput
+from webapp.shared.datex2.v3_7_json_static.models.operating_hours_g_input import OperatingHoursGInput
+from webapp.shared.datex2.v3_7_json_static.models.organisation_g_input import OrganisationGInput
+from webapp.shared.datex2.v3_7_json_static.models.organisation_specification_input import OrganisationSpecificationInput
+from webapp.shared.datex2.v3_7_json_static.models.organisation_unit_input import OrganisationUnitInput
+from webapp.shared.datex2.v3_7_json_static.models.payload_publication_g_input import PayloadPublicationGInput
+from webapp.shared.datex2.v3_7_json_static.models.point_by_coordinates_input import PointByCoordinatesInput
+from webapp.shared.datex2.v3_7_json_static.models.point_coordinates_input import PointCoordinatesInput
+from webapp.shared.datex2.v3_7_json_static.models.point_location_input import PointLocationInput
+from webapp.shared.datex2.v3_7_json_static.models.refill_point_g_input import RefillPointGInput
 
 
 class DatexV37JSONStaticExportMapper:
