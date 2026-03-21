@@ -18,7 +18,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from webapp.public_api.base_blueprint import BaseBlueprint
 
-from .v3_6 import Datex2V36Blueprint
+from .v3_5_json import Datex2V35JSONBlueprint
+from .v3_7_json import Datex2V37JSONBlueprint
 
 
 class Datex2Blueprint(BaseBlueprint):
@@ -26,4 +27,5 @@ class Datex2Blueprint(BaseBlueprint):
 
     def __init__(self):
         super().__init__('datex2', __name__, url_prefix='/api/public/datex')
-        self.register_blueprint(Datex2V36Blueprint())
+        self.register_blueprint(Datex2V35JSONBlueprint())
+        self.register_blueprint(Datex2V37JSONBlueprint())

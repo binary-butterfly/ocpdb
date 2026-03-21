@@ -34,14 +34,14 @@ class Datex2StaticApiTest:
         db: SQLAlchemy,
         test_client: OpenApiFlaskClient,
     ) -> None:
-        response = test_client.get(path='/api/public/datex/v3.6/recharging/static')
+        response = test_client.get(path='/api/public/datex/v3.5/json/static')
 
         assert response.status_code == HTTPStatus.OK
         data = response.json
 
         assert 'payload' in data
         payload = data['payload']
-        assert payload['versionG'] == '3.6'
+        assert payload['versionG'] == '3.5'
         assert payload['profileNameG'] == 'Afir Energy Infrastructure'
         assert payload['profileVersionG'] == '01-00-00'
 
@@ -60,7 +60,7 @@ class Datex2StaticApiTest:
         db.session.add(get_full_location_1())
         db.session.commit()
 
-        response = test_client.get(path='/api/public/datex/v3.6/recharging/static')
+        response = test_client.get(path='/api/public/datex/v3.5/json/static')
 
         assert response.status_code == HTTPStatus.OK
         data = response.json
@@ -83,7 +83,7 @@ class Datex2StaticApiTest:
         db.session.add(get_full_location_1())
         db.session.commit()
 
-        response = test_client.get(path='/api/public/datex/v3.6/recharging/static')
+        response = test_client.get(path='/api/public/datex/v3.5/json/static')
 
         site = response.json['payload']['aegiEnergyInfrastructureTablePublication']['energyInfrastructureTable'][0][
             'energyInfrastructureSite'
@@ -116,7 +116,7 @@ class Datex2StaticApiTest:
         db.session.add(get_full_location_1())
         db.session.commit()
 
-        response = test_client.get(path='/api/public/datex/v3.6/recharging/static')
+        response = test_client.get(path='/api/public/datex/v3.5/json/static')
 
         site = response.json['payload']['aegiEnergyInfrastructureTablePublication']['energyInfrastructureTable'][0][
             'energyInfrastructureSite'
@@ -137,7 +137,7 @@ class Datex2StaticApiTest:
         db.session.add(get_full_location_1())
         db.session.commit()
 
-        response = test_client.get(path='/api/public/datex/v3.6/recharging/static')
+        response = test_client.get(path='/api/public/datex/v3.5/json/static')
 
         site = response.json['payload']['aegiEnergyInfrastructureTablePublication']['energyInfrastructureTable'][0][
             'energyInfrastructureSite'
@@ -167,7 +167,7 @@ class Datex2StaticApiTest:
         db.session.add(get_full_location_1())
         db.session.commit()
 
-        response = test_client.get(path='/api/public/datex/v3.6/recharging/static')
+        response = test_client.get(path='/api/public/datex/v3.5/json/static')
 
         charging_point = response.json['payload']['aegiEnergyInfrastructureTablePublication'][
             'energyInfrastructureTable'
@@ -196,7 +196,7 @@ class Datex2StaticApiTest:
         db.session.add(get_full_location_2())
         db.session.commit()
 
-        response = test_client.get(path='/api/public/datex/v3.6/recharging/static')
+        response = test_client.get(path='/api/public/datex/v3.5/json/static')
 
         charging_point = response.json['payload']['aegiEnergyInfrastructureTablePublication'][
             'energyInfrastructureTable'
@@ -221,7 +221,7 @@ class Datex2StaticApiTest:
         db.session.add(get_location_1(name=None, evses=[get_full_evse_1()], operator=get_business_1()))
         db.session.commit()
 
-        response = test_client.get(path='/api/public/datex/v3.6/recharging/static')
+        response = test_client.get(path='/api/public/datex/v3.5/json/static')
 
         assert response.status_code == HTTPStatus.OK
         site = response.json['payload']['aegiEnergyInfrastructureTablePublication']['energyInfrastructureTable'][0][
@@ -237,7 +237,7 @@ class Datex2StaticApiTest:
         db.session.add_all([get_full_location_1(), get_full_location_2()])
         db.session.commit()
 
-        response = test_client.get(path='/api/public/datex/v3.6/recharging/static')
+        response = test_client.get(path='/api/public/datex/v3.5/json/static')
 
         assert response.status_code == HTTPStatus.OK
         sites = response.json['payload']['aegiEnergyInfrastructureTablePublication']['energyInfrastructureTable'][0][
@@ -255,7 +255,7 @@ class Datex2RealtimeApiTest:
         db: SQLAlchemy,
         test_client: OpenApiFlaskClient,
     ) -> None:
-        response = test_client.get(path='/api/public/datex/v3.6/recharging/realtime')
+        response = test_client.get(path='/api/public/datex/v3.5/json/realtime')
 
         assert response.status_code == HTTPStatus.OK
         data = response.json
@@ -267,12 +267,12 @@ class Datex2RealtimeApiTest:
         db: SQLAlchemy,
         test_client: OpenApiFlaskClient,
     ) -> None:
-        response = test_client.get(path='/api/public/datex/v3.6/recharging/realtime')
+        response = test_client.get(path='/api/public/datex/v3.5/json/realtime')
 
         assert response.status_code == HTTPStatus.OK
         payload = response.json['payload']
 
-        assert payload['versionG'] == '3.6'
+        assert payload['versionG'] == '3.5'
         assert payload['profileNameG'] == 'AFIR Energy Infrastructure'
         assert payload['profileVersionG'] == '01-00-00'
 
@@ -288,7 +288,7 @@ class Datex2RealtimeApiTest:
         db.session.add(get_full_location_1())
         db.session.commit()
 
-        response = test_client.get(path='/api/public/datex/v3.6/recharging/realtime')
+        response = test_client.get(path='/api/public/datex/v3.5/json/realtime')
 
         assert response.status_code == HTTPStatus.OK
         status_pub = response.json['payload']['aegiEnergyInfrastructureStatusPublication']
@@ -309,7 +309,7 @@ class Datex2RealtimeApiTest:
         db.session.add(get_full_location_1())
         db.session.commit()
 
-        response = test_client.get(path='/api/public/datex/v3.6/recharging/realtime')
+        response = test_client.get(path='/api/public/datex/v3.5/json/realtime')
 
         site_status = response.json['payload']['aegiEnergyInfrastructureStatusPublication'][
             'energyInfrastructureSiteStatus'
@@ -330,7 +330,7 @@ class Datex2RealtimeApiTest:
         db.session.add(get_full_location_1())
         db.session.commit()
 
-        response = test_client.get(path='/api/public/datex/v3.6/recharging/realtime')
+        response = test_client.get(path='/api/public/datex/v3.5/json/realtime')
 
         station_status = response.json['payload']['aegiEnergyInfrastructureStatusPublication'][
             'energyInfrastructureSiteStatus'
@@ -361,7 +361,7 @@ class Datex2RealtimeApiTest:
         )
         db.session.commit()
 
-        response = test_client.get(path='/api/public/datex/v3.6/recharging/realtime')
+        response = test_client.get(path='/api/public/datex/v3.5/json/realtime')
 
         refill_statuses = response.json['payload']['aegiEnergyInfrastructureStatusPublication'][
             'energyInfrastructureSiteStatus'
@@ -392,7 +392,7 @@ class Datex2RealtimeApiTest:
         )
         db.session.commit()
 
-        response = test_client.get(path='/api/public/datex/v3.6/recharging/realtime')
+        response = test_client.get(path='/api/public/datex/v3.5/json/realtime')
 
         refill_statuses = response.json['payload']['aegiEnergyInfrastructureStatusPublication'][
             'energyInfrastructureSiteStatus'
@@ -417,7 +417,7 @@ class Datex2RealtimeApiTest:
         )
         db.session.commit()
 
-        response = test_client.get(path='/api/public/datex/v3.6/recharging/realtime')
+        response = test_client.get(path='/api/public/datex/v3.5/json/realtime')
 
         site_statuses = response.json['payload']['aegiEnergyInfrastructureStatusPublication'][
             'energyInfrastructureSiteStatus'
@@ -433,7 +433,7 @@ class Datex2RealtimeApiTest:
         db.session.add_all([get_full_location_1(), get_full_location_2()])
         db.session.commit()
 
-        response = test_client.get(path='/api/public/datex/v3.6/recharging/realtime')
+        response = test_client.get(path='/api/public/datex/v3.5/json/realtime')
 
         assert response.status_code == HTTPStatus.OK
         site_statuses = response.json['payload']['aegiEnergyInfrastructureStatusPublication'][
@@ -463,7 +463,7 @@ class Datex2RealtimeApiTest:
         )
         db.session.commit()
 
-        response = test_client.get(path='/api/public/datex/v3.6/recharging/realtime')
+        response = test_client.get(path='/api/public/datex/v3.5/json/realtime')
 
         refill_statuses = response.json['payload']['aegiEnergyInfrastructureStatusPublication'][
             'energyInfrastructureSiteStatus'

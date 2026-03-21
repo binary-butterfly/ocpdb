@@ -29,26 +29,26 @@ from webapp.models import SourceStatus
 from webapp.services.import_services.base_import_service import BaseImportService
 from webapp.services.import_services.datex2.german_mapper import GermanStaticDatexMapper
 from webapp.services.import_services.models import LocationUpdate
-from webapp.shared.datex2.german_realtime.d_a_t_e_x_i_i3_d2_payload_input import (
+from webapp.shared.datex2.v3_5_json_realtime.d_a_t_e_x_i_i3_d2_payload_input import (
     DATEXII3D2PayloadInput as DATEXII3D2RealtimePayloadInput,
 )
-from webapp.shared.datex2.german_realtime.energy_infrastructure_station_status_input import (
+from webapp.shared.datex2.v3_5_json_realtime.energy_infrastructure_station_status_input import (
     EnergyInfrastructureStationStatusInput,
 )
-from webapp.shared.datex2.german_static.d_a_t_e_x_i_i3_d2_payload_input import (
+from webapp.shared.datex2.v3_5_json_static.d_a_t_e_x_i_i3_d2_payload_input import (
     DATEXII3D2PayloadInput as DATEXII3D2StaticPayloadInput,
 )
-from webapp.shared.datex2.german_static.energy_infrastructure_site_input import EnergyInfrastructureSiteInput
+from webapp.shared.datex2.v3_5_json_static.energy_infrastructure_site_input import EnergyInfrastructureSiteInput
 
 logger = logging.getLogger(__name__)
 
 
-class BaseDatex2ImportService(BaseImportService, ABC):
-    german_static_datex_validator = DataclassValidator(DATEXII3D2StaticPayloadInput)
-    german_realtime_datex_validator = DataclassValidator(DATEXII3D2RealtimePayloadInput)
+class BaseDatex2V35ImportService(BaseImportService, ABC):
+    v3_5_json_static_datex_validator = DataclassValidator(DATEXII3D2StaticPayloadInput)
+    v3_5_json_realtime_datex_validator = DataclassValidator(DATEXII3D2RealtimePayloadInput)
     energy_infrastructure_site_validator = DataclassValidator(EnergyInfrastructureSiteInput)
     energy_infrastructure_station_status_validator = DataclassValidator(EnergyInfrastructureStationStatusInput)
-    german_static_datex_mapper = GermanStaticDatexMapper()
+    v3_5_json_static_datex_mapper = GermanStaticDatexMapper()
 
     def fetch_static_data(self):
         source = self.get_source()
@@ -59,7 +59,7 @@ class BaseDatex2ImportService(BaseImportService, ABC):
         data = self.request_data(self.config.get('static_subscription_id'))
 
         try:
-            datex_input = self.german_static_datex_validator.validate(data)
+            datex_input = self.v3_5_json_static_datex_validator.validate(data)
         except ValidationError as e:
             logger.error(
                 f'missing payload or aegiEnergyInfrastructureTablePublication in {self.source_info.uid} static data {data}: {e.to_dict()}',
@@ -95,7 +95,7 @@ class BaseDatex2ImportService(BaseImportService, ABC):
                 error_count += 1
                 continue
 
-            location_update = self.german_static_datex_mapper.map_energy_infrastructure_site_to_location(
+            location_update = self.v3_5_json_static_datex_mapper.map_energy_infrastructure_site_to_location(
                 self.source_info.uid, energy_infrastructure_site_input
             )
             if location_update is None:
@@ -138,7 +138,7 @@ class BaseDatex2ImportService(BaseImportService, ABC):
             return
 
         try:
-            datex_input = self.german_realtime_datex_validator.validate(realtime_data)
+            datex_input = self.v3_5_json_realtime_datex_validator.validate(realtime_data)
         except ValidationError as e:
             logger.error(
                 f'invalid {self.source_info.uid} realtime data: {e.to_dict()}',
@@ -177,7 +177,7 @@ class BaseDatex2ImportService(BaseImportService, ABC):
                 if station_status.refillPointStatus is UnsetValue:
                     continue
                 for refill_point_status_g in station_status.refillPointStatus:
-                    evse_update = self.german_static_datex_mapper.map_energy_infrastructure_station_status(
+                    evse_update = self.v3_5_json_static_datex_mapper.map_energy_infrastructure_station_status(
                         refill_point_status_g,
                     )
                     if evse_update is None:

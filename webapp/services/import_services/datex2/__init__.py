@@ -16,5 +16,4 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from .base_datex2_import_service import BaseDatex2ImportService
 from .enbw_datex2_import_service import EnBWDatex2ImportService

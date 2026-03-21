@@ -16,11 +16,11 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from webapp.services.import_services.datex2.base_datex2_import_service import BaseDatex2ImportService
+from webapp.services.import_services.datex2.base_datex2_v3_5_import_service import BaseDatex2V35ImportService
 from webapp.services.import_services.models import SourceInfo
 
 
-class EnBWDatex2ImportService(BaseDatex2ImportService):
+class EnBWDatex2ImportService(BaseDatex2V35ImportService):
     source_info = SourceInfo(
         uid='datex2_enbw',
         name='EnBW Datex II',

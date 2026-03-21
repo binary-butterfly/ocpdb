@@ -24,15 +24,15 @@ from webapp.common.rest import BaseMethodView
 from webapp.dependencies import dependencies
 from webapp.public_api.base_blueprint import BaseBlueprint
 
-from .datex2_handler import Datex2V35Handler
+from .datex2_handler import Datex2V35JSONHandler
 
 
-class Datex2V35Blueprint(BaseBlueprint):
+class Datex2V35JSONBlueprint(BaseBlueprint):
     documented = True
-    datex2_handler: Datex2V35Handler
+    datex2_handler: Datex2V35JSONHandler
 
     def __init__(self):
-        self.datex2_handler = Datex2V35Handler(
+        self.datex2_handler = Datex2V35JSONHandler(
             **self.get_base_handler_dependencies(),
             location_repository=dependencies.get_location_repository(),
         )
@@ -41,7 +41,7 @@ class Datex2V35Blueprint(BaseBlueprint):
 
         self.add_url_rule(
             '/json/static',
-            view_func=Datex2V35StaticMethodView.as_view(
+            view_func=Datex2V35JSONStaticMethodView.as_view(
                 'datex_recharging_static',
                 **self.get_base_method_view_dependencies(),
                 datex2_handler=self.datex2_handler,
@@ -50,7 +50,7 @@ class Datex2V35Blueprint(BaseBlueprint):
 
         self.add_url_rule(
             '/json/realtime',
-            view_func=Datex2V35RealtimeMethodView.as_view(
+            view_func=Datex2V35JSONRealtimeMethodView.as_view(
                 'datex_recharging_realtime',
                 **self.get_base_method_view_dependencies(),
                 datex2_handler=self.datex2_handler,
@@ -58,10 +58,10 @@ class Datex2V35Blueprint(BaseBlueprint):
         )
 
 
-class Datex2V35StaticMethodView(BaseMethodView):
-    datex2_handler: Datex2V35Handler
+class Datex2V35JSONStaticMethodView(BaseMethodView):
+    datex2_handler: Datex2V35JSONHandler
 
-    def __init__(self, *args, datex2_handler: Datex2V35Handler, **kwargs):
+    def __init__(self, *args, datex2_handler: Datex2V35JSONHandler, **kwargs):
         super().__init__(*args, **kwargs)
         self.datex2_handler = datex2_handler
 
@@ -72,10 +72,10 @@ class Datex2V35StaticMethodView(BaseMethodView):
         return jsonify(filter_unset_value(result.to_dict()))
 
 
-class Datex2V35RealtimeMethodView(BaseMethodView):
-    datex2_handler: Datex2V35Handler
+class Datex2V35JSONRealtimeMethodView(BaseMethodView):
+    datex2_handler: Datex2V35JSONHandler
 
-    def __init__(self, *args, datex2_handler: Datex2V35Handler, **kwargs):
+    def __init__(self, *args, datex2_handler: Datex2V35JSONHandler, **kwargs):
         super().__init__(*args, **kwargs)
         self.datex2_handler = datex2_handler
 

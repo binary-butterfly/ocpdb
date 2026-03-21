@@ -36,37 +36,37 @@ from webapp.services.import_services.models import (
     LocationUpdate,
     MaxPowerUpdate,
 )
-from webapp.shared.datex2.german_realtime.refill_point_status_enum import RefillPointStatusEnum
-from webapp.shared.datex2.german_realtime.refill_point_status_g_input import RefillPointStatusGInput
-from webapp.shared.datex2.german_static.address_line_type_enum import AddressLineTypeEnum
-from webapp.shared.datex2.german_static.authentication_and_identification_enum import (
+from webapp.shared.datex2.v3_5_json_realtime.refill_point_status_enum import RefillPointStatusEnum
+from webapp.shared.datex2.v3_5_json_realtime.refill_point_status_g_input import RefillPointStatusGInput
+from webapp.shared.datex2.v3_5_json_static.address_line_type_enum import AddressLineTypeEnum
+from webapp.shared.datex2.v3_5_json_static.authentication_and_identification_enum import (
     AuthenticationAndIdentificationEnum,
 )
-from webapp.shared.datex2.german_static.authentication_and_identification_enum_g_input import (
+from webapp.shared.datex2.v3_5_json_static.authentication_and_identification_enum_g_input import (
     AuthenticationAndIdentificationEnumGInput,
 )
-from webapp.shared.datex2.german_static.connector_input import ConnectorInput as DatexConnectorInput
-from webapp.shared.datex2.german_static.connector_type_enum import ConnectorTypeEnum
-from webapp.shared.datex2.german_static.current_type_enum import CurrentTypeEnum
-from webapp.shared.datex2.german_static.electric_charging_point_input import (
+from webapp.shared.datex2.v3_5_json_static.connector_input import ConnectorInput as DatexConnectorInput
+from webapp.shared.datex2.v3_5_json_static.connector_type_enum import ConnectorTypeEnum
+from webapp.shared.datex2.v3_5_json_static.current_type_enum import CurrentTypeEnum
+from webapp.shared.datex2.v3_5_json_static.electric_charging_point_input import (
     ElectricChargingPointInput,
 )
-from webapp.shared.datex2.german_static.energy_infrastructure_site_input import (
+from webapp.shared.datex2.v3_5_json_static.energy_infrastructure_site_input import (
     EnergyInfrastructureSiteInput,
 )
-from webapp.shared.datex2.german_static.energy_infrastructure_station_input import (
+from webapp.shared.datex2.v3_5_json_static.energy_infrastructure_station_input import (
     EnergyInfrastructureStationInput,
 )
-from webapp.shared.datex2.german_static.external_identifier_input import ExternalIdentifierInput
-from webapp.shared.datex2.german_static.multilingual_string_input import MultilingualStringInput
-from webapp.shared.datex2.german_static.operating_hours_g_input import OperatingHoursGInput
-from webapp.shared.datex2.german_static.organisation_g_input import OrganisationGInput
-from webapp.shared.datex2.german_static.point_location_input import PointLocationInput
-from webapp.shared.datex2.german_static.refill_point_g_input import RefillPointGInput
-from webapp.shared.datex2.german_static.service_type_enum import ServiceTypeEnum
-from webapp.shared.datex2.german_static.service_type_input import ServiceTypeInput
-from webapp.shared.datex2.german_static.type_of_identifier_enum import TypeOfIdentifierEnum
-from webapp.shared.datex2.german_static.type_of_identifier_enum_extension_type_g import (
+from webapp.shared.datex2.v3_5_json_static.external_identifier_input import ExternalIdentifierInput
+from webapp.shared.datex2.v3_5_json_static.multilingual_string_input import MultilingualStringInput
+from webapp.shared.datex2.v3_5_json_static.operating_hours_g_input import OperatingHoursGInput
+from webapp.shared.datex2.v3_5_json_static.organisation_g_input import OrganisationGInput
+from webapp.shared.datex2.v3_5_json_static.point_location_input import PointLocationInput
+from webapp.shared.datex2.v3_5_json_static.refill_point_g_input import RefillPointGInput
+from webapp.shared.datex2.v3_5_json_static.service_type_enum import ServiceTypeEnum
+from webapp.shared.datex2.v3_5_json_static.service_type_input import ServiceTypeInput
+from webapp.shared.datex2.v3_5_json_static.type_of_identifier_enum import TypeOfIdentifierEnum
+from webapp.shared.datex2.v3_5_json_static.type_of_identifier_enum_extension_type_g import (
     TypeOfIdentifierEnumExtensionTypeG,
 )
 

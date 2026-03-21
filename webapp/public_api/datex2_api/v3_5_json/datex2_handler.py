@@ -18,27 +18,27 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from webapp.public_api.base_handler import PublicApiBaseHandler
 from webapp.repositories import LocationRepository
-from webapp.shared.datex2.german_realtime.d_a_t_e_x_i_i3_d2_payload_input import (
+from webapp.shared.datex2.v3_5_json_realtime.d_a_t_e_x_i_i3_d2_payload_input import (
     DATEXII3D2PayloadInput as DATEXII3D2RealtimePayloadInput,
 )
-from webapp.shared.datex2.german_static.d_a_t_e_x_i_i3_d2_payload_input import (
+from webapp.shared.datex2.v3_5_json_static.d_a_t_e_x_i_i3_d2_payload_input import (
     DATEXII3D2PayloadInput as DATEXII3D2StaticPayloadInput,
 )
 
-from .datex2_realtime_mapper import DatexV35RealtimeExportMapper
-from .datex2_static_mapper import DatexV35StaticExportMapper
+from .datex2_realtime_mapper import DatexV35JSONRealtimeExportMapper
+from .datex2_static_mapper import DatexV35JSONStaticExportMapper
 
 
-class Datex2V35Handler(PublicApiBaseHandler):
+class Datex2V35JSONHandler(PublicApiBaseHandler):
     location_repository: LocationRepository
-    datex_static_export_mapper: DatexV35StaticExportMapper
-    datex_realtime_export_mapper: DatexV35RealtimeExportMapper
+    datex_static_export_mapper: DatexV35JSONStaticExportMapper
+    datex_realtime_export_mapper: DatexV35JSONRealtimeExportMapper
 
     def __init__(self, *args, location_repository: LocationRepository, **kwargs):
         super().__init__(*args, **kwargs)
         self.location_repository = location_repository
-        self.datex_static_export_mapper = DatexV35StaticExportMapper()
-        self.datex_realtime_export_mapper = DatexV35RealtimeExportMapper()
+        self.datex_static_export_mapper = DatexV35JSONStaticExportMapper()
+        self.datex_realtime_export_mapper = DatexV35JSONRealtimeExportMapper()
 
     def get_datex2_payload(self) -> DATEXII3D2StaticPayloadInput:
         locations = self.location_repository.fetch_all_locations_with_children()
