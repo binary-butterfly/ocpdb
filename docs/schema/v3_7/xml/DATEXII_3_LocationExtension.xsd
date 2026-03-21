@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<xs:schema elementFormDefault="qualified" attributeFormDefault="unqualified" xmlns:locx="http://datex2.eu/schema/3/locationExtension" version="3.7" targetNamespace="http://datex2.eu/schema/3/locationExtension" xmlns:fac="http://datex2.eu/schema/3/facilities" xmlns:com="http://datex2.eu/schema/3/common" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:import namespace="http://datex2.eu/schema/3/common" schemaLocation="DATEXII_3_Common.xsd" />
+  <xs:import namespace="http://datex2.eu/schema/3/facilities" schemaLocation="DATEXII_3_Facilities.xsd" />
+  <xs:complexType name="_AddressLineTypeEnum">
+    <xs:simpleContent>
+      <xs:extension base="locx:AddressLineTypeEnum">
+        <xs:attribute name="_extendedValue" type="xs:string" />
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+  <xs:complexType name="Address">
+    <xs:annotation>
+      <xs:documentation>A street oriented addressing structure supporting delivery</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="postcode" type="com:String" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Postcode or postal code for the address.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="city" type="com:MultilingualString" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Postal city name of the address.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="countryCode" type="com:CountryCode" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>EN ISO 3166-1 two-character country code.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="addressLine" type="locx:AddressLine" minOccurs="0" maxOccurs="unbounded" />
+      <xs:element name="_addressExtension" type="com:_ExtensionType" minOccurs="0" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="AddressLine">
+    <xs:annotation>
+      <xs:documentation>A class defining information concerning one line of a postal address.</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="type" type="locx:_AddressLineTypeEnum" minOccurs="1" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>The type for the address line element</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="text" type="com:MultilingualString" minOccurs="1" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Free-text description for the address line element</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="_addressLineExtension" type="com:_ExtensionType" minOccurs="0" />
+    </xs:sequence>
+    <xs:attribute name="order" type="com:NonNegativeInteger" use="required">
+      <xs:annotation>
+        <xs:documentation>The sequence order that the address line element should be displayed in</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+  </xs:complexType>
+  <xs:simpleType name="AddressLineTypeEnum">
+    <xs:annotation>
+      <xs:documentation>A list of supported address line types.</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="street">
+        <xs:annotation>
+          <xs:documentation>Element indicating road or street identifier or name </xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="houseNumber">
+        <xs:annotation>
+          <xs:documentation>Element indicating a house number</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="_extended" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:complexType name="FacilityLocation">
+    <xs:annotation>
+      <xs:documentation>A location for which a time zone and an address can be specified</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="timeZone" type="fac:TimeZone" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>The time zone the facility is located in.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="address" type="locx:Address" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>An address specification following ISO 19160-4.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:simpleType name="NamedAreaCode">
+    <xs:annotation>
+      <xs:documentation>Type for a short numeric or alphanumeric code identifying an area.</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="com:String">
+      <xs:maxLength value="8" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:complexType name="NamedAreaExtended">
+    <xs:annotation>
+      <xs:documentation>A named area with an additional code (that is not an ISO subdivision code)</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="namedAreaCode" type="locx:NamedAreaCode" minOccurs="1" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Code for the named area, such a postal code or other code assigned for administration.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+</xs:schema>
