@@ -11,6 +11,7 @@ significant differences at every level of the hierarchy.
 
 | Field                                   | Input                                   | Output                            |
 |-----------------------------------------|-----------------------------------------|-----------------------------------|
+| `versionG`                              | `3.5` or `3.6`                          | `3.5`                             |
 | `publicationCreator.nationalIdentifier` | `DE-NAP-EnBWAG` (original source)       | `OCPDB` (replaced by system)      |
 | `publicationTime`                       | Original timestamp from source          | Regenerated at export time        |
 | `energyInfrastructureTable[].idG`       | Original ID (e.g. `907574882292453376`) | Replaced with sequential ID (`1`) |

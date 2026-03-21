@@ -42,7 +42,7 @@ class Datex2V35JSONBlueprint(BaseBlueprint):
         self.add_url_rule(
             '/json/static',
             view_func=Datex2V35JSONStaticMethodView.as_view(
-                'datex_recharging_static',
+                'datex_v3_5_json_static',
                 **self.get_base_method_view_dependencies(),
                 datex2_handler=self.datex2_handler,
             ),
@@ -51,7 +51,7 @@ class Datex2V35JSONBlueprint(BaseBlueprint):
         self.add_url_rule(
             '/json/realtime',
             view_func=Datex2V35JSONRealtimeMethodView.as_view(
-                'datex_recharging_realtime',
+                'datex_v3_5_json_realtime',
                 **self.get_base_method_view_dependencies(),
                 datex2_handler=self.datex2_handler,
             ),

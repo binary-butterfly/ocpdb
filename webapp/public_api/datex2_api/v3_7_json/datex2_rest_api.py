@@ -37,12 +37,12 @@ class Datex2V37JSONBlueprint(BaseBlueprint):
             location_repository=dependencies.get_location_repository(),
         )
 
-        super().__init__('datex2_v3_7', __name__, url_prefix='/v3.7/recharging')
+        super().__init__('datex2_v3_7', __name__, url_prefix='/v3.7')
 
         self.add_url_rule(
-            '/static',
+            '/json/static',
             view_func=Datex2V37JSONStaticMethodView.as_view(
-                'datex_recharging_static',
+                'datex_v3_7_json_static',
                 **self.get_base_method_view_dependencies(),
                 datex2_handler=self.datex2_handler,
             ),
