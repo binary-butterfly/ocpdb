@@ -111,6 +111,7 @@ def test_ludwigsburg_fetch_static_data(db: SQLAlchemy, requests_mock: Mocker) ->
     assert sample_location.operator.to_dict() == {
         'name': 'sw-ludwigsburg',
         'website': None,
+        'emobility_uid': None,
     }
 
 

@@ -1,0 +1,30 @@
+"""
+Copyright 2026 binary butterfly GmbH
+Use of this source code is governed by an MIT-style license that can be found in the LICENSE.txt.
+"""
+
+from validataclass.dataclasses import Default, ValidataclassMixin, validataclass
+from validataclass.helpers import UnsetValue, UnsetValueType
+from validataclass.validators import DataclassValidator
+
+from .extension_type_g_input import ExtensionTypeGInput
+from .openlr_line_attributes_input import OpenlrLineAttributesInput
+from .point_coordinates_input import PointCoordinatesInput
+
+
+@validataclass
+class OpenlrLastLocationReferencePointInput(ValidataclassMixin):
+    """
+    The sequence of location reference points is terminated by a last location reference point.
+    """
+
+    openlrCoordinates: PointCoordinatesInput = DataclassValidator(PointCoordinatesInput)
+    openlrLineAttributes: OpenlrLineAttributesInput = DataclassValidator(OpenlrLineAttributesInput)
+    locOpenlrBaseReferencePointExtensionG: ExtensionTypeGInput | UnsetValueType = (
+        DataclassValidator(ExtensionTypeGInput),
+        Default(UnsetValue),
+    )
+    locOpenlrLastLocationReferencePointExtensionG: ExtensionTypeGInput | UnsetValueType = (
+        DataclassValidator(ExtensionTypeGInput),
+        Default(UnsetValue),
+    )
