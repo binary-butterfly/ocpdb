@@ -28,7 +28,7 @@ from webapp.common.sqlalchemy import SQLAlchemy
 from webapp.models.evse import EvseStatus
 
 
-class Datex2StaticApiTest:
+class Datex2V35StaticApiTest:
     @staticmethod
     def test_get_static_empty(
         db: SQLAlchemy,
