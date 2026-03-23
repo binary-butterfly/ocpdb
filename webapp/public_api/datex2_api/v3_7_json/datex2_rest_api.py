@@ -65,7 +65,7 @@ class Datex2V37JSONStaticMethodView(BaseMethodView):
         self.datex2_handler = datex2_handler
 
     @document(
-        description='Get static DATEX II v3.7 energy infrastructure data',
+        description='Get static DATEX II v3.7 energy infrastructure data. Warning: this endpoint is experimental!',
         response=[
             Response(
                 ResponseData(
