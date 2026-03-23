@@ -1,5 +1,21 @@
 # Changelog
 
+## Version 2.9.0
+
+Released 2026-03-23
+
+This release adds DATEX2 support:
+
+* EnBW DATEX2 import
+* DATEX2 3.5 static and realtime APIs
+* DATEX2 3.7 static API
+
+
+### Features
+
+* [first generic datex steps](https://github.com/binary-butterfly/ocpdb/pull/170)
+
+
 ## Version 2.8.0
 
 Released 2026-03-16
