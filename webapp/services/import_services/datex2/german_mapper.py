@@ -264,7 +264,7 @@ class GermanStaticDatexMapper:
         standard = self._map_standard(connector_input.connectorType.value)
         power_type = self._map_power_type(charging_point.currentType.value, standard)
 
-        max_electric_power = int(connector_input.maxPowerAtSocket * 1000)
+        max_electric_power = int(connector_input.maxPowerAtSocket)
         max_voltage = int(connector_input.voltage) if connector_input.voltage is not UnsetValue else None
         max_amperage = int(connector_input.maximumCurrent) if connector_input.maximumCurrent is not UnsetValue else None
 
@@ -278,7 +278,7 @@ class GermanStaticDatexMapper:
         if max_electric_power == 0 and (
             charging_point.availableChargingPower is not UnsetValue and charging_point.availableChargingPower
         ):
-            max_electric_power = int(charging_point.availableChargingPower[0] * 1000)
+            max_electric_power = int(charging_point.availableChargingPower[0])
 
         if max_amperage is None and max_voltage and max_electric_power:
             max_amperage = int(max_electric_power / max_voltage)

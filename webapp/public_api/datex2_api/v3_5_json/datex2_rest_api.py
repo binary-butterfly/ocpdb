@@ -20,11 +20,14 @@ from flask import jsonify
 from flask_cors import cross_origin
 from flask_openapi.decorator import (
     ExampleReference,
+    Parameter,
     Response,
     ResponseData,
     SchemaReference,
     document,
 )
+from flask_openapi.schema import AnyOfField, DateTimeField, IntegerField, NumericField, StringField
+from validataclass.validators import DataclassValidator
 
 from webapp.common.dataclass import filter_unset_value
 from webapp.common.rest import BaseMethodView
@@ -32,8 +35,65 @@ from webapp.dependencies import dependencies
 from webapp.public_api.base_blueprint import BaseBlueprint
 from webapp.shared.datex2.v3_5_json_realtime.schema import all_datex2_v35_realtime_components
 from webapp.shared.datex2.v3_5_json_static.schema import all_datex2_v35_static_components
+from webapp.shared.location_search_queries import LocationSearchQuery
 
 from .datex2_handler import Datex2V35JSONHandler
+
+location_search_query_parameters = [
+    Parameter(
+        'sorted_by',
+        schema=AnyOfField(allowed_values=['name', 'created', 'modified'], required=False, default='name'),
+    ),
+    Parameter('name', schema=StringField(required=False)),
+    Parameter('source_uid', schema=StringField(required=False), example='bnetza_api'),
+    Parameter(
+        'source_uids',
+        schema=StringField(required=False),
+        example='bnetza_api,something_else',
+        description='Comma separated list of sources',
+    ),
+    Parameter(
+        'exclude_source_uid',
+        schema=StringField(required=False),
+        example='bnetza_api',
+        description='Sources to exclude',
+    ),
+    Parameter(
+        'exclude_source_uids',
+        schema=StringField(required=False),
+        example='bnetza_api,something_else',
+        description='Comma separated list of sources which should be excluded',
+    ),
+    Parameter('address', schema=StringField(required=False), example='Erlenweg', description='Contain query'),
+    Parameter('postal_code', schema=StringField(required=False), example='59423'),
+    Parameter('city', schema=StringField(required=False), example='Bad Gateway', description='Contain query'),
+    Parameter('country', schema=StringField(required=False), example='59423'),
+    Parameter('operator_name', schema=StringField(required=False), example='Electro Inc'),
+    Parameter(
+        'lat',
+        schema=NumericField(required=False),
+        example='51.58',
+        description='Radius, lat and lon always have to be set together.',
+    ),
+    Parameter(
+        'lon',
+        schema=NumericField(required=False),
+        example='7.67',
+        description='Radius, lat and lon always have to be set together.',
+    ),
+    Parameter(
+        'radius',
+        schema=IntegerField(required=False),
+        example='1000',
+        description='In meter. Radius, lat and lon always have to be set together.',
+    ),
+    Parameter('lat_min', schema=NumericField(), example=55.0, description='Bounding box'),
+    Parameter('lat_max', schema=NumericField(), example=55.5, description='Bounding box'),
+    Parameter('lon_min', schema=NumericField(), example=5.0, description='Bounding box'),
+    Parameter('lon_max', schema=NumericField(), example=5.5, description='Bounding box'),
+    Parameter('last_updated_since', schema=DateTimeField(), example='2023-01-01T00:00:00Z'),
+    Parameter('limit', schema=IntegerField(maximum=1000, required=False, default=100)),
+]
 
 
 class Datex2V35JSONBlueprint(BaseBlueprint):
@@ -69,6 +129,7 @@ class Datex2V35JSONBlueprint(BaseBlueprint):
 
 class Datex2V35JSONStaticMethodView(BaseMethodView):
     datex2_handler: Datex2V35JSONHandler
+    search_query_validator = DataclassValidator(LocationSearchQuery)
 
     def __init__(self, *args, datex2_handler: Datex2V35JSONHandler, **kwargs):
         super().__init__(*args, **kwargs)
@@ -76,6 +137,7 @@ class Datex2V35JSONStaticMethodView(BaseMethodView):
 
     @document(
         description='Get static DATEX II v3.5 energy infrastructure data. Warning: this endpoint is experimental!',
+        query=location_search_query_parameters,
         response=[
             Response(
                 ResponseData(
@@ -88,13 +150,15 @@ class Datex2V35JSONStaticMethodView(BaseMethodView):
     )
     @cross_origin()
     def get(self):
-        result = self.datex2_handler.get_datex2_payload()
+        search_query = self.validate_query_args(self.search_query_validator)
+        result = self.datex2_handler.get_datex2_payload(search_query)
 
         return jsonify(filter_unset_value(result.to_dict()))
 
 
 class Datex2V35JSONRealtimeMethodView(BaseMethodView):
     datex2_handler: Datex2V35JSONHandler
+    search_query_validator = DataclassValidator(LocationSearchQuery)
 
     def __init__(self, *args, datex2_handler: Datex2V35JSONHandler, **kwargs):
         super().__init__(*args, **kwargs)
@@ -102,6 +166,7 @@ class Datex2V35JSONRealtimeMethodView(BaseMethodView):
 
     @document(
         description='Get realtime DATEX II v3.5 energy infrastructure status data. Warning: this endpoint is experimental!',
+        query=location_search_query_parameters,
         response=[
             Response(
                 ResponseData(
@@ -114,6 +179,7 @@ class Datex2V35JSONRealtimeMethodView(BaseMethodView):
     )
     @cross_origin()
     def get(self):
-        result = self.datex2_handler.get_datex2_realtime_payload()
+        search_query = self.validate_query_args(self.search_query_validator)
+        result = self.datex2_handler.get_datex2_realtime_payload(search_query)
 
         return jsonify(filter_unset_value(result.to_dict()))

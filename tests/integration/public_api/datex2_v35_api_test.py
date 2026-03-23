@@ -17,6 +17,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 from datetime import datetime, timezone
+from decimal import Decimal
 from http import HTTPStatus
 from unittest.mock import ANY
 
@@ -24,6 +25,7 @@ from tests.integration.helpers import OpenApiFlaskClient
 from tests.integration.model_generators.business import BUSINESS_1_NAME, get_business_1
 from tests.integration.model_generators.evse import get_full_evse_1, get_full_evse_2
 from tests.integration.model_generators.location import get_full_location_1, get_full_location_2, get_location_1
+from tests.integration.model_generators.source import SOURCE_UID_1
 from webapp.common.sqlalchemy import SQLAlchemy
 from webapp.models.evse import EvseStatus
 
@@ -247,6 +249,45 @@ class Datex2V35StaticApiTest:
 
         site_ids = {site['idG'] for site in sites}
         assert site_ids == {'LOCATION-1', 'LOCATION-2'}
+
+    @staticmethod
+    def test_get_static_filter_by_source_uid(
+        db: SQLAlchemy,
+        test_client: OpenApiFlaskClient,
+    ) -> None:
+        db.session.add_all([get_full_location_1(), get_full_location_2(source='OTHER-SOURCE')])
+        db.session.commit()
+
+        response = test_client.get(path=f'/api/public/datex/v3.5/json/static?source_uid={SOURCE_UID_1}')
+
+        assert response.status_code == HTTPStatus.OK
+        sites = response.json['payload']['aegiEnergyInfrastructureTablePublication']['energyInfrastructureTable'][0][
+            'energyInfrastructureSite'
+        ]
+        assert len(sites) == 1
+        assert sites[0]['idG'] == 'LOCATION-1'
+
+    @staticmethod
+    def test_get_static_filter_by_bounding_box(
+        db: SQLAlchemy,
+        test_client: OpenApiFlaskClient,
+    ) -> None:
+        db.session.add_all([
+            get_full_location_1(),
+            get_full_location_2(lat=Decimal('48.13'), lon=Decimal('11.58')),
+        ])
+        db.session.commit()
+
+        response = test_client.get(
+            path='/api/public/datex/v3.5/json/static?lat_min=52.0&lat_max=53.0&lon_min=13.0&lon_max=14.0',
+        )
+
+        assert response.status_code == HTTPStatus.OK
+        sites = response.json['payload']['aegiEnergyInfrastructureTablePublication']['energyInfrastructureTable'][0][
+            'energyInfrastructureSite'
+        ]
+        assert len(sites) == 1
+        assert sites[0]['idG'] == 'LOCATION-1'
 
 
 class Datex2RealtimeApiTest:
@@ -482,3 +523,42 @@ class Datex2RealtimeApiTest:
             if rs['aegiRefillPointStatus']['reference']['idG'] == 'EVSE-2'
         )
         assert evse_2_status['lastUpdated'] == now.isoformat()
+
+    @staticmethod
+    def test_get_realtime_filter_by_source_uid(
+        db: SQLAlchemy,
+        test_client: OpenApiFlaskClient,
+    ) -> None:
+        db.session.add_all([get_full_location_1(), get_full_location_2(source='OTHER-SOURCE')])
+        db.session.commit()
+
+        response = test_client.get(path=f'/api/public/datex/v3.5/json/realtime?source_uid={SOURCE_UID_1}')
+
+        assert response.status_code == HTTPStatus.OK
+        site_statuses = response.json['payload']['aegiEnergyInfrastructureStatusPublication'][
+            'energyInfrastructureSiteStatus'
+        ]
+        assert len(site_statuses) == 1
+        assert site_statuses[0]['reference']['idG'] == 'LOCATION-1'
+
+    @staticmethod
+    def test_get_realtime_filter_by_bounding_box(
+        db: SQLAlchemy,
+        test_client: OpenApiFlaskClient,
+    ) -> None:
+        db.session.add_all([
+            get_full_location_1(),
+            get_full_location_2(lat=Decimal('48.13'), lon=Decimal('11.58')),
+        ])
+        db.session.commit()
+
+        response = test_client.get(
+            path='/api/public/datex/v3.5/json/realtime?lat_min=52.0&lat_max=53.0&lon_min=13.0&lon_max=14.0',
+        )
+
+        assert response.status_code == HTTPStatus.OK
+        site_statuses = response.json['payload']['aegiEnergyInfrastructureStatusPublication'][
+            'energyInfrastructureSiteStatus'
+        ]
+        assert len(site_statuses) == 1
+        assert site_statuses[0]['reference']['idG'] == 'LOCATION-1'
