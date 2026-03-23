@@ -173,7 +173,7 @@ class Datex2V37StaticApiTest:
         ]
 
         assert charging_point['availableVoltage'] == [400.0]
-        assert charging_point['availableChargingPower'] == [22.0]
+        assert charging_point['availableChargingPower'] == [22000.0]
 
         connectors = charging_point['connector']
         assert len(connectors) == 1
@@ -181,7 +181,7 @@ class Datex2V37StaticApiTest:
         connector = connectors[0]
         assert connector['connectorType'] == {'value': 'iec62196T2'}
         assert connector['connectorFormat'] == {'value': 'socket'}
-        assert connector['maxPowerAtSocket'] == 22.0
+        assert connector['maxPowerAtSocket'] == 22000.0
         assert connector['voltage'] == 400.0
         assert connector['maximumCurrent'] == 32.0
 
@@ -204,7 +204,7 @@ class Datex2V37StaticApiTest:
         connector = charging_point['connector'][0]
         assert connector['connectorType'] == {'value': 'iec62196T2COMBO'}
         assert connector['connectorFormat'] == {'value': 'cableMode3'}
-        assert connector['maxPowerAtSocket'] == 150.0
+        assert connector['maxPowerAtSocket'] == 150000.0
         assert connector['voltage'] == 400.0
         assert connector['maximumCurrent'] == 350.0
 

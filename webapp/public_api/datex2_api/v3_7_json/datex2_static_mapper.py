@@ -40,7 +40,12 @@ from webapp.shared.datex2.v3_7_json_static.models.connector_format_type_enum imp
 from webapp.shared.datex2.v3_7_json_static.models.connector_format_type_enum_g_input import (
     ConnectorFormatTypeEnumGInput,
 )
-from webapp.shared.datex2.v3_7_json_static.models.connector_input import ConnectorInput as DatexConnectorInput
+from webapp.shared.datex2.v3_7_json_static.models.connector_input import (
+    ConnectorInput,
+)
+from webapp.shared.datex2.v3_7_json_static.models.connector_input import (
+    ConnectorInput as DatexConnectorInput,
+)
 from webapp.shared.datex2.v3_7_json_static.models.connector_type_enum import ConnectorTypeEnum
 from webapp.shared.datex2.v3_7_json_static.models.connector_type_enum_g_input import ConnectorTypeEnumGInput
 from webapp.shared.datex2.v3_7_json_static.models.d_a_t_e_x_i_i3_d2_payload_input import DATEXII3D2PayloadInput
@@ -219,17 +224,17 @@ class DatexV37JSONStaticExportMapper:
     def _map_evse_to_refill_point(self, evse: Evse, location: Location) -> RefillPointGInput:
         version_g = evse.last_updated.isoformat()
 
-        datex_connectors = []
-        voltages = []
-        powers = []
+        datex_connectors: list[ConnectorInput] = []
+        voltages: list[int] = []
+        powers: list[int] = []
         for connector in evse.connectors:
             datex_connector = self._map_connector(connector)
             if datex_connector is not None:
                 datex_connectors.append(datex_connector)
             if connector.max_voltage:
-                voltages.append(float(connector.max_voltage))
+                voltages.append(connector.max_voltage)
             if connector.max_electric_power:
-                powers.append(connector.max_electric_power / 1000.0)
+                powers.append(connector.max_electric_power)
 
         charging_point = ElectricChargingPointInput(
             idG=evse.uid,
@@ -261,7 +266,7 @@ class DatexV37JSONStaticExportMapper:
         if connector_type_enum is None:
             return None
 
-        max_power_kw = (connector.max_electric_power / 1000.0) if connector.max_electric_power else 0.0
+        max_power_kw = float(connector.max_electric_power) if connector.max_electric_power else 0.0
 
         datex_connector = DatexConnectorInput(
             connectorType=ConnectorTypeEnumGInput(value=connector_type_enum),
@@ -269,10 +274,10 @@ class DatexV37JSONStaticExportMapper:
         )
 
         if connector.max_voltage:
-            datex_connector.voltage = float(connector.max_voltage)
+            datex_connector.voltage = connector.max_voltage
 
         if connector.max_amperage:
-            datex_connector.maximumCurrent = float(connector.max_amperage)
+            datex_connector.maximumCurrent = connector.max_amperage
 
         if connector.format:
             format_enum = self._connector_format_map.get(connector.format)
