@@ -57,6 +57,7 @@ def testing_import_service() -> TestingImportService:
         image_repository=dependencies.get_image_repository(),
         source_repository=dependencies.get_source_repository(),
         official_region_code_repository=dependencies.get_official_region_code_repository(),
+        tariff_repository=dependencies.get_tariff_repository(),
     )
 
 

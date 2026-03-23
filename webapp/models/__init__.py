@@ -24,3 +24,5 @@ from .image import Image
 from .location import Location
 from .option import Option
 from .source import Source, SourceStatus
+from .tariff import Tariff
+from .tariff_association import TariffAssociation

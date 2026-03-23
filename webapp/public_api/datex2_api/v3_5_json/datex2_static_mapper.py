@@ -25,8 +25,10 @@ from validataclass.helpers import UnsetValue
 from webapp.models.business import Business
 from webapp.models.charging_station import Capability, ChargingStation, ServiceType
 from webapp.models.connector import Connector, ConnectorFormat, ConnectorType, PowerType
+from webapp.models.enums import TariffType
 from webapp.models.evse import Evse
 from webapp.models.location import Location
+from webapp.models.tariff import Tariff
 from webapp.shared.datex2.v3_5_json_static.models.address_input import AddressInput
 from webapp.shared.datex2.v3_5_json_static.models.address_line_input import AddressLineInput
 from webapp.shared.datex2.v3_5_json_static.models.address_line_type_enum import AddressLineTypeEnum
@@ -70,6 +72,8 @@ from webapp.shared.datex2.v3_5_json_static.models.energy_infrastructure_table_in
 from webapp.shared.datex2.v3_5_json_static.models.energy_infrastructure_table_publication_input import (
     EnergyInfrastructureTablePublicationInput,
 )
+from webapp.shared.datex2.v3_5_json_static.models.energy_price_input import EnergyPriceInput
+from webapp.shared.datex2.v3_5_json_static.models.energy_rate_input import EnergyRateInput
 from webapp.shared.datex2.v3_5_json_static.models.external_identifier_input import ExternalIdentifierInput
 from webapp.shared.datex2.v3_5_json_static.models.facility_location_input import FacilityLocationInput
 from webapp.shared.datex2.v3_5_json_static.models.international_identifier_input import InternationalIdentifierInput
@@ -84,11 +88,16 @@ from webapp.shared.datex2.v3_5_json_static.models.organisation_unit_input import
 from webapp.shared.datex2.v3_5_json_static.models.payload_publication_g_input import PayloadPublicationGInput
 from webapp.shared.datex2.v3_5_json_static.models.point_coordinates_input import PointCoordinatesInput
 from webapp.shared.datex2.v3_5_json_static.models.point_location_input import PointLocationInput
+from webapp.shared.datex2.v3_5_json_static.models.price_type_enum import PriceTypeEnum
+from webapp.shared.datex2.v3_5_json_static.models.price_type_enum_g_input import PriceTypeEnumGInput
+from webapp.shared.datex2.v3_5_json_static.models.rate_policy_enum import RatePolicyEnum
+from webapp.shared.datex2.v3_5_json_static.models.rate_policy_enum_g_input import RatePolicyEnumGInput
 from webapp.shared.datex2.v3_5_json_static.models.referenceable_organisation_input import ReferenceableOrganisationInput
 from webapp.shared.datex2.v3_5_json_static.models.refill_point_g_input import RefillPointGInput
 from webapp.shared.datex2.v3_5_json_static.models.service_type_enum import ServiceTypeEnum
 from webapp.shared.datex2.v3_5_json_static.models.service_type_enum_g_input import ServiceTypeEnumGInput
 from webapp.shared.datex2.v3_5_json_static.models.service_type_input import ServiceTypeInput
+from webapp.shared.datex2.v3_5_json_static.models.time_based_applicability_input import TimeBasedApplicabilityInput
 from webapp.shared.datex2.v3_5_json_static.models.type_of_identifier_enum import TypeOfIdentifierEnum
 from webapp.shared.datex2.v3_5_json_static.models.type_of_identifier_enum_extension_type_g import (
     TypeOfIdentifierEnumExtensionTypeG,
@@ -155,12 +164,29 @@ class DatexV35JSONStaticExportMapper:
         ConnectorFormat.CABLE: ConnectorFormatTypeEnum.CABLEMODE3,
     }
 
-    def map_locations_to_static_payload(self, locations: list[Location]) -> DATEXII3D2PayloadInput:
+    _tariff_type_to_rate_policy_map: dict[TariffType, RatePolicyEnum] = {
+        TariffType.AD_HOC_PAYMENT: RatePolicyEnum.ADHOC,
+        TariffType.REGULAR: RatePolicyEnum.CONTRACT,
+    }
+
+    _price_component_type_to_price_type_map: dict[str, PriceTypeEnum] = {
+        'ENERGY': PriceTypeEnum.PRICEPERKWH,
+        'TIME': PriceTypeEnum.PRICEPERMINUTE,
+        'FLAT': PriceTypeEnum.FLATRATE,
+        'PARKING_TIME': PriceTypeEnum.PRICEPERMINUTE,
+    }
+
+    def map_locations_to_static_payload(
+        self,
+        locations: list[Location],
+        evse_tariffs: dict[str, list['Tariff']] | None = None,
+    ) -> DATEXII3D2PayloadInput:
         now = datetime.now(tz=timezone.utc).isoformat()
+        evse_tariffs = evse_tariffs or {}
 
         sites = []
         for location in locations:
-            site = self._map_location_to_site(location)
+            site = self._map_location_to_site(location, evse_tariffs)
             if site is not None:
                 sites.append(site)
 
@@ -187,7 +213,11 @@ class DatexV35JSONStaticExportMapper:
         )
         return DATEXII3D2PayloadInput(payload=payload)
 
-    def _map_location_to_site(self, location: Location) -> EnergyInfrastructureSiteInput | None:
+    def _map_location_to_site(
+        self,
+        location: Location,
+        evse_tariffs: dict[str, list['Tariff']],
+    ) -> EnergyInfrastructureSiteInput | None:
         if location.lat is None or location.lon is None:
             return None
 
@@ -197,7 +227,7 @@ class DatexV35JSONStaticExportMapper:
 
         stations = []
         for charging_station in location.charging_pool:
-            station = self._map_charging_station_to_station(charging_station, location)
+            station = self._map_charging_station_to_station(charging_station, location, evse_tariffs)
             stations.append(station)
 
         site = EnergyInfrastructureSiteInput(
@@ -225,12 +255,13 @@ class DatexV35JSONStaticExportMapper:
         self,
         charging_station: ChargingStation,
         location: Location,
+        evse_tariffs: dict[str, list['Tariff']],
     ) -> EnergyInfrastructureStationInput:
         version_g = charging_station.last_updated.isoformat()
 
         refill_points = []
         for evse in charging_station.evses:
-            refill_point = self._map_evse_to_refill_point(evse, location)
+            refill_point = self._map_evse_to_refill_point(evse, location, evse_tariffs)
             refill_points.append(refill_point)
 
         service_type_list = []
@@ -266,7 +297,12 @@ class DatexV35JSONStaticExportMapper:
 
         return station
 
-    def _map_evse_to_refill_point(self, evse: Evse, location: Location) -> RefillPointGInput:
+    def _map_evse_to_refill_point(
+        self,
+        evse: Evse,
+        location: Location,
+        evse_tariffs: dict[str, list['Tariff']],
+    ) -> RefillPointGInput:
         version_g = evse.last_updated.isoformat()
 
         current_type = CurrentTypeEnum.AC
@@ -302,10 +338,17 @@ class DatexV35JSONStaticExportMapper:
         if powers:
             charging_point.availableChargingPower = powers
 
-        if location.energy_mix and location.energy_mix.get('is_green_energy') is not None:
-            charging_point.electricEnergy = [
-                ElectricEnergyInput(isGreenEnergy=location.energy_mix['is_green_energy']),
-            ]
+        is_green = location.energy_mix.get('is_green_energy') if location.energy_mix else None
+        tariffs = evse_tariffs.get(evse.uid, [])
+
+        if tariffs:
+            energy_rates = [self._map_tariff_to_energy_rate(tariff) for tariff in tariffs]
+            electric_energy = ElectricEnergyInput(energyRate=energy_rates)
+            if is_green is not None:
+                electric_energy.isGreenEnergy = is_green
+            charging_point.electricEnergy = [electric_energy]
+        elif is_green is not None:
+            charging_point.electricEnergy = [ElectricEnergyInput(isGreenEnergy=is_green)]
 
         return RefillPointGInput(aegiElectricChargingPoint=charging_point)
 
@@ -333,6 +376,52 @@ class DatexV35JSONStaticExportMapper:
                 datex_connector.connectorFormat = ConnectorFormatTypeEnumGInput(value=format_enum)
 
         return datex_connector
+
+    def _map_tariff_to_energy_rate(self, tariff: Tariff) -> EnergyRateInput:
+        # Extract rate idG from tariff uid (format: "{evse_uid}:{rate_idG}")
+        rate_id = tariff.uid.rsplit(':', 1)[-1] if ':' in tariff.uid else tariff.uid
+
+        rate_policy = RatePolicyEnum.ADHOC
+        if tariff.type:
+            rate_policy = self._tariff_type_to_rate_policy_map.get(tariff.type, RatePolicyEnum.ADHOC)
+
+        energy_rate = EnergyRateInput(
+            idG=rate_id,
+            ratePolicy=RatePolicyEnumGInput(value=rate_policy),
+            lastUpdated=tariff.last_updated.isoformat(),
+            applicableCurrency=[tariff.currency] if tariff.currency else ['EUR'],
+        )
+
+        if tariff.elements:
+            energy_prices = []
+            for element in tariff.elements:
+                if element.price_components:
+                    for component in element.price_components:
+                        price_type = self._price_component_type_to_price_type_map.get(
+                            component.get('type', ''),
+                            PriceTypeEnum.OTHER,
+                        )
+                        energy_price = EnergyPriceInput(
+                            priceType=PriceTypeEnumGInput(value=price_type),
+                            value=component.get('price', 0),
+                        )
+                        if 'tax_included' in component:
+                            energy_price.taxIncluded = component['tax_included']
+                        if 'vat' in component:
+                            energy_price.taxRate = component['vat']
+                        if 'time_based_applicability' in component:
+                            tba = component['time_based_applicability']
+                            time_applicability = TimeBasedApplicabilityInput()
+                            if 'from_minute' in tba:
+                                time_applicability.fromMinute = tba['from_minute']
+                            if 'to_minute' in tba:
+                                time_applicability.toMinute = tba['to_minute']
+                            energy_price.timeBasedApplicability = time_applicability
+                        energy_prices.append(energy_price)
+            if energy_prices:
+                energy_rate.energyPrice = energy_prices
+
+        return energy_rate
 
     def _build_site_location_reference(self, location: Location) -> LocationReferenceGInput:
         coordinates = PointCoordinatesInput(

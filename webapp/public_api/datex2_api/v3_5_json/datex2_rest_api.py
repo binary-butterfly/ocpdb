@@ -104,6 +104,7 @@ class Datex2V35JSONBlueprint(BaseBlueprint):
         self.datex2_handler = Datex2V35JSONHandler(
             **self.get_base_handler_dependencies(),
             location_repository=dependencies.get_location_repository(),
+            tariff_repository=dependencies.get_tariff_repository(),
         )
 
         super().__init__('datex2_v3_5', __name__, url_prefix='/v3.5')

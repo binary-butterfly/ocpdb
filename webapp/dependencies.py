@@ -36,7 +36,9 @@ from webapp.repositories import (
     LocationRepository,
     OfficialRegionCodeRepository,
     SourceRepository,
+    TariffRepository,
 )
+from webapp.repositories.tariff_association_repository import TariffAssociationRepository
 from webapp.services.import_services import ImageImportService, ImportServices
 from webapp.services.import_services.generic_import_runner import GenericImportRunner
 from webapp.services.location_service import LocationService
@@ -166,6 +168,18 @@ class Dependencies:
             session=self.get_db_session(),
         )
 
+    @cache_dependency
+    def get_tariff_repository(self) -> TariffRepository:
+        return TariffRepository(
+            session=self.get_db_session(),
+        )
+
+    @cache_dependency
+    def get_tariff_association_repository(self) -> TariffAssociationRepository:
+        return TariffAssociationRepository(
+            session=self.get_db_session(),
+        )
+
     # Services
     def get_base_service_dependencies(self) -> dict:
         return {
@@ -184,6 +198,7 @@ class Dependencies:
             business_repository=self.get_business_repository(),
             image_repository=self.get_image_repository(),
             official_region_code_repository=self.get_official_region_code_repository(),
+            tariff_repository=self.get_tariff_repository(),
         )
 
     @cache_dependency

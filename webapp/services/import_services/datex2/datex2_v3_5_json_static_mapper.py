@@ -24,6 +24,7 @@ from validataclass.helpers import UnsetValue, UnsetValueType
 
 from webapp.models.charging_station import Capability, ServiceType
 from webapp.models.connector import ConnectorFormat, ConnectorType, PowerType, ac_1_phase_connector_types
+from webapp.models.enums import TariffAudience, TariffType
 from webapp.models.evse import EvseStatus
 from webapp.models.location import ChargingRateUnit
 from webapp.services.import_services.models import (
@@ -35,6 +36,10 @@ from webapp.services.import_services.models import (
     EvseUpdate,
     LocationUpdate,
     MaxPowerUpdate,
+    PriceComponentUpdate,
+    TariffAssociationUpdate,
+    TariffElementUpdate,
+    TariffUpdate,
 )
 from webapp.shared.datex2.v3_5_json_realtime.models.refill_point_status_enum import RefillPointStatusEnum
 from webapp.shared.datex2.v3_5_json_realtime.models.refill_point_status_g_input import RefillPointStatusGInput
@@ -57,11 +62,14 @@ from webapp.shared.datex2.v3_5_json_static.models.energy_infrastructure_site_inp
 from webapp.shared.datex2.v3_5_json_static.models.energy_infrastructure_station_input import (
     EnergyInfrastructureStationInput,
 )
+from webapp.shared.datex2.v3_5_json_static.models.energy_rate_input import EnergyRateInput
 from webapp.shared.datex2.v3_5_json_static.models.external_identifier_input import ExternalIdentifierInput
 from webapp.shared.datex2.v3_5_json_static.models.multilingual_string_input import MultilingualStringInput
 from webapp.shared.datex2.v3_5_json_static.models.operating_hours_g_input import OperatingHoursGInput
 from webapp.shared.datex2.v3_5_json_static.models.organisation_g_input import OrganisationGInput
 from webapp.shared.datex2.v3_5_json_static.models.point_location_input import PointLocationInput
+from webapp.shared.datex2.v3_5_json_static.models.price_type_enum import PriceTypeEnum
+from webapp.shared.datex2.v3_5_json_static.models.rate_policy_enum import RatePolicyEnum
 from webapp.shared.datex2.v3_5_json_static.models.refill_point_g_input import RefillPointGInput
 from webapp.shared.datex2.v3_5_json_static.models.service_type_enum import ServiceTypeEnum
 from webapp.shared.datex2.v3_5_json_static.models.service_type_input import ServiceTypeInput
@@ -71,11 +79,29 @@ from webapp.shared.datex2.v3_5_json_static.models.type_of_identifier_enum_extens
 )
 
 
-class GermanStaticDatexMapper:
+class Datex2V35JSONStaticMapper:
+    _rate_policy_map: dict[RatePolicyEnum, TariffType] = {
+        RatePolicyEnum.ADHOC: TariffType.AD_HOC_PAYMENT,
+        RatePolicyEnum.CONTRACT: TariffType.REGULAR,
+    }
+
+    _rate_policy_audience_map: dict[RatePolicyEnum, TariffAudience] = {
+        RatePolicyEnum.ADHOC: TariffAudience.AD_HOC_PAYMENT,
+        RatePolicyEnum.CONTRACT: TariffAudience.EMSP_CONTRACT,
+    }
+
+    _price_type_map: dict[PriceTypeEnum, str] = {
+        PriceTypeEnum.PRICEPERKWH: 'ENERGY',
+        PriceTypeEnum.PRICEPERMINUTE: 'TIME',
+        PriceTypeEnum.BASEPRICE: 'FLAT',
+        PriceTypeEnum.FLATRATE: 'FLAT',
+    }
+
     def map_energy_infrastructure_site_to_location(
         self,
         source: str,
         energy_infrastructure_site: EnergyInfrastructureSiteInput,
+        tariff_updates: list[TariffUpdate],
     ) -> LocationUpdate | None:
         # Check if all lot/lon required fields are present
         if not energy_infrastructure_site.locationReference:
@@ -116,7 +142,7 @@ class GermanStaticDatexMapper:
         self._apply_helpdesk(energy_infrastructure_site.helpdesk, location)
         if energy_infrastructure_site.energyInfrastructureStation is not UnsetValue:
             for station in energy_infrastructure_site.energyInfrastructureStation:
-                self._apply_energy_infrastructure_stations(station, location)
+                self._apply_energy_infrastructure_stations(station, location, source, tariff_updates)
 
         return location
 
@@ -201,6 +227,8 @@ class GermanStaticDatexMapper:
         self,
         energy_infrastructure_station: EnergyInfrastructureStationInput,
         location: LocationUpdate,
+        source: str,
+        tariff_updates: list[TariffUpdate],
     ):
         if energy_infrastructure_station.refillPoint is UnsetValue:
             return
@@ -210,7 +238,7 @@ class GermanStaticDatexMapper:
             last_updated=energy_infrastructure_station.lastUpdated or location.last_updated,
             evses=[],
             max_power=MaxPowerUpdate(
-                unit=ChargingRateUnit.KW,
+                unit=ChargingRateUnit.W,
                 value=energy_infrastructure_station.totalMaximumPower,
             ),
         )
@@ -229,10 +257,15 @@ class GermanStaticDatexMapper:
         location.charging_pool.append(charge_station)
 
         for refill_point in energy_infrastructure_station.refillPoint:
-            self._apply_refill_point(refill_point, charge_station, location)
+            self._apply_refill_point(refill_point, charge_station, location, source, tariff_updates)
 
     def _apply_refill_point(
-        self, refill_point: RefillPointGInput, charge_station: ChargingStationUpdate, location: LocationUpdate
+        self,
+        refill_point: RefillPointGInput,
+        charge_station: ChargingStationUpdate,
+        location: LocationUpdate,
+        source: str,
+        tariff_updates: list[TariffUpdate],
     ):
         if refill_point.aegiElectricChargingPoint is UnsetValue:
             return
@@ -253,6 +286,8 @@ class GermanStaticDatexMapper:
         evse.connectors = []
         for i, connector in enumerate(refill_point.aegiElectricChargingPoint.connector):
             self._apply_connector(connector, i, refill_point.aegiElectricChargingPoint, evse)
+
+        self._apply_energy_rates(refill_point.aegiElectricChargingPoint, evse, source, tariff_updates)
 
     def _apply_connector(
         self,
@@ -305,6 +340,85 @@ class GermanStaticDatexMapper:
                 else:
                     location.energy_mix.is_green_energy = electric_energy.isGreenEnergy
                 return
+
+    def _apply_energy_rates(
+        self,
+        charging_point: ElectricChargingPointInput,
+        evse: EvseUpdate,
+        source: str,
+        tariff_updates: list[TariffUpdate],
+    ):
+        if charging_point.electricEnergy is UnsetValue:
+            return
+        for electric_energy in charging_point.electricEnergy:
+            if electric_energy.energyRate is UnsetValue:
+                continue
+            for energy_rate in electric_energy.energyRate:
+                tariff_uid = f'{evse.uid}:{energy_rate.idG}'
+                tariff_update = self._map_energy_rate(energy_rate, tariff_uid, source)
+                tariff_updates.append(tariff_update)
+
+                last_updated = datetime.fromisoformat(energy_rate.lastUpdated)
+                audience = self._rate_policy_audience_map.get(energy_rate.ratePolicy.value)
+
+                evse.tariff_association = TariffAssociationUpdate(
+                    uid=tariff_uid,
+                    source=source,
+                    tariff_uid=tariff_uid,
+                    evse_uid=evse.uid,
+                    audience=audience,
+                    start_date_time=last_updated,
+                    last_updated=last_updated,
+                )
+
+                for connector_update in evse.connectors:
+                    connector_update.tariff_association = TariffAssociationUpdate(
+                        uid=tariff_uid,
+                        source=source,
+                        tariff_uid=tariff_uid,
+                        evse_uid=evse.uid,
+                        connector_uid=connector_update.uid,
+                        audience=audience,
+                        start_date_time=last_updated,
+                        last_updated=last_updated,
+                    )
+
+    def _map_energy_rate(self, energy_rate: EnergyRateInput, tariff_uid: str, source: str) -> TariffUpdate:
+        tariff_type = self._rate_policy_map.get(energy_rate.ratePolicy.value)
+        currency = energy_rate.applicableCurrency[0] if energy_rate.applicableCurrency else None
+        last_updated = datetime.fromisoformat(energy_rate.lastUpdated)
+
+        price_components: list[PriceComponentUpdate] = []
+        if energy_rate.energyPrice is not UnsetValue:
+            for energy_price in energy_rate.energyPrice:
+                component: dict = {
+                    'type': self._price_type_map.get(energy_price.priceType.value, energy_price.priceType.value.value),
+                    'price': energy_price.value,
+                }
+                if energy_price.taxIncluded is not UnsetValue:
+                    component['tax_included'] = energy_price.taxIncluded
+                if energy_price.taxRate is not UnsetValue:
+                    component['vat'] = energy_price.taxRate
+                if energy_price.timeBasedApplicability is not UnsetValue:
+                    applicability = {}
+                    if energy_price.timeBasedApplicability.fromMinute is not UnsetValue:
+                        applicability['from_minute'] = energy_price.timeBasedApplicability.fromMinute
+                    if energy_price.timeBasedApplicability.toMinute is not UnsetValue:
+                        applicability['to_minute'] = energy_price.timeBasedApplicability.toMinute
+                    if applicability:
+                        component['time_based_applicability'] = applicability
+                price_components.append(component)
+
+        elements = [TariffElementUpdate(price_components=price_components)]
+
+        return TariffUpdate(
+            uid=tariff_uid,
+            source=source,
+            currency=currency,
+            type=tariff_type,
+            last_updated=last_updated,
+            elements=elements,
+        )
 
     _authentication_to_capability_map: dict[AuthenticationAndIdentificationEnum, Capability] = {
         AuthenticationAndIdentificationEnum.CREDITCARD: Capability.CREDIT_CARD_PAYABLE,

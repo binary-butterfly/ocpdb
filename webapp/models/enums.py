@@ -23,3 +23,37 @@ class ChargingRateUnit(Enum):
     W = 'W'
     KW = 'KW'
     A = 'A'
+
+
+class TariffType(Enum):
+    AD_HOC_PAYMENT = 'AD_HOC_PAYMENT'
+    PROFILE_CHEAP = 'PROFILE_CHEAP'
+    PROFILE_FAST = 'PROFILE_FAST'
+    PROFILE_GREEN = 'PROFILE_GREEN'
+    REGULAR = 'REGULAR'
+
+
+class TariffAudience(Enum):
+    AD_HOC_PAYMENT = 'AD_HOC_PAYMENT'
+    EMSP_CONTRACT = 'EMSP_CONTRACT'
+
+
+class TariffDimensionType(Enum):
+    ENERGY = 'ENERGY'
+    TIME = 'TIME'
+    FLAT = 'FLAT'
+
+
+class DayOfWeek(Enum):
+    MONDAY = 'MONDAY'
+    TUESDAY = 'TUESDAY'
+    WEDNESDAY = 'WEDNESDAY'
+    THURSDAY = 'THURSDAY'
+    FRIDAY = 'FRIDAY'
+    SATURDAY = 'SATURDAY'
+    SUNDAY = 'SUNDAY'
+
+
+class ReservationRestrictionType:
+    RESERVATION = 'RESERVATION'
+    RESERVATION_EXPIRES = 'RESERVATION_EXPIRES'

@@ -27,8 +27,7 @@ from validataclass.validators import DataclassValidator
 from webapp.common.logging.models import LogMessageType
 from webapp.models import SourceStatus
 from webapp.services.import_services.base_import_service import BaseImportService
-from webapp.services.import_services.datex2.german_mapper import GermanStaticDatexMapper
-from webapp.services.import_services.models import LocationUpdate
+from webapp.services.import_services.models import LocationUpdate, TariffUpdate
 from webapp.shared.datex2.v3_5_json_realtime.models.d_a_t_e_x_i_i3_d2_payload_input import (
     DATEXII3D2PayloadInput as DATEXII3D2RealtimePayloadInput,
 )
@@ -40,6 +39,8 @@ from webapp.shared.datex2.v3_5_json_static.models.d_a_t_e_x_i_i3_d2_payload_inpu
 )
 from webapp.shared.datex2.v3_5_json_static.models.energy_infrastructure_site_input import EnergyInfrastructureSiteInput
 
+from .datex2_v3_5_json_static_mapper import Datex2V35JSONStaticMapper
+
 logger = logging.getLogger(__name__)
 
 
@@ -48,13 +49,14 @@ class BaseDatex2V35ImportService(BaseImportService, ABC):
     v3_5_json_realtime_datex_validator = DataclassValidator(DATEXII3D2RealtimePayloadInput)
     energy_infrastructure_site_validator = DataclassValidator(EnergyInfrastructureSiteInput)
     energy_infrastructure_station_status_validator = DataclassValidator(EnergyInfrastructureStationStatusInput)
-    v3_5_json_static_datex_mapper = GermanStaticDatexMapper()
+    v3_5_json_static_datex_mapper = Datex2V35JSONStaticMapper()
 
     def fetch_static_data(self):
         source = self.get_source()
         error_count = 0
         success_count = 0
         location_updates: list[LocationUpdate] = []
+        tariff_updates: list[TariffUpdate] = []
         static_data_updated_at = datetime.now(timezone.utc)
         data = self.request_data(self.config.get('static_subscription_id'))
 
@@ -96,13 +98,16 @@ class BaseDatex2V35ImportService(BaseImportService, ABC):
                 continue
 
             location_update = self.v3_5_json_static_datex_mapper.map_energy_infrastructure_site_to_location(
-                self.source_info.uid, energy_infrastructure_site_input
+                self.source_info.uid,
+                energy_infrastructure_site_input,
+                tariff_updates,
             )
             if location_update is None:
                 continue
             location_updates.append(location_update)
             success_count += 1
 
+        self.save_tariff_updates(tariff_updates, [])
         self.save_location_updates(location_updates)
 
         self.update_source(
@@ -113,7 +118,7 @@ class BaseDatex2V35ImportService(BaseImportService, ABC):
         )
         logger.info(
             f'Successfully updated {self.source_info.uid} static data with {success_count} valid '
-            f'locations and {error_count} failed locations.',
+            f'locations and {error_count} failed locations and {len(tariff_updates)} tariffs.',
             extra={'attributes': {'type': LogMessageType.IMPORT_LOCATION}},
         )
 

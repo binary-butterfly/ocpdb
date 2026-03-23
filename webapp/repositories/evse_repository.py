@@ -153,6 +153,7 @@ class EvseRepository(BaseRepository[Evse]):
         query = (
             self.session
             .query(Evse)
+            .options(selectinload(Evse.connectors))
             .filter(Evse.uid.in_(uids))
             .join(Evse.charging_station)
             .join(ChargingStation.location)

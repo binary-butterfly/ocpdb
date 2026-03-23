@@ -35,7 +35,7 @@ from webapp.common.rest import BaseMethodView
 from webapp.dependencies import dependencies
 from webapp.public_api.base_blueprint import BaseBlueprint
 from webapp.shared.location_search_queries import LocationSearchQuery
-from webapp.shared.ocpi_schema import all_location_components
+from webapp.shared.v2_2.location_schema import all_location_components
 
 from .location_handler import LocationHandler
 

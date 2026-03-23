@@ -105,6 +105,7 @@ station-level location information from the input (including address, timezone, 
 - `availableVoltage` — preserved
 - `availableChargingPower` — preserved
 - `electricEnergy[].isGreenEnergy` — preserved
+- `electricEnergy[].energyRate` — preserved (see tariff data below)
 
 
 ### Modified fields
@@ -114,11 +115,44 @@ station-level location information from the input (including address, timezone, 
 | `versionG` | Original source timestamp | Replaced with OCPDB internal timestamp |
 
 
-### Dropped fields
+### Tariff / energy rate data
 
-| Field                         | Notes                                                                                                                                                                                                                       |
-|-------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `electricEnergy[].energyRate` | Entire pricing information dropped: `ratePolicy`, `lastUpdated`, `applicableCurrency`, `payment.paymentMeans`, `energyPrice` (pricePerKWh, pricePerMinute values, tax info, time-based applicability). Will be added later. |
+Energy rate data from `electricEnergy[].energyRate` is now imported and exported. The following fields are
+preserved through the import/export cycle:
+
+| Field                                        | Notes                                                                            |
+|----------------------------------------------|----------------------------------------------------------------------------------|
+| `energyRate[].idG`                           | Preserved (extracted from tariff uid)                                            |
+| `energyRate[].ratePolicy`                    | Mapped: `adHoc` ↔ `AD_HOC_PAYMENT`, `contract` ↔ `REGULAR`                      |
+| `energyRate[].lastUpdated`                   | Preserved as tariff `last_updated`                                               |
+| `energyRate[].applicableCurrency`            | Preserved as tariff `currency`                                                   |
+| `energyRate[].energyPrice[].priceType`       | Mapped: `pricePerKWh` ↔ `ENERGY`, `pricePerMinute` ↔ `TIME`, `flatRate` ↔ `FLAT`|
+| `energyRate[].energyPrice[].value`           | Preserved as price component `price`                                             |
+| `energyRate[].energyPrice[].taxIncluded`     | Preserved as price component `tax_included`                                      |
+| `energyRate[].energyPrice[].taxRate`         | Preserved as price component `vat`                                               |
+| `energyRate[].energyPrice[].timeBasedApplicability` | Preserved (fromMinute, toMinute)                                          |
+
+### Dropped fields (energy rate)
+
+| Field                                        | Notes                                                                            |
+|----------------------------------------------|----------------------------------------------------------------------------------|
+| `energyRate[].payment.paymentMeans`          | Payment means not round-tripped (dropped on export)                              |
+| `energyRate[].rateName`                      | Not stored                                                                       |
+| `energyRate[].additionalInformation`         | Not stored                                                                       |
+| `energyRate[].overallPeriod`                 | Not stored                                                                       |
+| `energyRate[].combinationWithParkingFee`     | Not stored                                                                       |
+| `energyRate[].maximumDeliveryFee`            | Not stored                                                                       |
+| `energyRate[].minimumDeliveryFee`            | Not stored                                                                       |
+| `energyRate[].discount`                      | Not stored                                                                       |
+
+
+### Internal storage model
+
+Tariff data is stored using OCPI 3.0-aligned tables:
+
+- **`tariff`** — One tariff per EVSE per rate (uid = `{evse_uid}:{rate_idG}`). Stores currency, type, timestamps.
+- **`tariff_element`** — Price components stored as JSON (list of `{type, price, vat, tax_included, time_based_applicability}`).
+- **`tariff_association`** — Links each tariff to an EVSE and connector via foreign key relationships (`evse_id`, `connector_id`).
 
 
 ## Connector level
@@ -142,16 +176,16 @@ station-level location information from the input (including address, timezone, 
 
 The main categories of information lost during the import/export cycle:
 
-1. **Pricing data** — All energy rates, prices per kWh/minute, tax information, payment means, and time-based applicability rules
-2. **Parking information** — Dedicated parking spaces, vehicle type restrictions, EU vehicle categories, amenities (illuminated, roofed)
-3. **Site descriptions** — `additionalInformation` text labels
-4. **BNetzA identifiers** — `operatorIdBNetzA` external identifiers at both operator and station level
-5. **NUTS region codes** — Regional classification codes
-6. **Station-level location details** — Station-level address, timezone, and NUTS area are dropped; coordinates are only output when the station has its own lat/lon in the database
-7. **Station-level operating hours** — Not output at station level (only at site level)
-8. **Station-level operator** — Not output at station level (only at site level)
-9. **Source identity** — Original publication creator and table IDs replaced by OCPDB values
-10. **Authentication method granularity** — Specific RFID types (`mifareClassic`, `mifareDesfire`) consolidated to generic `rfid`
+1. **Parking information** — Dedicated parking spaces, vehicle type restrictions, EU vehicle categories, amenities (illuminated, roofed)
+2. **Site descriptions** — `additionalInformation` text labels
+3. **BNetzA identifiers** — `operatorIdBNetzA` external identifiers at both operator and station level
+4. **NUTS region codes** — Regional classification codes
+5. **Station-level location details** — Station-level address, timezone, and NUTS area are dropped; coordinates are only output when the station has its own lat/lon in the database
+6. **Station-level operating hours** — Not output at station level (only at site level)
+7. **Station-level operator** — Not output at station level (only at site level)
+8. **Source identity** — Original publication creator and table IDs replaced by OCPDB values
+9. **Authentication method granularity** — Specific RFID types (`mifareClassic`, `mifareDesfire`) consolidated to generic `rfid`
+10. **Energy rate metadata** — `payment.paymentMeans`, `rateName`, `additionalInformation`, `overallPeriod`, `discount`, delivery fee bounds
 
 
 ## Summary of data enrichment

@@ -20,7 +20,6 @@ from flask_openapi.decorator import Schema as Component
 from flask_openapi.schema import (
     ArrayField,
     BooleanField,
-    DateField,
     DateTimeField,
     DecimalField,
     EnumField,
@@ -33,10 +32,8 @@ from flask_openapi.schema import (
     UriField,
 )
 
-from webapp.models.charging_station import Capability
-from webapp.models.connector import ConnectorFormat, ConnectorType, PowerType
 from webapp.models.enums import ChargingRateUnit
-from webapp.models.evse import EvseStatus, ParkingRestriction, PresenceStatus
+from webapp.models.evse import EvseStatus
 from webapp.models.image import ImageCategory
 from webapp.models.location import EnergySourceCategory, EnvironmentalImpactCategory, Facility, ParkingType, TokenType
 
@@ -61,7 +58,7 @@ additional_geo_location_schema = JsonSchema(
             obj='DisplayText',
             required=False,
             description='Name of the point in local language or as written at the location. For example the street name of a parking lot '
-            'entrance or it’s number.',
+            "entrance or it's number.",
         ),
     },
 )
@@ -79,8 +76,8 @@ business_details_schema = JsonSchema(
     title='BusinessDetails',
     properties={
         'name': StringField(maxLength=100, description='Name of the operator.'),
-        'website': UriField(required=False, description='Link to the operator’s website.'),
-        'logo': Reference(obj='Image', required=False, description='Image link to the operator’s logo.'),
+        'website': UriField(required=False, description="Link to the operator's website."),
+        'logo': Reference(obj='Image', required=False, description="Image link to the operator's logo."),
     },
 )
 
@@ -89,56 +86,6 @@ business_details_example = {}
 
 
 business_details_component = Component('BusinessDetails', business_details_schema, business_details_example)
-
-
-connector_schema = JsonSchema(
-    title='Connector',
-    description='A Connector is the socket or cable and plug available for the EV to use. A single EVSE may provide multiple Connectors '
-    'but only one of them can be in use at the same time. A Connector always belongs to an EVSE object.',
-    properties={
-        'id': StringField(
-            maxLength=36,
-            description='Identifier of the Connector within the EVSE. Two Connectors may have the same id as long as they do not belong to '
-            'the same EVSE object.',
-        ),
-        'standard': EnumField(enum=ConnectorType, description='The standard of the installed connector.'),
-        'format': EnumField(enum=ConnectorFormat, description='The format (socket/cable) of the installed connector.'),
-        'power_type': EnumField(enum=PowerType, description=''),
-        'max_voltage': IntegerField(
-            minimum=0,
-            description='Maximum voltage of the connector (line to neutral for AC_3_PHASE), in volt [V]. For example: DC Chargers might '
-            'vary the voltage during charging when battery almost full.',
-        ),
-        'max_amperage': IntegerField(minimum=0, description='Maximum amperage of the connector, in ampere [A].'),
-        'max_electric_power': IntegerField(
-            minimum=0,
-            required=False,
-            description='Maximum electric power that can be delivered by this connector, in Watts (W). When the maximum electric power is '
-            'lower than the calculated value from voltage and amperage, this value should be set. For example: A DC Charge '
-            'Point which can delivers up to 920V and up to 400A can be limited to a maximum of 150kW (max_electric_power = '
-            '150000). Depending on the car, it may supply max voltage or current, but not both at the same time. For AC Charge '
-            'Points, the amount of phases used can also have influence on the maximum power.',
-        ),
-        'tariff_ids': ArrayField(
-            items=StringField(maxLength=36),
-            required=False,
-            description='Identifiers of the currently valid charging tariffs. Multiple tariffs are possible, but only one of each '
-            'Tariff.type can be active at the same time. Tariffs with the same type are only allowed if they are not active at '
-            'the same time: start_date_time and end_date_time period not overlapping. When preference-based smart charging is '
-            'supported, one tariff for every possible ProfileType should be provided. These tell the user about the options '
-            'they have at this Connector, and what the tariff is for every option. For a "free of charge" tariff, this field '
-            'should be set and point to a defined "free of charge" tariff.',
-        ),
-        'terms_and_conditions': UriField(required=False, description='URL to the operator’s terms and conditions.'),
-        'last_updated': DateTimeField(description='Timestamp when this Connector was last updated (or created).'),
-    },
-)
-
-
-connector_example = {}
-
-
-connector_component = Component('Connector', connector_schema, connector_example)
 
 
 display_text_schema = JsonSchema(
@@ -169,12 +116,12 @@ energy_mix_schema = JsonSchema(
         'energy_sources': ArrayField(
             items=Reference(obj='EnergySource'),
             required=False,
-            description='Key-value pairs (enum + percentage) of energy sources of this location’s tariff.',
+            description="Key-value pairs (enum + percentage) of energy sources of this location's tariff.",
         ),
         'environ_impact': ArrayField(
             items=Reference(obj='EnvironmentalImpact'),
             required=False,
-            description='Key-value pairs (enum + percentage) of nuclear waste and CO2 exhaust of this location’s tariff.',
+            description="Key-value pairs (enum + percentage) of nuclear waste and CO2 exhaust of this location's tariff.",
         ),
         'supplier_name': StringField(
             maxLength=64,
@@ -231,87 +178,6 @@ environmental_impact_example = {}
 environmental_impact_component = Component(
     'EnvironmentalImpact', environmental_impact_schema, environmental_impact_example
 )
-
-
-evse_schema = JsonSchema(
-    title='EVSE',
-    description='The EVSE object describes the part that controls the power supply to a single EV in a single session. It always belongs '
-    'to a Location object. The object only contains directions to get from the location itself to the EVSE (i.e. floor, '
-    'physical_reference or directions). When the directional properties of an EVSE are insufficient to reach the EVSE from '
-    'the Location point, then it typically indicates that the EVSE should be put in a different Location object (sometimes '
-    'with the same address but with different coordinates/directions). An EVSE object has a list of Connectors which can not '
-    'be used simultaneously: only one connector per EVSE can be used at the time.',
-    properties={
-        'uid': StringField(
-            maxLength=36,
-            description='Uniquely identifies the EVSE within the CPOs platform (and suboperator platforms). This field can never be '
-            "changed, modified or renamed. This is the 'technical' identification of the EVSE, not to be used as 'human "
-            "readable' identification, use the field evse_id for that. This field is named uid instead of id, because id "
-            'could be confused with evse_id which is an eMI3 defined field. Note that in order to fulfill both the requirement '
-            'that an EVSE’s uid be unique within a CPO’s platform and the requirement that EVSEs are never deleted, a CPO will '
-            'typically want to avoid using identifiers of the physical hardware for this uid property. If they do use such a '
-            'physical identifier, they will find themselves breaking the uniqueness requirement for uid when the same physical '
-            'EVSE is redeployed at another Location.',
-        ),
-        'evse_id': StringField(
-            maxLength=48,
-            required=False,
-            description='Compliant with the following specification for EVSE ID from "eMI3 standard version V1.0" '
-            '(http://emi3group.com/documents-links/) "Part 2: business objects." Optional because: if an evse_id is to be '
-            're-used in the real world, the evse_id can be removed from an EVSE object if the status is set to REMOVED.',
-        ),
-        'status': EnumField(enum=EvseStatus, description='Indicates the current status of the EVSE.'),
-        'presence': EnumField(
-            enum=PresenceStatus,
-            required=False,
-            description='Indicates whether the EVSE is physically present, planned, or removed.',
-        ),
-        'status_schedule': ArrayField(
-            items=Reference(obj='StatusSchedule'),
-            required=False,
-            description='Indicates a planned status update of the EVSE.',
-        ),
-        'capabilities': ArrayField(
-            items=EnumField(enum=Capability),
-            required=False,
-            description='List of functionalities that the EVSE is capable of.',
-        ),
-        'connectors': ArrayField(
-            items=Reference(obj='Connector'),
-            minItems=1,
-            description='List of available connectors on the EVSE.',
-        ),
-        'floor_level': StringField(
-            maxLength=4,
-            description='Level on which the Charge Point is located (in garage buildings) in the locally displayed numbering scheme.',
-            required=False,
-        ),
-        'physical_reference': StringField(
-            maxLength=16,
-            required=False,
-            description='A number/string printed on the outside of the EVSE for visual identification.',
-        ),
-        'parking_restrictions': ArrayField(
-            items=EnumField(enum=ParkingRestriction),
-            required=False,
-            description='The restrictions that apply to the parking spot.',
-        ),
-        'images': ArrayField(
-            items=Reference(obj='Image'),
-            required=False,
-            description='Links to images related to the EVSE such as photos or logos.',
-        ),
-        'last_updated': DateTimeField(
-            description='Timestamp when this EVSE or one of its Connectors was last updated (or created).',
-        ),
-    },
-)
-
-
-evse_example = {}
-
-
-evse_component = Component('EVSE', evse_schema, evse_example)
 
 
 exceptional_period_schema = JsonSchema(
@@ -494,7 +360,7 @@ location_schema = JsonSchema(
             maxLength=10,
             required=False,
             description='Postal code of the location, may only be omitted when the location has no postal code: in some countries charging '
-            'locations at highways don’t have postal codes.',
+            "locations at highways don't have postal codes.",
         ),
         'state': StringField(
             maxLength=20,
@@ -546,7 +412,7 @@ location_schema = JsonSchema(
         ),
         'time_zone': StringField(
             maxLength=255,
-            description='One of IANA tzdata’s TZ-values representing the time zone of the location. Examples: "Europe/Oslo", '
+            description='One of IANA tzdata\'s TZ-values representing the time zone of the location. Examples: "Europe/Oslo", '
             '"Europe/Zurich". (http://www.iana.org/time-zones)',
         ),
         'opening_times': Reference(
@@ -585,27 +451,6 @@ location_schema = JsonSchema(
         ),
     },
 )
-
-
-extended_location_schema = JsonSchema(
-    title='ExtendedLocation',
-    description=f'{location_schema.description}<br>*Extended with non-standard fields.*',
-    properties={
-        **location_schema.properties,
-        'source': StringField(maxLength=255, required=False, description='Source of the location data.'),
-        'original_id': StringField(
-            minLength=1,
-            maxLength=36,
-            description='Uniquely identifies the location within the CPOs platform (and suboperator platforms). This field can never be '
-            'changed, modified or renamed. In original OCPI, this field is called id.',
-        ),
-    },
-)
-
-location_example = {}
-
-
-location_component = Component('Location', location_schema, location_example)
 
 
 publish_token_type_schema = JsonSchema(
@@ -699,163 +544,7 @@ status_schedule_example = {}
 status_schedule_component = Component('StatusSchedule', status_schedule_schema, status_schedule_example)
 
 
-all_location_components = [
-    additional_geo_location_component,
-    business_details_component,
-    connector_component,
-    display_text_component,
-    energy_mix_component,
-    energy_source_component,
-    environmental_impact_component,
-    evse_component,
-    exceptional_period_component,
-    geo_location_component,
-    hours_component,
-    image_component,
-    location_component,
-    max_power_component,
-    publish_token_type_component,
-    regular_hours_component,
-    status_schedule_component,
-]
-
-
-# OCPI 3.0 schemas: Location → ChargingStation → EVSE hierarchy
-
-charging_station_schema = JsonSchema(
-    title='ChargingStation',
-    description='The ChargingStation object groups EVSEs that belong to the same physical charging station. '
-    'It always belongs to a Location object.',
-    properties={
-        'id': StringField(
-            maxLength=36,
-            description='Unique identifier of the ChargingStation within the Location.',
-        ),
-        'original_uid': StringField(
-            maxLength=36,
-            description='Original unique identifier of the ChargingStation within the Location.',
-            required=False,
-        ),
-        'capabilities': ArrayField(
-            items=EnumField(enum=Capability),
-            required=False,
-            description='List of functionalities that the ChargingStation is capable of.',
-        ),
-        'floor_level': StringField(
-            maxLength=16,
-            required=False,
-            description='Level on which the ChargingStation is located (in garage buildings) in the locally displayed '
-            'numbering scheme.',
-        ),
-        'coordinates': Reference(obj='GeoLocation', required=False, description='Coordinates of the ChargingStation.'),
-        'physical_reference': StringField(
-            maxLength=16,
-            required=False,
-            description='A number/string printed on the outside of the ChargingStation for visual identification.',
-        ),
-        'directions': ArrayField(
-            items=Reference(obj='DisplayText'),
-            required=False,
-            description='Multi-language human-readable directions when more detailed information on how to reach the '
-            'ChargingStation from the Location is required.',
-        ),
-        'images': ArrayField(
-            items=Reference(obj='Image'),
-            required=False,
-            description='Links to images related to the ChargingStation such as photos or logos.',
-        ),
-        'evses': ArrayField(
-            items=Reference(obj='EVSE'),
-            minItems=1,
-            description='List of EVSEs that belong to this ChargingStation.',
-        ),
-        'max_power': Reference(
-            obj='MaxPower',
-            required=False,
-            description='Maximum power available at this ChargingStation.',
-        ),
-        'go_live_date': DateField(
-            required=False,
-            description='Date when the ChargingStation went or will go live.',
-        ),
-        'last_updated': DateTimeField(
-            description='Timestamp when this ChargingStation or one of its EVSEs was last updated (or created).',
-        ),
-    },
-)
-
-charging_station_example = {}
-
-charging_station_component = Component('ChargingStation', charging_station_schema, charging_station_example)
-
-
-ocpi_30_location_schema = JsonSchema(
-    title='Ocpi30Location',
-    description='OCPI 3.0 Location object. Contains ChargingStations instead of a flat list of EVSEs. '
-    'The Location describes the location and its properties where a group of ChargingStations that belong together '
-    'are installed.',
-    properties={
-        **{k: v for k, v in location_schema.properties.items() if k != 'evses'},
-        'charging_pool': ArrayField(
-            items=Reference(obj='ChargingStation'),
-            required=False,
-            description='List of ChargingStations that belong to this Location.',
-        ),
-    },
-)
-
-ocpi_30_location_example = {}
-
-ocpi_30_location_component = Component('Ocpi30Location', ocpi_30_location_schema, ocpi_30_location_example)
-
-
 all_business_components = [
     business_details_component,
     image_component,
-]
-
-
-all_connector_components = [
-    connector_component,
-]
-
-
-all_evse_components = [
-    connector_component,
-    evse_component,
-    geo_location_component,
-    image_component,
-]
-
-
-all_charging_station_components = [
-    charging_station_component,
-    connector_component,
-    display_text_component,
-    evse_component,
-    geo_location_component,
-    image_component,
-    max_power_component,
-]
-
-
-all_ocpi_30_location_components = [
-    additional_geo_location_component,
-    business_details_component,
-    charging_station_component,
-    connector_component,
-    display_text_component,
-    energy_mix_component,
-    energy_source_component,
-    environmental_impact_component,
-    evse_component,
-    exceptional_period_component,
-    geo_location_component,
-    hours_component,
-    image_component,
-    max_power_component,
-    ocpi_30_location_component,
-    publish_token_type_component,
-    regular_hours_component,
-    status_schedule_component,
 ]

@@ -27,9 +27,11 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy_utc import UtcDateTime
 
 from .base import BaseModel
+from .connector_tariff_association import ConnectorTariffAssociation
 
 if TYPE_CHECKING:
     from .evse import Evse
+    from .tariff_association import TariffAssociation
 
 
 class ConnectorType(Enum):
@@ -123,6 +125,12 @@ class Connector(BaseModel):
     evse: Mapped['Evse'] = relationship('Evse', back_populates='connectors')
     evse_id: Mapped[int] = mapped_column(BigInteger, ForeignKey('evse.id', use_alter=True), nullable=False, index=True)
 
+    tariff_associations: Mapped[list['TariffAssociation']] = relationship(
+        'TariffAssociation',
+        secondary=ConnectorTariffAssociation.__table__,
+        back_populates='connectors',
+    )
+
     uid: Mapped[str] = mapped_column(String(64), nullable=False, index=True)
     standard: Mapped[ConnectorType | None] = mapped_column(SqlalchemyEnum(ConnectorType), nullable=True)
     format: Mapped[ConnectorFormat | None] = mapped_column(SqlalchemyEnum(ConnectorFormat), nullable=True)
@@ -132,8 +140,6 @@ class Connector(BaseModel):
     max_electric_power: Mapped[int | None] = mapped_column(Integer, nullable=True)
     last_updated: Mapped[datetime] = mapped_column(UtcDateTime(), nullable=False)
     terms_and_conditions: Mapped[str | None] = mapped_column(String(255), nullable=True)
-
-    # tariff_ids TODO
 
     def guess_power_type(self):
         if self.power_type == PowerType.DC or not self.max_electric_power:

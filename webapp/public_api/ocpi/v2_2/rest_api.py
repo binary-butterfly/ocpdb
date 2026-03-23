@@ -22,6 +22,7 @@ from .businesses import OcpiBusinessBlueprint
 from .connectors import OcpiConnectorBlueprint
 from .evses import OcpiEvseBlueprint
 from .locations import OcpiLegacyLocationBlueprint, OcpiLocationBlueprint
+from .tariffs import OcpiTariffBlueprint
 
 
 class Ocpi22Blueprint(BaseBlueprint):
@@ -31,9 +32,10 @@ class Ocpi22Blueprint(BaseBlueprint):
         OcpiEvseBlueprint,
         OcpiLocationBlueprint,
         OcpiLegacyLocationBlueprint,
+        OcpiTariffBlueprint,
     ]
 
     def __init__(self):
-        super().__init__('ocpi_22', __name__, url_prefix='/api/ocpi/2.2')
+        super().__init__('ocpi_22', __name__, url_prefix='/api/public/ocpi/2.2')
         for blueprint in self.blueprints:
             self.register_blueprint(blueprint())

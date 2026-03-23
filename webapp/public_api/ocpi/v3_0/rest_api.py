@@ -23,6 +23,8 @@ from .charging_stations import Ocpi30ChargingStationBlueprint
 from .connectors import Ocpi30ConnectorBlueprint
 from .evses import Ocpi30EvseBlueprint
 from .locations import Ocpi30LocationBlueprint
+from .tariff_associations import Ocpi30TariffAssociationBlueprint
+from .tariffs import Ocpi30TariffBlueprint
 
 
 class Ocpi30Blueprint(BaseBlueprint):
@@ -32,9 +34,11 @@ class Ocpi30Blueprint(BaseBlueprint):
         Ocpi30ConnectorBlueprint,
         Ocpi30EvseBlueprint,
         Ocpi30LocationBlueprint,
+        Ocpi30TariffBlueprint,
+        Ocpi30TariffAssociationBlueprint,
     ]
 
     def __init__(self):
-        super().__init__('ocpi_30', __name__, url_prefix='/api/ocpi/3.0')
+        super().__init__('ocpi_30', __name__, url_prefix='/api/public/ocpi/3.0')
         for blueprint in self.blueprints:
             self.register_blueprint(blueprint())

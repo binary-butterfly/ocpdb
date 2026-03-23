@@ -36,7 +36,7 @@ from webapp.dependencies import dependencies
 from webapp.public_api.base_blueprint import BaseBlueprint
 from webapp.public_api.business_api.business_handler import BusinessHandler
 from webapp.public_api.business_api.business_search_queries import BusinessSearchQuery
-from webapp.shared.ocpi_schema import all_business_components
+from webapp.shared.location_schema import all_business_components
 
 
 class Ocpi30BusinessBlueprint(BaseBlueprint):

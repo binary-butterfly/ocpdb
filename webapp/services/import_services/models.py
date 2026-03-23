@@ -23,6 +23,7 @@ from math import sqrt
 
 from webapp.models.charging_station import Capability, ServiceType
 from webapp.models.connector import ConnectorFormat, ConnectorType, PowerType
+from webapp.models.enums import DayOfWeek, ReservationRestrictionType, TariffAudience, TariffDimensionType, TariffType
 from webapp.models.evse import EvseStatus, ParkingRestriction, PresenceStatus
 from webapp.models.image import ImageCategory
 from webapp.models.location import ChargingRateUnit, EnergySourceCategory, EnvironmentalImpactCategory, ParkingType
@@ -53,6 +54,108 @@ class BaseUpdate:
 
 
 @dataclass(kw_only=True)
+class DisplayTextUpdate(BaseUpdate):
+    language: str  # Max 2 chars
+    text: str  # Max 512 chars
+
+
+@dataclass(kw_only=True)
+class EnergySourceUpdate(BaseUpdate):
+    source: EnergySourceCategory
+    percentage: float
+
+
+@dataclass(kw_only=True)
+class EnvironmentalImpactUpdate(BaseUpdate):
+    category: EnvironmentalImpactCategory
+    amount: float
+
+
+@dataclass(kw_only=True)
+class EnergyMixUpdate(BaseUpdate):
+    is_green_energy: bool | None = None
+    energy_sources: list[EnergySourceUpdate] | None = None
+    environ_impact: list[EnvironmentalImpactUpdate] | None = None
+    supplier_name: str | None = None
+    energy_product_name: str | None = None
+
+
+@dataclass
+class TaxAmountUpdate(BaseUpdate):
+    name: str
+    amount: Decimal
+
+
+@dataclass
+class PriceUpdate(BaseUpdate):
+    before_taxes: Decimal
+    taxes: list[TaxAmountUpdate] | None = None
+
+
+@dataclass(kw_only=True)
+class PriceComponentUpdate(BaseUpdate):
+    type: TariffDimensionType
+    price: Decimal
+    taxes: list[TaxAmountUpdate] | None = None
+
+
+@dataclass(kw_only=True)
+class RestrictionsUpdate(BaseUpdate):
+    start_time: time | None = None
+    end_time: time | None = None
+    min_energy: Decimal | None = None
+    max_energy: Decimal | None = None
+    min_current: Decimal | None = None
+    max_current: Decimal | None = None
+    min_power: Decimal | None = None
+    max_power: Decimal | None = None
+    min_duration: int | None = None
+    max_duration: int | None = None
+    min_restrictions_duration: int | None = None
+    day_of_week: list[DayOfWeek] | None = None
+    reservation: ReservationRestrictionType | None = None
+    vehicle_requesting_power: bool | None = None
+
+
+@dataclass(kw_only=True)
+class TariffElementUpdate(BaseUpdate):
+    _object_keys = ('price_components', 'restrictions')
+    price_components: list[PriceComponentUpdate] | None = None
+    restrictions: RestrictionsUpdate | None = None
+
+
+@dataclass(kw_only=True)
+class TariffUpdate(BaseUpdate):
+    _object_keys = ('elements', 'tariff_alt_text', 'min_price', 'max_price', 'energy_mix')
+
+    uid: str
+    source: str
+    currency: str | None = None
+    type: TariffType | None = None
+    tariff_alt_url: str | None = None
+    tariff_alt_text: list[DisplayTextUpdate] | None = None
+    min_price: PriceUpdate | None = None
+    max_price: PriceUpdate | None = None
+    energy_mix: EnergyMixUpdate | None = None
+    last_updated: datetime | None = None
+    elements: list[TariffElementUpdate] | None = None
+
+
+@dataclass(kw_only=True)
+class TariffAssociationUpdate(BaseUpdate):
+    _object_keys = ('tariff_uid', 'evse_uid', 'connector_uid')
+
+    uid: str
+    source: str
+    tariff_uid: str
+    evse_uid: str
+    connector_uid: str | None = None
+    audience: TariffAudience | None = None
+    start_date_time: datetime | None = None
+    last_updated: datetime | None = None
+
+
+@dataclass(kw_only=True)
 class ImageUpdate(BaseUpdate):
     external_url: str | None = None
     type: str | None = None
@@ -74,6 +177,8 @@ class BusinessUpdate(BaseUpdate):
 
 @dataclass(kw_only=True)
 class ConnectorUpdate(BaseUpdate):
+    _object_keys = ('tariff_association',)
+
     uid: str
     standard: ConnectorType
     format: ConnectorFormat
@@ -83,6 +188,7 @@ class ConnectorUpdate(BaseUpdate):
     max_electric_power: int | None = None
     last_updated: datetime | None = None
     terms_and_conditions: str | None = None
+    tariff_association: TariffAssociationUpdate | None = None
 
     def __post_init__(self):
         """
@@ -303,7 +409,7 @@ class ConnectorUpdate(BaseUpdate):
 
 @dataclass(kw_only=True)
 class EvseUpdate(BaseUpdate):
-    _object_keys = ('connectors', 'images')
+    _object_keys = ('connectors', 'images', 'tariff_association')
 
     uid: str
     evse_id: str
@@ -330,6 +436,8 @@ class EvseUpdate(BaseUpdate):
 
     terms_and_conditions: str | None = None
     calibration_info_url: str | None = None
+
+    tariff_association: TariffAssociationUpdate | None = None
 
     def __post_init__(self):
         if self.lat is not None:
@@ -399,33 +507,6 @@ class RegularHoursUpdate(BaseUpdate):
 class ExceptionalPeriodUpdate(BaseUpdate):
     period_begin: datetime
     period_end: datetime
-
-
-@dataclass(kw_only=True)
-class EnergySourceUpdate(BaseUpdate):
-    source: EnergySourceCategory
-    percentage: float
-
-
-@dataclass(kw_only=True)
-class EnvironmentalImpactUpdate(BaseUpdate):
-    category: EnvironmentalImpactCategory
-    amount: float
-
-
-@dataclass(kw_only=True)
-class EnergyMixUpdate(BaseUpdate):
-    is_green_energy: bool | None = None
-    energy_sources: list[EnergySourceUpdate] | None = None
-    environ_impact: list[EnvironmentalImpactUpdate] | None = None
-    supplier_name: str | None = None
-    energy_product_name: str | None = None
-
-
-@dataclass(kw_only=True)
-class DisplayTextUpdate(BaseUpdate):
-    language: str  # Max 2 chars
-    text: str  # Max 512 chars
 
 
 @dataclass(kw_only=True)

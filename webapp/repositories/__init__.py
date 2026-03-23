@@ -25,3 +25,5 @@ from .image_repository import ImageRepository
 from .location_repository import LocationRepository
 from .official_region_code_repository import OfficialRegionCodeRepository
 from .source_repository import SourceRepository
+from .tariff_association_repository import TariffAssociationRepository
+from .tariff_repository import TariffRepository
