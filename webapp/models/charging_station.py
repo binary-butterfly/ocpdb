@@ -40,6 +40,11 @@ if TYPE_CHECKING:
     from .location import Location
 
 
+class ServiceType(Enum):
+    PHYSICAL_ATTENDANCE = 'PHYSICAL_ATTENDANCE'
+    UNATTENDED = 'UNATTENDED'
+
+
 class Capability(Enum):
     CHARGING_PROFILE_CAPABLE = 'CHARGING_PROFILE_CAPABLE'
     CHARGING_PREFERENCES_CAPABLE = 'CHARGING_PREFERENCES_CAPABLE'
@@ -95,6 +100,23 @@ class ChargingStation(BaseModel):
 
     max_power_unit: Mapped[ChargingRateUnit | None] = mapped_column(SqlalchemyEnum(ChargingRateUnit), nullable=True)
     max_power_value: Mapped[float | None] = mapped_column(Float, nullable=True)
+    service_type: Mapped[ServiceType | None] = mapped_column(SqlalchemyEnum(ServiceType), nullable=True)
+    _user_interface_languages: Mapped[str | None] = mapped_column(
+        'user_interface_languages', String(255), nullable=True
+    )
+
+    @hybrid_property
+    def user_interface_languages(self) -> list[str] | None:
+        if self._user_interface_languages is None:
+            return None
+        return self._user_interface_languages.split('|')
+
+    @user_interface_languages.setter
+    def user_interface_languages(self, languages: list[str] | None) -> None:
+        if languages is None:
+            self._user_interface_languages = None
+            return
+        self._user_interface_languages = '|'.join(languages)
 
     @hybrid_property
     def capabilities(self) -> list[Capability]:

@@ -1,0 +1,32 @@
+"""
+Copyright 2026 binary butterfly GmbH
+Use of this source code is governed by an MIT-style license that can be found in the LICENSE.txt.
+"""
+
+from validataclass.dataclasses import Default, ValidataclassMixin, validataclass
+from validataclass.helpers import UnsetValue, UnsetValueType
+from validataclass.validators import DataclassValidator, ListValidator
+
+from .extension_type_g_input import ExtensionTypeGInput
+from .openlr_last_location_reference_point_input import OpenlrLastLocationReferencePointInput
+from .openlr_location_reference_point_input import OpenlrLocationReferencePointInput
+
+
+@validataclass
+class OpenlrClosedLineLocationReferenceInput(ValidataclassMixin):
+    """
+    The OpenLR method of area definition by providing a closed path (i.e. a circuit) in the road network.  The boundary always consists of road segments
+    """
+
+    openlrLocationReferencePoint: list[OpenlrLocationReferencePointInput] = ListValidator(
+        DataclassValidator(OpenlrLocationReferencePointInput)
+    )
+    openlrLastLine: OpenlrLastLocationReferencePointInput = DataclassValidator(OpenlrLastLocationReferencePointInput)
+    locOpenlrAreaLocationReferenceExtensionG: ExtensionTypeGInput | UnsetValueType = (
+        DataclassValidator(ExtensionTypeGInput),
+        Default(UnsetValue),
+    )
+    locOpenlrClosedLineLocationReferenceExtensionG: ExtensionTypeGInput | UnsetValueType = (
+        DataclassValidator(ExtensionTypeGInput),
+        Default(UnsetValue),
+    )

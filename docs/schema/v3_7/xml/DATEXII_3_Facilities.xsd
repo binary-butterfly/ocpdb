@@ -1,0 +1,1858 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<xs:schema elementFormDefault="qualified" attributeFormDefault="unqualified" xmlns:fac="http://datex2.eu/schema/3/facilities" version="3.7" targetNamespace="http://datex2.eu/schema/3/facilities" xmlns:com="http://datex2.eu/schema/3/common" xmlns:loc="http://datex2.eu/schema/3/locationReferencing" xmlns:egi="http://datex2.eu/schema/3/energyInfrastructure" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:import namespace="http://datex2.eu/schema/3/energyInfrastructure" schemaLocation="DATEXII_3_EnergyInfrastructure.xsd" />
+  <xs:import namespace="http://datex2.eu/schema/3/locationReferencing" schemaLocation="DATEXII_3_LocationReferencing.xsd" />
+  <xs:import namespace="http://datex2.eu/schema/3/common" schemaLocation="DATEXII_3_Common.xsd" />
+  <xs:complexType name="_CredentialTypeEnum">
+    <xs:simpleContent>
+      <xs:extension base="fac:CredentialTypeEnum">
+        <xs:attribute name="_extendedValue" type="xs:string" />
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+  <xs:complexType name="_EnergySourceEnum">
+    <xs:simpleContent>
+      <xs:extension base="fac:EnergySourceEnum">
+        <xs:attribute name="_extendedValue" type="xs:string" />
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+  <xs:complexType name="_MeansOfPaymentEnum">
+    <xs:simpleContent>
+      <xs:extension base="fac:MeansOfPaymentEnum">
+        <xs:attribute name="_extendedValue" type="xs:string" />
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+  <xs:complexType name="_OperatingHoursSpecificationVersionedReference">
+    <xs:complexContent>
+      <xs:extension base="com:VersionedReference">
+        <xs:attribute name="targetClass" type="xs:string" use="required" fixed="fac:OperatingHoursSpecification" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="_OperatingHoursTableVersionedReference">
+    <xs:complexContent>
+      <xs:extension base="com:VersionedReference">
+        <xs:attribute name="targetClass" type="xs:string" use="required" fixed="fac:OperatingHoursTable" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="_OrganisationVersionedReference">
+    <xs:complexContent>
+      <xs:extension base="com:VersionedReference">
+        <xs:attribute name="targetClass" type="xs:string" use="required" fixed="fac:Organisation" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="_PaymentBrandsEnum">
+    <xs:simpleContent>
+      <xs:extension base="fac:PaymentBrandsEnum">
+        <xs:attribute name="_extendedValue" type="xs:string" />
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+  <xs:complexType name="_PaymentTimingEnum">
+    <xs:simpleContent>
+      <xs:extension base="fac:PaymentTimingEnum">
+        <xs:attribute name="_extendedValue" type="xs:string" />
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+  <xs:complexType name="_RateAvailabilityTypeEnum">
+    <xs:simpleContent>
+      <xs:extension base="fac:RateAvailabilityTypeEnum">
+        <xs:attribute name="_extendedValue" type="xs:string" />
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+  <xs:complexType name="_RateLineTypeEnum">
+    <xs:simpleContent>
+      <xs:extension base="fac:RateLineTypeEnum">
+        <xs:attribute name="_extendedValue" type="xs:string" />
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+  <xs:complexType name="_RateMatrixVersionedReference">
+    <xs:complexContent>
+      <xs:extension base="com:VersionedReference">
+        <xs:attribute name="targetClass" type="xs:string" use="required" fixed="fac:RateMatrix" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="_RateTableVersionedReference">
+    <xs:complexContent>
+      <xs:extension base="com:VersionedReference">
+        <xs:attribute name="targetClass" type="xs:string" use="required" fixed="fac:RateTable" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="_RateTypeEnum">
+    <xs:simpleContent>
+      <xs:extension base="fac:RateTypeEnum">
+        <xs:attribute name="_extendedValue" type="xs:string" />
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+  <xs:complexType name="_RateUsageConditionsTypeEnum">
+    <xs:simpleContent>
+      <xs:extension base="fac:RateUsageConditionsTypeEnum">
+        <xs:attribute name="_extendedValue" type="xs:string" />
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+  <xs:complexType name="_RefundTypeEnum">
+    <xs:simpleContent>
+      <xs:extension base="fac:RefundTypeEnum">
+        <xs:attribute name="_extendedValue" type="xs:string" />
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+  <xs:complexType name="_RightTypeEnum">
+    <xs:simpleContent>
+      <xs:extension base="fac:RightTypeEnum">
+        <xs:attribute name="_extendedValue" type="xs:string" />
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+  <xs:complexType name="_SurchargeTypeEnum">
+    <xs:simpleContent>
+      <xs:extension base="fac:SurchargeTypeEnum">
+        <xs:attribute name="_extendedValue" type="xs:string" />
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+  <xs:complexType name="_UserTypeEnum">
+    <xs:simpleContent>
+      <xs:extension base="fac:UserTypeEnum">
+        <xs:attribute name="_extendedValue" type="xs:string" />
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+  <xs:complexType name="AmountInCurrency">
+    <xs:annotation>
+      <xs:documentation>A class supporting the definition of a unit of currency in a defined currency.</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="currencyValue" type="fac:AmountOfMoney" minOccurs="1" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>The amount of currency specified in the given currency code type.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="currencyType" type="fac:CurrencyCode" minOccurs="1" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Code for the specified currency as defined in ISO 4217.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="_amountInCurrencyExtension" type="com:_ExtensionType" minOccurs="0" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:simpleType name="AmountOfMoney">
+    <xs:annotation>
+      <xs:documentation>A monetary value expressed to two decimal places.</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="com:Decimal">
+      <xs:totalDigits value="8" />
+      <xs:fractionDigits value="2" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:complexType name="BrandsAcceptedCodeList">
+    <xs:annotation>
+      <xs:documentation>Use this class to describe details of the brands that are accepted.</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="brandsAcceptedList" type="fac:_PaymentBrandsEnum" minOccurs="1" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>List of accepted brands for payment cards.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="_brandsAcceptedCodeListExtension" type="com:_ExtensionType" minOccurs="0" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="BrandsAcceptedText">
+    <xs:annotation>
+      <xs:documentation>Use this class to describe details of the brands that are accepted.</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="brandsAccepted" type="com:String" minOccurs="1" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>List of accepted brands for payment cards.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="_brandsAcceptedTextExtension" type="com:_ExtensionType" minOccurs="0" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="ClosureInformation">
+    <xs:annotation>
+      <xs:documentation>Information about temporary or permanent closure.</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="permananentlyClosed" type="com:Boolean" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Permanently closed, i.e. it is not intended to open again.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="temporarilyClosed" type="com:Boolean" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Temporarily closed for an unspecified period.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="closedFrom" type="com:DateTime" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Permanently or temporarily closed from the given date on. May lie in the future - in this case the scene is not closed now.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="temporarilyClosedUntil" type="com:DateTime" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Temporarily closed until the given date (i.e. closure still includes this date).</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="_closureInformationExtension" type="com:_ExtensionType" minOccurs="0" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="ContactInformation">
+    <xs:annotation>
+      <xs:documentation>Contact information</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="language" type="com:Language" minOccurs="0" maxOccurs="unbounded">
+        <xs:annotation>
+          <xs:documentation>Language(s) that are supported via telephone or mail.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="telephoneNumber" type="com:String" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Telephone number, which can be a general number or the number of a specific contact person.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="faxNumber" type="com:String" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Fax number, which can be a general number or the number of a specific contact person.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="eMail" type="com:String" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>E-Mail address, which can be a general mail address or the mail address of a specific contact person.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="_contactInformationExtension" type="com:_ExtensionType" minOccurs="0" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="ContactPerson">
+    <xs:annotation>
+      <xs:documentation>A specific contact person</xs:documentation>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="fac:ContactInformation">
+        <xs:sequence>
+          <xs:element name="name" type="com:String" minOccurs="1" maxOccurs="1">
+            <xs:annotation>
+              <xs:documentation>The (last) name of the contact person</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element name="firstName" type="com:String" minOccurs="0" maxOccurs="1">
+            <xs:annotation>
+              <xs:documentation>The first name of the contact person</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element name="title" type="com:MultilingualString" minOccurs="0" maxOccurs="1">
+            <xs:annotation>
+              <xs:documentation>Title information of the contact person.</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element name="position" type="com:MultilingualString" minOccurs="0" maxOccurs="1">
+            <xs:annotation>
+              <xs:documentation>The position of the contact person</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element name="_contactPersonExtension" type="com:_ExtensionType" minOccurs="0" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="Credential">
+    <xs:annotation>
+      <xs:documentation>Class containing reference to a credential (identifiable persistent identity)</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="type" type="fac:_CredentialTypeEnum" minOccurs="1" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Type of credential</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="otherType" type="com:String" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Some other type of credential</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="_credentialExtension" type="com:_ExtensionType" minOccurs="0" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="CredentialAssigned">
+    <xs:annotation>
+      <xs:documentation>Information concerning a specific credential that is used for verification for one AssignedRight. Specialisation of a general credential.</xs:documentation>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="fac:Credential">
+        <xs:sequence>
+          <xs:element name="localIdentifier" type="com:String" minOccurs="0" maxOccurs="1">
+            <xs:annotation>
+              <xs:documentation>Identifier issued by credential issuer.</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element name="issuer" type="fac:_OrganisationVersionedReference" minOccurs="1" maxOccurs="1">
+            <xs:annotation>
+              <xs:documentation>Identity of the credential issuer.</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element name="_credentialAssignedExtension" type="com:_ExtensionType" minOccurs="0" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:simpleType name="CredentialTypeEnum">
+    <xs:annotation>
+      <xs:documentation>A list of the supported credential types available for reference.</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="hangtag">
+        <xs:annotation>
+          <xs:documentation>Visible, often removable, credential indicator, with visible markings</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="permit">
+        <xs:annotation>
+          <xs:documentation>Issued credential, often in the form of an adhesive label, often placed on the windscreen, credential indicator, with visible markings</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="licensePlate">
+        <xs:annotation>
+          <xs:documentation>Fixed plate, in a defined format, used to identify a specific vehicle. Normally a permanent fixture.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="ticket">
+        <xs:annotation>
+          <xs:documentation>Typically issued paper with printed details, often with magnetic strips; typically single use disposable.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="eticket">
+        <xs:annotation>
+          <xs:documentation>Digital equivalent of a paper ticket, often presentable via smartphone or similar device for control.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="barcode">
+        <xs:annotation>
+          <xs:documentation>Barcode or QR digital print pattern held on any physical media.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="bluetooth">
+        <xs:annotation>
+          <xs:documentation>Specific bluetooth or BLE identification chip used to associate a BLE receiver to a specific user.  Used for both one time and permit uses.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="rfid">
+        <xs:annotation>
+          <xs:documentation>Specific RF identification associated to an RFID-related account.  Used for permit uses.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="qrCode">
+        <xs:annotation>
+          <xs:documentation>Quick Reference (QR) code</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="other">
+        <xs:annotation>
+          <xs:documentation>Some other credential</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="_extended" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="CurrencyCode">
+    <xs:annotation>
+      <xs:documentation>Three letter code defining the currency according to ISO 4217:2015 (e.g. EUR for Euro).</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="com:String">
+      <xs:pattern value="[A-Z][A-Z][A-Z]" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="Duration">
+    <xs:annotation>
+      <xs:documentation>A duration of time, which may consist of years, months, days, hours, minutes, and seconds components, as defined in ISO 8601.</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:duration" />
+  </xs:simpleType>
+  <xs:complexType name="Eligibility">
+    <xs:annotation>
+      <xs:documentation>Class support concepts for defining eligibility criteria.</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="eligibilityName" type="com:MultilingualString" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Free-text name for the eligibility definition</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="description" type="com:MultilingualString" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Free-text description for the eligibility definition</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="qualification" type="fac:Qualification" minOccurs="0" maxOccurs="unbounded" />
+      <xs:element name="_eligibilityExtension" type="com:_ExtensionType" minOccurs="0" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:simpleType name="EnergySourceEnum">
+    <xs:annotation>
+      <xs:documentation>Type of fuel used by a vehicle.</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="all">
+        <xs:annotation>
+          <xs:documentation>All sort of fuel is accepted.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="battery">
+        <xs:annotation>
+          <xs:documentation>Battery.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="biodiesel">
+        <xs:annotation>
+          <xs:documentation>Biodiesel.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="diesel">
+        <xs:annotation>
+          <xs:documentation>Fuel used for compression-ignition (CI) engines.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="dieselBatteryHybrid">
+        <xs:annotation>
+          <xs:documentation>Diesel and battery hybrid.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="ethanol">
+        <xs:annotation>
+          <xs:documentation>Ethanol.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="hydrogen">
+        <xs:annotation>
+          <xs:documentation>Hydrogen.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="liquidGas">
+        <xs:annotation>
+          <xs:documentation>Liquid gas of any type including LPG.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="lpg">
+        <xs:annotation>
+          <xs:documentation>Liquid petroleum gas.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="methane">
+        <xs:annotation>
+          <xs:documentation>Methane gas.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="petrol">
+        <xs:annotation>
+          <xs:documentation>Fuel used for positive-ignition (PI) engines.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="petrol95Octane">
+        <xs:annotation>
+          <xs:documentation>Petrol with 95 octane.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="petrol98Octane">
+        <xs:annotation>
+          <xs:documentation>Petrol with 98 octane.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="petrolBatteryHybrid">
+        <xs:annotation>
+          <xs:documentation>Petrol and battery hybrid.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="petrolLeaded">
+        <xs:annotation>
+          <xs:documentation>Leaded petrol.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="petrolUnleaded">
+        <xs:annotation>
+          <xs:documentation>Unleaded petrol.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="unknown">
+        <xs:annotation>
+          <xs:documentation>The sort of fuel is not known.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="other">
+        <xs:annotation>
+          <xs:documentation>Other.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="_extended" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:complexType name="Facility" abstract="true">
+    <xs:annotation>
+      <xs:documentation>Provides information about a facility, which may represent any kind of site, building, or structure, and may be a composite facility that includes supplemental facilities.</xs:documentation>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="fac:FacilityObject">
+        <xs:sequence>
+          <xs:element name="supplementalFacility" type="fac:SupplementalFacility" minOccurs="0" maxOccurs="unbounded" />
+          <xs:element name="_facilityExtension" type="com:_ExtensionType" minOccurs="0" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="FacilityObject" abstract="true">
+    <xs:annotation>
+      <xs:documentation>Provides information about a facility object, which may represent any kind of site, building, or structure, including those which supplement a main facility.</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="name" type="com:MultilingualString" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>The name of this facility.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="externalIdentifier" type="com:String" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>An external identifier for this facility.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="lastUpdated" type="com:DateTime" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Information on the time when the information has been updated the last time</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="operatingHours" type="fac:OperatingHours" minOccurs="0" />
+      <xs:element name="locationReference" type="loc:LocationReference" minOccurs="0" />
+      <xs:element name="owner" type="fac:Organisation" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>The owner of this facility.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="operator" type="fac:Organisation" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>The operator of this facility.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="rates" type="fac:Rates" minOccurs="0" />
+      <xs:element name="_facilityObjectExtension" type="com:_ExtensionType" minOccurs="0" />
+    </xs:sequence>
+    <xs:attribute name="id" type="xs:string" use="required" />
+    <xs:attribute name="version" type="xs:string" use="required" />
+  </xs:complexType>
+  <xs:complexType name="FreeOfCharge">
+    <xs:annotation>
+      <xs:documentation>There are no rates or fees to be paid.</xs:documentation>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="fac:Rates">
+        <xs:sequence>
+          <xs:element name="_freeOfChargeExtension" type="com:_ExtensionType" minOccurs="0" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="GeneralRateInformation">
+    <xs:annotation>
+      <xs:documentation>Some general rates and payment information without specifying rates as such.</xs:documentation>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="fac:Rates">
+        <xs:sequence>
+          <xs:element name="_generalRateInformationExtension" type="com:_ExtensionType" minOccurs="0" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:simpleType name="MeansOfPaymentEnum">
+    <xs:annotation>
+      <xs:documentation>Means of payment</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="paymentCreditCard">
+        <xs:annotation>
+          <xs:documentation>Payment by electronic payment credit card which is a small plastic card issued by a bank, building society, or other financial institution (ISO/IEC 7813 and other related standards), allowing the holder to purchase goods or services on credit.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="cashBillsOnly">
+        <xs:annotation>
+          <xs:documentation>Cash payment using bills only.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="cashCoinsOnly">
+        <xs:annotation>
+          <xs:documentation>Cash payment with coins only.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="tollTag">
+        <xs:annotation>
+          <xs:documentation>Toll tag (RFID) or similar, with associated account.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="mobileAccount">
+        <xs:annotation>
+          <xs:documentation>Payment method using an app or other functions typically via a smartphone to a linked bank or card account.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="cashCoinsAndBills">
+        <xs:annotation>
+          <xs:documentation>Cash payment using bills and/or coins only.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="prepay">
+        <xs:annotation>
+          <xs:documentation>Advanced payment for parking right.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="paymentDebitCard">
+        <xs:annotation>
+          <xs:documentation>Payment by electronic payment debit card which is a small plastic card (ISO/IEC 7813 and other related standards), allowing the holder to transfer money electronically from their bank account when making a purchase.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="paymentValueCard">
+        <xs:annotation>
+          <xs:documentation>Payment by electronic payment debit card which is a small plastic card (ISO/IEC 7813 and other related standards) with a monetary value stored on the card itself, that may not be linked to an external account maintained by a financial institution.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="unknown">
+        <xs:annotation>
+          <xs:documentation>Unknown.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="_extended" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:complexType name="OpenAllHours">
+    <xs:annotation>
+      <xs:documentation>Open or available all the time (24/7)</xs:documentation>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="fac:OperatingHours">
+        <xs:sequence>
+          <xs:element name="_openAllHoursExtension" type="com:_ExtensionType" minOccurs="0" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="OperatingHours" abstract="true">
+    <xs:annotation>
+      <xs:documentation>Operating hours, either by reference or by specification.</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="closureInformation" type="fac:ClosureInformation" minOccurs="0" />
+      <xs:element name="_operatingHoursExtension" type="com:_ExtensionType" minOccurs="0" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="OperatingHoursByReference">
+    <xs:annotation>
+      <xs:documentation>Operating hours information that is addressed via a reference.</xs:documentation>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="fac:OperatingHours">
+        <xs:sequence>
+          <xs:element name="operatingHoursReference" type="fac:_OperatingHoursSpecificationVersionedReference" minOccurs="1" maxOccurs="1">
+            <xs:annotation>
+              <xs:documentation>The reference to an operating hours specification.</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element name="operatingHoursTableReference" type="fac:_OperatingHoursTableVersionedReference" minOccurs="0" maxOccurs="1">
+            <xs:annotation>
+              <xs:documentation>Operation hours table in question defined by a reference.</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element name="_operatingHoursByReferenceExtension" type="com:_ExtensionType" minOccurs="0" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="OperatingHoursSpecification">
+    <xs:annotation>
+      <xs:documentation>A specification of operating hours (e.g. for a parking site, a service facility, an access or the availability for equipment).</xs:documentation>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="fac:OperatingHours">
+        <xs:sequence>
+          <xs:element name="lastUpdated" type="com:DateTime" minOccurs="0" maxOccurs="1">
+            <xs:annotation>
+              <xs:documentation>The date/time at which this information was last updated.</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element name="label" type="com:String" minOccurs="0" maxOccurs="1">
+            <xs:annotation>
+              <xs:documentation>A label, name or identifier for this operating hours specification.</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element name="operatingAllYear" type="com:Boolean" minOccurs="0" maxOccurs="1">
+            <xs:annotation>
+              <xs:documentation>The facility or organisation is not closed on a seasonal base.</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element name="urlLinkAddress" type="com:Url" minOccurs="0" maxOccurs="1">
+            <xs:annotation>
+              <xs:documentation>A Uniform Resource Locator (URL) address pointing to a resource available on the Internet from where further relevant information may be obtained.</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element name="overallPeriod" type="com:OverallPeriod">
+            <xs:annotation>
+              <xs:documentation>The specification of operating hours by an overall period combined with valid or exceptional periods.</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element name="_operatingHoursSpecificationExtension" type="com:_ExtensionType" minOccurs="0" />
+        </xs:sequence>
+        <xs:attribute name="id" type="xs:string" use="required" />
+        <xs:attribute name="version" type="xs:string" use="required" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="Organisation" abstract="true">
+    <xs:annotation>
+      <xs:documentation>Information about an organisation including its units and contact information.</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="_organisationExtension" type="com:_ExtensionType" minOccurs="0" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="OrganisationSpecification">
+    <xs:annotation>
+      <xs:documentation>Specification of an organisation. It must contain at least one unit.</xs:documentation>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="fac:Organisation">
+        <xs:sequence>
+          <xs:element name="lastUpdated" type="com:DateTime" minOccurs="0" maxOccurs="1">
+            <xs:annotation>
+              <xs:documentation>The date/time at which this information was last updated.</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element name="name" type="com:MultilingualString" minOccurs="1" maxOccurs="1">
+            <xs:annotation>
+              <xs:documentation>Name of the organisation.</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element name="externalCode" type="com:String" minOccurs="0" maxOccurs="1">
+            <xs:annotation>
+              <xs:documentation>An external code to identify the organisation.</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element name="legalName" type="com:MultilingualString" minOccurs="0" maxOccurs="1">
+            <xs:annotation>
+              <xs:documentation>The legal name of the organisation.</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element name="linkToGeneralInformation" type="com:Url" minOccurs="0" maxOccurs="1">
+            <xs:annotation>
+              <xs:documentation>An internet address from where further relevant information about this organisation may be obtained.</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element name="nationalOrganisationNumber" type="com:String" minOccurs="0" maxOccurs="1">
+            <xs:annotation>
+              <xs:documentation>The national organisation number in the specified national register, if applicable.</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element name="nationalRegister" type="com:String" minOccurs="0" maxOccurs="1">
+            <xs:annotation>
+              <xs:documentation>A national register where the organisation is registered.</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element name="vatIdentificationNumber" type="com:String" minOccurs="0" maxOccurs="1">
+            <xs:annotation>
+              <xs:documentation>The VAT identification number of the organisation.</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element name="organisationUnit" type="fac:OrganisationUnit" maxOccurs="unbounded" />
+          <xs:element name="subOrganisation" type="fac:Organisation" minOccurs="0" maxOccurs="unbounded">
+            <xs:annotation>
+              <xs:documentation>A sub organisation that could substitute its role</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element name="_organisationSpecificationExtension" type="com:_ExtensionType" minOccurs="0" />
+        </xs:sequence>
+        <xs:attribute name="id" type="xs:string" use="required" />
+        <xs:attribute name="version" type="xs:string" use="required" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="OrganisationUnit">
+    <xs:annotation>
+      <xs:documentation>A unit within the organisation, which has got seperate location, operating hours, address and/or contacts.</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="name" type="com:MultilingualString" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>A name for this organisation unit</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="function" type="com:MultilingualString" minOccurs="0" maxOccurs="unbounded">
+        <xs:annotation>
+          <xs:documentation>Functions this unit is responsible for or a specific type, e.g. headquarter or sales</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="locationReference" type="loc:LocationReference" minOccurs="0" />
+      <xs:element name="contactInformation" type="fac:ContactInformation" minOccurs="0" maxOccurs="unbounded" />
+      <xs:element name="operatingHours" type="fac:OperatingHours" minOccurs="0" />
+      <xs:element name="_organisationUnitExtension" type="com:_ExtensionType" minOccurs="0" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:simpleType name="PaymentBrandsEnum">
+    <xs:annotation>
+      <xs:documentation>Brands for payment cards</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="americanExpress">
+        <xs:annotation>
+          <xs:documentation>American Express</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="applePay">
+        <xs:annotation>
+          <xs:documentation>Apple pay</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="cirrus">
+        <xs:annotation>
+          <xs:documentation>Cirrus</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="dinersClub">
+        <xs:annotation>
+          <xs:documentation>Diners Club</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="discoverCard">
+        <xs:annotation>
+          <xs:documentation>Discover Card</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="giroCard">
+        <xs:annotation>
+          <xs:documentation>Giro card</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="maestro">
+        <xs:annotation>
+          <xs:documentation>Maestro</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="masterCard">
+        <xs:annotation>
+          <xs:documentation>Master Card</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="visa">
+        <xs:annotation>
+          <xs:documentation>Visa</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="vpay">
+        <xs:annotation>
+          <xs:documentation>VPay</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="other">
+        <xs:annotation>
+          <xs:documentation>Another brand</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="_extended" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:complexType name="PaymentMethod">
+    <xs:annotation>
+      <xs:documentation>Provides information on the means of payment available</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="paymentMeans" type="fac:_MeansOfPaymentEnum" minOccurs="0" maxOccurs="unbounded">
+        <xs:annotation>
+          <xs:documentation>The means of payment available</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="paymentMode" type="fac:_PaymentTimingEnum" minOccurs="0" maxOccurs="unbounded">
+        <xs:annotation>
+          <xs:documentation>Defines the timing of the parking or other mobility related payment</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="brandsAcceptedText" type="fac:BrandsAcceptedText" minOccurs="0" maxOccurs="unbounded" />
+      <xs:element name="brandsAcceptedCodeList" type="fac:BrandsAcceptedCodeList" minOccurs="0" maxOccurs="unbounded" />
+      <xs:element name="_paymentMethodExtension" type="com:_ExtensionType" minOccurs="0" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:simpleType name="PaymentTimingEnum">
+    <xs:annotation>
+      <xs:documentation>Details of when payment is required.</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="prepay">
+        <xs:annotation>
+          <xs:documentation>Pay before entry</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="payOnEntry">
+        <xs:annotation>
+          <xs:documentation>Pay at start of the parking session (e.g. for pay and display) </xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="payPriorToExit">
+        <xs:annotation>
+          <xs:documentation>Pay at machine on foot prior to returning to vehicle and use payment ticket to exit.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="payAfterExit">
+        <xs:annotation>
+          <xs:documentation>Payment on account</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="payAndExit">
+        <xs:annotation>
+          <xs:documentation>Pay directly at the exit with a payment card or other means of payment (usually, this payment card must have been used when entering as well). </xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="other">
+        <xs:annotation>
+          <xs:documentation>Other.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="_extended" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:complexType name="Qualification">
+    <xs:annotation>
+      <xs:documentation>A singular set of criteria used to test eligibility for use of a rate table.</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="withReservation" type="com:Boolean" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Indicates whether a reservation is required. [TRUE] reservation required</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="propulsionEnergyType" type="fac:_EnergySourceEnum" minOccurs="0" maxOccurs="unbounded">
+        <xs:annotation>
+          <xs:documentation>Indicates eligible fuel types for applicable vehicles</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="noFeeToUse" type="com:Boolean" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Specific facility is free or not. [TRUE] (e.g. free to park)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="withMembership" type="com:Boolean" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Indicates that a membership is required. [TRUE] membership required</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="membershipName" type="com:MultilingualString" minOccurs="0" maxOccurs="unbounded">
+        <xs:annotation>
+          <xs:documentation>Free-text description of the membership</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="memberOfOtherRateTable" type="com:Boolean" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Indicates if this qualification can be used in combination with the use of another rate table. [TRUE]= member of (i.e., used) another rate table.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="rateTableMember" type="fac:_RateTableVersionedReference" minOccurs="0" maxOccurs="unbounded">
+        <xs:annotation>
+          <xs:documentation>Reference to another rate table membership</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="activeAssignedRight" type="com:String" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Indication of an assigned right.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="paymentMethod" type="fac:PaymentMethod" minOccurs="0" maxOccurs="unbounded" />
+      <xs:element name="vehicleCharacteristics" type="com:VehicleCharacteristics" minOccurs="0" maxOccurs="unbounded" />
+      <xs:element name="userQualification" type="fac:UserQualification" minOccurs="0" maxOccurs="unbounded" />
+      <xs:element name="_qualificationExtension" type="com:_ExtensionType" minOccurs="0" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:simpleType name="RateAvailabilityTypeEnum">
+    <xs:annotation>
+      <xs:documentation>A list of rate availability types.</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="private">
+        <xs:annotation>
+          <xs:documentation>Where parking access limited to known and authorized individuals.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="public">
+        <xs:annotation>
+          <xs:documentation>Open to the public.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="restricted">
+        <xs:annotation>
+          <xs:documentation>Open to the public but need a direct purpose or permission to use from the owner (e.g. doctor's surgery, storefront)</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="_extended" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:complexType name="RateDiscount">
+    <xs:annotation>
+      <xs:documentation>Class defining discount rates to be applied to a RateTable</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="discountRate" type="com:Percentage" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Proportionate discount (-) or surcharge (+) to be applied to all values in the referenced RateTable </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="fixedValue" type="fac:AmountInCurrency" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Fixed value discount (-) or surcharge (+) to be applied to all values in the referenced RateTable </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="_rateDiscountExtension" type="com:_ExtensionType" minOccurs="0" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="RateEligibility">
+    <xs:annotation>
+      <xs:documentation>Defines the combination of Eligibility requirements with RateTables and associates this combination to a RightSpecification.</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="priority" type="com:Integer" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>An integer value, starting at 1, indicating the order in which multiple relevant RateTables shall be considered, with 1 being the highest priority.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="combinable" type="com:Boolean" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Boolean attribute that indicates (TRUE) if all RateTables associated to a RightSpecification with a common Eligibility can be combined to establish a lowest cost tariff or (FALSE) they cannot be combined.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="rateDiscount" type="fac:RateDiscount" minOccurs="0" />
+      <xs:element name="eligibility" type="fac:Eligibility" />
+      <xs:element name="rightSpecification" type="fac:RightSpecification" minOccurs="0" maxOccurs="unbounded" />
+      <xs:element name="_rateEligibilityExtension" type="com:_ExtensionType" minOccurs="0" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="RateLine">
+    <xs:annotation>
+      <xs:documentation>A specific rate element of a rate line collection within a specific rate table.</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="rateLineType" type="fac:_RateLineTypeEnum" minOccurs="1" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Indicates the nature of the rate line</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="description" type="com:MultilingualString" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Free-text description associated with this rate line.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="durationStart" type="com:Time" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>If used, indicates the start time for the applicability of the specific rate line, generally with respect to the start of the parking or other mobility session. e.g. the start of a time-based tier charge rate.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="durationEnd" type="com:Time" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>If used, indicates the end time for the applicability of the specific rate line, generally with respect to the start of the parking or other mobility session. e.g. the end of a time-based tier charge rate.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="incrementPeriod" type="fac:Duration" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>The time period for incrementing the rate line charge. If set to the same as the duration of the period between the durationStart and durationEnd, the increment will occur once per period, i.e. a flat rate time-based tier charge rate.  </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="value" type="fac:AmountOfMoney" minOccurs="1" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>The value of the fee to be charged in respect of this rate line</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="minValue" type="fac:AmountOfMoney" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>The minimum monetary amount to be applied in conjunction with use of this rate line collection.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="maxValue" type="fac:AmountOfMoney" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>The maximum monetary amount to be applied in conjunction with use of this rate line collection.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="usageCondition" type="fac:_RateUsageConditionsTypeEnum" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Indicates conditions on the use of this rate line</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="surcharge" type="fac:Surcharge" minOccurs="0" maxOccurs="unbounded" />
+      <xs:element name="rateLineTax" type="fac:RateLineTax" minOccurs="0" maxOccurs="unbounded" />
+      <xs:element name="_rateLineExtension" type="com:_ExtensionType" minOccurs="0" />
+    </xs:sequence>
+    <xs:attribute name="sequence" type="com:Integer" use="required">
+      <xs:annotation>
+        <xs:documentation>The ordered sequence of this RateLine instance within the RateLineCollection</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+  </xs:complexType>
+  <xs:complexType name="RateLineCollection">
+    <xs:annotation>
+      <xs:documentation>A group of rate line elements that logically group together within one rate table, e.g. such as the rate lines for the different tiers of a time-based tier rate table.</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="applicableCurrency" type="fac:CurrencyCode" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>The monetary currency that rates are specified in this rate line collection.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="minValueCollection" type="fac:AmountOfMoney" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>The minimum monetary amount to be applied in conjunction with use of this rate line collection.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="maxValueCollection" type="fac:AmountOfMoney" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>The maximum monetary amount to be applied in conjunction with use of this rate line collection.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="validStart" type="com:DateTime" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>The start time for the validity of this rate line collection</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="validEnd" type="com:DateTime" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>The end time for the validity of this rate line collection</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="minTime" type="fac:Duration" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>A minimum parking session duration to be applied to this rate line collection.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="maxTime" type="fac:Duration" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>A maximum parking session duration to be applied to this rate line collection.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="resetTime" type="com:Time" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Time that rate resets</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="taxIncluded" type="com:Boolean" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>[TRUE] Indication that tax to be applied is included within the total rate associated with this rate line collection. [FALSE] indicates that the tax is added additionally to the total.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="taxRate" type="com:Percentage" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>The percentage rate of tax to be applied.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="taxValue" type="fac:AmountOfMoney" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>The monetary amount of tax to be applied.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="relativeTimes" type="com:Boolean" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>[TRUE] Indicates whether times relative to the start of an external event are used as the basis for rate calculation. [FALSE] indicates that rate calculation definitions are based on local or UTC times (for example the duration of a parking session).</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="rateLine" type="fac:RateLine" maxOccurs="unbounded" />
+      <xs:element name="_rateLineCollectionExtension" type="com:_ExtensionType" minOccurs="0" />
+    </xs:sequence>
+    <xs:attribute name="collectionSequence" type="com:Integer" use="required">
+      <xs:annotation>
+        <xs:documentation>An indicator giving the place in sequence of this rate line collection</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+  </xs:complexType>
+  <xs:complexType name="RateLineTax">
+    <xs:annotation>
+      <xs:documentation>Class containing details of tax to be applied to a RateLine</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="taxValue" type="fac:AmountOfMoney" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>The monetary amount of tax to be applied.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="taxRate" type="com:Percentage" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>The percentage rate of tax to be applied.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="taxIncluded" type="com:Boolean" minOccurs="1" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>[TRUE] Indication that tax to be applied is included within the total rate associated with this rate line. [FALSE] indicates that the tax is added additionally to the total.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="trigger" type="com:MultilingualString" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Free-text definition of boundary condition setting applicability of the tax</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="labelForDisplay" type="com:MultilingualString" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Free-text for display on a receipt and/or in a user interface</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="_rateLineTaxExtension" type="com:_ExtensionType" minOccurs="0" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:simpleType name="RateLineTypeEnum">
+    <xs:annotation>
+      <xs:documentation>A list of rate line types.</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="flatRate">
+        <xs:annotation>
+          <xs:documentation>A rate applied to the rate line which is not time/duration dependent. i.e. a single fixed payment.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="incrementingRate">
+        <xs:annotation>
+          <xs:documentation>A charge rate that increases by a defined amount in a defined time.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="flatRateTier">
+        <xs:annotation>
+          <xs:documentation>A flat rate charge rate associated with a specific time-based tier. This is a special case of an incrementing rate.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="perUnit">
+        <xs:annotation>
+          <xs:documentation>A charge rate that is calculated per unit (the unit should be specified, for example in RefillPoint)</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="_extended" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:complexType name="Rates" abstract="true">
+    <xs:annotation>
+      <xs:documentation>Information about rates, either by reference or by a table specification.</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="applicableCurrency" type="fac:CurrencyCode" minOccurs="0" maxOccurs="unbounded">
+        <xs:annotation>
+          <xs:documentation>A general information on the applicable monetary currency.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="paymentMethod" type="fac:PaymentMethod" minOccurs="0" />
+      <xs:element name="overallPeriod" type="com:OverallPeriod" minOccurs="0" />
+      <xs:element name="energyPricingPolicy" type="egi:EnergyPricingPolicy" minOccurs="0" />
+      <xs:element name="_ratesExtension" type="com:_ExtensionType" minOccurs="0" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="RatesByReference">
+    <xs:annotation>
+      <xs:documentation>Reference to a rate table previously specified.</xs:documentation>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="fac:Rates">
+        <xs:sequence>
+          <xs:element name="rateTableReference" type="fac:_RateTableVersionedReference" minOccurs="1" maxOccurs="1">
+            <xs:annotation>
+              <xs:documentation>Reference to rate information specified in a rate table.</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element name="rateMatrixReference" type="fac:_RateMatrixVersionedReference" minOccurs="0" maxOccurs="1">
+            <xs:annotation>
+              <xs:documentation>Reference to the corresponding rate matrix.</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element name="_ratesByReferenceExtension" type="com:_ExtensionType" minOccurs="0" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="RateTable">
+    <xs:annotation>
+      <xs:documentation>A specific set of rate charges relating to one or more locations and optionally one set of eligibility criteria. </xs:documentation>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="fac:Rates">
+        <xs:sequence>
+          <xs:element name="lastUpdated" type="com:DateTime" minOccurs="0" maxOccurs="1">
+            <xs:annotation>
+              <xs:documentation>The date/time at which this information was last updated.</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element name="rateTableName" type="com:MultilingualString" minOccurs="0" maxOccurs="1">
+            <xs:annotation>
+              <xs:documentation>Name of the Rate Table</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element name="activeTimes" type="fac:Duration" minOccurs="0" maxOccurs="unbounded">
+            <xs:annotation>
+              <xs:documentation>Periods when the rate table is to be applied.</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element name="availability" type="fac:_RateAvailabilityTypeEnum" minOccurs="0" maxOccurs="1">
+            <xs:annotation>
+              <xs:documentation>Availability of Rate to the public.</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element name="rateResponsibleParty" type="fac:_OrganisationVersionedReference" minOccurs="0" maxOccurs="1">
+            <xs:annotation>
+              <xs:documentation>Entity responsible for fee collection. Identifies the entity that actually collects payment (e.g. mobile payment provider, online reservation firm, on-site operations)</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element name="rateSupersedeLink" type="fac:_RateTableVersionedReference" minOccurs="0" maxOccurs="1">
+            <xs:annotation>
+              <xs:documentation>Identify the rate table that this rate table supersedes. Temporarily supersedes the identified rate table. Use the Rate expiration times to define duration. </xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element name="validation" type="com:Boolean" minOccurs="0" maxOccurs="1">
+            <xs:annotation>
+              <xs:documentation>Are validations accepted when using this rate table? [TRUE] = validations can be applied to transactions using this rate table; [FALSE] validations cannot be applicated to transactions using this rate table.</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element name="rateType" type="fac:_RateTypeEnum" minOccurs="0" maxOccurs="1">
+            <xs:annotation>
+              <xs:documentation>Defines the type of rate in use.</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element name="validityStart" type="com:DateTime" minOccurs="0" maxOccurs="1">
+            <xs:annotation>
+              <xs:documentation>Valid start date/time of rate table.  This is when the rate table and pricing become active</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element name="validityEnd" type="com:DateTime" minOccurs="0" maxOccurs="1">
+            <xs:annotation>
+              <xs:documentation>Expiration of rate table in date/time.  This is when the rate table and pricing expires and is no longer used.</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element name="additionalInformation" type="com:Url" minOccurs="0" maxOccurs="1">
+            <xs:annotation>
+              <xs:documentation>URI locator for supplementary additional information concerning use of the rate table</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element name="rateLineCollection" type="fac:RateLineCollection" minOccurs="0" maxOccurs="unbounded" />
+          <xs:element name="rateEligibility" type="fac:RateEligibility" minOccurs="0" />
+          <xs:element name="_rateTableExtension" type="com:_ExtensionType" minOccurs="0" />
+        </xs:sequence>
+        <xs:attribute name="id" type="xs:string" use="required" />
+        <xs:attribute name="version" type="xs:string" use="required" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:simpleType name="RateTypeEnum">
+    <xs:annotation>
+      <xs:documentation>A list of supported rate types.</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="contract">
+        <xs:annotation>
+          <xs:documentation>Rate provided to contract holders only.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="daily">
+        <xs:annotation>
+          <xs:documentation>Rate provided on a daily rate, per calendar day.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="event">
+        <xs:annotation>
+          <xs:documentation>Rate provided in combination with a specific event.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="hourly">
+        <xs:annotation>
+          <xs:documentation>Rate provided on an hourly basis.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="_extended" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="RateUsageConditionsTypeEnum">
+    <xs:annotation>
+      <xs:documentation>A list of supported rate usage condition types.</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="fixedDuration">
+        <xs:annotation>
+          <xs:documentation>Fixed duration - check Rate Usage Duration Limitation field</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="fixedNumber">
+        <xs:annotation>
+          <xs:documentation>check Rate Usage Count Limitation field</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="once">
+        <xs:annotation>
+          <xs:documentation>Permit can be used once</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="unlimited">
+        <xs:annotation>
+          <xs:documentation>Unlimited usage.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="_extended" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="RefundTypeEnum">
+    <xs:annotation>
+      <xs:documentation>A list of available refund categories.</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="surchargeNonRefundable">
+        <xs:annotation>
+          <xs:documentation>The surcharge amount is non-refundable, when termination conditions are met.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="surchargePartiallyRefundable">
+        <xs:annotation>
+          <xs:documentation>The surcharge amount is partially but not fully refundable, when termination conditions are met</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="surchargeFullyRefundable">
+        <xs:annotation>
+          <xs:documentation>The surcharge amount is fully refundable, when termination conditions are met.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="_extended" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:complexType name="RelativeTimeRates">
+    <xs:annotation>
+      <xs:documentation>A class supporting the specification of times for defining rate applicability that are relative to a defined referenceTimeStart of an event.</xs:documentation>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="fac:RateLineCollection">
+        <xs:sequence>
+          <xs:element name="referenceTimeStart" type="com:DateTime" minOccurs="0" maxOccurs="1">
+            <xs:annotation>
+              <xs:documentation>Event-related reference start time</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element name="referenceTimeEnd" type="com:DateTime" minOccurs="0" maxOccurs="1">
+            <xs:annotation>
+              <xs:documentation>Event-related reference end time</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element name="_relativeTimeRatesExtension" type="com:_ExtensionType" minOccurs="0" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="RightSpecification">
+    <xs:annotation>
+      <xs:documentation>A Right Specification explicitly defines what the owner/manager of a Place is granting specific users or vehicles the ability to do (e.g. park, delivery, pick up).</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="type" type="fac:_RightTypeEnum" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Defines the type of Right Specification.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="description" type="com:MultilingualString" minOccurs="0" maxOccurs="unbounded">
+        <xs:annotation>
+          <xs:documentation>Free-text description of a RightSpecification.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="expiry" type="com:DateTime" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Date/time showing the timestamp for when a RightSpecification ceases to be valid.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="financialReference" type="com:String" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Creator defined free-text reference to financial transactions associated to the specific Right Specification.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="issuer" type="fac:_OrganisationVersionedReference" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>The issuer of this right.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="noFeeToUse" type="com:Boolean" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>If TRUE Indicates that the related RightSpecification may be used without charge or cost. If FALSE costs and charges apply</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="credential" type="fac:Credential" minOccurs="0" maxOccurs="unbounded" />
+      <xs:element name="validity" type="com:Validity" minOccurs="0" />
+      <xs:element name="_rightSpecificationExtension" type="com:_ExtensionType" minOccurs="0" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:simpleType name="RightTypeEnum">
+    <xs:annotation>
+      <xs:documentation>A list of the supported RightSpecification types available for reference.</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="oneTimeUseParking">
+        <xs:annotation>
+          <xs:documentation>RightSpecification intended for one time or limited parking usage.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="permitParking">
+        <xs:annotation>
+          <xs:documentation>RightSpecification intended for multi-use parking usage.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="loadingUnloading">
+        <xs:annotation>
+          <xs:documentation>RightSpecification intended granting permissions to load and unload vehicles.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="setdownPickup">
+        <xs:annotation>
+          <xs:documentation>RightSpecification intended for passenger setdown and pickup.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="waiting">
+        <xs:annotation>
+          <xs:documentation>RightSpecification intended to grant permission for an accompanied vehicle to wait.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="accessPermission">
+        <xs:annotation>
+          <xs:documentation>RightSpecification intended grant access permission.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="doingReservation">
+        <xs:annotation>
+          <xs:documentation>RightSpecification intended granting doing a reservation (e.g. for parking or electric charging)</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="electricCharging">
+        <xs:annotation>
+          <xs:documentation>RightSpecification intended grant electric charging</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="_extended" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:complexType name="SupplementalFacility" abstract="true">
+    <xs:annotation>
+      <xs:documentation>One type of supplemental facility which can be supplemental equipment or a supplemental service facility.</xs:documentation>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="fac:FacilityObject">
+        <xs:sequence>
+          <xs:element name="_supplementalFacilityExtension" type="com:_ExtensionType" minOccurs="0" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="Surcharge">
+    <xs:annotation>
+      <xs:documentation>Free-text description of the condition that leads to a surcharge being applied</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="surchargeType" type="fac:_SurchargeTypeEnum" minOccurs="1" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Indicates the nature of the surcharge to be applied</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="value" type="fac:AmountOfMoney" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>The monetary amount of the surcharge</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="rate" type="com:Percentage" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>The percentage rate surcharge to be applied</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="trigger" type="com:MultilingualString" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Free-text definition of boundary condition setting applicability of the surcharge value.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="refund" type="fac:_RefundTypeEnum" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Indicates the nature of the refund of the surcharge that is available</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="labelForDisplay" type="com:MultilingualString" minOccurs="0" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Free-text for display on a receipt and/or in a user interface</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="_surchargeExtension" type="com:_ExtensionType" minOccurs="0" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:simpleType name="SurchargeTypeEnum">
+    <xs:annotation>
+      <xs:documentation>Types of surcharge that can be applied.</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="reservation">
+        <xs:annotation>
+          <xs:documentation>Reservation fee</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="mobilePayment">
+        <xs:annotation>
+          <xs:documentation>Mobile payment fee</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="deposit">
+        <xs:annotation>
+          <xs:documentation>Deposit fee</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="membershipFee">
+        <xs:annotation>
+          <xs:documentation>Membership fee</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="_extended" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="TimeZone">
+    <xs:annotation>
+      <xs:documentation>Identifies a time zone by specifying the difference to UTC in hours and minutes, as defined in ISO 8601.</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="com:String">
+      <xs:pattern value="[-+][0-9][0-9]:[0-9][0-9]|Z" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:complexType name="UndefinedOperatingHours">
+    <xs:annotation>
+      <xs:documentation>There are no operating hours specified.</xs:documentation>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="fac:OperatingHours">
+        <xs:sequence>
+          <xs:element name="_undefinedOperatingHoursExtension" type="com:_ExtensionType" minOccurs="0" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="UnknownOperatingHours">
+    <xs:annotation>
+      <xs:documentation>The operating hours are not known.</xs:documentation>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="fac:OperatingHours">
+        <xs:sequence>
+          <xs:element name="_unknownOperatingHoursExtension" type="com:_ExtensionType" minOccurs="0" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="UnknownRates">
+    <xs:annotation>
+      <xs:documentation>There is no information about rates.</xs:documentation>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="fac:Rates">
+        <xs:sequence>
+          <xs:element name="_unknownRatesExtension" type="com:_ExtensionType" minOccurs="0" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="UnspecifiedRates">
+    <xs:annotation>
+      <xs:documentation>Rates are not (yet) specified.</xs:documentation>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="fac:Rates">
+        <xs:sequence>
+          <xs:element name="_unspecifiedRatesExtension" type="com:_ExtensionType" minOccurs="0" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="UserQualification">
+    <xs:annotation>
+      <xs:documentation>Class supporting the definition of user group characteristics</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="userGroup" type="fac:_UserTypeEnum" minOccurs="1" maxOccurs="1">
+        <xs:annotation>
+          <xs:documentation>Indicates the user-defined user group qualification</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="_userQualificationExtension" type="com:_ExtensionType" minOccurs="0" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:simpleType name="UserTypeEnum">
+    <xs:annotation>
+      <xs:documentation>Types of different users, for example used in the context of parking.</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="allUsers">
+        <xs:annotation>
+          <xs:documentation>All users.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="commuters">
+        <xs:annotation>
+          <xs:documentation>Commuters.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="customers">
+        <xs:annotation>
+          <xs:documentation>Customers.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="elderlyUsers">
+        <xs:annotation>
+          <xs:documentation>Elderly users.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="employees">
+        <xs:annotation>
+          <xs:documentation>Employees.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="families">
+        <xs:annotation>
+          <xs:documentation>Families.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="hearingImpaired">
+        <xs:annotation>
+          <xs:documentation>People with hearing loss</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="hotelGuests">
+        <xs:annotation>
+          <xs:documentation>Hotel guests.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="longTermParkers">
+        <xs:annotation>
+          <xs:documentation>Long-term parker.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="members">
+        <xs:annotation>
+          <xs:documentation>Members.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="men">
+        <xs:annotation>
+          <xs:documentation>Men.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="overnightParkers">
+        <xs:annotation>
+          <xs:documentation>Overnight parker.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="parkAndCycleUser">
+        <xs:annotation>
+          <xs:documentation>Park and cycle user.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="parkAndRideUsers">
+        <xs:annotation>
+          <xs:documentation>Users that are exchanging into public transport at a park and ride station.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="parkAndWalkUser">
+        <xs:annotation>
+          <xs:documentation>Park and walk user.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="pensioners">
+        <xs:annotation>
+          <xs:documentation>Pensioners.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="pregnantWomen">
+        <xs:annotation>
+          <xs:documentation>Pregnant women.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="registeredDisabledUsers">
+        <xs:annotation>
+          <xs:documentation>Registered disabled persons.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="reservationHolders">
+        <xs:annotation>
+          <xs:documentation>Those who have a valid reservation, e.g. for the duration of parking.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="residents">
+        <xs:annotation>
+          <xs:documentation>Local residents.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="seasonTicketHolders">
+        <xs:annotation>
+          <xs:documentation>Season ticket holders.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="shoppers">
+        <xs:annotation>
+          <xs:documentation>Shoppers.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="shortTermParkers">
+        <xs:annotation>
+          <xs:documentation>Short-term parker.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="sportEventAwaySupporters">
+        <xs:annotation>
+          <xs:documentation>Sport event away supporters.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="sportEventHomeSupporters">
+        <xs:annotation>
+          <xs:documentation>Sport event home supporters.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="students">
+        <xs:annotation>
+          <xs:documentation>Students.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="staff">
+        <xs:annotation>
+          <xs:documentation>Staff.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="subscribers">
+        <xs:annotation>
+          <xs:documentation>Subscribers.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="visitors">
+        <xs:annotation>
+          <xs:documentation>Visitors.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="visuallyImpaired">
+        <xs:annotation>
+          <xs:documentation>People with vision impairment</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="wheelchairUsers">
+        <xs:annotation>
+          <xs:documentation>Wheelchair users.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="women">
+        <xs:annotation>
+          <xs:documentation>Women.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="unknown">
+        <xs:annotation>
+          <xs:documentation>Unknown.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="other">
+        <xs:annotation>
+          <xs:documentation>Other.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="_extended" />
+    </xs:restriction>
+  </xs:simpleType>
+</xs:schema>

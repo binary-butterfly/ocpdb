@@ -34,6 +34,14 @@ from .base_repository import BaseRepository
 class LocationRepository(BaseRepository[Location]):
     model_cls = Location
 
+    def fetch_all_locations_with_children(self) -> list[Location]:
+        cs_load = selectinload(Location.charging_pool)
+        options = [
+            selectinload(Location.operator),
+            cs_load.selectinload(ChargingStation.evses).selectinload(Evse.connectors),
+        ]
+        return self.session.query(Location).options(*options).all()
+
     def fetch_locations_by_source(self, source: str, include_children: bool = True) -> list[Location]:
         query = self.session.query(Location)
 

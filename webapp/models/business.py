@@ -41,6 +41,7 @@ class Business(BaseModel):
 
     name: Mapped[str] = mapped_column(String(255), index=True, nullable=False)
     website: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    emobility_uid: Mapped[str | None] = mapped_column(String(255), nullable=True)
 
     def to_dict(self, *args, ignore: list[str] | None = None, **kwargs) -> dict:
         ignore = ignore or []
