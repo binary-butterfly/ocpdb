@@ -16,7 +16,7 @@ class WindSpeedValueInput(ValidataclassMixin):
     A measured or calculated value of wind speed.
     """
 
-    windSpeed: int = FloatValidator()
+    windSpeed: float = FloatValidator()
     comDataValueExtensionG: ExtensionTypeGInput | UnsetValueType = (
         DataclassValidator(ExtensionTypeGInput),
         Default(UnsetValue),

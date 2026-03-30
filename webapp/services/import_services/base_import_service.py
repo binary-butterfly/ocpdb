@@ -135,9 +135,14 @@ class BaseImportService(BaseService, RemoteMixin, ABC):
         # Business and Images are shared, so we just cache them to prevent sql queries
         businesses_by_name = {business.name: business for business in self.business_repository.fetch_businesses()}
         images_by_url = {image.external_url: image for image in self.image_repository.fetch_images()}
-        tariffs_by_uid = {
-            tariff.uid: tariff for tariff in self.tariff_repository.fetch_tariffs_by_source(self.source_info.uid)
-        }
+
+        tariffs = self.tariff_repository.fetch_tariffs_by_source(self.source_info.uid)
+        tariffs_by_uid = {tariff.uid: tariff for tariff in tariffs}
+
+        tariff_associations_by_uid: dict[str, TariffAssociation] = {}
+        for tariff in tariffs:
+            for tariff_association in tariff.tariff_associations:
+                tariff_associations_by_uid[tariff_association.uid] = tariff_association
 
         # EVSE UIDs are critical because they are unique, so we fetch them related to location id in order to check them before saving
         # TODO: actually use this
@@ -151,6 +156,7 @@ class BaseImportService(BaseService, RemoteMixin, ABC):
                 images_by_url=images_by_url,
                 available_official_region_code_databases=available_official_region_code_databases,
                 tariffs_by_uid=tariffs_by_uid,
+                tariff_associations_by_uid=tariff_associations_by_uid,
             )
 
         # delete locations which are not part of the updated dataset anymore
@@ -167,6 +173,7 @@ class BaseImportService(BaseService, RemoteMixin, ABC):
         images_by_url: dict[str, Image] | None = None,
         available_official_region_code_databases: list[str] | None = None,
         tariffs_by_uid: dict[str, Tariff] | None = None,
+        tariff_associations_by_uid: dict[str, TariffAssociation] | None = None,
     ):
         if tariffs_by_uid is None:
             tariffs_by_uid = {
@@ -220,6 +227,8 @@ class BaseImportService(BaseService, RemoteMixin, ABC):
                     charging_station_update=charging_station_update,
                     old_charging_stations_by_uid=old_charging_stations_by_uid,
                     images_by_url=images_by_url,
+                    tariff_associations_by_uid=tariff_associations_by_uid,
+                    tariffs_by_uid=tariffs_by_uid,
                 ),
             )
         location.charging_pool = new_charging_stations
@@ -250,10 +259,6 @@ class BaseImportService(BaseService, RemoteMixin, ABC):
 
         self.location_repository.save_location(location)
 
-        # Apply inline tariff associations after save, so EVSEs/connectors have proper IDs
-        if tariffs_by_uid:
-            self._apply_inline_tariff_associations(location_update, location, tariffs_by_uid)
-
         if old_location_ids is not None and location.id in old_location_ids:
             old_location_ids.remove(location.id)
 
@@ -262,6 +267,8 @@ class BaseImportService(BaseService, RemoteMixin, ABC):
         charging_station_update: ChargingStationUpdate,
         old_charging_stations_by_uid: dict[str, ChargingStation],
         images_by_url: dict[str, Image] | None,
+        tariff_associations_by_uid: dict[str, TariffAssociation],
+        tariffs_by_uid: dict[str, Tariff],
     ) -> ChargingStation:
         charging_station = old_charging_stations_by_uid.get(charging_station_update.uid, ChargingStation())
 
@@ -288,6 +295,8 @@ class BaseImportService(BaseService, RemoteMixin, ABC):
                     evse_update=evse_update,
                     old_evses_by_uid=old_evses_by_uid,
                     images_by_url=images_by_url,
+                    tariff_associations_by_uid=tariff_associations_by_uid,
+                    tariffs_by_uid=tariffs_by_uid,
                 ),
             )
 
@@ -300,6 +309,8 @@ class BaseImportService(BaseService, RemoteMixin, ABC):
         evse_update: EvseUpdate,
         old_evses_by_uid: dict[str, Evse],
         images_by_url: dict[str, Image] | None,
+        tariff_associations_by_uid: dict[str, TariffAssociation],
+        tariffs_by_uid: dict[str, Tariff],
     ) -> Evse:
         evse = old_evses_by_uid.get(evse_update.uid, Evse())
 
@@ -320,6 +331,18 @@ class BaseImportService(BaseService, RemoteMixin, ABC):
                 ),
             )
         evse.connectors = new_connectors
+
+        tariff_associations: list[TariffAssociation] = []
+        if evse_update.tariff_association:
+            for tariff_association_update in evse_update.tariff_association:
+                tariff_association = self.get_tariff_association(
+                    tariff_association_update=tariff_association_update,
+                    tariff_associations_by_uid=tariff_associations_by_uid,
+                    tariffs_by_uid=tariffs_by_uid,
+                )
+                tariff_associations.append(tariff_association)
+
+        evse.tariff_associations = tariff_associations
 
         self.set_image_list(
             primary_object=evse,
@@ -345,72 +368,54 @@ class BaseImportService(BaseService, RemoteMixin, ABC):
 
         return connector
 
-    def _apply_inline_tariff_associations(
+    def get_tariff_association(
         self,
-        location_update: LocationUpdate,
-        location: Location,
+        tariff_association_update: TariffAssociationUpdate,
+        tariff_associations_by_uid: dict[str, TariffAssociation],
         tariffs_by_uid: dict[str, Tariff],
-    ):
-        evses_by_uid: dict[str, Evse] = {}
-        connectors_by_evse_and_uid: dict[tuple[str, str], Connector] = {}
-        for charging_station in location.charging_pool:
-            for evse in charging_station.evses:
-                evses_by_uid[evse.uid] = evse
-                for connector in evse.connectors:
-                    connectors_by_evse_and_uid[(evse.uid, connector.uid)] = connector
-
-        has_changes = False
-        for cs_update in location_update.charging_pool:
-            for evse_update in cs_update.evses:
-                evse = evses_by_uid.get(evse_update.uid)
-                if evse is None:
-                    continue
-
-                if evse_update.tariff_association is not None:
-                    tariff = tariffs_by_uid.get(evse_update.tariff_association.tariff_uid)
-                    if tariff is not None:
-                        association = self._get_or_create_tariff_association(tariff, evse_update.tariff_association)
-                        if evse not in association.evses:
-                            association.evses.append(evse)
-                            has_changes = True
-
-                for connector_update in evse_update.connectors:
-                    if connector_update.tariff_association is None:
-                        continue
-                    connector = connectors_by_evse_and_uid.get((evse_update.uid, connector_update.uid))
-                    if connector is None:
-                        continue
-                    tariff = tariffs_by_uid.get(connector_update.tariff_association.tariff_uid)
-                    if tariff is None:
-                        continue
-                    association = self._get_or_create_tariff_association(tariff, connector_update.tariff_association)
-                    if connector not in association.connectors:
-                        association.connectors.append(connector)
-                        has_changes = True
-
-        if has_changes:
-            self.location_repository.save_location(location)
-
-    def _get_or_create_tariff_association(
-        self,
-        tariff: Tariff,
-        association_update: TariffAssociationUpdate,
     ) -> TariffAssociation:
-        old_associations_by_uid = {a.uid: a for a in tariff.tariff_associations}
-        association = old_associations_by_uid.get(association_update.uid, TariffAssociation())
+        tariff = self.get_tariff(tariff_association_update.tariff, tariffs_by_uid)
 
-        association.last_updated = association_update.last_updated or datetime.now(tz=timezone.utc)
-        association.start_date_time = association_update.start_date_time or datetime.now(tz=timezone.utc)
+        if tariff_association_update.uid in tariff_associations_by_uid:
+            tariff_association = tariff_associations_by_uid[tariff_association_update.uid]
+        else:
+            tariff_association = TariffAssociation()
+            tariff_associations_by_uid[tariff_association_update.uid] = tariff_association
 
-        for key, value in association_update.to_dict().items():
+        tariff_association.last_updated = tariff_association_update.last_updated or datetime.now(tz=timezone.utc)
+        tariff_association.start_date_time = tariff_association_update.start_date_time or datetime.now(tz=timezone.utc)
+        tariff_association.tariff = tariff
+
+        for key, value in tariff_association_update.to_dict().items():
             if key in ['last_updated', 'start_date_time']:
                 continue
-            setattr(association, key, value)
+            setattr(tariff_association, key, value)
 
-        if association not in tariff.tariff_associations:
-            tariff.tariff_associations.append(association)
+        return tariff_association
 
-        return association
+    def get_tariff(self, tariff_update: TariffUpdate, tariffs_by_uid: dict[str, Tariff]) -> Tariff:
+        if tariff_update.uid in tariffs_by_uid:
+            tariff = tariffs_by_uid[tariff_update.uid]
+        else:
+            tariff = Tariff(uid=tariff_update.uid)
+            tariffs_by_uid[tariff_update.uid] = tariff
+
+        tariff.last_updated = tariff_update.last_updated or datetime.now(tz=timezone.utc)
+
+        for key, value in tariff_update.to_dict().items():
+            if key == 'last_updated':
+                continue
+            setattr(tariff, key, value)
+
+        tariff.elements = [element.to_dict() for element in tariff_update.elements]
+        if tariff_update.tariff_alt_text:
+            tariff.tariff_alt_text = [tariff_alt_text.to_dict() for tariff_alt_text in tariff_update.tariff_alt_text]
+        if tariff_update.min_price:
+            tariff.min_price = tariff_update.min_price.to_dict()
+        if tariff_update.max_price:
+            tariff.max_price = tariff_update.max_price.to_dict()
+
+        return tariff
 
     def set_business(
         self,
@@ -498,74 +503,6 @@ class BaseImportService(BaseService, RemoteMixin, ABC):
             self.source_repository.save_source(source)
 
             return source
-
-    def save_tariff_updates(
-        self,
-        tariff_updates: list[TariffUpdate],
-        tariff_association_updates: list[TariffAssociationUpdate],
-    ):
-        old_tariff_ids = self.tariff_repository.fetch_tariff_ids_by_source(self.source_info.uid)
-        tariffs_by_uid: dict[str, Tariff] = {
-            tariff.uid: tariff for tariff in self.tariff_repository.fetch_tariffs_by_source(self.source_info.uid)
-        }
-
-        for tariff_update in tariff_updates:
-            tariff = tariffs_by_uid.get(tariff_update.uid, Tariff())
-            tariff.last_updated = tariff_update.last_updated or datetime.now(tz=timezone.utc)
-
-            for key, value in tariff_update.to_dict().items():
-                if key == 'last_updated':
-                    continue
-                setattr(tariff, key, value)
-
-            new_elements: list[dict] = [element.to_dict() for element in tariff_update.elements]
-            tariff.elements = new_elements
-
-            tariffs_by_uid[tariff_update.uid] = tariff
-            self.tariff_repository.save_tariff(tariff, commit=False)
-
-            if tariff.id and tariff.id in old_tariff_ids:
-                old_tariff_ids.remove(tariff.id)
-
-        # Build lookup for EVSEs and connectors by uid
-        evses_by_uid: dict[str, Evse] = {
-            evse.uid: evse
-            for evse in self.evse_repository.fetch_evses_by_source_and_uids(
-                self.source_info.uid,
-                uids=[a.evse_uid for a in tariff_association_updates],
-            )
-        }
-
-        # Save tariff associations
-        for association_update in tariff_association_updates:
-            tariff = tariffs_by_uid.get(association_update.tariff_uid)
-            if tariff is None:
-                continue
-
-            evse = evses_by_uid.get(association_update.evse_uid)
-            if evse is None:
-                continue
-
-            association = self._get_or_create_tariff_association(tariff, association_update)
-
-            if evse not in association.evses:
-                association.evses.append(evse)
-
-            # TODO: what about connector-specific tariffs?
-
-            self.tariff_repository.save_tariff(tariff, commit=False)
-
-        # Delete tariffs no longer in dataset
-        for old_tariff_id in old_tariff_ids:
-            self.tariff_repository.delete_tariff(
-                self.tariff_repository.fetch_tariff_by_uid(
-                    self.source_info.uid,
-                    next(uid for uid, t in tariffs_by_uid.items() if t.id == old_tariff_id),
-                ),
-                commit=False,
-            )
-
-        self.tariff_repository.session.commit()
 
     def update_source(
         self,

@@ -52,7 +52,7 @@ def test_get_ocpi_30_evses_strict(
     db.session.commit()
 
     response = public_test_client.get(
-        path='/api/ocpi/public/3.0/evses?strict=true',
+        path='/api/public/ocpi/3.0/evses?strict=true',
     )
     assert response.status_code == HTTPStatus.OK
     assert response.json['total_count'] == 4
@@ -72,7 +72,7 @@ def test_get_ocpi_30_evse_strict(
     db.session.commit()
 
     response = public_test_client.get(
-        path='/api/ocpi/public/3.0/evses/1?strict=true',
+        path='/api/public/ocpi/3.0/evses/1?strict=true',
     )
     assert response.status_code == HTTPStatus.OK
     assert response.json == {
@@ -119,7 +119,7 @@ def test_get_ocpi_30_evses_by_status(
     db.session.commit()
 
     response = public_test_client.get(
-        path='/api/ocpi/public/3.0/evses?strict=true&status=AVAILABLE',
+        path='/api/public/ocpi/3.0/evses?strict=true&status=AVAILABLE',
     )
     assert response.status_code == HTTPStatus.OK
     assert response.json['total_count'] == 2
@@ -146,7 +146,7 @@ def test_get_ocpi_30_evses_by_source_uid(
     db.session.commit()
 
     response = public_test_client.get(
-        path=f'/api/ocpi/public/3.0/evses?strict=true&source_uid={SOURCE_UID_1}',
+        path=f'/api/public/ocpi/3.0/evses?strict=true&source_uid={SOURCE_UID_1}',
     )
     assert response.status_code == HTTPStatus.OK
     assert response.json['total_count'] == 2
@@ -166,7 +166,7 @@ def test_get_ocpi_30_evse_non_strict(
     db.session.commit()
 
     response = test_client.get(
-        path='/api/ocpi/public/3.0/evses/1',
+        path='/api/public/ocpi/3.0/evses/1',
     )
     assert response.status_code == HTTPStatus.OK
     data = response.json

@@ -16,7 +16,7 @@ class AmountInCurrencyInput(ValidataclassMixin):
     A class supporting the definition of a unit of currency in a defined currency.
     """
 
-    currencyValue: int = FloatValidator()
+    currencyValue: float = FloatValidator()
     currencyType: str = StringValidator()
     facAmountInCurrencyExtensionG: ExtensionTypeGInput | UnsetValueType = (
         DataclassValidator(ExtensionTypeGInput),

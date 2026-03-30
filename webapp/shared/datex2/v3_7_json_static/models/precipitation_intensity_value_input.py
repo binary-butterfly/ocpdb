@@ -16,7 +16,7 @@ class PrecipitationIntensityValueInput(ValidataclassMixin):
     A measured or calculated value of the accumulation rate of precipitation.
     """
 
-    millimetresPerHourIntensity: int = FloatValidator()
+    millimetresPerHourIntensity: float = FloatValidator()
     comDataValueExtensionG: ExtensionTypeGInput | UnsetValueType = (
         DataclassValidator(ExtensionTypeGInput),
         Default(UnsetValue),

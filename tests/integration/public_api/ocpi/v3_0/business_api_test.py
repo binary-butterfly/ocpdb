@@ -31,7 +31,7 @@ def test_get_ocpi_30_businesses(
     db.session.commit()
 
     response = public_test_client.get(
-        path='/api/ocpi/public/3.0/businesses',
+        path='/api/public/ocpi/3.0/businesses',
     )
     assert response.status_code == HTTPStatus.OK
     assert response.json['total_count'] == 2
@@ -46,7 +46,7 @@ def test_get_ocpi_30_business(
     db.session.commit()
 
     response = public_test_client.get(
-        path='/api/ocpi/public/3.0/businesses/1',
+        path='/api/public/ocpi/3.0/businesses/1',
     )
     assert response.status_code == HTTPStatus.OK
     assert response.json == {'name': BUSINESS_1_NAME}
@@ -60,7 +60,7 @@ def test_get_ocpi_30_businesses_by_name(
     db.session.commit()
 
     response = public_test_client.get(
-        path='/api/ocpi/public/3.0/businesses?name=Electro',
+        path='/api/public/ocpi/3.0/businesses?name=Electro',
     )
     assert response.status_code == HTTPStatus.OK
     assert response.json['total_count'] == 1
@@ -75,7 +75,7 @@ def test_get_ocpi_30_business_with_website(
     db.session.commit()
 
     response = public_test_client.get(
-        path='/api/ocpi/public/3.0/businesses/1',
+        path='/api/public/ocpi/3.0/businesses/1',
     )
     assert response.status_code == HTTPStatus.OK
     assert response.json == {

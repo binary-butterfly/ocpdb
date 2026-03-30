@@ -19,7 +19,7 @@ class HazardousMaterialsInput(ValidataclassMixin):
     """
 
     chemicalName: MultilingualStringInput = DataclassValidator(MultilingualStringInput)
-    dangerousGoodsFlashPoint: int | UnsetValueType = FloatValidator(), Default(UnsetValue)
+    dangerousGoodsFlashPoint: float | UnsetValueType = FloatValidator(), Default(UnsetValue)
     dangerousGoodsRegulations: DangerousGoodsRegulationsEnumGInput | UnsetValueType = (
         DataclassValidator(DangerousGoodsRegulationsEnumGInput),
         Default(UnsetValue),
@@ -29,8 +29,8 @@ class HazardousMaterialsInput(ValidataclassMixin):
     hazardSubstanceItemPageNumber: str | UnsetValueType = StringValidator(), Default(UnsetValue)
     tremCardNumber: str | UnsetValueType = StringValidator(), Default(UnsetValue)
     undgNumber: str | UnsetValueType = StringValidator(), Default(UnsetValue)
-    volumeOfDangerousGoods: int | UnsetValueType = FloatValidator(), Default(UnsetValue)
-    weightOfDangerousGoods: int | UnsetValueType = FloatValidator(), Default(UnsetValue)
+    volumeOfDangerousGoods: float | UnsetValueType = FloatValidator(), Default(UnsetValue)
+    weightOfDangerousGoods: float | UnsetValueType = FloatValidator(), Default(UnsetValue)
     comHazardousMaterialsExtensionG: ExtensionTypeGInput | UnsetValueType = (
         DataclassValidator(ExtensionTypeGInput),
         Default(UnsetValue),

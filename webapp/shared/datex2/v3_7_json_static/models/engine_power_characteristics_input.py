@@ -19,7 +19,7 @@ class EnginePowerCharacteristicsInput(ValidataclassMixin):
     """
 
     comparisonOperator: ComparisonOperatorEnumGInput = DataclassValidator(ComparisonOperatorEnumGInput)
-    enginePower: int = FloatValidator()
+    enginePower: float = FloatValidator()
     unitOfMeasure: PowerUnitOfMeasureEnumGInput = DataclassValidator(PowerUnitOfMeasureEnumGInput)
     comxEnginePowerCharacteristicsExtensionG: ExtensionTypeGInput | UnsetValueType = (
         DataclassValidator(ExtensionTypeGInput),

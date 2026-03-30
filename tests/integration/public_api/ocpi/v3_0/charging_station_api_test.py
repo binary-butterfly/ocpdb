@@ -33,7 +33,7 @@ def test_get_ocpi_30_charging_stations_strict(
     db.session.commit()
 
     response = public_test_client.get(
-        path='/api/ocpi/public/3.0/charge-stations?strict=true',
+        path='/api/public/ocpi/3.0/charge-stations?strict=true',
     )
     assert response.status_code == HTTPStatus.OK
     assert response.json['total_count'] == 2
@@ -53,7 +53,7 @@ def test_get_ocpi_30_charging_station_strict(
     db.session.commit()
 
     response = public_test_client.get(
-        path='/api/ocpi/public/3.0/charge-stations/1?strict=true',
+        path='/api/public/ocpi/3.0/charge-stations/1?strict=true',
     )
     assert response.status_code == HTTPStatus.OK
     assert response.json == {
@@ -110,7 +110,7 @@ def test_get_ocpi_30_charging_stations_by_source_uid(
     db.session.commit()
 
     response = public_test_client.get(
-        path=f'/api/ocpi/public/3.0/charge-stations?strict=true&source_uid={SOURCE_UID_1}',
+        path=f'/api/public/ocpi/3.0/charge-stations?strict=true&source_uid={SOURCE_UID_1}',
     )
     assert response.status_code == HTTPStatus.OK
     assert response.json['total_count'] == 2
@@ -125,7 +125,7 @@ def test_get_ocpi_30_charging_stations_by_location_id(
     db.session.commit()
 
     response = public_test_client.get(
-        path='/api/ocpi/public/3.0/charge-stations?strict=true&location_id=1',
+        path='/api/public/ocpi/3.0/charge-stations?strict=true&location_id=1',
     )
     assert response.status_code == HTTPStatus.OK
     assert response.json['total_count'] == 1
@@ -140,7 +140,7 @@ def test_get_ocpi_30_charging_station_non_strict(
     db.session.commit()
 
     response = test_client.get(
-        path='/api/ocpi/public/3.0/charge-stations/1',
+        path='/api/public/ocpi/3.0/charge-stations/1',
     )
     assert response.status_code == HTTPStatus.OK
     data = response.json

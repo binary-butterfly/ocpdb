@@ -16,7 +16,7 @@ class TemperatureValueInput(ValidataclassMixin):
     A measured or calculated value of temperature.
     """
 
-    temperature: int = FloatValidator()
+    temperature: float = FloatValidator()
     comDataValueExtensionG: ExtensionTypeGInput | UnsetValueType = (
         DataclassValidator(ExtensionTypeGInput),
         Default(UnsetValue),

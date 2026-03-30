@@ -16,7 +16,7 @@ class MicrogramsConcentrationValueInput(ValidataclassMixin):
     A measured or calculated value of concentration of a substance in micrograms per unit volume.
     """
 
-    microgramsConcentration: int = FloatValidator()
+    microgramsConcentration: float = FloatValidator()
     comDataValueExtensionG: ExtensionTypeGInput | UnsetValueType = (
         DataclassValidator(ExtensionTypeGInput),
         Default(UnsetValue),

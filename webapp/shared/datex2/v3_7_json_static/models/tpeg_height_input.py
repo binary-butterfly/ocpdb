@@ -17,7 +17,7 @@ class TpegHeightInput(ValidataclassMixin):
     Height information which provides additional discrimination for the applicable area.
     """
 
-    height: int | UnsetValueType = FloatValidator(), Default(UnsetValue)
+    height: float | UnsetValueType = FloatValidator(), Default(UnsetValue)
     heightType: TpegLoc04HeightTypeEnumGInput = DataclassValidator(TpegLoc04HeightTypeEnumGInput)
     locTpegHeightExtensionG: ExtensionTypeGInput | UnsetValueType = (
         DataclassValidator(ExtensionTypeGInput),

@@ -16,7 +16,7 @@ class KilogramsConcentrationValueInput(ValidataclassMixin):
     A measured or calculated value of concentration of a substance in kilograms per unit volume.
     """
 
-    kilogramsConcentration: int = FloatValidator()
+    kilogramsConcentration: float = FloatValidator()
     comDataValueExtensionG: ExtensionTypeGInput | UnsetValueType = (
         DataclassValidator(ExtensionTypeGInput),
         Default(UnsetValue),

@@ -17,7 +17,7 @@ class RateDiscountInput(ValidataclassMixin):
     Class defining discount rates to be applied to a RateTable
     """
 
-    discountRate: int | UnsetValueType = FloatValidator(), Default(UnsetValue)
+    discountRate: float | UnsetValueType = FloatValidator(), Default(UnsetValue)
     fixedValue: AmountInCurrencyInput | UnsetValueType = DataclassValidator(AmountInCurrencyInput), Default(UnsetValue)
     facRateDiscountExtensionG: ExtensionTypeGInput | UnsetValueType = (
         DataclassValidator(ExtensionTypeGInput),

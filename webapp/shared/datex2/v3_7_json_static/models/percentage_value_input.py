@@ -16,7 +16,7 @@ class PercentageValueInput(ValidataclassMixin):
     A measured or calculated value expressed as a percentage (amount per hundred).
     """
 
-    percentage: int = FloatValidator()
+    percentage: float = FloatValidator()
     comDataValueExtensionG: ExtensionTypeGInput | UnsetValueType = (
         DataclassValidator(ExtensionTypeGInput),
         Default(UnsetValue),

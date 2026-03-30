@@ -16,7 +16,7 @@ class ApplicationRateValueInput(ValidataclassMixin):
     A measured or calculated value of the application rate of a substance.
     """
 
-    applicationRate: int = FloatValidator()
+    applicationRate: float = FloatValidator()
     comDataValueExtensionG: ExtensionTypeGInput | UnsetValueType = (
         DataclassValidator(ExtensionTypeGInput),
         Default(UnsetValue),

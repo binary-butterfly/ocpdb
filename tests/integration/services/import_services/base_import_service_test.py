@@ -16,6 +16,7 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+from datetime import datetime, timezone
 from decimal import Decimal
 
 import pytest
@@ -220,7 +221,22 @@ def test_save_location_updates_replaces_old_locations(db, testing_import_service
     assert db.session.query(Location).first().uid == 'loc1'
 
 
-def _create_location_with_evse_and_connector(testing_import_service: BaseImportService):
+def _create_tariff_update() -> TariffUpdate:
+    return TariffUpdate(
+        uid='tariff1',
+        source='test_source_uid',
+        currency='EUR',
+        elements=[
+            TariffElementUpdate(
+                price_components=[
+                    PriceComponentUpdate(type=TariffDimensionType.ENERGY, price=Decimal('0.30')),
+                ],
+            ),
+        ],
+    )
+
+
+def test_save_location_updates_with_evse_tariff_association(db, testing_import_service: BaseImportService):
     testing_import_service.save_location_updates([
         LocationUpdate(
             uid='loc1',
@@ -244,41 +260,20 @@ def _create_location_with_evse_and_connector(testing_import_service: BaseImportS
                                     max_electric_power=22000,
                                 ),
                             ],
+                            tariff_association=[
+                                TariffAssociationUpdate(
+                                    uid='ta1',
+                                    source='test_source_uid',
+                                    start_date_time=datetime(2024, 1, 1, tzinfo=timezone.utc),
+                                    tariff=_create_tariff_update(),
+                                ),
+                            ],
                         ),
                     ],
                 ),
             ],
         ),
     ])
-
-
-def test_save_tariff_updates_with_evse_association(db, testing_import_service: BaseImportService):
-    _create_location_with_evse_and_connector(testing_import_service)
-
-    testing_import_service.save_tariff_updates(
-        tariff_updates=[
-            TariffUpdate(
-                uid='tariff1',
-                source='test_source_uid',
-                currency='EUR',
-                elements=[
-                    TariffElementUpdate(
-                        price_components=[
-                            PriceComponentUpdate(type=TariffDimensionType.ENERGY, price=Decimal('0.30')),
-                        ],
-                    ),
-                ],
-            ),
-        ],
-        tariff_association_updates=[
-            TariffAssociationUpdate(
-                uid='ta1',
-                source='test_source_uid',
-                tariff_uid='tariff1',
-                evse_uid='evse1',
-            ),
-        ],
-    )
 
     assert db.session.query(Tariff).count() == 1
     assert db.session.query(TariffAssociation).count() == 1
@@ -288,61 +283,7 @@ def test_save_tariff_updates_with_evse_association(db, testing_import_service: B
     assert evse.tariff_associations[0].uid == 'ta1'
 
 
-def test_save_tariff_updates_with_connector_association(db, testing_import_service: BaseImportService):
-    _create_location_with_evse_and_connector(testing_import_service)
-
-    testing_import_service.save_tariff_updates(
-        tariff_updates=[
-            TariffUpdate(
-                uid='tariff1',
-                source='test_source_uid',
-                currency='EUR',
-                elements=[
-                    TariffElementUpdate(
-                        price_components=[
-                            PriceComponentUpdate(type=TariffDimensionType.ENERGY, price=Decimal('0.30')),
-                        ],
-                    ),
-                ],
-            ),
-        ],
-        tariff_association_updates=[
-            TariffAssociationUpdate(
-                uid='ta1',
-                source='test_source_uid',
-                tariff_uid='tariff1',
-                evse_uid='evse1',
-                connector_uid='conn1',
-            ),
-        ],
-    )
-
-    assert db.session.query(TariffAssociation).count() == 1
-
-    evse = db.session.query(Evse).first()
-    assert len(evse.tariff_associations) == 1
-
-    connector = db.session.query(Connector).first()
-    assert len(connector.tariff_associations) == 1
-    assert connector.tariff_associations[0].uid == 'ta1'
-
-
-def test_save_location_updates_with_evse_inline_tariff_association(db, testing_import_service: BaseImportService):
-    # First create tariffs
-    testing_import_service.save_tariff_updates(
-        tariff_updates=[
-            TariffUpdate(
-                uid='tariff1',
-                source='test_source_uid',
-                currency='EUR',
-                elements=[],
-            ),
-        ],
-        tariff_association_updates=[],
-    )
-    assert db.session.query(Tariff).count() == 1
-
-    # Now save locations with inline tariff association on EVSE
+def test_save_location_updates_with_evse_tariff_association_elements(db, testing_import_service: BaseImportService):
     testing_import_service.save_location_updates([
         LocationUpdate(
             uid='loc1',
@@ -366,12 +307,14 @@ def test_save_location_updates_with_evse_inline_tariff_association(db, testing_i
                                     max_electric_power=22000,
                                 ),
                             ],
-                            tariff_association=TariffAssociationUpdate(
-                                uid='ta_evse1',
-                                source='test_source_uid',
-                                tariff_uid='tariff1',
-                                evse_uid='evse1',
-                            ),
+                            tariff_association=[
+                                TariffAssociationUpdate(
+                                    uid='ta1',
+                                    source='test_source_uid',
+                                    start_date_time=datetime(2024, 1, 1, tzinfo=timezone.utc),
+                                    tariff=_create_tariff_update(),
+                                ),
+                            ],
                         ),
                     ],
                 ),
@@ -379,31 +322,18 @@ def test_save_location_updates_with_evse_inline_tariff_association(db, testing_i
         ),
     ])
 
-    assert db.session.query(Evse).count() == 1
-    assert db.session.query(TariffAssociation).count() == 1
+    tariff = db.session.query(Tariff).first()
+    assert tariff.uid == 'tariff1'
+    assert tariff.currency == 'EUR'
+    assert len(tariff.elements) == 1
 
     evse = db.session.query(Evse).first()
     assert len(evse.tariff_associations) == 1
-    assert evse.tariff_associations[0].uid == 'ta_evse1'
     assert evse.tariff_associations[0].tariff.uid == 'tariff1'
 
 
-def test_save_location_updates_with_connector_inline_tariff_association(db, testing_import_service: BaseImportService):
-    # First create tariffs
-    testing_import_service.save_tariff_updates(
-        tariff_updates=[
-            TariffUpdate(
-                uid='tariff1',
-                source='test_source_uid',
-                currency='EUR',
-                elements=[],
-            ),
-        ],
-        tariff_association_updates=[],
-    )
-
-    # Now save locations with inline tariff association on connector
-    testing_import_service.save_location_updates([
+def test_save_location_updates_reimport_is_idempotent(db, testing_import_service: BaseImportService):
+    location_updates = [
         LocationUpdate(
             uid='loc1',
             source='test_source_uid',
@@ -424,12 +354,18 @@ def test_save_location_updates_with_connector_inline_tariff_association(db, test
                                     standard=ConnectorType.IEC_62196_T2,
                                     format=ConnectorFormat.SOCKET,
                                     max_electric_power=22000,
-                                    tariff_association=TariffAssociationUpdate(
-                                        uid='ta_conn1',
+                                ),
+                            ],
+                            tariff_association=[
+                                TariffAssociationUpdate(
+                                    uid='ta1',
+                                    source='test_source_uid',
+                                    start_date_time=datetime(2024, 1, 1, tzinfo=timezone.utc),
+                                    tariff=TariffUpdate(
+                                        uid='tariff1',
                                         source='test_source_uid',
-                                        tariff_uid='tariff1',
-                                        evse_uid='evse1',
-                                        connector_uid='conn1',
+                                        currency='EUR',
+                                        elements=[],
                                     ),
                                 ),
                             ],
@@ -437,162 +373,12 @@ def test_save_location_updates_with_connector_inline_tariff_association(db, test
                     ],
                 ),
             ],
-        ),
-    ])
-
-    assert db.session.query(Connector).count() == 1
-    assert db.session.query(TariffAssociation).count() == 1
-
-    connector = db.session.query(Connector).first()
-    assert len(connector.tariff_associations) == 1
-    assert connector.tariff_associations[0].uid == 'ta_conn1'
-    assert connector.tariff_associations[0].tariff.uid == 'tariff1'
-
-
-def test_save_location_updates_with_evse_and_connector_tariff_associations(
-    db,
-    testing_import_service: BaseImportService,
-):
-    # Create tariffs
-    testing_import_service.save_tariff_updates(
-        tariff_updates=[
-            TariffUpdate(
-                uid='tariff1',
-                source='test_source_uid',
-                currency='EUR',
-                elements=[],
-            ),
-        ],
-        tariff_association_updates=[],
-    )
-
-    # Save location with tariff associations on both EVSE and connector
-    testing_import_service.save_location_updates([
-        LocationUpdate(
-            uid='loc1',
-            source='test_source_uid',
-            lat=Decimal('48.7758'),
-            lon=Decimal('9.1829'),
-            time_zone='Europe/Berlin',
-            charging_pool=[
-                ChargingStationUpdate(
-                    uid='cs1',
-                    evses=[
-                        EvseUpdate(
-                            uid='evse1',
-                            evse_id='DE*TST*E001',
-                            status=EvseStatus.AVAILABLE,
-                            connectors=[
-                                ConnectorUpdate(
-                                    uid='conn1',
-                                    standard=ConnectorType.IEC_62196_T2,
-                                    format=ConnectorFormat.SOCKET,
-                                    max_electric_power=22000,
-                                    tariff_association=TariffAssociationUpdate(
-                                        uid='ta_conn1',
-                                        source='test_source_uid',
-                                        tariff_uid='tariff1',
-                                        evse_uid='evse1',
-                                        connector_uid='conn1',
-                                    ),
-                                ),
-                            ],
-                            tariff_association=TariffAssociationUpdate(
-                                uid='ta_evse1',
-                                source='test_source_uid',
-                                tariff_uid='tariff1',
-                                evse_uid='evse1',
-                            ),
-                        ),
-                    ],
-                ),
-            ],
-        ),
-    ])
-
-    assert db.session.query(TariffAssociation).count() == 2
-
-    evse = db.session.query(Evse).first()
-    assert len(evse.tariff_associations) == 1
-    assert evse.tariff_associations[0].uid == 'ta_evse1'
-
-    connector = db.session.query(Connector).first()
-    assert len(connector.tariff_associations) == 1
-    assert connector.tariff_associations[0].uid == 'ta_conn1'
-
-
-def test_save_location_updates_without_tariff_skips_association(db, testing_import_service: BaseImportService):
-    # Save locations with tariff association referencing non-existent tariff
-    testing_import_service.save_location_updates([
-        LocationUpdate(
-            uid='loc1',
-            source='test_source_uid',
-            lat=Decimal('48.7758'),
-            lon=Decimal('9.1829'),
-            time_zone='Europe/Berlin',
-            charging_pool=[
-                ChargingStationUpdate(
-                    uid='cs1',
-                    evses=[
-                        EvseUpdate(
-                            uid='evse1',
-                            evse_id='DE*TST*E001',
-                            status=EvseStatus.AVAILABLE,
-                            connectors=[
-                                ConnectorUpdate(
-                                    uid='conn1',
-                                    standard=ConnectorType.IEC_62196_T2,
-                                    format=ConnectorFormat.SOCKET,
-                                    max_electric_power=22000,
-                                ),
-                            ],
-                            tariff_association=TariffAssociationUpdate(
-                                uid='ta1',
-                                source='test_source_uid',
-                                tariff_uid='nonexistent_tariff',
-                                evse_uid='evse1',
-                            ),
-                        ),
-                    ],
-                ),
-            ],
-        ),
-    ])
-
-    # Location and EVSE should be saved, but no tariff association created
-    assert db.session.query(Evse).count() == 1
-    assert db.session.query(TariffAssociation).count() == 0
-
-
-def test_save_tariff_updates_reimport_is_idempotent(db, testing_import_service: BaseImportService):
-    _create_location_with_evse_and_connector(testing_import_service)
-
-    tariff_updates = [
-        TariffUpdate(
-            uid='tariff1',
-            source='test_source_uid',
-            currency='EUR',
-            elements=[],
-        ),
-    ]
-    association_updates = [
-        TariffAssociationUpdate(
-            uid='ta1',
-            source='test_source_uid',
-            tariff_uid='tariff1',
-            evse_uid='evse1',
         ),
     ]
 
     # Import twice
-    testing_import_service.save_tariff_updates(
-        tariff_updates=tariff_updates,
-        tariff_association_updates=association_updates,
-    )
-    testing_import_service.save_tariff_updates(
-        tariff_updates=tariff_updates,
-        tariff_association_updates=association_updates,
-    )
+    testing_import_service.save_location_updates(location_updates)
+    testing_import_service.save_location_updates(location_updates)
 
     assert db.session.query(Tariff).count() == 1
     assert db.session.query(TariffAssociation).count() == 1
@@ -601,24 +387,17 @@ def test_save_tariff_updates_reimport_is_idempotent(db, testing_import_service: 
     assert len(evse.tariff_associations) == 1
 
 
-def test_save_location_updates_two_evses_share_same_tariff_association(
+def test_save_location_updates_two_evses_share_same_tariff(
     db,
     testing_import_service: BaseImportService,
 ):
-    # Create tariff first
-    testing_import_service.save_tariff_updates(
-        tariff_updates=[
-            TariffUpdate(
-                uid='tariff1',
-                source='test_source_uid',
-                currency='EUR',
-                elements=[],
-            ),
-        ],
-        tariff_association_updates=[],
+    tariff_update = TariffUpdate(
+        uid='tariff1',
+        source='test_source_uid',
+        currency='EUR',
+        elements=[],
     )
 
-    # Two EVSEs reference the same tariff_association (same uid)
     testing_import_service.save_location_updates([
         LocationUpdate(
             uid='loc1',
@@ -642,12 +421,14 @@ def test_save_location_updates_two_evses_share_same_tariff_association(
                                     max_electric_power=22000,
                                 ),
                             ],
-                            tariff_association=TariffAssociationUpdate(
-                                uid='ta_shared',
-                                source='test_source_uid',
-                                tariff_uid='tariff1',
-                                evse_uid='evse1',
-                            ),
+                            tariff_association=[
+                                TariffAssociationUpdate(
+                                    uid='ta_shared',
+                                    source='test_source_uid',
+                                    start_date_time=datetime(2024, 1, 1, tzinfo=timezone.utc),
+                                    tariff=tariff_update,
+                                ),
+                            ],
                         ),
                         EvseUpdate(
                             uid='evse2',
@@ -661,12 +442,14 @@ def test_save_location_updates_two_evses_share_same_tariff_association(
                                     max_electric_power=50000,
                                 ),
                             ],
-                            tariff_association=TariffAssociationUpdate(
-                                uid='ta_shared',
-                                source='test_source_uid',
-                                tariff_uid='tariff1',
-                                evse_uid='evse2',
-                            ),
+                            tariff_association=[
+                                TariffAssociationUpdate(
+                                    uid='ta_shared',
+                                    source='test_source_uid',
+                                    start_date_time=datetime(2024, 1, 1, tzinfo=timezone.utc),
+                                    tariff=tariff_update,
+                                ),
+                            ],
                         ),
                     ],
                 ),
@@ -675,6 +458,7 @@ def test_save_location_updates_two_evses_share_same_tariff_association(
     ])
 
     assert db.session.query(Evse).count() == 2
+    assert db.session.query(Tariff).count() == 1
     assert db.session.query(TariffAssociation).count() == 1
 
     association = db.session.query(TariffAssociation).first()
@@ -686,3 +470,41 @@ def test_save_location_updates_two_evses_share_same_tariff_association(
     assert len(evse1.tariff_associations) == 1
     assert len(evse2.tariff_associations) == 1
     assert evse1.tariff_associations[0].id == evse2.tariff_associations[0].id
+
+
+def test_save_location_updates_evse_without_tariff_association(db, testing_import_service: BaseImportService):
+    testing_import_service.save_location_updates([
+        LocationUpdate(
+            uid='loc1',
+            source='test_source_uid',
+            lat=Decimal('48.7758'),
+            lon=Decimal('9.1829'),
+            time_zone='Europe/Berlin',
+            charging_pool=[
+                ChargingStationUpdate(
+                    uid='cs1',
+                    evses=[
+                        EvseUpdate(
+                            uid='evse1',
+                            evse_id='DE*TST*E001',
+                            status=EvseStatus.AVAILABLE,
+                            connectors=[
+                                ConnectorUpdate(
+                                    uid='conn1',
+                                    standard=ConnectorType.IEC_62196_T2,
+                                    format=ConnectorFormat.SOCKET,
+                                    max_electric_power=22000,
+                                ),
+                            ],
+                        ),
+                    ],
+                ),
+            ],
+        ),
+    ])
+
+    assert db.session.query(Evse).count() == 1
+    assert db.session.query(TariffAssociation).count() == 0
+
+    evse = db.session.query(Evse).first()
+    assert len(evse.tariff_associations) == 0

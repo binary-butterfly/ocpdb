@@ -16,7 +16,7 @@ class FrictionValueInput(ValidataclassMixin):
     A measured or calculated value of road surface friction.
     """
 
-    friction: int = FloatValidator()
+    friction: float = FloatValidator()
     comDataValueExtensionG: ExtensionTypeGInput | UnsetValueType = (
         DataclassValidator(ExtensionTypeGInput),
         Default(UnsetValue),

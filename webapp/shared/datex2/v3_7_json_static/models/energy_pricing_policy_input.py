@@ -21,7 +21,7 @@ class EnergyPricingPolicyInput(ValidataclassMixin):
         ListValidator(DataclassValidator(PricingPolicyEnumGInput)),
         Default(UnsetValue),
     )
-    minimumDeliveryFee: int | UnsetValueType = FloatValidator(), Default(UnsetValue)
+    minimumDeliveryFee: float | UnsetValueType = FloatValidator(), Default(UnsetValue)
     egiEnergyPricingPolicyExtensionG: ExtensionTypeGInput | UnsetValueType = (
         DataclassValidator(ExtensionTypeGInput),
         Default(UnsetValue),

@@ -17,8 +17,8 @@ class AxleWeightInput(ValidataclassMixin):
     """
 
     axlePositionIdentifier: int = IntegerValidator(min_value=0)
-    axleWeight: int | UnsetValueType = FloatValidator(), Default(UnsetValue)
-    maximumPermittedAxleWeight: int | UnsetValueType = FloatValidator(), Default(UnsetValue)
+    axleWeight: float | UnsetValueType = FloatValidator(), Default(UnsetValue)
+    maximumPermittedAxleWeight: float | UnsetValueType = FloatValidator(), Default(UnsetValue)
     comAxleWeightExtensionG: ExtensionTypeGInput | UnsetValueType = (
         DataclassValidator(ExtensionTypeGInput),
         Default(UnsetValue),

@@ -47,9 +47,9 @@ class RateLineInput(ValidataclassMixin):
         Default(UnsetValue),
     )
     incrementPeriod: str | UnsetValueType = StringValidator(), Default(UnsetValue)
-    value: int = FloatValidator()
-    minValue: int | UnsetValueType = FloatValidator(), Default(UnsetValue)
-    maxValue: int | UnsetValueType = FloatValidator(), Default(UnsetValue)
+    value: float = FloatValidator()
+    minValue: float | UnsetValueType = FloatValidator(), Default(UnsetValue)
+    maxValue: float | UnsetValueType = FloatValidator(), Default(UnsetValue)
     usageCondition: RateUsageConditionsTypeEnumGInput | UnsetValueType = (
         DataclassValidator(RateUsageConditionsTypeEnumGInput),
         Default(UnsetValue),

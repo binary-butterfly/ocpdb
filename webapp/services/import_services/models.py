@@ -87,15 +87,21 @@ class TaxAmountUpdate(BaseUpdate):
 
 
 @dataclass
-class PriceUpdate(BaseUpdate):
-    before_taxes: Decimal
-    taxes: list[TaxAmountUpdate] | None = None
+class TaxPercentageUpdate(BaseUpdate):
+    name: str
+    percentage: Decimal
 
 
 @dataclass(kw_only=True)
 class PriceComponentUpdate(BaseUpdate):
     type: TariffDimensionType
     price: Decimal
+    taxes: list[TaxPercentageUpdate] | None = None
+
+
+@dataclass
+class PriceUpdate(BaseUpdate):
+    before_taxes: Decimal
     taxes: list[TaxAmountUpdate] | None = None
 
 
@@ -143,13 +149,11 @@ class TariffUpdate(BaseUpdate):
 
 @dataclass(kw_only=True)
 class TariffAssociationUpdate(BaseUpdate):
-    _object_keys = ('tariff_uid', 'evse_uid', 'connector_uid')
+    _object_keys = ('tariff',)
 
     uid: str
     source: str
-    tariff_uid: str
-    evse_uid: str
-    connector_uid: str | None = None
+    tariff: TariffUpdate
     audience: TariffAudience | None = None
     start_date_time: datetime | None = None
     last_updated: datetime | None = None
@@ -177,7 +181,7 @@ class BusinessUpdate(BaseUpdate):
 
 @dataclass(kw_only=True)
 class ConnectorUpdate(BaseUpdate):
-    _object_keys = ('tariff_association',)
+    # _object_keys = ('tariff_association',)  # TODO: activate if necessary
 
     uid: str
     standard: ConnectorType
@@ -188,7 +192,7 @@ class ConnectorUpdate(BaseUpdate):
     max_electric_power: int | None = None
     last_updated: datetime | None = None
     terms_and_conditions: str | None = None
-    tariff_association: TariffAssociationUpdate | None = None
+    # tariff_association: TariffAssociationUpdate | None = None  # TODO: activate if necessary
 
     def __post_init__(self):
         """
@@ -437,7 +441,7 @@ class EvseUpdate(BaseUpdate):
     terms_and_conditions: str | None = None
     calibration_info_url: str | None = None
 
-    tariff_association: TariffAssociationUpdate | None = None
+    tariff_association: list[TariffAssociationUpdate] | None = None
 
     def __post_init__(self):
         if self.lat is not None:

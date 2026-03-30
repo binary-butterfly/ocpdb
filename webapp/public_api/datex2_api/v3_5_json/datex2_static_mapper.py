@@ -176,17 +176,12 @@ class DatexV35JSONStaticExportMapper:
         'PARKING_TIME': PriceTypeEnum.PRICEPERMINUTE,
     }
 
-    def map_locations_to_static_payload(
-        self,
-        locations: list[Location],
-        evse_tariffs: dict[str, list['Tariff']] | None = None,
-    ) -> DATEXII3D2PayloadInput:
+    def map_locations_to_static_payload(self, locations: list[Location]) -> DATEXII3D2PayloadInput:
         now = datetime.now(tz=timezone.utc).isoformat()
-        evse_tariffs = evse_tariffs or {}
 
         sites = []
         for location in locations:
-            site = self._map_location_to_site(location, evse_tariffs)
+            site = self._map_location_to_site(location)
             if site is not None:
                 sites.append(site)
 
@@ -213,11 +208,7 @@ class DatexV35JSONStaticExportMapper:
         )
         return DATEXII3D2PayloadInput(payload=payload)
 
-    def _map_location_to_site(
-        self,
-        location: Location,
-        evse_tariffs: dict[str, list['Tariff']],
-    ) -> EnergyInfrastructureSiteInput | None:
+    def _map_location_to_site(self, location: Location) -> EnergyInfrastructureSiteInput | None:
         if location.lat is None or location.lon is None:
             return None
 
@@ -227,7 +218,7 @@ class DatexV35JSONStaticExportMapper:
 
         stations = []
         for charging_station in location.charging_pool:
-            station = self._map_charging_station_to_station(charging_station, location, evse_tariffs)
+            station = self._map_charging_station_to_station(charging_station, location)
             stations.append(station)
 
         site = EnergyInfrastructureSiteInput(
@@ -255,13 +246,12 @@ class DatexV35JSONStaticExportMapper:
         self,
         charging_station: ChargingStation,
         location: Location,
-        evse_tariffs: dict[str, list['Tariff']],
     ) -> EnergyInfrastructureStationInput:
         version_g = charging_station.last_updated.isoformat()
 
         refill_points = []
         for evse in charging_station.evses:
-            refill_point = self._map_evse_to_refill_point(evse, location, evse_tariffs)
+            refill_point = self._map_evse_to_refill_point(evse, location)
             refill_points.append(refill_point)
 
         service_type_list = []
@@ -301,7 +291,6 @@ class DatexV35JSONStaticExportMapper:
         self,
         evse: Evse,
         location: Location,
-        evse_tariffs: dict[str, list['Tariff']],
     ) -> RefillPointGInput:
         version_g = evse.last_updated.isoformat()
 
@@ -339,16 +328,15 @@ class DatexV35JSONStaticExportMapper:
             charging_point.availableChargingPower = powers
 
         is_green = location.energy_mix.get('is_green_energy') if location.energy_mix else None
-        tariffs = evse_tariffs.get(evse.uid, [])
 
-        if tariffs:
-            energy_rates = [self._map_tariff_to_energy_rate(tariff) for tariff in tariffs]
+        for tariff_association in evse.tariff_associations:
+            energy_rates = [self._map_tariff_to_energy_rate(tariff) for tariff in tariff_association.tariffs]
             electric_energy = ElectricEnergyInput(energyRate=energy_rates)
             if is_green is not None:
                 electric_energy.isGreenEnergy = is_green
             charging_point.electricEnergy = [electric_energy]
-        elif is_green is not None:
-            charging_point.electricEnergy = [ElectricEnergyInput(isGreenEnergy=is_green)]
+        # elif is_green is not None:
+        #    charging_point.electricEnergy = [ElectricEnergyInput(isGreenEnergy=is_green)]
 
         return RefillPointGInput(aegiElectricChargingPoint=charging_point)
 

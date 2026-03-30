@@ -16,7 +16,7 @@ class PressureValueInput(ValidataclassMixin):
     A measured or calculated value of atmospheric pressure.
     """
 
-    pressure: int = FloatValidator()
+    pressure: float = FloatValidator()
     comDataValueExtensionG: ExtensionTypeGInput | UnsetValueType = (
         DataclassValidator(ExtensionTypeGInput),
         Default(UnsetValue),

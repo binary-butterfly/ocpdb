@@ -17,7 +17,7 @@ class TemperatureBelowOrAboveRoadSurfaceInput(ValidataclassMixin):
     Mesurement of temperature below or above the road surface.
     """
 
-    heightBelowOrAboveRoadSurface: int = FloatValidator()
+    heightBelowOrAboveRoadSurface: float = FloatValidator()
     temperatureBelowOrAboveRoadSurface: TemperatureValueInput = DataclassValidator(TemperatureValueInput)
     comTemperatureBelowOrAboveRoadSurfaceExtensionG: ExtensionTypeGInput | UnsetValueType = (
         DataclassValidator(ExtensionTypeGInput),

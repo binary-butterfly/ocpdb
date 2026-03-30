@@ -20,8 +20,8 @@ class SurchargeInput(ValidataclassMixin):
     """
 
     surchargeType: SurchargeTypeEnumGInput = DataclassValidator(SurchargeTypeEnumGInput)
-    value: int | UnsetValueType = FloatValidator(), Default(UnsetValue)
-    rate: int | UnsetValueType = FloatValidator(), Default(UnsetValue)
+    value: float | UnsetValueType = FloatValidator(), Default(UnsetValue)
+    rate: float | UnsetValueType = FloatValidator(), Default(UnsetValue)
     trigger: MultilingualStringInput | UnsetValueType = DataclassValidator(MultilingualStringInput), Default(UnsetValue)
     refund: RefundTypeEnumGInput | UnsetValueType = DataclassValidator(RefundTypeEnumGInput), Default(UnsetValue)
     labelForDisplay: MultilingualStringInput | UnsetValueType = (

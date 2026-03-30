@@ -16,7 +16,7 @@ class AxleSpacingInput(ValidataclassMixin):
     The spacing details between the axle sets of an individual vehicle numbered from the front to the back of the vehicle.
     """
 
-    axleSpacing: int = FloatValidator()
+    axleSpacing: float = FloatValidator()
     axleSpacingSequenceIdentifier: int = IntegerValidator(min_value=0)
     comAxleSpacingExtensionG: ExtensionTypeGInput | UnsetValueType = (
         DataclassValidator(ExtensionTypeGInput),

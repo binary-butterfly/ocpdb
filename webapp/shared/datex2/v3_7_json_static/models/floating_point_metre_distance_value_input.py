@@ -16,7 +16,7 @@ class FloatingPointMetreDistanceValueInput(ValidataclassMixin):
     A measured or calculated value of distance in metres in a floating point format.
     """
 
-    distance: int = FloatValidator()
+    distance: float = FloatValidator()
     comDataValueExtensionG: ExtensionTypeGInput | UnsetValueType = (
         DataclassValidator(ExtensionTypeGInput),
         Default(UnsetValue),

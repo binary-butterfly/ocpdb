@@ -44,12 +44,7 @@ def flask_app() -> Generator[App, None, None]:
     )
 
     with app.app_context():
-        # Drop legacy tables that may exist from old migrations but are no longer in models
         with flask_sqlalchemy.engine.connect() as connection:
-            connection.execute(flask_sqlalchemy.text('DROP TABLE IF EXISTS related_resource CASCADE'))
-            connection.execute(flask_sqlalchemy.text('DROP TABLE IF EXISTS regular_hours CASCADE'))
-            connection.execute(flask_sqlalchemy.text('DROP TABLE IF EXISTS exceptional_opening_period CASCADE'))
-            connection.execute(flask_sqlalchemy.text('DROP TABLE IF EXISTS exceptional_closing_period CASCADE'))
             # Drop all model tables with CASCADE to handle stale FK constraints from schema changes
             for table in reversed(flask_sqlalchemy.metadata.sorted_tables):
                 connection.execute(flask_sqlalchemy.text(f'DROP TABLE IF EXISTS {table.name} CASCADE'))

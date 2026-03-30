@@ -17,8 +17,8 @@ class RateLineTaxInput(ValidataclassMixin):
     Class containing details of tax to be applied to a RateLine
     """
 
-    taxValue: int | UnsetValueType = FloatValidator(), Default(UnsetValue)
-    taxRate: int | UnsetValueType = FloatValidator(), Default(UnsetValue)
+    taxValue: float | UnsetValueType = FloatValidator(), Default(UnsetValue)
+    taxRate: float | UnsetValueType = FloatValidator(), Default(UnsetValue)
     taxIncluded: bool = BooleanValidator()
     trigger: MultilingualStringInput | UnsetValueType = DataclassValidator(MultilingualStringInput), Default(UnsetValue)
     labelForDisplay: MultilingualStringInput | UnsetValueType = (

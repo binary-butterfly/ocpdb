@@ -27,8 +27,8 @@ class RelativeTimeRatesInput(ValidataclassMixin):
 
     collectionSequence: int = IntegerValidator()
     applicableCurrency: str | UnsetValueType = StringValidator(), Default(UnsetValue)
-    minValueCollection: int | UnsetValueType = FloatValidator(), Default(UnsetValue)
-    maxValueCollection: int | UnsetValueType = FloatValidator(), Default(UnsetValue)
+    minValueCollection: float | UnsetValueType = FloatValidator(), Default(UnsetValue)
+    maxValueCollection: float | UnsetValueType = FloatValidator(), Default(UnsetValue)
     validStart: str | UnsetValueType = StringValidator(), Default(UnsetValue)
     validEnd: str | UnsetValueType = StringValidator(), Default(UnsetValue)
     minTime: str | UnsetValueType = StringValidator(), Default(UnsetValue)
@@ -40,8 +40,8 @@ class RelativeTimeRatesInput(ValidataclassMixin):
         Default(UnsetValue),
     )
     taxIncluded: bool | UnsetValueType = BooleanValidator(), Default(UnsetValue)
-    taxRate: int | UnsetValueType = FloatValidator(), Default(UnsetValue)
-    taxValue: int | UnsetValueType = FloatValidator(), Default(UnsetValue)
+    taxRate: float | UnsetValueType = FloatValidator(), Default(UnsetValue)
+    taxValue: float | UnsetValueType = FloatValidator(), Default(UnsetValue)
     relativeTimes: bool | UnsetValueType = BooleanValidator(), Default(UnsetValue)
     referenceTimeStart: str | UnsetValueType = StringValidator(), Default(UnsetValue)
     referenceTimeEnd: str | UnsetValueType = StringValidator(), Default(UnsetValue)

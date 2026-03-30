@@ -49,7 +49,7 @@ class RefillPointStatusInput(ValidataclassMixin):
         Default(UnsetValue),
     )
     status: RefillPointStatusEnumGInput = DataclassValidator(RefillPointStatusEnumGInput)
-    unitsInStock: int | UnsetValueType = FloatValidator(), Default(UnsetValue)
+    unitsInStock: float | UnsetValueType = FloatValidator(), Default(UnsetValue)
     newOperatingHours: OperatingHoursGInput | UnsetValueType = (
         DataclassValidator(OperatingHoursGInput),
         Default(UnsetValue),

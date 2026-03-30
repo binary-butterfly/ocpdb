@@ -17,12 +17,12 @@ class PositionConfidenceEllipseInput(ValidataclassMixin):
     Confidence ellipse position defined in a shape of ellipse with a predefined confidence level (e.g. 95 %). The centre of the ellipse shape corresponds to the reference position point for which the position accuracy is evaluated.
     """
 
-    semiMajorAxisLength: int | UnsetValueType = FloatValidator(), Default(UnsetValue)
+    semiMajorAxisLength: float | UnsetValueType = FloatValidator(), Default(UnsetValue)
     semiMajorAxisLengthCodedError: PositionConfidenceCodedErrorEnumGInput | UnsetValueType = (
         DataclassValidator(PositionConfidenceCodedErrorEnumGInput),
         Default(UnsetValue),
     )
-    semiMinorAxisLength: int | UnsetValueType = FloatValidator(), Default(UnsetValue)
+    semiMinorAxisLength: float | UnsetValueType = FloatValidator(), Default(UnsetValue)
     semiMinorAxisLengthCodedError: PositionConfidenceCodedErrorEnumGInput | UnsetValueType = (
         DataclassValidator(PositionConfidenceCodedErrorEnumGInput),
         Default(UnsetValue),
