@@ -32,9 +32,7 @@ class TariffRepository(BaseRepository[Tariff]):
     model_cls = Tariff
 
     def fetch_tariff_by_id(self, tariff_id: int) -> Tariff:
-        tariff = (
-            self.session.query(Tariff).options(selectinload(Tariff.elements)).filter(Tariff.id == tariff_id).first()
-        )
+        tariff = self.session.query(Tariff).filter(Tariff.id == tariff_id).first()
         if tariff is None:
             raise ObjectNotFoundException(f'tariff with id {tariff_id} not found')
         return tariff
@@ -95,7 +93,6 @@ class TariffRepository(BaseRepository[Tariff]):
             self.session
             .query(Tariff)
             .options(
-                selectinload(Tariff.elements),
                 selectinload(Tariff.tariff_associations),
             )
             .filter(Tariff.source == source, Tariff.uid == uid)

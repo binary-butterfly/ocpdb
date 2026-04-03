@@ -142,6 +142,8 @@ tariff_schema = JsonSchema(
     'consist of PriceComponents.',
     properties={
         'id': StringField(maxLength=36, description='Uniquely identifies the tariff within the CPO platform.'),
+        'original_id': StringField(maxLength=64, description='Original UID of the tariff from the source.'),
+        'source': StringField(maxLength=64, description='Source identifier.'),
         'country_code': StringField(
             minLength=2, maxLength=2, required=False, description='ISO-3166 alpha-2 country code.'
         ),

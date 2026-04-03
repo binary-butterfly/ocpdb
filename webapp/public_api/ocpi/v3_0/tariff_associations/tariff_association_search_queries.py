@@ -42,7 +42,7 @@ class TariffAssociationSearchQuery(SortingMixin, OffsetPaginationMixin, BaseSear
         MultiSelectValidator(StringValidator(min_length=1)),
     )
 
-    tariff_id: int | None = SearchParamCustom(), IntegerValidator()
+    tariff_id: int | None = SearchParamCustom(), IntegerValidator(allow_strings=True)
 
     last_updated_since: datetime | None = (
         SearchParamGreaterThan('last_updated'),

@@ -25,10 +25,11 @@ from validataclass.helpers import UnsetValue
 from webapp.models.business import Business
 from webapp.models.charging_station import Capability, ChargingStation, ServiceType
 from webapp.models.connector import Connector, ConnectorFormat, ConnectorType, PowerType
-from webapp.models.enums import TariffType
+from webapp.models.enums import TariffAudience
 from webapp.models.evse import Evse
 from webapp.models.location import Location
 from webapp.models.tariff import Tariff
+from webapp.models.tariff_association import TariffAssociation
 from webapp.shared.datex2.v3_5_json_static.models.address_input import AddressInput
 from webapp.shared.datex2.v3_5_json_static.models.address_line_input import AddressLineInput
 from webapp.shared.datex2.v3_5_json_static.models.address_line_type_enum import AddressLineTypeEnum
@@ -164,9 +165,9 @@ class DatexV35JSONStaticExportMapper:
         ConnectorFormat.CABLE: ConnectorFormatTypeEnum.CABLEMODE3,
     }
 
-    _tariff_type_to_rate_policy_map: dict[TariffType, RatePolicyEnum] = {
-        TariffType.AD_HOC_PAYMENT: RatePolicyEnum.ADHOC,
-        TariffType.REGULAR: RatePolicyEnum.CONTRACT,
+    _audience_to_rate_policy_map: dict[TariffAudience, RatePolicyEnum] = {
+        TariffAudience.AD_HOC_PAYMENT: RatePolicyEnum.ADHOC,
+        TariffAudience.EMSP_CONTRACT: RatePolicyEnum.CONTRACT,
     }
 
     _price_component_type_to_price_type_map: dict[str, PriceTypeEnum] = {
@@ -329,14 +330,18 @@ class DatexV35JSONStaticExportMapper:
 
         is_green = location.energy_mix.get('is_green_energy') if location.energy_mix else None
 
+        energy_rates = []
         for tariff_association in evse.tariff_associations:
-            energy_rates = [self._map_tariff_to_energy_rate(tariff) for tariff in tariff_association.tariffs]
-            electric_energy = ElectricEnergyInput(energyRate=energy_rates)
+            energy_rate = self._map_tariff_to_energy_rate(tariff_association.tariff, tariff_association)
+            energy_rates.append(energy_rate)
+
+        if energy_rates or is_green is not None:
+            electric_energy = ElectricEnergyInput()
+            if energy_rates:
+                electric_energy.energyRate = energy_rates
             if is_green is not None:
                 electric_energy.isGreenEnergy = is_green
             charging_point.electricEnergy = [electric_energy]
-        # elif is_green is not None:
-        #    charging_point.electricEnergy = [ElectricEnergyInput(isGreenEnergy=is_green)]
 
         return RefillPointGInput(aegiElectricChargingPoint=charging_point)
 
@@ -365,13 +370,13 @@ class DatexV35JSONStaticExportMapper:
 
         return datex_connector
 
-    def _map_tariff_to_energy_rate(self, tariff: Tariff) -> EnergyRateInput:
+    def _map_tariff_to_energy_rate(self, tariff: Tariff, tariff_association: TariffAssociation) -> EnergyRateInput:
         # Extract rate idG from tariff uid (format: "{evse_uid}:{rate_idG}")
         rate_id = tariff.uid.rsplit(':', 1)[-1] if ':' in tariff.uid else tariff.uid
 
         rate_policy = RatePolicyEnum.ADHOC
-        if tariff.type:
-            rate_policy = self._tariff_type_to_rate_policy_map.get(tariff.type, RatePolicyEnum.ADHOC)
+        if tariff_association.audience:
+            rate_policy = self._audience_to_rate_policy_map.get(tariff_association.audience, RatePolicyEnum.ADHOC)
 
         energy_rate = EnergyRateInput(
             idG=rate_id,
@@ -383,29 +388,42 @@ class DatexV35JSONStaticExportMapper:
         if tariff.elements:
             energy_prices = []
             for element in tariff.elements:
-                if element.price_components:
-                    for component in element.price_components:
-                        price_type = self._price_component_type_to_price_type_map.get(
-                            component.get('type', ''),
-                            PriceTypeEnum.OTHER,
-                        )
-                        energy_price = EnergyPriceInput(
-                            priceType=PriceTypeEnumGInput(value=price_type),
-                            value=component.get('price', 0),
-                        )
-                        if 'tax_included' in component:
-                            energy_price.taxIncluded = component['tax_included']
-                        if 'vat' in component:
-                            energy_price.taxRate = component['vat']
-                        if 'time_based_applicability' in component:
-                            tba = component['time_based_applicability']
+                price_components = element.get('price_components')
+                if not price_components:
+                    continue
+
+                restrictions = element.get('restrictions')
+
+                for component in price_components:
+                    price_type = self._price_component_type_to_price_type_map.get(
+                        component.get('type', ''),
+                        PriceTypeEnum.OTHER,
+                    )
+                    energy_price = EnergyPriceInput(
+                        priceType=PriceTypeEnumGInput(value=price_type),
+                        value=float(component.get('price', 0)),
+                    )
+
+                    taxes = component.get('taxes')
+                    if taxes:
+                        for tax in taxes:
+                            if tax.get('percentage') is not None:
+                                energy_price.taxRate = float(tax['percentage'])
+                                break
+
+                    if restrictions:
+                        min_duration = restrictions.get('min_duration')
+                        max_duration = restrictions.get('max_duration')
+                        if min_duration is not None or max_duration is not None:
                             time_applicability = TimeBasedApplicabilityInput()
-                            if 'from_minute' in tba:
-                                time_applicability.fromMinute = tba['from_minute']
-                            if 'to_minute' in tba:
-                                time_applicability.toMinute = tba['to_minute']
+                            if min_duration is not None:
+                                time_applicability.fromMinute = int(min_duration / 60)
+                            if max_duration is not None:
+                                time_applicability.toMinute = int(max_duration / 60)
                             energy_price.timeBasedApplicability = time_applicability
-                        energy_prices.append(energy_price)
+
+                    energy_prices.append(energy_price)
+
             if energy_prices:
                 energy_rate.energyPrice = energy_prices
 

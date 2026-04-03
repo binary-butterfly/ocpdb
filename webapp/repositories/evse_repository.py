@@ -200,6 +200,6 @@ class EvseRepository(BaseRepository[Evse]):
         )
         result: list[EvseStatusSummary] = []
         for item in items:
-            result.append(EvseStatusSummary(**dict(item)))
+            result.append(EvseStatusSummary(**dict(item._mapping)))
 
         return result

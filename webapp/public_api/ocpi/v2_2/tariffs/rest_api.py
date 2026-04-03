@@ -34,7 +34,9 @@ from validataclass.validators import DataclassValidator
 from webapp.common.rest import BaseMethodView
 from webapp.dependencies import dependencies
 from webapp.public_api.base_blueprint import BaseBlueprint
-from webapp.shared.ocpi.tariffs.tariff_search_queries import TariffSearchQuery
+from webapp.public_api.ocpi.v3_0.tariff_associations.tariff_association_search_queries import (
+    TariffAssociationSearchQuery,
+)
 from webapp.shared.tariff_schema import all_tariff_components
 
 from .tariff_handler import TariffHandler
@@ -47,7 +49,7 @@ class OcpiTariffBlueprint(BaseBlueprint):
     def __init__(self):
         self.tariff_handler = TariffHandler(
             **self.get_base_handler_dependencies(),
-            tariff_repository=dependencies.get_tariff_repository(),
+            tariff_association_repository=dependencies.get_tariff_association_repository(),
         )
 
         super().__init__('ocpi_tariffs', __name__, url_prefix='/tariffs')
@@ -79,10 +81,10 @@ class OcpiTariffBaseMethodView(BaseMethodView):
 
 
 class OcpiTariffListMethodView(OcpiTariffBaseMethodView):
-    search_query_validator = DataclassValidator(TariffSearchQuery)
+    search_query_validator = DataclassValidator(TariffAssociationSearchQuery)
 
     @document(
-        description='Get list of Tariffs',
+        description='Get list of Tariffs (OCPI 2.2 format, merging tariff data with tariff association metadata)',
         query=[
             Parameter(
                 'sorted_by',
@@ -92,24 +94,30 @@ class OcpiTariffListMethodView(OcpiTariffBaseMethodView):
                     default='id',
                 ),
             ),
-            Parameter('source_uid', schema=StringField(required=False), example='bnetza_api'),
+            Parameter('source_uid', schema=StringField(required=False), example='datex2_enbw'),
             Parameter(
                 'source_uids',
                 schema=StringField(required=False),
-                example='bnetza_api,something_else',
+                example='datex2_enbw,something_else',
                 description='Comma separated list of sources',
             ),
             Parameter(
                 'exclude_source_uid',
                 schema=StringField(required=False),
-                example='bnetza_api',
+                example='datex2_enbw',
                 description='Source to exclude',
             ),
             Parameter(
                 'exclude_source_uids',
                 schema=StringField(required=False),
-                example='bnetza_api,something_else',
+                example='datex2_enbw,something_else',
                 description='Comma separated list of sources which should be excluded',
+            ),
+            Parameter(
+                'tariff_id',
+                schema=IntegerField(required=False, minimum=1),
+                example=1,
+                description='Filter by underlying Tariff ID',
             ),
             Parameter(
                 'last_updated_since',
@@ -131,7 +139,7 @@ class OcpiTariffListMethodView(OcpiTariffBaseMethodView):
 
 class OcpiTariffItemMethodView(OcpiTariffBaseMethodView):
     @document(
-        description='Get single Tariff',
+        description='Get single Tariff (OCPI 2.2 format)',
         path=[Parameter('tariff_id', schema=IntegerField(minimum=1))],
         response=[Response(ResponseData(SchemaReference('Tariff'), ExampleReference('Tariff')))],
         components=all_tariff_components,

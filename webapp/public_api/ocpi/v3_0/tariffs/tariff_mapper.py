@@ -24,5 +24,6 @@ class TariffMapper:
     @staticmethod
     def map_tariff_to_ocpi(tariff: Tariff) -> dict:
         result = tariff.to_dict()
+        result['original_id'] = result.pop('uid', None)
 
         return PublicApiBaseHandler.filter_none(result)

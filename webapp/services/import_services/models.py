@@ -129,6 +129,14 @@ class TariffElementUpdate(BaseUpdate):
     price_components: list[PriceComponentUpdate] | None = None
     restrictions: RestrictionsUpdate | None = None
 
+    def to_dict(self) -> dict:
+        result = {}
+        if self.price_components:
+            result['price_components'] = [price_component.to_dict() for price_component in self.price_components]
+        if self.restrictions:
+            result['restrictions'] = self.restrictions.to_dict()
+        return result
+
 
 @dataclass(kw_only=True)
 class TariffUpdate(BaseUpdate):

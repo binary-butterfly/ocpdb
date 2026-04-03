@@ -35,7 +35,7 @@ class TariffAssociationMapper:
         if tariff_association.audience is not None:
             result['audience'] = tariff_association.audience.value
 
+        result['evses'] = [{'evse_uid': str(evse.id)} for evse in tariff_association.evses]
         result['connectors'] = [{'connector_id': str(connector.id)} for connector in tariff_association.connectors]
-        result['connectors'] += [{'evse_uid': str(evse.id)} for evse in tariff_association.evses]
 
         return PublicApiBaseHandler.filter_none(result)
