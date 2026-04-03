@@ -1,0 +1,7 @@
+services:
+  postgre:
+    volumes:
+      - ./scripts:/scripts
+      - ./data/regionalschluessel:/data
+    tmpfs:
+      - /var/lib/postgresql/data/

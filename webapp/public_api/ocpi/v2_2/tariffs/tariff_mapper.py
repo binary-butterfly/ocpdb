@@ -36,7 +36,7 @@ class TariffMapper:
             'original_id': tariff_association.uid,
             'source': tariff_association.source,
             'currency': tariff.currency,
-            'elements': tariff.elements,
+            'elements': [element.to_dict() for element in tariff.elements],
             'start_date_time': tariff_association.start_date_time.isoformat(),
             'last_updated': tariff_association.last_updated.isoformat(),
         }
@@ -47,14 +47,14 @@ class TariffMapper:
                 result['type'] = tariff_type.value
 
         if tariff.tariff_alt_text is not None:
-            result['tariff_alt_text'] = tariff.tariff_alt_text
+            result['tariff_alt_text'] = [dt.to_dict() for dt in tariff.tariff_alt_text]
         if tariff.tariff_alt_url is not None:
             result['tariff_alt_url'] = tariff.tariff_alt_url
         if tariff.min_price is not None:
-            result['min_price'] = tariff.min_price
+            result['min_price'] = tariff.min_price.to_dict()
         if tariff.max_price is not None:
-            result['max_price'] = tariff.max_price
+            result['max_price'] = tariff.max_price.to_dict()
         if tariff.energy_mix is not None:
-            result['energy_mix'] = tariff.energy_mix
+            result['energy_mix'] = tariff.energy_mix.to_dict()
 
         return PublicApiBaseHandler.filter_none(result)

@@ -388,32 +388,28 @@ class DatexV35JSONStaticExportMapper:
         if tariff.elements:
             energy_prices = []
             for element in tariff.elements:
-                price_components = element.get('price_components')
-                if not price_components:
+                if not element.price_components:
                     continue
 
-                restrictions = element.get('restrictions')
-
-                for component in price_components:
+                for component in element.price_components:
                     price_type = self._price_component_type_to_price_type_map.get(
-                        component.get('type', ''),
+                        component.type or '',
                         PriceTypeEnum.OTHER,
                     )
                     energy_price = EnergyPriceInput(
                         priceType=PriceTypeEnumGInput(value=price_type),
-                        value=float(component.get('price', 0)),
+                        value=float(component.price or 0),
                     )
 
-                    taxes = component.get('taxes')
-                    if taxes:
-                        for tax in taxes:
-                            if tax.get('percentage') is not None:
-                                energy_price.taxRate = float(tax['percentage'])
+                    if component.taxes:
+                        for tax in component.taxes:
+                            if tax.percentage is not None:
+                                energy_price.taxRate = float(tax.percentage)
                                 break
 
-                    if restrictions:
-                        min_duration = restrictions.get('min_duration')
-                        max_duration = restrictions.get('max_duration')
+                    if element.restrictions:
+                        min_duration = element.restrictions.min_duration
+                        max_duration = element.restrictions.max_duration
                         if min_duration is not None or max_duration is not None:
                             time_applicability = TimeBasedApplicabilityInput()
                             if min_duration is not None:

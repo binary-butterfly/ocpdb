@@ -23,6 +23,7 @@ from tests.integration.helpers import OpenApiFlaskClient
 from tests.integration.model_generators.source import SOURCE_UID_1, SOURCE_UID_2
 from tests.integration.model_generators.tariff import TARIFF_UID_1, get_tariff_1, get_tariff_2
 from webapp.common.sqlalchemy import SQLAlchemy
+from webapp.models.tariff import TariffElement, TariffPriceComponent
 
 
 def test_get_ocpi_30_tariffs(
@@ -63,11 +64,11 @@ def test_get_ocpi_30_tariff_with_elements(
 ) -> None:
     tariff = get_tariff_1()
     tariff.elements = [
-        {
-            'price_components': [
-                {'type': 'ENERGY', 'price': 0.30},
+        TariffElement(
+            price_components=[
+                TariffPriceComponent(type='ENERGY', price=0.30),
             ],
-        },
+        ),
     ]
     db.session.add(tariff)
     db.session.commit()

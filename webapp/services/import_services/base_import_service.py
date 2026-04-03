@@ -27,6 +27,7 @@ from webapp.common.logging.models import LogMessageType
 from webapp.common.remote_mixin import RemoteMixin
 from webapp.models import Business, ChargingStation, Connector, Evse, Image, Location, Source, Tariff, TariffAssociation
 from webapp.models.source import SourceStatus
+from webapp.models.tariff import DisplayText, TariffElement, TariffEnergyMix, TariffPrice
 from webapp.repositories import (
     ConnectorRepository,
     EvseRepository,
@@ -407,13 +408,15 @@ class BaseImportService(BaseService, RemoteMixin, ABC):
                 continue
             setattr(tariff, key, value)
 
-        tariff.elements = [element.to_dict() for element in tariff_update.elements]
+        tariff.elements = [TariffElement.from_dict(element.to_dict()) for element in tariff_update.elements]
         if tariff_update.tariff_alt_text:
-            tariff.tariff_alt_text = [tariff_alt_text.to_dict() for tariff_alt_text in tariff_update.tariff_alt_text]
+            tariff.tariff_alt_text = [DisplayText.from_dict(dt.to_dict()) for dt in tariff_update.tariff_alt_text]
         if tariff_update.min_price:
-            tariff.min_price = tariff_update.min_price.to_dict()
+            tariff.min_price = TariffPrice.from_dict(tariff_update.min_price.to_dict())
         if tariff_update.max_price:
-            tariff.max_price = tariff_update.max_price.to_dict()
+            tariff.max_price = TariffPrice.from_dict(tariff_update.max_price.to_dict())
+        if tariff_update.energy_mix:
+            tariff.energy_mix = TariffEnergyMix.from_dict(tariff_update.energy_mix.to_dict())
 
         return tariff
 

@@ -1,9 +1,9 @@
-DOCKER_COMPOSE = docker compose
+DOCKER_COMPOSE = docker compose -f docker-compose.yml -f docker-compose.default.yml
 FLASK_RUN = $(DOCKER_COMPOSE) run --rm flask
 
 # Separate environment for running integration tests
 TESTING_COMPOSE_PROJECT_NAME = ocpdb_integrationtests
-TESTING_DOCKER_COMPOSE = $(DOCKER_COMPOSE) -p $(TESTING_COMPOSE_PROJECT_NAME)
+TESTING_DOCKER_COMPOSE = docker compose -f docker-compose.yml -f docker-compose.testing.yml -p $(TESTING_COMPOSE_PROJECT_NAME)
 
 # Default target when running `make`
 .PHONY: all
