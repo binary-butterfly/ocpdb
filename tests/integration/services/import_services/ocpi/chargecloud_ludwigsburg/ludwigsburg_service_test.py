@@ -44,7 +44,7 @@ def test_ludwigsburg_fetch_static_data(db: SQLAlchemy, requests_mock: Mocker) ->
     Test for LudwigsburgImportService.fetch_static_data().
 
     Checks the total number of imported datasets
-    (should be 129 locations, 367 evses and 367 connectors more than before),
+    (should be 100 locations, 273 evses and 273 connectors more than before),
     and a sample of the imported data's content.
     """
     ludwigsburg_service: LudwigsburgImportService = dependencies.get_import_services().importer_by_uid[
@@ -64,6 +64,7 @@ def test_ludwigsburg_fetch_static_data(db: SQLAlchemy, requests_mock: Mocker) ->
         [
             {'status_code': 200, 'json': request_1_data},
             {'status_code': 200, 'json': request_2_data},
+            {'status_code': 200, 'json': {'next': None, 'items': []}},
         ],
     )
 
@@ -71,9 +72,9 @@ def test_ludwigsburg_fetch_static_data(db: SQLAlchemy, requests_mock: Mocker) ->
     ludwigsburg_service.fetch_static_data()
 
     # Check numbers of imported objects
-    assert db.session.query(Location).count() - locations_in_db_before == 129
-    assert db.session.query(Evse).count() - evses_in_db_before == 367
-    assert db.session.query(Connector).count() - connectors_in_db_before == 367
+    assert db.session.query(Location).count() - locations_in_db_before == 100
+    assert db.session.query(Evse).count() - evses_in_db_before == 273
+    assert db.session.query(Connector).count() - connectors_in_db_before == 273
 
     # Check a sample of the imported data
     sample_location = db.session.query(Location).filter(Location.uid == '1588625').first()
@@ -95,7 +96,7 @@ def test_ludwigsburg_fetch_static_data(db: SQLAlchemy, requests_mock: Mocker) ->
             'latitude': Decimal('48.89233'),
             'longitude': Decimal('9.18329'),
         },
-        'directions': None,
+        'directions': [{'text': 'öffentliche Ladestation, durchgehend geöffnet', 'language': 'DE'}],
         'related_locations': None,
         'opening_times': {'twentyfourseven': True},
         'parking_type': None,
@@ -106,11 +107,14 @@ def test_ludwigsburg_fetch_static_data(db: SQLAlchemy, requests_mock: Mocker) ->
         'charging_when_closed': None,
         'energy_mix': None,
         'help_phone': None,
+        'facilities': [],
+        'facility_description': '',
+        'has_in_person_support': False,
     }
     assert sum(len(cs.evses) for cs in sample_location.charging_pool) == 2
     assert sample_location.operator.to_dict() == {
-        'name': 'sw-ludwigsburg',
-        'website': None,
+        'name': 'SWLB Mobilität GmbH',
+        'website': 'https://www.swlb-mobilitaet.de',
         'emobility_uid': None,
     }
 
@@ -136,9 +140,11 @@ def test_ludwigsburg_fetch_realtime_data(db: SQLAlchemy, requests_mock: Mocker) 
             # First two responses for static import
             {'status_code': 200, 'json': request_1_data},
             {'status_code': 200, 'json': request_2_data},
+            {'status_code': 200, 'json': {'next': None, 'items': []}},
             # Next two responses for realtime import
             {'status_code': 200, 'json': request_1_data},
             {'status_code': 200, 'json': request_2_data},
+            {'status_code': 200, 'json': {'next': None, 'items': []}},
         ],
     )
 

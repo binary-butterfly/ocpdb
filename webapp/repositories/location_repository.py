@@ -25,7 +25,7 @@ from validataclass_search_queries.pagination import PaginatedResult
 from validataclass_search_queries.search_queries import BaseSearchQuery
 
 from webapp.common.sqlalchemy import Query
-from webapp.models import Business, Evse, Location
+from webapp.models import Business, Evse, Location, TariffAssociation
 from webapp.models.charging_station import ChargingStation
 
 from .base_repository import BaseRepository
@@ -159,16 +159,24 @@ class LocationRepository(BaseRepository[Location]):
         if commit:
             self.session.commit()
 
-    def fetch_locations(self, search_query: BaseSearchQuery | None = None) -> PaginatedResult[Location]:
-        cs_load = selectinload(Location.charging_pool)
+    def fetch_locations(
+        self, *, search_query: BaseSearchQuery | None = None, include_tariffs: bool = False
+    ) -> PaginatedResult[Location]:
         options = [
             joinedload(Location.operator).joinedload(Business.logo),
             joinedload(Location.suboperator).joinedload(Business.logo),
             joinedload(Location.owner).joinedload(Business.logo),
             selectinload(Location.images),
-            cs_load.selectinload(ChargingStation.evses).selectinload(Evse.connectors),
-            cs_load.selectinload(ChargingStation.evses).selectinload(Evse.images),
+            selectinload(Location.charging_pool).selectinload(ChargingStation.evses).selectinload(Evse.connectors),
+            selectinload(Location.charging_pool).selectinload(ChargingStation.evses).selectinload(Evse.images),
         ]
+        if include_tariffs:
+            options.append(
+                selectinload(Location.charging_pool)
+                .selectinload(ChargingStation.evses)
+                .selectinload(Evse.tariff_associations)
+                .selectinload(TariffAssociation.tariff)
+            )
 
         query = self.session.query(Location).options(*options)
         return self._search_and_paginate(query, search_query)
@@ -186,20 +194,28 @@ class LocationRepository(BaseRepository[Location]):
                 'lat_max',
                 'lon_min',
                 'lon_max',
+                'evse_status_last_updated_since',
                 'last_updated_since',
             ]:
                 continue
 
             query = self._apply_bound_search_filter(query, bound_filter)
 
-        if last_updated_since := getattr(search_query, 'last_updated_since', None):
-            query = (
-                query
-                .join(Location.charging_pool)
-                .join(ChargingStation.evses)
-                .filter(or_(Location.last_updated >= last_updated_since, Evse.last_updated >= last_updated_since))
-                .distinct()
-            )
+        last_updated_since = getattr(search_query, 'last_updated_since', None)
+        evse_status_last_updated = getattr(search_query, 'evse_status_last_updated_since', None)
+
+        if last_updated_since or evse_status_last_updated:
+            query = query.join(Location.charging_pool).join(ChargingStation.evses).distinct()
+            if last_updated_since:
+                query = query.filter(
+                    or_(
+                        Location.last_updated >= last_updated_since,
+                        # ChargingStation.last_updaed >= last_updated_since,  # TODO: reactivate
+                        Evse.last_updated >= last_updated_since,
+                    ),
+                )
+            if evse_status_last_updated:
+                query = query.filter(Evse.status_last_updated >= evse_status_last_updated)
 
         if (
             getattr(search_query, 'lat', None)

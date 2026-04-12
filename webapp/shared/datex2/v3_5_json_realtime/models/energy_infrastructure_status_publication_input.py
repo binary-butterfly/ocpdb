@@ -3,9 +3,11 @@ Copyright 2026 binary butterfly GmbH
 Use of this source code is governed by an MIT-style license that can be found in the LICENSE.txt.
 """
 
+from datetime import datetime
+
 from validataclass.dataclasses import Default, ValidataclassMixin, validataclass
 from validataclass.helpers import UnsetValue, UnsetValueType
-from validataclass.validators import DataclassValidator, ListValidator, RegexValidator, StringValidator
+from validataclass.validators import DataclassValidator, DateTimeValidator, ListValidator, RegexValidator
 
 from .energy_infrastructure_site_status_input import EnergyInfrastructureSiteStatusInput
 from .energy_infrastructure_table_versioned_reference_g_input import EnergyInfrastructureTableVersionedReferenceGInput
@@ -21,7 +23,7 @@ class EnergyInfrastructureStatusPublicationInput(ValidataclassMixin):
     """
 
     lang: str = RegexValidator(pattern=r'^[a-z]{2}$')
-    publicationTime: str = StringValidator()
+    publicationTime: datetime = DateTimeValidator()
     tableReference: list[EnergyInfrastructureTableVersionedReferenceGInput] | UnsetValueType = (
         ListValidator(DataclassValidator(EnergyInfrastructureTableVersionedReferenceGInput)),
         Default(UnsetValue),

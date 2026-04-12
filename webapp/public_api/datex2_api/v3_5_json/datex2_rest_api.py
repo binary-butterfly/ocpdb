@@ -35,7 +35,7 @@ from webapp.dependencies import dependencies
 from webapp.public_api.base_blueprint import BaseBlueprint
 from webapp.shared.datex2.v3_5_json_realtime.schema import all_datex2_v35_realtime_components
 from webapp.shared.datex2.v3_5_json_static.schema import all_datex2_v35_static_components
-from webapp.shared.location_search_queries import LocationSearchQuery
+from webapp.shared.location_search_queries import LocationApiSearchQuery
 
 from .datex2_handler import Datex2V35JSONHandler
 
@@ -104,6 +104,7 @@ class Datex2V35JSONBlueprint(BaseBlueprint):
         self.datex2_handler = Datex2V35JSONHandler(
             **self.get_base_handler_dependencies(),
             location_repository=dependencies.get_location_repository(),
+            tariff_repository=dependencies.get_tariff_repository(),
         )
 
         super().__init__('datex2_v3_5', __name__, url_prefix='/v3.5')
@@ -129,7 +130,7 @@ class Datex2V35JSONBlueprint(BaseBlueprint):
 
 class Datex2V35JSONStaticMethodView(BaseMethodView):
     datex2_handler: Datex2V35JSONHandler
-    search_query_validator = DataclassValidator(LocationSearchQuery)
+    search_query_validator = DataclassValidator(LocationApiSearchQuery)
 
     def __init__(self, *args, datex2_handler: Datex2V35JSONHandler, **kwargs):
         super().__init__(*args, **kwargs)
@@ -158,7 +159,7 @@ class Datex2V35JSONStaticMethodView(BaseMethodView):
 
 class Datex2V35JSONRealtimeMethodView(BaseMethodView):
     datex2_handler: Datex2V35JSONHandler
-    search_query_validator = DataclassValidator(LocationSearchQuery)
+    search_query_validator = DataclassValidator(LocationApiSearchQuery)
 
     def __init__(self, *args, datex2_handler: Datex2V35JSONHandler, **kwargs):
         super().__init__(*args, **kwargs)

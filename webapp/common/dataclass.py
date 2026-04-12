@@ -40,6 +40,14 @@ def filter_unset_value(data: Any) -> Any:
     return data
 
 
+def filter_none_recursive(data: Any) -> Any:
+    if isinstance(data, dict):
+        return {key: filter_none_recursive(value) for key, value in data.items() if value is not None}
+    if isinstance(data, list):
+        return [filter_none_recursive(item) for item in data]
+    return data
+
+
 class DataclassMixin:
     def to_dict(self) -> Any:
         return filter_unset_value(recursive_to_dict(self, True))

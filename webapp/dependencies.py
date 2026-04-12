@@ -26,6 +26,7 @@ from sqlalchemy.orm import scoped_session
 from webapp.common.celery import CeleryHelper
 from webapp.common.config import ConfigHelper
 from webapp.common.contexts import ContextHelper
+from webapp.common.redis import RedisHelper, get_redis_client
 from webapp.common.rest import RequestHelper
 from webapp.repositories import (
     BusinessRepository,
@@ -36,11 +37,14 @@ from webapp.repositories import (
     LocationRepository,
     OfficialRegionCodeRepository,
     SourceRepository,
+    TariffRepository,
 )
+from webapp.repositories.tariff_association_repository import TariffAssociationRepository
 from webapp.services.import_services import ImageImportService, ImportServices
-from webapp.services.import_services.generic_import_runner import GenericImportRunner
+from webapp.services.import_services.generic_import_runner import GenericBeatRunner
 from webapp.services.location_service import LocationService
 from webapp.services.matching_service import MatchingService
+from webapp.services.push_services.datex_push_service import ChargeLocationService
 
 if TYPE_CHECKING:
     from webapp.common.server_auth import ServerAuthHelper
@@ -97,6 +101,12 @@ class Dependencies:
     @cache_dependency
     def get_celery_helper(self) -> CeleryHelper:
         return CeleryHelper()
+
+    @cache_dependency
+    def get_redis_helper(self) -> RedisHelper:
+        return RedisHelper(
+            redis=get_redis_client(self.get_config_helper()),
+        )
 
     @cache_dependency
     def get_server_auth_helper(self) -> 'ServerAuthHelper':
@@ -166,6 +176,18 @@ class Dependencies:
             session=self.get_db_session(),
         )
 
+    @cache_dependency
+    def get_tariff_repository(self) -> TariffRepository:
+        return TariffRepository(
+            session=self.get_db_session(),
+        )
+
+    @cache_dependency
+    def get_tariff_association_repository(self) -> TariffAssociationRepository:
+        return TariffAssociationRepository(
+            session=self.get_db_session(),
+        )
+
     # Services
     def get_base_service_dependencies(self) -> dict:
         return {
@@ -184,6 +206,7 @@ class Dependencies:
             business_repository=self.get_business_repository(),
             image_repository=self.get_image_repository(),
             official_region_code_repository=self.get_official_region_code_repository(),
+            tariff_repository=self.get_tariff_repository(),
         )
 
     @cache_dependency
@@ -215,10 +238,19 @@ class Dependencies:
         )
 
     @cache_dependency
-    def get_generic_import_runner(self) -> GenericImportRunner:
-        return GenericImportRunner(
+    def get_generic_beat_runner(self) -> GenericBeatRunner:
+        return GenericBeatRunner(
             **self.get_base_service_dependencies(),
             import_services=self.get_import_services(),
+            charge_location_service=self.get_charge_location_service(),
+        )
+
+    @cache_dependency
+    def get_charge_location_service(self) -> ChargeLocationService:
+        return ChargeLocationService(
+            **self.get_base_service_dependencies(),
+            location_repository=self.get_location_repository(),
+            redis_helper=self.get_redis_helper(),
         )
 
 

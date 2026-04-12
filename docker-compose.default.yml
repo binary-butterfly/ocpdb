@@ -1,0 +1,14 @@
+services:
+  flask:
+    ports:
+      - '5010:5000'
+  postgre:
+    volumes:
+      - postgres:/var/lib/postgresql/data/
+      - ./scripts:/scripts
+      - ./data/regionalschluessel:/data
+    ports:
+      - '5442:5432'
+
+volumes:
+  postgres:

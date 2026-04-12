@@ -22,6 +22,7 @@ from webapp.common.base_blueprint import BaseBlueprint
 
 from .base_blueprint import ServerApiBaseBlueprint
 from .bnetza.bnetza_import_rest_api import BnetzaImportBlueprint
+from .datex2.datex2_rest_api import Datex2ImportBlueprint
 from .giroe.giroe_rest_api import GiroeBlueprint
 
 
@@ -35,6 +36,7 @@ class ServerRestApi(BaseBlueprint):
         self.blueprints = [
             GiroeBlueprint,
             BnetzaImportBlueprint,
+            Datex2ImportBlueprint,
         ]
         for blueprint in self.blueprints:
             self.register_blueprint(blueprint())

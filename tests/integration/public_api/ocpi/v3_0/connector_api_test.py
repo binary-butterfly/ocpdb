@@ -51,7 +51,7 @@ def test_get_ocpi_30_connectors_strict(
     db.session.commit()
 
     response = public_test_client.get(
-        path='/api/ocpi/3.0/connectors?strict=true',
+        path='/api/public/ocpi/3.0/connectors?strict=true',
     )
     assert response.status_code == HTTPStatus.OK
     assert response.json['total_count'] == 4
@@ -71,7 +71,7 @@ def test_get_ocpi_30_connector_strict(
     db.session.commit()
 
     response = public_test_client.get(
-        path='/api/ocpi/3.0/connectors/1?strict=true',
+        path='/api/public/ocpi/3.0/connectors/1?strict=true',
     )
     assert response.status_code == HTTPStatus.OK
     assert response.json == {
@@ -104,7 +104,7 @@ def test_get_ocpi_30_connectors_by_source_uid(
     db.session.commit()
 
     response = public_test_client.get(
-        path=f'/api/ocpi/3.0/connectors?strict=true&source_uid={SOURCE_UID_1}',
+        path=f'/api/public/ocpi/3.0/connectors?strict=true&source_uid={SOURCE_UID_1}',
     )
     assert response.status_code == HTTPStatus.OK
     assert response.json['total_count'] == 2
@@ -124,7 +124,7 @@ def test_get_ocpi_30_connectors_by_evse_id(
     db.session.commit()
 
     response = public_test_client.get(
-        path='/api/ocpi/3.0/connectors?strict=true&evse_id=1',
+        path='/api/public/ocpi/3.0/connectors?strict=true&evse_id=1',
     )
     assert response.status_code == HTTPStatus.OK
     assert response.json['total_count'] == 1
@@ -144,7 +144,7 @@ def test_get_ocpi_30_connector_non_strict(
     db.session.commit()
 
     response = test_client.get(
-        path='/api/ocpi/3.0/connectors/1',
+        path='/api/public/ocpi/3.0/connectors/1',
     )
     assert response.status_code == HTTPStatus.OK
     data = response.json

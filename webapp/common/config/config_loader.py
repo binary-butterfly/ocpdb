@@ -25,6 +25,7 @@ from flask import Flask
 from yaml import safe_load
 
 from webapp.common.constants import BaseConfig
+from webapp.common.helper import AnyDict
 from webapp.common.logging.models import LogMessageType
 
 logger = logging.getLogger(__name__)
@@ -32,7 +33,7 @@ logger = logging.getLogger(__name__)
 
 class ConfigLoader:
     @staticmethod
-    def configure_app(app: Flask, config_overrides: None = None) -> None:
+    def configure_app(app: Flask, config_overrides: AnyDict | None = None) -> None:
         """
         Initializes the app config with default values and loads the actual config from a YAML file.
         """

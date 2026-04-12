@@ -27,12 +27,16 @@ from sqlalchemy import Enum as SqlalchemyEnum
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy_utc import UtcDateTime
+from validataclass.validators import (
+    DataclassValidator,
+    ListValidator,
+)
 
 from webapp.common.json import DefaultJSONEncoder
 
 from .base import BaseModel
 from .charging_station_image import ChargingStationImageAssociation
-from .enums import ChargingRateUnit
+from .enums import ChargingRateUnit, ParkingSpace
 
 if TYPE_CHECKING:
     from .evse import Evse
@@ -67,6 +71,7 @@ class Capability(Enum):
 
 class ChargingStation(BaseModel):
     __tablename__ = 'charging_station'
+    parking_spaces_list_validator: list[ParkingSpace] = ListValidator(DataclassValidator(ParkingSpace))
 
     location_id: Mapped[int] = mapped_column(
         BigInteger,
@@ -102,8 +107,11 @@ class ChargingStation(BaseModel):
     max_power_value: Mapped[float | None] = mapped_column(Float, nullable=True)
     service_type: Mapped[ServiceType | None] = mapped_column(SqlalchemyEnum(ServiceType), nullable=True)
     _user_interface_languages: Mapped[str | None] = mapped_column(
-        'user_interface_languages', String(255), nullable=True
+        'user_interface_languages',
+        String(255),
+        nullable=True,
     )
+    _parking_spaces: Mapped[str] = mapped_column('parking_spaces', Text, nullable=False, default='[]')
 
     @hybrid_property
     def user_interface_languages(self) -> list[str] | None:
@@ -148,6 +156,17 @@ class ChargingStation(BaseModel):
             self._directions = None
             return
         self._directions = json.dumps(directions, cls=DefaultJSONEncoder)
+
+    @hybrid_property
+    def parking_spaces(self) -> list[ParkingSpace]:
+        if not self._parking_spaces:
+            return []
+        data = json.loads(self._parking_spaces)
+        return self.parking_spaces_list_validator.validate(data)
+
+    @parking_spaces.setter
+    def parking_spaces(self, items: list[ParkingSpace]) -> None:
+        self._parking_spaces = json.dumps([item.to_dict() for item in items], cls=DefaultJSONEncoder)
 
     def to_dict(self, *args, ignore: list[str] | None = None, strict: bool = False, **kwargs) -> dict:
         ignore = ignore or []

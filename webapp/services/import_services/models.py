@@ -23,6 +23,14 @@ from math import sqrt
 
 from webapp.models.charging_station import Capability, ServiceType
 from webapp.models.connector import ConnectorFormat, ConnectorType, PowerType
+from webapp.models.enums import (
+    DayOfWeek,
+    ReservationRestrictionType,
+    TariffAudience,
+    TariffDimensionType,
+    TariffType,
+    VehicleCategoryEnum,
+)
 from webapp.models.evse import EvseStatus, ParkingRestriction, PresenceStatus
 from webapp.models.image import ImageCategory
 from webapp.models.location import ChargingRateUnit, EnergySourceCategory, EnvironmentalImpactCategory, ParkingType
@@ -53,6 +61,120 @@ class BaseUpdate:
 
 
 @dataclass(kw_only=True)
+class DisplayTextUpdate(BaseUpdate):
+    language: str  # Max 2 chars
+    text: str  # Max 512 chars
+
+
+@dataclass(kw_only=True)
+class EnergySourceUpdate(BaseUpdate):
+    source: EnergySourceCategory
+    percentage: float
+
+
+@dataclass(kw_only=True)
+class EnvironmentalImpactUpdate(BaseUpdate):
+    category: EnvironmentalImpactCategory
+    amount: float
+
+
+@dataclass(kw_only=True)
+class EnergyMixUpdate(BaseUpdate):
+    is_green_energy: bool | None = None
+    energy_sources: list[EnergySourceUpdate] | None = None
+    environ_impact: list[EnvironmentalImpactUpdate] | None = None
+    supplier_name: str | None = None
+    energy_product_name: str | None = None
+
+
+@dataclass
+class TaxAmountUpdate(BaseUpdate):
+    name: str
+    amount: Decimal
+
+
+@dataclass
+class TaxPercentageUpdate(BaseUpdate):
+    name: str
+    percentage: Decimal
+
+
+@dataclass(kw_only=True)
+class PriceComponentUpdate(BaseUpdate):
+    type: TariffDimensionType
+    price: Decimal
+    taxes: list[TaxPercentageUpdate] | None = None
+
+
+@dataclass
+class PriceUpdate(BaseUpdate):
+    before_taxes: Decimal
+    taxes: list[TaxAmountUpdate] | None = None
+
+
+@dataclass(kw_only=True)
+class RestrictionsUpdate(BaseUpdate):
+    start_time: time | None = None
+    end_time: time | None = None
+    min_energy: Decimal | None = None
+    max_energy: Decimal | None = None
+    min_current: Decimal | None = None
+    max_current: Decimal | None = None
+    min_power: Decimal | None = None
+    max_power: Decimal | None = None
+    min_duration: int | None = None
+    max_duration: int | None = None
+    min_restrictions_duration: int | None = None
+    day_of_week: list[DayOfWeek] | None = None
+    reservation: ReservationRestrictionType | None = None
+    vehicle_requesting_power: bool | None = None
+
+
+@dataclass(kw_only=True)
+class TariffElementUpdate(BaseUpdate):
+    _object_keys = ('price_components', 'restrictions')
+    price_components: list[PriceComponentUpdate] | None = None
+    restrictions: RestrictionsUpdate | None = None
+
+    def to_dict(self) -> dict:
+        result = {}
+        if self.price_components:
+            result['price_components'] = [price_component.to_dict() for price_component in self.price_components]
+        if self.restrictions:
+            result['restrictions'] = self.restrictions.to_dict()
+        return result
+
+
+@dataclass(kw_only=True)
+class TariffUpdate(BaseUpdate):
+    _object_keys = ('elements', 'tariff_alt_text', 'min_price', 'max_price', 'energy_mix')
+
+    uid: str
+    source: str
+    currency: str | None = None
+    type: TariffType | None = None
+    tariff_alt_url: str | None = None
+    tariff_alt_text: list[DisplayTextUpdate] | None = None
+    min_price: PriceUpdate | None = None
+    max_price: PriceUpdate | None = None
+    energy_mix: EnergyMixUpdate | None = None
+    last_updated: datetime | None = None
+    elements: list[TariffElementUpdate] | None = None
+
+
+@dataclass(kw_only=True)
+class TariffAssociationUpdate(BaseUpdate):
+    _object_keys = ('tariff',)
+
+    uid: str
+    source: str
+    tariff: TariffUpdate
+    audience: TariffAudience | None = None
+    start_date_time: datetime | None = None
+    last_updated: datetime | None = None
+
+
+@dataclass(kw_only=True)
 class ImageUpdate(BaseUpdate):
     external_url: str | None = None
     type: str | None = None
@@ -74,6 +196,8 @@ class BusinessUpdate(BaseUpdate):
 
 @dataclass(kw_only=True)
 class ConnectorUpdate(BaseUpdate):
+    # _object_keys = ('tariff_association',)  # TODO: activate if necessary
+
     uid: str
     standard: ConnectorType
     format: ConnectorFormat
@@ -83,6 +207,7 @@ class ConnectorUpdate(BaseUpdate):
     max_electric_power: int | None = None
     last_updated: datetime | None = None
     terms_and_conditions: str | None = None
+    # tariff_association: TariffAssociationUpdate | None = None  # TODO: activate if necessary
 
     def __post_init__(self):
         """
@@ -303,7 +428,7 @@ class ConnectorUpdate(BaseUpdate):
 
 @dataclass(kw_only=True)
 class EvseUpdate(BaseUpdate):
-    _object_keys = ('connectors', 'images')
+    _object_keys = ('connectors', 'images', 'tariff_association')
 
     uid: str
     evse_id: str
@@ -331,6 +456,8 @@ class EvseUpdate(BaseUpdate):
     terms_and_conditions: str | None = None
     calibration_info_url: str | None = None
 
+    tariff_association: list[TariffAssociationUpdate] | None = None
+
     def __post_init__(self):
         if self.lat is not None:
             self.lat = self.lat.quantize(Decimal('.0000001'))
@@ -354,8 +481,21 @@ class MaxPowerUpdate(BaseUpdate):
 
 
 @dataclass(kw_only=True)
+class ParkingSpaceUpdate(BaseUpdate):
+    vehicle_types: list[VehicleCategoryEnum]
+    parking_space_count: int
+    max_weight: int | None = None  # in kg
+    max_height: int | None = None  # in cm
+    max_length: int | None = None  # in cm
+    max_width: int | None = None  # in cm
+    has_roof: bool = False
+    is_illuminated: bool = False
+    is_accessible: bool = False
+
+
+@dataclass(kw_only=True)
 class ChargingStationUpdate(BaseUpdate):
-    _object_keys = ('evses', 'images')
+    _object_keys = ('evses', 'images', 'parking_spaces')
 
     uid: str
     evses: list[EvseUpdate]
@@ -374,6 +514,7 @@ class ChargingStationUpdate(BaseUpdate):
     images: list[ImageUpdate] | None = None
 
     max_power: MaxPowerUpdate | None = None
+    parking_spaces: list[ParkingSpaceUpdate] | None = None
 
     def __post_init__(self):
         if self.lat is not None:
@@ -402,33 +543,6 @@ class ExceptionalPeriodUpdate(BaseUpdate):
 
 
 @dataclass(kw_only=True)
-class EnergySourceUpdate(BaseUpdate):
-    source: EnergySourceCategory
-    percentage: float
-
-
-@dataclass(kw_only=True)
-class EnvironmentalImpactUpdate(BaseUpdate):
-    category: EnvironmentalImpactCategory
-    amount: float
-
-
-@dataclass(kw_only=True)
-class EnergyMixUpdate(BaseUpdate):
-    is_green_energy: bool | None = None
-    energy_sources: list[EnergySourceUpdate] | None = None
-    environ_impact: list[EnvironmentalImpactUpdate] | None = None
-    supplier_name: str | None = None
-    energy_product_name: str | None = None
-
-
-@dataclass(kw_only=True)
-class DisplayTextUpdate(BaseUpdate):
-    language: str  # Max 2 chars
-    text: str  # Max 512 chars
-
-
-@dataclass(kw_only=True)
 class AdditionalGeoLocationUpdate(BaseUpdate):
     name: DisplayTextUpdate | None = None
     latitude: Decimal
@@ -444,6 +558,7 @@ class LocationUpdate(BaseUpdate):
         'suboperator',
         'owner',
         'max_power',
+        'parking_spaces',
     )
 
     uid: str
@@ -458,6 +573,7 @@ class LocationUpdate(BaseUpdate):
     regular_hours: list[RegularHoursUpdate] | None = None
     energy_mix: EnergyMixUpdate | None = None
     max_power: MaxPowerUpdate | None = None
+    parking_spaces: list[ParkingSpaceUpdate] | None = None
 
     name: str | None = None
     address: str | None = None

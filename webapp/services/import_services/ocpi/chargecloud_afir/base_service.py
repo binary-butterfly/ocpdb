@@ -30,18 +30,17 @@ from webapp.common.logging.models import LogMessageType
 from webapp.models.source import SourceStatus
 from webapp.services.import_services.base_import_service import BaseImportService
 from webapp.services.import_services.models import EvseUpdate, LocationUpdate
-from webapp.services.import_services.ocpi.ocpi_mapper import OcpiMapper
-from webapp.services.import_services.ocpi.ocpi_validators import LocationInput
 
-from .validators import ChargecloudAfirLocationsInput
+from .mapper import ChargecloudAfirMapper
+from .validators import ChargecloudAfirLocationInput, ChargecloudAfirLocationsInput
 
 logger = logging.getLogger(__name__)
 
 
 class ChargecloudAfirBaseImportService(BaseImportService, ABC):
     ocpi_validator = DataclassValidator(ChargecloudAfirLocationsInput)
-    location_validator = DataclassValidator(LocationInput)
-    ocpi_mapper = OcpiMapper()
+    location_validator = DataclassValidator(ChargecloudAfirLocationInput)
+    ocpi_mapper = ChargecloudAfirMapper()
 
     required_config_keys: list[str] = ['api_key']
 
@@ -108,10 +107,9 @@ class ChargecloudAfirBaseImportService(BaseImportService, ABC):
             extra={'attributes': {'type': LogMessageType.IMPORT_LOCATION}},
         )
 
-    def _get_location_inputs(self) -> tuple[list[LocationInput], int]:
+    def _get_location_inputs(self) -> tuple[list[ChargecloudAfirLocationInput], int]:
         location_dicts: list[dict[str, Any]] = []
         error_count = 0
-
         try:
             input_data = self._download()
             location_dicts += input_data.items
@@ -119,7 +117,6 @@ class ChargecloudAfirBaseImportService(BaseImportService, ABC):
             while input_data.next and len(input_data.items):
                 input_data = self._download(input_data.next)
                 location_dicts += input_data.items
-
         except RemoteException as e:
             logger.error(
                 f'request failed: {e.to_dict()}',
@@ -133,8 +130,8 @@ class ChargecloudAfirBaseImportService(BaseImportService, ABC):
                 extra={'attributes': {'type': LogMessageType.IMPORT_SOURCE}},
             )
             raise StopHandling(message='Cannot proceed due validation error') from e
+        location_input: list[ChargecloudAfirLocationInput] = []
 
-        location_input: list[LocationInput] = []
         for location_dict in location_dicts:
             try:
                 location_input.append(self.location_validator.validate(location_dict))
@@ -150,7 +147,6 @@ class ChargecloudAfirBaseImportService(BaseImportService, ABC):
                 )
                 error_count += 1
                 continue
-
         return location_input, error_count
 
     def _download(self, cursor: str | None = None) -> ChargecloudAfirLocationsInput:

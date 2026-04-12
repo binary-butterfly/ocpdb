@@ -33,6 +33,7 @@ class ServerAuthRole(Enum):
 
     GIROE = 'giroe'
     BNETZA = 'bnetza'
+    DATEX2 = 'datex2'
 
 
 @dataclass

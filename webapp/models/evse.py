@@ -31,11 +31,13 @@ from webapp.common.json import DefaultJSONEncoder
 
 from .base import BaseModel
 from .evse_image import EvseImageAssociation
+from .evse_tariff_association import EvseTariffAssociation
 
 if TYPE_CHECKING:
     from .charging_station import ChargingStation
     from .connector import Connector
     from .image import Image
+    from .tariff_association import TariffAssociation
 
 
 class EvseStatus(Enum):
@@ -78,6 +80,11 @@ class Evse(BaseModel):
     images: Mapped[list['Image']] = relationship(
         'Image',
         secondary=EvseImageAssociation.__table__,
+        back_populates='evses',
+    )
+    tariff_associations: Mapped[list['TariffAssociation']] = relationship(
+        'TariffAssociation',
+        secondary=EvseTariffAssociation.__table__,
         back_populates='evses',
     )
     charging_station: Mapped['ChargingStation'] = relationship('ChargingStation', back_populates='evses')

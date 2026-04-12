@@ -25,8 +25,10 @@ from celery.schedules import crontab
 from webapp.common.contexts import TelemetryContext
 from webapp.common.logging.models import LogMessageType
 from webapp.common.remote_mixin import RemoteMixin
-from webapp.models import Business, ChargingStation, Connector, Evse, Image, Location, Source
+from webapp.models import Business, ChargingStation, Connector, Evse, Image, Location, Source, Tariff, TariffAssociation
+from webapp.models.charging_station import ParkingSpace
 from webapp.models.source import SourceStatus
+from webapp.models.tariff import DisplayText, TariffElement, TariffEnergyMix, TariffPrice
 from webapp.repositories import (
     ConnectorRepository,
     EvseRepository,
@@ -34,6 +36,7 @@ from webapp.repositories import (
     ObjectNotFoundException,
     OfficialRegionCodeRepository,
     SourceRepository,
+    TariffRepository,
 )
 from webapp.repositories.business_repository import BusinessRepository
 from webapp.repositories.image_repository import ImageRepository
@@ -46,6 +49,8 @@ from webapp.services.import_services.models import (
     ImageUpdate,
     LocationUpdate,
     SourceInfo,
+    TariffAssociationUpdate,
+    TariffUpdate,
 )
 
 logger = logging.getLogger(__name__)
@@ -59,6 +64,7 @@ class BaseImportService(BaseService, RemoteMixin, ABC):
     business_repository: BusinessRepository
     image_repository: ImageRepository
     official_region_code_repository: OfficialRegionCodeRepository
+    tariff_repository: TariffRepository
 
     schedule: crontab | None = None
     required_config_keys: list[str] = []
@@ -81,6 +87,7 @@ class BaseImportService(BaseService, RemoteMixin, ABC):
         business_repository: BusinessRepository,
         image_repository: ImageRepository,
         official_region_code_repository: OfficialRegionCodeRepository,
+        tariff_repository: TariffRepository,
         **kwargs,
     ):
         super().__init__(*args, **kwargs)
@@ -91,6 +98,7 @@ class BaseImportService(BaseService, RemoteMixin, ABC):
         self.business_repository = business_repository
         self.image_repository = image_repository
         self.official_region_code_repository = official_region_code_repository
+        self.tariff_repository = tariff_repository
 
     def save_evse_updates(self, evse_updates: list[EvseUpdate | EvseRealtimeUpdate]):
         """
@@ -130,6 +138,14 @@ class BaseImportService(BaseService, RemoteMixin, ABC):
         businesses_by_name = {business.name: business for business in self.business_repository.fetch_businesses()}
         images_by_url = {image.external_url: image for image in self.image_repository.fetch_images()}
 
+        tariffs = self.tariff_repository.fetch_tariffs_by_source(self.source_info.uid)
+        tariffs_by_uid = {tariff.uid: tariff for tariff in tariffs}
+
+        tariff_associations_by_uid: dict[str, TariffAssociation] = {}
+        for tariff in tariffs:
+            for tariff_association in tariff.tariff_associations:
+                tariff_associations_by_uid[tariff_association.uid] = tariff_association
+
         # EVSE UIDs are critical because they are unique, so we fetch them related to location id in order to check them before saving
         # TODO: actually use this
         # evse_uids = {item[0]: item[1] for item in self.evse_repository.fetch_extended_evse_uids()}
@@ -141,6 +157,8 @@ class BaseImportService(BaseService, RemoteMixin, ABC):
                 old_location_ids=old_location_ids,
                 images_by_url=images_by_url,
                 available_official_region_code_databases=available_official_region_code_databases,
+                tariffs_by_uid=tariffs_by_uid,
+                tariff_associations_by_uid=tariff_associations_by_uid,
             )
 
         # delete locations which are not part of the updated dataset anymore
@@ -156,7 +174,13 @@ class BaseImportService(BaseService, RemoteMixin, ABC):
         old_location_ids: list[int] | None = None,
         images_by_url: dict[str, Image] | None = None,
         available_official_region_code_databases: list[str] | None = None,
+        tariffs_by_uid: dict[str, Tariff] | None = None,
+        tariff_associations_by_uid: dict[str, TariffAssociation] | None = None,
     ):
+        if tariffs_by_uid is None:
+            tariffs_by_uid = {
+                tariff.uid: tariff for tariff in self.tariff_repository.fetch_tariffs_by_source(self.source_info.uid)
+            }
         try:
             location = self.location_repository.fetch_location_by_uid(
                 self.source_info.uid,
@@ -190,6 +214,22 @@ class BaseImportService(BaseService, RemoteMixin, ABC):
                 location.max_power_unit = None
                 location.max_power_value = None
 
+        if location_update.parking_spaces is not None:
+            location.parking_spaces = [
+                ParkingSpace(
+                    vehicle_types=ps.vehicle_types,
+                    parking_space_count=ps.parking_space_count,
+                    max_weight=ps.max_weight,
+                    max_height=ps.max_height,
+                    max_length=ps.max_length,
+                    max_width=ps.max_width,
+                    has_roof=ps.has_roof,
+                    is_illuminated=ps.is_illuminated,
+                    is_accessible=ps.is_accessible,
+                )
+                for ps in location_update.parking_spaces
+            ]
+
         self.set_business(location, location_update, 'operator', businesses_by_name)
         self.set_business(location, location_update, 'suboperator', businesses_by_name)
         self.set_business(location, location_update, 'owner', businesses_by_name)
@@ -205,6 +245,8 @@ class BaseImportService(BaseService, RemoteMixin, ABC):
                     charging_station_update=charging_station_update,
                     old_charging_stations_by_uid=old_charging_stations_by_uid,
                     images_by_url=images_by_url,
+                    tariff_associations_by_uid=tariff_associations_by_uid,
+                    tariffs_by_uid=tariffs_by_uid,
                 ),
             )
         location.charging_pool = new_charging_stations
@@ -243,6 +285,8 @@ class BaseImportService(BaseService, RemoteMixin, ABC):
         charging_station_update: ChargingStationUpdate,
         old_charging_stations_by_uid: dict[str, ChargingStation],
         images_by_url: dict[str, Image] | None,
+        tariff_associations_by_uid: dict[str, TariffAssociation],
+        tariffs_by_uid: dict[str, Tariff],
     ) -> ChargingStation:
         charging_station = old_charging_stations_by_uid.get(charging_station_update.uid, ChargingStation())
 
@@ -261,6 +305,22 @@ class BaseImportService(BaseService, RemoteMixin, ABC):
                 charging_station.max_power_unit = None
                 charging_station.max_power_value = None
 
+        if charging_station_update.parking_spaces is not None:
+            charging_station.parking_spaces = [
+                ParkingSpace(
+                    vehicle_types=ps.vehicle_types,
+                    parking_space_count=ps.parking_space_count,
+                    max_weight=ps.max_weight,
+                    max_height=ps.max_height,
+                    max_length=ps.max_length,
+                    max_width=ps.max_width,
+                    has_roof=ps.has_roof,
+                    is_illuminated=ps.is_illuminated,
+                    is_accessible=ps.is_accessible,
+                )
+                for ps in charging_station_update.parking_spaces
+            ]
+
         old_evses_by_uid = {evse.uid: evse for evse in charging_station.evses}
         new_evses: list[Evse] = []
         for evse_update in charging_station_update.evses:
@@ -269,6 +329,8 @@ class BaseImportService(BaseService, RemoteMixin, ABC):
                     evse_update=evse_update,
                     old_evses_by_uid=old_evses_by_uid,
                     images_by_url=images_by_url,
+                    tariff_associations_by_uid=tariff_associations_by_uid,
+                    tariffs_by_uid=tariffs_by_uid,
                 ),
             )
 
@@ -281,6 +343,8 @@ class BaseImportService(BaseService, RemoteMixin, ABC):
         evse_update: EvseUpdate,
         old_evses_by_uid: dict[str, Evse],
         images_by_url: dict[str, Image] | None,
+        tariff_associations_by_uid: dict[str, TariffAssociation],
+        tariffs_by_uid: dict[str, Tariff],
     ) -> Evse:
         evse = old_evses_by_uid.get(evse_update.uid, Evse())
 
@@ -302,6 +366,18 @@ class BaseImportService(BaseService, RemoteMixin, ABC):
             )
         evse.connectors = new_connectors
 
+        tariff_associations: list[TariffAssociation] = []
+        if evse_update.tariff_association:
+            for tariff_association_update in evse_update.tariff_association:
+                tariff_association = self.get_tariff_association(
+                    tariff_association_update=tariff_association_update,
+                    tariff_associations_by_uid=tariff_associations_by_uid,
+                    tariffs_by_uid=tariffs_by_uid,
+                )
+                tariff_associations.append(tariff_association)
+
+        evse.tariff_associations = tariff_associations
+
         self.set_image_list(
             primary_object=evse,
             image_updates=evse_update.images,
@@ -311,7 +387,10 @@ class BaseImportService(BaseService, RemoteMixin, ABC):
         return evse
 
     @staticmethod
-    def get_connector(connector_update: ConnectorUpdate, old_connectors_by_uid: dict[str, Connector]) -> Connector:
+    def get_connector(
+        connector_update: ConnectorUpdate,
+        old_connectors_by_uid: dict[str, Connector],
+    ) -> Connector:
         connector = old_connectors_by_uid.get(connector_update.uid, Connector())
 
         connector.last_updated = connector_update.last_updated or datetime.now(tz=timezone.utc)
@@ -322,6 +401,57 @@ class BaseImportService(BaseService, RemoteMixin, ABC):
             setattr(connector, key, value)
 
         return connector
+
+    def get_tariff_association(
+        self,
+        tariff_association_update: TariffAssociationUpdate,
+        tariff_associations_by_uid: dict[str, TariffAssociation],
+        tariffs_by_uid: dict[str, Tariff],
+    ) -> TariffAssociation:
+        tariff = self.get_tariff(tariff_association_update.tariff, tariffs_by_uid)
+
+        if tariff_association_update.uid in tariff_associations_by_uid:
+            tariff_association = tariff_associations_by_uid[tariff_association_update.uid]
+        else:
+            tariff_association = TariffAssociation()
+            tariff_associations_by_uid[tariff_association_update.uid] = tariff_association
+
+        tariff_association.last_updated = tariff_association_update.last_updated or datetime.now(tz=timezone.utc)
+        tariff_association.start_date_time = tariff_association_update.start_date_time or datetime.now(tz=timezone.utc)
+        tariff_association.tariff = tariff
+
+        for key, value in tariff_association_update.to_dict().items():
+            if key in ['last_updated', 'start_date_time']:
+                continue
+            setattr(tariff_association, key, value)
+
+        return tariff_association
+
+    def get_tariff(self, tariff_update: TariffUpdate, tariffs_by_uid: dict[str, Tariff]) -> Tariff:
+        if tariff_update.uid in tariffs_by_uid:
+            tariff = tariffs_by_uid[tariff_update.uid]
+        else:
+            tariff = Tariff(uid=tariff_update.uid)
+            tariffs_by_uid[tariff_update.uid] = tariff
+
+        tariff.last_updated = tariff_update.last_updated or datetime.now(tz=timezone.utc)
+
+        for key, value in tariff_update.to_dict().items():
+            if key == 'last_updated':
+                continue
+            setattr(tariff, key, value)
+
+        tariff.elements = [TariffElement.from_dict(element.to_dict()) for element in tariff_update.elements]
+        if tariff_update.tariff_alt_text:
+            tariff.tariff_alt_text = [DisplayText.from_dict(dt.to_dict()) for dt in tariff_update.tariff_alt_text]
+        if tariff_update.min_price:
+            tariff.min_price = TariffPrice.from_dict(tariff_update.min_price.to_dict())
+        if tariff_update.max_price:
+            tariff.max_price = TariffPrice.from_dict(tariff_update.max_price.to_dict())
+        if tariff_update.energy_mix:
+            tariff.energy_mix = TariffEnergyMix.from_dict(tariff_update.energy_mix.to_dict())
+
+        return tariff
 
     def set_business(
         self,

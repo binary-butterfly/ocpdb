@@ -19,8 +19,8 @@ class PointCoordinatesInput(ValidataclassMixin):
     A pair of planar coordinates defining the geodetic position of a single point using the European Terrestrial Reference System 1989 (ETRS89).
     """
 
-    latitude: int = FloatValidator()
-    longitude: int = FloatValidator()
+    latitude: float = FloatValidator()
+    longitude: float = FloatValidator()
     heightCoordinate: list[HeightCoordinateInput] | UnsetValueType = (
         ListValidator(DataclassValidator(HeightCoordinateInput)),
         Default(UnsetValue),

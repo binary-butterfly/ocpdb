@@ -3,17 +3,19 @@ Copyright 2026 binary butterfly GmbH
 Use of this source code is governed by an MIT-style license that can be found in the LICENSE.txt.
 """
 
+from datetime import datetime
+
 from validataclass.dataclasses import Default, ValidataclassMixin, validataclass
 from validataclass.helpers import UnsetValue, UnsetValueType
 from validataclass.validators import (
-    AnythingValidator,
     BooleanValidator,
     DataclassValidator,
+    DateTimeValidator,
     IntegerValidator,
     ListValidator,
-    StringValidator,
 )
 
+from .energy_infrastructure_station_status_input import EnergyInfrastructureStationStatusInput
 from .extension_type_g_input import ExtensionTypeGInput
 from .facility_object_versioned_reference_g_input import FacilityObjectVersionedReferenceGInput
 from .fault_input import FaultInput
@@ -32,7 +34,7 @@ class EnergyInfrastructureSiteStatusInput(ValidataclassMixin):
     """
 
     reference: FacilityObjectVersionedReferenceGInput = DataclassValidator(FacilityObjectVersionedReferenceGInput)
-    lastUpdated: str | UnsetValueType = StringValidator(), Default(UnsetValue)
+    lastUpdated: datetime | UnsetValueType = DateTimeValidator(), Default(UnsetValue)
     openingStatus: OpeningStatusEnumGInput | UnsetValueType = (
         DataclassValidator(OpeningStatusEnumGInput),
         Default(UnsetValue),
@@ -57,8 +59,8 @@ class EnergyInfrastructureSiteStatusInput(ValidataclassMixin):
         ListValidator(DataclassValidator(SupplementalFacilityStatusInput)),
         Default(UnsetValue),
     )
-    energyInfrastructureStationStatus: list[dict] | UnsetValueType = (
-        ListValidator(AnythingValidator(allowed_types=[dict])),
+    energyInfrastructureStationStatus: list[EnergyInfrastructureStationStatusInput] | UnsetValueType = (
+        ListValidator(DataclassValidator(EnergyInfrastructureStationStatusInput)),
         Default(UnsetValue),
     )
     serviceType: list[ServiceTypeInput] | UnsetValueType = (

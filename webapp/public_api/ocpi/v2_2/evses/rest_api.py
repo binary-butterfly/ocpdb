@@ -37,7 +37,7 @@ from webapp.models.evse import EvseStatus
 from webapp.public_api.base_blueprint import BaseBlueprint
 from webapp.public_api.evse_api.evse_handler import EvseHandler
 from webapp.public_api.evse_api.evse_search_queries import EvseSearchQuery
-from webapp.shared.ocpi_schema import all_evse_components
+from webapp.shared.evse_schema import all_evse_components
 
 
 class OcpiEvseBlueprint(BaseBlueprint):

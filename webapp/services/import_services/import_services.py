@@ -23,6 +23,7 @@ from webapp.repositories import (
     LocationRepository,
     OfficialRegionCodeRepository,
     SourceRepository,
+    TariffRepository,
 )
 from webapp.repositories.business_repository import BusinessRepository
 from webapp.repositories.image_repository import ImageRepository
@@ -77,6 +78,7 @@ class ImportServices(BaseService):
         business_repository: BusinessRepository,
         image_repository: ImageRepository,
         official_region_code_repository: OfficialRegionCodeRepository,
+        tariff_repository: TariffRepository,
         **kwargs,
     ):
         super().__init__(**kwargs)
@@ -89,6 +91,7 @@ class ImportServices(BaseService):
             'business_repository': business_repository,
             'image_repository': image_repository,
             'official_region_code_repository': official_region_code_repository,
+            'tariff_repository': tariff_repository,
             'config_helper': self.config_helper,
             'context_helper': self.context_helper,
         }
