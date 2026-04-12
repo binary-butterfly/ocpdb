@@ -21,7 +21,7 @@ from validataclass_search_queries.pagination import PaginatedResult
 from webapp.models import Location
 from webapp.public_api.base_handler import PublicApiBaseHandler
 from webapp.repositories import LocationRepository
-from webapp.shared.location_search_queries import LocationSearchQuery
+from webapp.shared.location_search_queries import LocationApiSearchQuery
 
 
 class Ocpi30LocationHandler(PublicApiBaseHandler):
@@ -31,8 +31,8 @@ class Ocpi30LocationHandler(PublicApiBaseHandler):
         super().__init__(*args, **kwargs)
         self.location_repository = location_repository
 
-    def get_locations(self, query: LocationSearchQuery, strict: bool = False) -> PaginatedResult[dict]:
-        locations = self.location_repository.fetch_locations(query)
+    def get_locations(self, search_query: LocationApiSearchQuery, strict: bool = False) -> PaginatedResult[dict]:
+        locations = self.location_repository.fetch_locations(search_query=search_query)
         return locations.map(lambda location: self._map_location_to_ocpi_30(location, strict=strict))
 
     def get_location(self, location_id: int, strict: bool = False) -> dict:

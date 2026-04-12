@@ -24,7 +24,7 @@ from validataclass.helpers import UnsetValue, UnsetValueType
 
 from webapp.models.charging_station import Capability, ServiceType
 from webapp.models.connector import ConnectorFormat, ConnectorType, PowerType, ac_1_phase_connector_types
-from webapp.models.enums import TariffAudience, TariffDimensionType, TariffType
+from webapp.models.enums import TariffAudience, TariffDimensionType, TariffType, VehicleCategoryEnum
 from webapp.models.evse import EvseStatus
 from webapp.models.location import ChargingRateUnit
 from webapp.services.import_services.models import (
@@ -36,6 +36,7 @@ from webapp.services.import_services.models import (
     EvseUpdate,
     LocationUpdate,
     MaxPowerUpdate,
+    ParkingSpaceUpdate,
     PriceComponentUpdate,
     RestrictionsUpdate,
     TariffAssociationUpdate,
@@ -45,7 +46,9 @@ from webapp.services.import_services.models import (
 )
 from webapp.shared.datex2.v3_5_json_realtime.models.refill_point_status_enum import RefillPointStatusEnum
 from webapp.shared.datex2.v3_5_json_realtime.models.refill_point_status_g_input import RefillPointStatusGInput
+from webapp.shared.datex2.v3_5_json_static.models.accessibility_enum import AccessibilityEnum
 from webapp.shared.datex2.v3_5_json_static.models.address_line_type_enum import AddressLineTypeEnum
+from webapp.shared.datex2.v3_5_json_static.models.amenities_input import AmenitiesInput
 from webapp.shared.datex2.v3_5_json_static.models.authentication_and_identification_enum import (
     AuthenticationAndIdentificationEnum,
 )
@@ -55,6 +58,7 @@ from webapp.shared.datex2.v3_5_json_static.models.authentication_and_identificat
 from webapp.shared.datex2.v3_5_json_static.models.connector_input import ConnectorInput as DatexConnectorInput
 from webapp.shared.datex2.v3_5_json_static.models.connector_type_enum import ConnectorTypeEnum
 from webapp.shared.datex2.v3_5_json_static.models.current_type_enum import CurrentTypeEnum
+from webapp.shared.datex2.v3_5_json_static.models.dedicated_parking_spaces_input import DedicatedParkingSpacesInput
 from webapp.shared.datex2.v3_5_json_static.models.electric_charging_point_input import (
     ElectricChargingPointInput,
 )
@@ -65,6 +69,7 @@ from webapp.shared.datex2.v3_5_json_static.models.energy_infrastructure_station_
     EnergyInfrastructureStationInput,
 )
 from webapp.shared.datex2.v3_5_json_static.models.energy_rate_input import EnergyRateInput
+from webapp.shared.datex2.v3_5_json_static.models.eu_vehicle_category_enum import EuVehicleCategoryEnum
 from webapp.shared.datex2.v3_5_json_static.models.external_identifier_input import ExternalIdentifierInput
 from webapp.shared.datex2.v3_5_json_static.models.multilingual_string_input import MultilingualStringInput
 from webapp.shared.datex2.v3_5_json_static.models.operating_hours_g_input import OperatingHoursGInput
@@ -141,6 +146,10 @@ class Datex2V35JSONStaticMapper:
         self._apply_operator(energy_infrastructure_site.operator, location)
         self._apply_operating_hours(energy_infrastructure_site.operatingHours, location)
         self._apply_helpdesk(energy_infrastructure_site.helpdesk, location)
+        location.parking_spaces = self._map_dedicated_parking_spaces(
+            energy_infrastructure_site.dedicatedParkingSpaces,
+            energy_infrastructure_site.amenities,
+        )
         if energy_infrastructure_site.energyInfrastructureStation is not UnsetValue:
             for station in energy_infrastructure_site.energyInfrastructureStation:
                 self._apply_energy_infrastructure_stations(station, location, source)
@@ -253,6 +262,11 @@ class Datex2V35JSONStaticMapper:
             and energy_infrastructure_station.userInterfaceLanguage
         ):
             charge_station.user_interface_languages = energy_infrastructure_station.userInterfaceLanguage
+
+        charge_station.parking_spaces = self._map_dedicated_parking_spaces(
+            energy_infrastructure_station.dedicatedParkingSpaces,
+            energy_infrastructure_station.amenities,
+        )
 
         location.charging_pool.append(charge_station)
 
@@ -458,6 +472,166 @@ class Datex2V35JSONStaticMapper:
             if service_type is not None:
                 return service_type
         return None
+
+    _eu_vehicle_category_map: dict[EuVehicleCategoryEnum, VehicleCategoryEnum] = {
+        EuVehicleCategoryEnum.L1: VehicleCategoryEnum.L1,
+        EuVehicleCategoryEnum.L2: VehicleCategoryEnum.L2,
+        EuVehicleCategoryEnum.L3: VehicleCategoryEnum.L3,
+        EuVehicleCategoryEnum.L4: VehicleCategoryEnum.L4,
+        EuVehicleCategoryEnum.L5: VehicleCategoryEnum.L5,
+        EuVehicleCategoryEnum.L6: VehicleCategoryEnum.L6,
+        EuVehicleCategoryEnum.L7: VehicleCategoryEnum.L7,
+        EuVehicleCategoryEnum.M: VehicleCategoryEnum.M,
+        EuVehicleCategoryEnum.M1: VehicleCategoryEnum.M1,
+        EuVehicleCategoryEnum.M2: VehicleCategoryEnum.M2,
+        EuVehicleCategoryEnum.M3: VehicleCategoryEnum.M3,
+        EuVehicleCategoryEnum.N: VehicleCategoryEnum.N,
+        EuVehicleCategoryEnum.N1: VehicleCategoryEnum.N1,
+        EuVehicleCategoryEnum.N1CLASSI: VehicleCategoryEnum.N1,
+        EuVehicleCategoryEnum.N1CLASSII: VehicleCategoryEnum.N1,
+        EuVehicleCategoryEnum.N1CLASSIII: VehicleCategoryEnum.N1,
+        EuVehicleCategoryEnum.N1CLASSIIIANDN2: VehicleCategoryEnum.N1,
+        EuVehicleCategoryEnum.N2: VehicleCategoryEnum.N2,
+        EuVehicleCategoryEnum.N3: VehicleCategoryEnum.N3,
+        EuVehicleCategoryEnum.O: VehicleCategoryEnum.O,
+        EuVehicleCategoryEnum.O1: VehicleCategoryEnum.O1,
+        EuVehicleCategoryEnum.O2: VehicleCategoryEnum.O2,
+        EuVehicleCategoryEnum.O3: VehicleCategoryEnum.O3,
+        EuVehicleCategoryEnum.O4: VehicleCategoryEnum.O4,
+        EuVehicleCategoryEnum.R1: VehicleCategoryEnum.R1,
+        EuVehicleCategoryEnum.R2: VehicleCategoryEnum.R2,
+        EuVehicleCategoryEnum.R3: VehicleCategoryEnum.R3,
+        EuVehicleCategoryEnum.R4: VehicleCategoryEnum.R4,
+        EuVehicleCategoryEnum.T1: VehicleCategoryEnum.T1,
+        EuVehicleCategoryEnum.T2: VehicleCategoryEnum.T2,
+        EuVehicleCategoryEnum.T3: VehicleCategoryEnum.T3,
+        EuVehicleCategoryEnum.T4: VehicleCategoryEnum.T4,
+        EuVehicleCategoryEnum.T41: VehicleCategoryEnum.T41,
+        EuVehicleCategoryEnum.T42: VehicleCategoryEnum.T42,
+        EuVehicleCategoryEnum.T43: VehicleCategoryEnum.T43,
+    }
+
+    _accessible_values: set[AccessibilityEnum] = {
+        AccessibilityEnum.BARRIERFREEACCESSIBLE,
+        AccessibilityEnum.DISABILITYACCESSIBLE,
+        AccessibilityEnum.WHEELCHAIRACCESSIBLE,
+    }
+
+    def _map_dedicated_parking_spaces(
+        self,
+        dedicated_parking_spaces: list[DedicatedParkingSpacesInput] | UnsetValueType,
+        station_amenities: AmenitiesInput | UnsetValueType,
+    ) -> list[ParkingSpaceUpdate] | None:
+        if dedicated_parking_spaces is UnsetValue:
+            return None
+
+        result: list[ParkingSpaceUpdate] = []
+        for parking_input in dedicated_parking_spaces:
+            vehicle_types = self._map_vehicle_types(parking_input)
+
+            parking_space = ParkingSpaceUpdate(
+                vehicle_types=vehicle_types,
+                parking_space_count=parking_input.numberOfSpaces,
+            )
+
+            self._apply_vehicle_dimensions(parking_input, parking_space)
+            self._apply_parking_amenities(parking_input.amenities, station_amenities, parking_space)
+
+            if parking_input.accessibility is not UnsetValue:
+                for accessibility in parking_input.accessibility:
+                    if accessibility.value in self._accessible_values:
+                        parking_space.is_accessible = True
+                        break
+
+            result.append(parking_space)
+
+        return self._deduplicate_parking_spaces(result) or None
+
+    @staticmethod
+    def _deduplicate_parking_spaces(parking_spaces: list[ParkingSpaceUpdate]) -> list[ParkingSpaceUpdate]:
+        deduplicated: list[ParkingSpaceUpdate] = []
+        for ps in parking_spaces:
+            for existing in deduplicated:
+                if (
+                    existing.vehicle_types == ps.vehicle_types
+                    and existing.max_weight == ps.max_weight
+                    and existing.max_height == ps.max_height
+                    and existing.max_length == ps.max_length
+                    and existing.max_width == ps.max_width
+                    and existing.has_roof == ps.has_roof
+                    and existing.is_illuminated == ps.is_illuminated
+                    and existing.is_accessible == ps.is_accessible
+                ):
+                    existing.parking_space_count += ps.parking_space_count
+                    break
+            else:
+                deduplicated.append(ps)
+        return deduplicated
+
+    def _map_vehicle_types(
+        self,
+        parking_input: DedicatedParkingSpacesInput,
+    ) -> list[VehicleCategoryEnum]:
+        if parking_input.applicableForVehicles is UnsetValue:
+            return []
+
+        vehicle_types: list[VehicleCategoryEnum] = []
+        for vehicle_chars in parking_input.applicableForVehicles:
+            if vehicle_chars.comVehicleCharacteristicsExtensionG is UnsetValue:
+                continue
+            extended = vehicle_chars.comVehicleCharacteristicsExtensionG.VehicleCharacteristicsExtended
+            if extended is UnsetValue:
+                continue
+            for eu_category in extended.euVehicleCategory:
+                mapped = self._eu_vehicle_category_map.get(eu_category.value)
+                if mapped is not None and mapped not in vehicle_types:
+                    vehicle_types.append(mapped)
+
+        return vehicle_types
+
+    @staticmethod
+    def _apply_vehicle_dimensions(
+        parking_input: DedicatedParkingSpacesInput,
+        parking_space: ParkingSpaceUpdate,
+    ):
+        if parking_input.applicableForVehicles is UnsetValue:
+            return
+
+        for vehicle_chars in parking_input.applicableForVehicles:
+            if vehicle_chars.grossWeightCharacteristic is not UnsetValue:
+                for weight in vehicle_chars.grossWeightCharacteristic:
+                    parking_space.max_weight = int(weight.grossVehicleWeight * 1000)
+                    break
+
+            if vehicle_chars.heightCharacteristic is not UnsetValue:
+                for height in vehicle_chars.heightCharacteristic:
+                    parking_space.max_height = int(height.vehicleHeight * 100)
+                    break
+
+            if vehicle_chars.lengthCharacteristic is not UnsetValue:
+                for length in vehicle_chars.lengthCharacteristic:
+                    parking_space.max_length = int(length.vehicleLength * 100)
+                    break
+
+            if vehicle_chars.widthCharacteristic is not UnsetValue:
+                for width in vehicle_chars.widthCharacteristic:
+                    parking_space.max_width = int(width.vehicleWidth * 100)
+                    break
+
+    @staticmethod
+    def _apply_parking_amenities(
+        parking_amenities: AmenitiesInput | UnsetValueType,
+        station_amenities: AmenitiesInput | UnsetValueType,
+        parking_space: ParkingSpaceUpdate,
+    ):
+        amenities = parking_amenities if parking_amenities is not UnsetValue else station_amenities
+        if amenities is UnsetValue:
+            return
+
+        if amenities.roofed is not UnsetValue:
+            parking_space.has_roof = amenities.roofed
+        if amenities.illuminated is not UnsetValue:
+            parking_space.is_illuminated = amenities.illuminated
 
     @staticmethod
     def _map_power_type(current_type: CurrentTypeEnum, standard: ConnectorType):

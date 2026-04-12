@@ -40,12 +40,13 @@ from sqlalchemy import (
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy_utc import UtcDateTime
+from validataclass.validators import DataclassValidator, ListValidator
 
 from webapp.common.json import DefaultJSONEncoder
 from webapp.extensions import db
 
 from .base import BaseModel, Point
-from .enums import ChargingRateUnit
+from .enums import ChargingRateUnit, ParkingSpace
 from .location_image import LocationImageAssociation
 
 if TYPE_CHECKING:
@@ -111,8 +112,16 @@ class TokenType(Enum):
     RFID = 'RFID'
 
 
+class FacilityType(Enum):
+    BATHROOM = 'BATHROOM'
+    CATERING = 'CATERING'
+    RESTING = 'RESTING'
+
+
 class Location(BaseModel):
     __tablename__ = 'location'
+    parking_spaces_list_validator: list[ParkingSpace] = ListValidator(DataclassValidator(ParkingSpace))
+
     __table_args__ = (
         Index('uid_source', 'uid', 'source'),
         Index('geometry_index', 'geometry', postgresql_using='gist'),
@@ -191,6 +200,11 @@ class Location(BaseModel):
     _regular_hours: Mapped[str | None] = mapped_column('regular_hours', Text, nullable=True)
     _exceptional_openings: Mapped[str | None] = mapped_column('exceptional_openings', Text, nullable=True)
     _exceptional_closings: Mapped[str | None] = mapped_column('exceptional_closings', Text, nullable=True)
+
+    has_in_person_support: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+    _facilities: Mapped[str] = mapped_column('facilities', Text, nullable=False, default='')
+    facility_description: Mapped[str] = mapped_column(Text, nullable=False, default='')
+    _parking_spaces: Mapped[str] = mapped_column('parking_spaces', Text, nullable=False, default='[]')
 
     @hybrid_property
     def directions(self) -> list[dict[str, str]] | None:
@@ -271,6 +285,32 @@ class Location(BaseModel):
             return
         self._exceptional_closings = json.dumps(exceptional_closings, cls=DefaultJSONEncoder)
 
+    @hybrid_property
+    def facilities(self) -> list[FacilityType]:
+        if not self._facilities:
+            return []
+
+        facility_items = self._facilities.split('|')
+        return [FacilityType[item] for item in facility_items if item]
+
+    @facilities.setter
+    def facilities(self, items: list[FacilityType]) -> None:
+        if not len(items):
+            self._facilities = ''
+            return
+        self._facilities = '|'.join([item.name for item in items])
+
+    @hybrid_property
+    def parking_spaces(self) -> list[ParkingSpace]:
+        if not self._parking_spaces:
+            return []
+        data = json.loads(self._parking_spaces)
+        return self.parking_spaces_list_validator.validate(data)
+
+    @parking_spaces.setter
+    def parking_spaces(self, items: list[ParkingSpace]) -> None:
+        self._parking_spaces = json.dumps([item.to_dict() for item in items], cls=DefaultJSONEncoder)
+
     def to_dict(self, *args, strict: bool = False, ignore: list[str] | None = None, **kwargs) -> dict:
         ignore = ignore or []
 
@@ -301,6 +341,7 @@ class Location(BaseModel):
             'max_power_unit',
             'max_power_value',
             'official_region_code',
+            'parking_spaces',
         ]
 
         result = super().to_dict(ignore=ignore, **kwargs)

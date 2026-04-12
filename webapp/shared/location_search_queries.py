@@ -34,8 +34,8 @@ from validataclass_search_queries.filters import (
     SearchParamContains,
     SearchParamCustom,
     SearchParamEquals,
-    SearchParamGreaterThan,
     SearchParamMultiSelect,
+    SearchParamSince,
 )
 from validataclass_search_queries.pagination import OffsetPaginationMixin, PaginationLimitValidator
 from validataclass_search_queries.search_queries import BaseSearchQuery, search_query_dataclass
@@ -46,7 +46,19 @@ from webapp.common.validation import SearchParamNotInList, SearchParamUnequal
 
 
 @search_query_dataclass
-class LocationSearchQuery(SortingMixin, OffsetPaginationMixin, BaseSearchQuery):
+class LocationSearchQuery(BaseSearchQuery):
+    evse_status_last_updated_since: datetime | None = (
+        SearchParamSince(),
+        DateTimeValidator(
+            DateTimeFormat.LOCAL_OR_UTC,
+            local_timezone=timezone.utc,
+            target_timezone=timezone.utc,
+        ),
+    )
+
+
+@search_query_dataclass
+class LocationApiSearchQuery(SortingMixin, OffsetPaginationMixin, BaseSearchQuery):
     # Set allowed sorting keys and default sorting key
     sorted_by: str = AnyOfValidator(['id', 'name', 'created', 'modified']), Default('id')
 
@@ -80,7 +92,7 @@ class LocationSearchQuery(SortingMixin, OffsetPaginationMixin, BaseSearchQuery):
     lon_max: Decimal | None = SearchParamCustom(), NumericValidator()
 
     last_updated_since: datetime | None = (
-        SearchParamGreaterThan(),
+        SearchParamSince(),
         DateTimeValidator(
             DateTimeFormat.LOCAL_OR_UTC,
             local_timezone=timezone.utc,

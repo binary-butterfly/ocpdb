@@ -29,12 +29,12 @@ from flask_openapi.decorator import (
 from flask_openapi.schema import AnyOfField, DateTimeField, IntegerField, NumericField, StringField
 from validataclass.validators import DataclassValidator
 
-from webapp.common.dataclass import filter_unset_value
+from webapp.common.dataclass import filter_none_recursive, filter_unset_value, recursive_to_dict
 from webapp.common.rest import BaseMethodView
 from webapp.dependencies import dependencies
 from webapp.public_api.base_blueprint import BaseBlueprint
-from webapp.shared.datex2.v3_7_json_static.schema import all_datex2_v37_static_components
-from webapp.shared.location_search_queries import LocationSearchQuery
+from webapp.shared.datex2.v3_7.schema_static import all_datex2_v37_static_components
+from webapp.shared.location_search_queries import LocationApiSearchQuery
 
 from .datex2_handler import Datex2V37JSONHandler
 
@@ -119,7 +119,7 @@ class Datex2V37JSONBlueprint(BaseBlueprint):
 
 class Datex2V37JSONStaticMethodView(BaseMethodView):
     datex2_handler: Datex2V37JSONHandler
-    search_query_validator = DataclassValidator(LocationSearchQuery)
+    search_query_validator = DataclassValidator(LocationApiSearchQuery)
 
     def __init__(self, *args, datex2_handler: Datex2V37JSONHandler, **kwargs):
         super().__init__(*args, **kwargs)
@@ -143,4 +143,4 @@ class Datex2V37JSONStaticMethodView(BaseMethodView):
         search_query = self.validate_query_args(self.search_query_validator)
         result = self.datex2_handler.get_datex2_payload(search_query)
 
-        return jsonify(filter_unset_value(result.to_dict()))
+        return jsonify(filter_none_recursive(filter_unset_value(recursive_to_dict(result))))

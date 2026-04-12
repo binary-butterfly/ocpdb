@@ -35,7 +35,13 @@ from flask_openapi.schema import (
 from webapp.models.enums import ChargingRateUnit
 from webapp.models.evse import EvseStatus
 from webapp.models.image import ImageCategory
-from webapp.models.location import EnergySourceCategory, EnvironmentalImpactCategory, Facility, ParkingType, TokenType
+from webapp.models.location import (
+    EnergySourceCategory,
+    EnvironmentalImpactCategory,
+    FacilityType,
+    ParkingType,
+    TokenType,
+)
 
 additional_geo_location_schema = JsonSchema(
     title='AdditionalGeoLocation',
@@ -406,9 +412,18 @@ location_schema = JsonSchema(
         ),
         'owner': Reference(obj='BusinessDetails', required=False, description='Information of the owner if available.'),
         'facilities': ArrayField(
-            items=EnumField(enum=Facility),
+            items=EnumField(enum=FacilityType),
             required=False,
             description='Optional list of facilities this charging location directly belongs to.',
+        ),
+        'facility_description': StringField(
+            maxLength=1000,
+            required=False,
+            description='Human-readable description of facilities available at this location.',
+        ),
+        'has_in_person_support': BooleanField(
+            required=False,
+            description='Whether in-person support is available at this location.',
         ),
         'time_zone': StringField(
             maxLength=255,

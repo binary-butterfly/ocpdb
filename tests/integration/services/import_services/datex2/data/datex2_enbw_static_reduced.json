@@ -108,7 +108,7 @@
                       ],
                       "heightCharacteristic": [],
                       "comVehicleCharacteristicsExtensionG": {
-                        "vehicleCharacteristicsExtended": {
+                        "VehicleCharacteristicsExtended": {
                           "euVehicleCategory": [
                             {
                               "value": "m1"
@@ -145,7 +145,7 @@
                       ],
                       "heightCharacteristic": [],
                       "comVehicleCharacteristicsExtensionG": {
-                        "vehicleCharacteristicsExtended": {
+                        "VehicleCharacteristicsExtended": {
                           "euVehicleCategory": [
                             {
                               "value": "m1"
@@ -182,7 +182,7 @@
                       ],
                       "heightCharacteristic": [],
                       "comVehicleCharacteristicsExtensionG": {
-                        "vehicleCharacteristicsExtended": {
+                        "VehicleCharacteristicsExtended": {
                           "euVehicleCategory": [
                             {
                               "value": "m1"
@@ -219,7 +219,7 @@
                       ],
                       "heightCharacteristic": [],
                       "comVehicleCharacteristicsExtensionG": {
-                        "vehicleCharacteristicsExtended": {
+                        "VehicleCharacteristicsExtended": {
                           "euVehicleCategory": [
                             {
                               "value": "m1"
@@ -973,7 +973,7 @@
                       ],
                       "heightCharacteristic": [],
                       "comVehicleCharacteristicsExtensionG": {
-                        "vehicleCharacteristicsExtended": {
+                        "VehicleCharacteristicsExtended": {
                           "euVehicleCategory": [
                             {
                               "value": "m1"
@@ -1010,7 +1010,7 @@
                       ],
                       "heightCharacteristic": [],
                       "comVehicleCharacteristicsExtensionG": {
-                        "vehicleCharacteristicsExtended": {
+                        "VehicleCharacteristicsExtended": {
                           "euVehicleCategory": [
                             {
                               "value": "m1"
@@ -1047,7 +1047,7 @@
                       ],
                       "heightCharacteristic": [],
                       "comVehicleCharacteristicsExtensionG": {
-                        "vehicleCharacteristicsExtended": {
+                        "VehicleCharacteristicsExtended": {
                           "euVehicleCategory": [
                             {
                               "value": "m1"
@@ -1084,7 +1084,7 @@
                       ],
                       "heightCharacteristic": [],
                       "comVehicleCharacteristicsExtensionG": {
-                        "vehicleCharacteristicsExtended": {
+                        "VehicleCharacteristicsExtended": {
                           "euVehicleCategory": [
                             {
                               "value": "m1"
@@ -1121,7 +1121,7 @@
                       ],
                       "heightCharacteristic": [],
                       "comVehicleCharacteristicsExtensionG": {
-                        "vehicleCharacteristicsExtended": {
+                        "VehicleCharacteristicsExtended": {
                           "euVehicleCategory": [
                             {
                               "value": "m1"
@@ -1951,7 +1951,7 @@
                       ],
                       "heightCharacteristic": [],
                       "comVehicleCharacteristicsExtensionG": {
-                        "vehicleCharacteristicsExtended": {
+                        "VehicleCharacteristicsExtended": {
                           "euVehicleCategory": [
                             {
                               "value": "m1"
@@ -1988,7 +1988,7 @@
                       ],
                       "heightCharacteristic": [],
                       "comVehicleCharacteristicsExtensionG": {
-                        "vehicleCharacteristicsExtended": {
+                        "VehicleCharacteristicsExtended": {
                           "euVehicleCategory": [
                             {
                               "value": "m1"
@@ -2025,7 +2025,7 @@
                       ],
                       "heightCharacteristic": [],
                       "comVehicleCharacteristicsExtensionG": {
-                        "vehicleCharacteristicsExtended": {
+                        "VehicleCharacteristicsExtended": {
                           "euVehicleCategory": [
                             {
                               "value": "m1"
@@ -2062,7 +2062,7 @@
                       ],
                       "heightCharacteristic": [],
                       "comVehicleCharacteristicsExtensionG": {
-                        "vehicleCharacteristicsExtended": {
+                        "VehicleCharacteristicsExtended": {
                           "euVehicleCategory": [
                             {
                               "value": "m1"
@@ -2816,7 +2816,7 @@
                       ],
                       "heightCharacteristic": [],
                       "comVehicleCharacteristicsExtensionG": {
-                        "vehicleCharacteristicsExtended": {
+                        "VehicleCharacteristicsExtended": {
                           "euVehicleCategory": [
                             {
                               "value": "m1"
@@ -2853,7 +2853,7 @@
                       ],
                       "heightCharacteristic": [],
                       "comVehicleCharacteristicsExtensionG": {
-                        "vehicleCharacteristicsExtended": {
+                        "VehicleCharacteristicsExtended": {
                           "euVehicleCategory": [
                             {
                               "value": "m1"
@@ -2890,7 +2890,7 @@
                       ],
                       "heightCharacteristic": [],
                       "comVehicleCharacteristicsExtensionG": {
-                        "vehicleCharacteristicsExtended": {
+                        "VehicleCharacteristicsExtended": {
                           "euVehicleCategory": [
                             {
                               "value": "m1"
@@ -2927,7 +2927,7 @@
                       ],
                       "heightCharacteristic": [],
                       "comVehicleCharacteristicsExtensionG": {
-                        "vehicleCharacteristicsExtended": {
+                        "VehicleCharacteristicsExtended": {
                           "euVehicleCategory": [
                             {
                               "value": "m1"
@@ -2964,7 +2964,7 @@
                       ],
                       "heightCharacteristic": [],
                       "comVehicleCharacteristicsExtensionG": {
-                        "vehicleCharacteristicsExtended": {
+                        "VehicleCharacteristicsExtended": {
                           "euVehicleCategory": [
                             {
                               "value": "m1"
@@ -3001,7 +3001,7 @@
                       ],
                       "heightCharacteristic": [],
                       "comVehicleCharacteristicsExtensionG": {
-                        "vehicleCharacteristicsExtended": {
+                        "VehicleCharacteristicsExtended": {
                           "euVehicleCategory": [
                             {
                               "value": "m1"
@@ -3038,7 +3038,7 @@
                       ],
                       "heightCharacteristic": [],
                       "comVehicleCharacteristicsExtensionG": {
-                        "vehicleCharacteristicsExtended": {
+                        "VehicleCharacteristicsExtended": {
                           "euVehicleCategory": [
                             {
                               "value": "m1"
@@ -3075,7 +3075,7 @@
                       ],
                       "heightCharacteristic": [],
                       "comVehicleCharacteristicsExtensionG": {
-                        "vehicleCharacteristicsExtended": {
+                        "VehicleCharacteristicsExtended": {
                           "euVehicleCategory": [
                             {
                               "value": "m1"
@@ -4409,7 +4409,7 @@
                       ],
                       "heightCharacteristic": [],
                       "comVehicleCharacteristicsExtensionG": {
-                        "vehicleCharacteristicsExtended": {
+                        "VehicleCharacteristicsExtended": {
                           "euVehicleCategory": [
                             {
                               "value": "m1"
@@ -4446,7 +4446,7 @@
                       ],
                       "heightCharacteristic": [],
                       "comVehicleCharacteristicsExtensionG": {
-                        "vehicleCharacteristicsExtended": {
+                        "VehicleCharacteristicsExtended": {
                           "euVehicleCategory": [
                             {
                               "value": "m1"
@@ -4483,7 +4483,7 @@
                       ],
                       "heightCharacteristic": [],
                       "comVehicleCharacteristicsExtensionG": {
-                        "vehicleCharacteristicsExtended": {
+                        "VehicleCharacteristicsExtended": {
                           "euVehicleCategory": [
                             {
                               "value": "m1"
@@ -4520,7 +4520,7 @@
                       ],
                       "heightCharacteristic": [],
                       "comVehicleCharacteristicsExtensionG": {
-                        "vehicleCharacteristicsExtended": {
+                        "VehicleCharacteristicsExtended": {
                           "euVehicleCategory": [
                             {
                               "value": "m1"
@@ -5391,7 +5391,7 @@
                       ],
                       "heightCharacteristic": [],
                       "comVehicleCharacteristicsExtensionG": {
-                        "vehicleCharacteristicsExtended": {
+                        "VehicleCharacteristicsExtended": {
                           "euVehicleCategory": [
                             {
                               "value": "m1"
@@ -5428,7 +5428,7 @@
                       ],
                       "heightCharacteristic": [],
                       "comVehicleCharacteristicsExtensionG": {
-                        "vehicleCharacteristicsExtended": {
+                        "VehicleCharacteristicsExtended": {
                           "euVehicleCategory": [
                             {
                               "value": "m1"
@@ -5465,7 +5465,7 @@
                       ],
                       "heightCharacteristic": [],
                       "comVehicleCharacteristicsExtensionG": {
-                        "vehicleCharacteristicsExtended": {
+                        "VehicleCharacteristicsExtended": {
                           "euVehicleCategory": [
                             {
                               "value": "m1"
@@ -5502,7 +5502,7 @@
                       ],
                       "heightCharacteristic": [],
                       "comVehicleCharacteristicsExtensionG": {
-                        "vehicleCharacteristicsExtended": {
+                        "VehicleCharacteristicsExtended": {
                           "euVehicleCategory": [
                             {
                               "value": "m1"
@@ -5539,7 +5539,7 @@
                       ],
                       "heightCharacteristic": [],
                       "comVehicleCharacteristicsExtensionG": {
-                        "vehicleCharacteristicsExtended": {
+                        "VehicleCharacteristicsExtended": {
                           "euVehicleCategory": [
                             {
                               "value": "m1"
@@ -6615,7 +6615,7 @@
                       ],
                       "heightCharacteristic": [],
                       "comVehicleCharacteristicsExtensionG": {
-                        "vehicleCharacteristicsExtended": {
+                        "VehicleCharacteristicsExtended": {
                           "euVehicleCategory": [
                             {
                               "value": "m1"
@@ -6652,7 +6652,7 @@
                       ],
                       "heightCharacteristic": [],
                       "comVehicleCharacteristicsExtensionG": {
-                        "vehicleCharacteristicsExtended": {
+                        "VehicleCharacteristicsExtended": {
                           "euVehicleCategory": [
                             {
                               "value": "m1"
@@ -6689,7 +6689,7 @@
                       ],
                       "heightCharacteristic": [],
                       "comVehicleCharacteristicsExtensionG": {
-                        "vehicleCharacteristicsExtended": {
+                        "VehicleCharacteristicsExtended": {
                           "euVehicleCategory": [
                             {
                               "value": "m1"
@@ -6726,7 +6726,7 @@
                       ],
                       "heightCharacteristic": [],
                       "comVehicleCharacteristicsExtensionG": {
-                        "vehicleCharacteristicsExtended": {
+                        "VehicleCharacteristicsExtended": {
                           "euVehicleCategory": [
                             {
                               "value": "m1"
@@ -6763,7 +6763,7 @@
                       ],
                       "heightCharacteristic": [],
                       "comVehicleCharacteristicsExtensionG": {
-                        "vehicleCharacteristicsExtended": {
+                        "VehicleCharacteristicsExtended": {
                           "euVehicleCategory": [
                             {
                               "value": "m1"
@@ -7593,7 +7593,7 @@
                       ],
                       "heightCharacteristic": [],
                       "comVehicleCharacteristicsExtensionG": {
-                        "vehicleCharacteristicsExtended": {
+                        "VehicleCharacteristicsExtended": {
                           "euVehicleCategory": [
                             {
                               "value": "m1"
@@ -7630,7 +7630,7 @@
                       ],
                       "heightCharacteristic": [],
                       "comVehicleCharacteristicsExtensionG": {
-                        "vehicleCharacteristicsExtended": {
+                        "VehicleCharacteristicsExtended": {
                           "euVehicleCategory": [
                             {
                               "value": "m1"
@@ -7667,7 +7667,7 @@
                       ],
                       "heightCharacteristic": [],
                       "comVehicleCharacteristicsExtensionG": {
-                        "vehicleCharacteristicsExtended": {
+                        "VehicleCharacteristicsExtended": {
                           "euVehicleCategory": [
                             {
                               "value": "m1"
@@ -7704,7 +7704,7 @@
                       ],
                       "heightCharacteristic": [],
                       "comVehicleCharacteristicsExtensionG": {
-                        "vehicleCharacteristicsExtended": {
+                        "VehicleCharacteristicsExtended": {
                           "euVehicleCategory": [
                             {
                               "value": "m1"
@@ -7741,7 +7741,7 @@
                       ],
                       "heightCharacteristic": [],
                       "comVehicleCharacteristicsExtensionG": {
-                        "vehicleCharacteristicsExtended": {
+                        "VehicleCharacteristicsExtended": {
                           "euVehicleCategory": [
                             {
                               "value": "m1"
@@ -7778,7 +7778,7 @@
                       ],
                       "heightCharacteristic": [],
                       "comVehicleCharacteristicsExtensionG": {
-                        "vehicleCharacteristicsExtended": {
+                        "VehicleCharacteristicsExtended": {
                           "euVehicleCategory": [
                             {
                               "value": "m1"
@@ -7815,7 +7815,7 @@
                       ],
                       "heightCharacteristic": [],
                       "comVehicleCharacteristicsExtensionG": {
-                        "vehicleCharacteristicsExtended": {
+                        "VehicleCharacteristicsExtended": {
                           "euVehicleCategory": [
                             {
                               "value": "m1"
@@ -7852,7 +7852,7 @@
                       ],
                       "heightCharacteristic": [],
                       "comVehicleCharacteristicsExtensionG": {
-                        "vehicleCharacteristicsExtended": {
+                        "VehicleCharacteristicsExtended": {
                           "euVehicleCategory": [
                             {
                               "value": "m1"
@@ -9192,7 +9192,7 @@
                       ],
                       "heightCharacteristic": [],
                       "comVehicleCharacteristicsExtensionG": {
-                        "vehicleCharacteristicsExtended": {
+                        "VehicleCharacteristicsExtended": {
                           "euVehicleCategory": [
                             {
                               "value": "m1"
@@ -9229,7 +9229,7 @@
                       ],
                       "heightCharacteristic": [],
                       "comVehicleCharacteristicsExtensionG": {
-                        "vehicleCharacteristicsExtended": {
+                        "VehicleCharacteristicsExtended": {
                           "euVehicleCategory": [
                             {
                               "value": "m1"
@@ -9266,7 +9266,7 @@
                       ],
                       "heightCharacteristic": [],
                       "comVehicleCharacteristicsExtensionG": {
-                        "vehicleCharacteristicsExtended": {
+                        "VehicleCharacteristicsExtended": {
                           "euVehicleCategory": [
                             {
                               "value": "m1"
@@ -9303,7 +9303,7 @@
                       ],
                       "heightCharacteristic": [],
                       "comVehicleCharacteristicsExtensionG": {
-                        "vehicleCharacteristicsExtended": {
+                        "VehicleCharacteristicsExtended": {
                           "euVehicleCategory": [
                             {
                               "value": "m1"
@@ -9340,7 +9340,7 @@
                       ],
                       "heightCharacteristic": [],
                       "comVehicleCharacteristicsExtensionG": {
-                        "vehicleCharacteristicsExtended": {
+                        "VehicleCharacteristicsExtended": {
                           "euVehicleCategory": [
                             {
                               "value": "m1"
@@ -9377,7 +9377,7 @@
                       ],
                       "heightCharacteristic": [],
                       "comVehicleCharacteristicsExtensionG": {
-                        "vehicleCharacteristicsExtended": {
+                        "VehicleCharacteristicsExtended": {
                           "euVehicleCategory": [
                             {
                               "value": "m1"
@@ -9414,7 +9414,7 @@
                       ],
                       "heightCharacteristic": [],
                       "comVehicleCharacteristicsExtensionG": {
-                        "vehicleCharacteristicsExtended": {
+                        "VehicleCharacteristicsExtended": {
                           "euVehicleCategory": [
                             {
                               "value": "m1"
@@ -9451,7 +9451,7 @@
                       ],
                       "heightCharacteristic": [],
                       "comVehicleCharacteristicsExtensionG": {
-                        "vehicleCharacteristicsExtended": {
+                        "VehicleCharacteristicsExtended": {
                           "euVehicleCategory": [
                             {
                               "value": "m1"
@@ -9488,7 +9488,7 @@
                       ],
                       "heightCharacteristic": [],
                       "comVehicleCharacteristicsExtensionG": {
-                        "vehicleCharacteristicsExtended": {
+                        "VehicleCharacteristicsExtended": {
                           "euVehicleCategory": [
                             {
                               "value": "m1"
@@ -9525,7 +9525,7 @@
                       ],
                       "heightCharacteristic": [],
                       "comVehicleCharacteristicsExtensionG": {
-                        "vehicleCharacteristicsExtended": {
+                        "VehicleCharacteristicsExtended": {
                           "euVehicleCategory": [
                             {
                               "value": "m1"
@@ -11128,7 +11128,7 @@
                       ],
                       "heightCharacteristic": [],
                       "comVehicleCharacteristicsExtensionG": {
-                        "vehicleCharacteristicsExtended": {
+                        "VehicleCharacteristicsExtended": {
                           "euVehicleCategory": [
                             {
                               "value": "m1"
@@ -11165,7 +11165,7 @@
                       ],
                       "heightCharacteristic": [],
                       "comVehicleCharacteristicsExtensionG": {
-                        "vehicleCharacteristicsExtended": {
+                        "VehicleCharacteristicsExtended": {
                           "euVehicleCategory": [
                             {
                               "value": "m1"
@@ -11202,7 +11202,7 @@
                       ],
                       "heightCharacteristic": [],
                       "comVehicleCharacteristicsExtensionG": {
-                        "vehicleCharacteristicsExtended": {
+                        "VehicleCharacteristicsExtended": {
                           "euVehicleCategory": [
                             {
                               "value": "m1"
@@ -11239,7 +11239,7 @@
                       ],
                       "heightCharacteristic": [],
                       "comVehicleCharacteristicsExtensionG": {
-                        "vehicleCharacteristicsExtended": {
+                        "VehicleCharacteristicsExtended": {
                           "euVehicleCategory": [
                             {
                               "value": "m1"

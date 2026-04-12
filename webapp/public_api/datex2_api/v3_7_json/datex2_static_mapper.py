@@ -23,79 +23,71 @@ from pycountry import countries
 
 from webapp.models.business import Business
 from webapp.models.charging_station import Capability, ChargingStation
-from webapp.models.connector import Connector, ConnectorFormat, ConnectorType
+from webapp.models.connector import Connector, ConnectorFormat, ConnectorType, PowerType
 from webapp.models.evse import Evse
 from webapp.models.location import Location
-from webapp.shared.datex2.v3_7_json_static.models.address_input import AddressInput
-from webapp.shared.datex2.v3_7_json_static.models.address_line_input import AddressLineInput
-from webapp.shared.datex2.v3_7_json_static.models.address_line_type_enum import AddressLineTypeEnum
-from webapp.shared.datex2.v3_7_json_static.models.address_line_type_enum_g_input import AddressLineTypeEnumGInput
-from webapp.shared.datex2.v3_7_json_static.models.authentication_and_identification_enum import (
+from webapp.shared.datex2.v3_7.shared.address_line_output import AddressLineOutput
+from webapp.shared.datex2.v3_7.shared.address_line_type_enum import AddressLineTypeEnum
+from webapp.shared.datex2.v3_7.shared.address_line_type_enum_g_output import AddressLineTypeEnumGOutput
+from webapp.shared.datex2.v3_7.shared.address_output import AddressOutput
+from webapp.shared.datex2.v3_7.shared.afir_facility_location_output import AfirFacilityLocationOutput
+from webapp.shared.datex2.v3_7.shared.international_identifier_output import InternationalIdentifierOutput
+from webapp.shared.datex2.v3_7.shared.location_extension_type_g_output import LocationExtensionTypeGOutput
+from webapp.shared.datex2.v3_7.shared.location_reference_g_output import LocationReferenceGOutput
+from webapp.shared.datex2.v3_7.shared.multi_lingual_string_value_output import MultiLingualStringValueOutput
+from webapp.shared.datex2.v3_7.shared.multilingual_string_output import MultilingualStringOutput
+from webapp.shared.datex2.v3_7.shared.open_all_hours_output import OpenAllHoursOutput
+from webapp.shared.datex2.v3_7.shared.operating_hours_g_output import OperatingHoursGOutput
+from webapp.shared.datex2.v3_7.shared.point_by_coordinates_output import PointByCoordinatesOutput
+from webapp.shared.datex2.v3_7.shared.point_coordinates_output import PointCoordinatesOutput
+from webapp.shared.datex2.v3_7.shared.point_location_output import PointLocationOutput
+from webapp.shared.datex2.v3_7.static.authentication_and_identification_enum import (
     AuthenticationAndIdentificationEnum,
 )
-from webapp.shared.datex2.v3_7_json_static.models.authentication_and_identification_enum_g_input import (
-    AuthenticationAndIdentificationEnumGInput,
+from webapp.shared.datex2.v3_7.static.authentication_and_identification_enum_g_output import (
+    AuthenticationAndIdentificationEnumGOutput,
 )
-from webapp.shared.datex2.v3_7_json_static.models.connector_format_type_enum import ConnectorFormatTypeEnum
-from webapp.shared.datex2.v3_7_json_static.models.connector_format_type_enum_g_input import (
-    ConnectorFormatTypeEnumGInput,
+from webapp.shared.datex2.v3_7.static.connector_format_type_enum import ConnectorFormatTypeEnum
+from webapp.shared.datex2.v3_7.static.connector_format_type_enum_g_output import ConnectorFormatTypeEnumGOutput
+from webapp.shared.datex2.v3_7.static.connector_output import ConnectorOutput
+from webapp.shared.datex2.v3_7.static.connector_type_enum import ConnectorTypeEnum
+from webapp.shared.datex2.v3_7.static.connector_type_enum_g_output import ConnectorTypeEnumGOutput
+from webapp.shared.datex2.v3_7.static.current_type_enum import CurrentTypeEnum
+from webapp.shared.datex2.v3_7.static.current_type_enum_g_output import CurrentTypeEnumGOutput
+from webapp.shared.datex2.v3_7.static.d_a_t_e_x_i_i3_d2_payload_output import DATEXII3D2PayloadOutput
+from webapp.shared.datex2.v3_7.static.delivery_unit_enum import DeliveryUnitEnum
+from webapp.shared.datex2.v3_7.static.delivery_unit_enum_g_output import DeliveryUnitEnumGOutput
+from webapp.shared.datex2.v3_7.static.electric_charging_point_output import ElectricChargingPointOutput
+from webapp.shared.datex2.v3_7.static.electric_energy_output import ElectricEnergyOutput
+from webapp.shared.datex2.v3_7.static.energy_infrastructure_site_output import EnergyInfrastructureSiteOutput
+from webapp.shared.datex2.v3_7.static.energy_infrastructure_station_output import EnergyInfrastructureStationOutput
+from webapp.shared.datex2.v3_7.static.energy_infrastructure_table_output import EnergyInfrastructureTableOutput
+from webapp.shared.datex2.v3_7.static.energy_infrastructure_table_publication_output import (
+    EnergyInfrastructureTablePublicationOutput,
 )
-from webapp.shared.datex2.v3_7_json_static.models.connector_input import (
-    ConnectorInput,
-)
-from webapp.shared.datex2.v3_7_json_static.models.connector_input import (
-    ConnectorInput as DatexConnectorInput,
-)
-from webapp.shared.datex2.v3_7_json_static.models.connector_type_enum import ConnectorTypeEnum
-from webapp.shared.datex2.v3_7_json_static.models.connector_type_enum_g_input import ConnectorTypeEnumGInput
-from webapp.shared.datex2.v3_7_json_static.models.d_a_t_e_x_i_i3_d2_payload_input import DATEXII3D2PayloadInput
-from webapp.shared.datex2.v3_7_json_static.models.electric_charging_point_input import ElectricChargingPointInput
-from webapp.shared.datex2.v3_7_json_static.models.electric_energy_mix_input import ElectricEnergyMixInput
-from webapp.shared.datex2.v3_7_json_static.models.energy_infrastructure_site_input import EnergyInfrastructureSiteInput
-from webapp.shared.datex2.v3_7_json_static.models.energy_infrastructure_station_input import (
-    EnergyInfrastructureStationInput,
-)
-from webapp.shared.datex2.v3_7_json_static.models.energy_infrastructure_table_input import (
-    EnergyInfrastructureTableInput,
-)
-from webapp.shared.datex2.v3_7_json_static.models.energy_infrastructure_table_publication_input import (
-    EnergyInfrastructureTablePublicationInput,
-)
-from webapp.shared.datex2.v3_7_json_static.models.facility_location_input import FacilityLocationInput
-from webapp.shared.datex2.v3_7_json_static.models.international_identifier_input import InternationalIdentifierInput
-from webapp.shared.datex2.v3_7_json_static.models.location_reference_extension_type_g_input import (
-    LocationReferenceExtensionTypeGInput,
-)
-from webapp.shared.datex2.v3_7_json_static.models.location_reference_g_input import LocationReferenceGInput
-from webapp.shared.datex2.v3_7_json_static.models.multi_lingual_string_value_input import MultiLingualStringValueInput
-from webapp.shared.datex2.v3_7_json_static.models.multilingual_string_input import MultilingualStringInput
-from webapp.shared.datex2.v3_7_json_static.models.open_all_hours_input import OpenAllHoursInput
-from webapp.shared.datex2.v3_7_json_static.models.operating_hours_g_input import OperatingHoursGInput
-from webapp.shared.datex2.v3_7_json_static.models.organisation_g_input import OrganisationGInput
-from webapp.shared.datex2.v3_7_json_static.models.organisation_specification_input import OrganisationSpecificationInput
-from webapp.shared.datex2.v3_7_json_static.models.organisation_unit_input import OrganisationUnitInput
-from webapp.shared.datex2.v3_7_json_static.models.payload_publication_g_input import PayloadPublicationGInput
-from webapp.shared.datex2.v3_7_json_static.models.point_by_coordinates_input import PointByCoordinatesInput
-from webapp.shared.datex2.v3_7_json_static.models.point_coordinates_input import PointCoordinatesInput
-from webapp.shared.datex2.v3_7_json_static.models.point_location_input import PointLocationInput
-from webapp.shared.datex2.v3_7_json_static.models.refill_point_g_input import RefillPointGInput
+from webapp.shared.datex2.v3_7.static.energy_product_g_output import EnergyProductGOutput
+from webapp.shared.datex2.v3_7.static.organisation_g_output import OrganisationGOutput
+from webapp.shared.datex2.v3_7.static.organisation_unit_output import OrganisationUnitOutput
+from webapp.shared.datex2.v3_7.static.payload_publication_g_output import PayloadPublicationGOutput
+from webapp.shared.datex2.v3_7.static.referenceable_organisation_output import ReferenceableOrganisationOutput
+from webapp.shared.datex2.v3_7.static.refill_point_g_output import RefillPointGOutput
 
 
 class DatexV37JSONStaticExportMapper:
     _connector_type_map: dict[ConnectorType, ConnectorTypeEnum] = {
         ConnectorType.CHADEMO: ConnectorTypeEnum.CHADEMO,
-        ConnectorType.DOMESTIC_A: ConnectorTypeEnum.DOMESTICA,
-        ConnectorType.DOMESTIC_B: ConnectorTypeEnum.DOMESTICB,
-        ConnectorType.DOMESTIC_C: ConnectorTypeEnum.DOMESTICC,
-        ConnectorType.DOMESTIC_D: ConnectorTypeEnum.DOMESTICD,
-        ConnectorType.DOMESTIC_E: ConnectorTypeEnum.DOMESTICE,
-        ConnectorType.DOMESTIC_F: ConnectorTypeEnum.DOMESTICF,
-        ConnectorType.DOMESTIC_G: ConnectorTypeEnum.DOMESTICG,
-        ConnectorType.DOMESTIC_H: ConnectorTypeEnum.DOMESTICH,
-        ConnectorType.DOMESTIC_I: ConnectorTypeEnum.DOMESTICI,
-        ConnectorType.DOMESTIC_J: ConnectorTypeEnum.DOMESTICJ,
-        ConnectorType.DOMESTIC_K: ConnectorTypeEnum.DOMESTICK,
-        ConnectorType.DOMESTIC_L: ConnectorTypeEnum.DOMESTICL,
+        ConnectorType.DOMESTIC_A: ConnectorTypeEnum.DOMESTICATYPE,
+        ConnectorType.DOMESTIC_B: ConnectorTypeEnum.DOMESTICBTYPE,
+        ConnectorType.DOMESTIC_C: ConnectorTypeEnum.DOMESTICCTYPE,
+        ConnectorType.DOMESTIC_D: ConnectorTypeEnum.DOMESTICDTYPE,
+        ConnectorType.DOMESTIC_E: ConnectorTypeEnum.DOMESTICETYPE,
+        ConnectorType.DOMESTIC_F: ConnectorTypeEnum.DOMESTICFTYPE,
+        ConnectorType.DOMESTIC_G: ConnectorTypeEnum.DOMESTICGTYPE,
+        ConnectorType.DOMESTIC_H: ConnectorTypeEnum.DOMESTICHTYPE,
+        ConnectorType.DOMESTIC_I: ConnectorTypeEnum.DOMESTICITYPE,
+        ConnectorType.DOMESTIC_J: ConnectorTypeEnum.DOMESTICJTYPE,
+        ConnectorType.DOMESTIC_K: ConnectorTypeEnum.DOMESTICKTYPE,
+        ConnectorType.DOMESTIC_L: ConnectorTypeEnum.DOMESTICLTYPE,
         ConnectorType.IEC_60309_2_single_16: ConnectorTypeEnum.IEC60309X2SINGLE16,
         ConnectorType.IEC_60309_2_three_16: ConnectorTypeEnum.IEC60309X2THREE16,
         ConnectorType.IEC_60309_2_three_32: ConnectorTypeEnum.IEC60309X2THREE32,
@@ -124,13 +116,19 @@ class DatexV37JSONStaticExportMapper:
         Capability.CHIP_CARD_SUPPORT: AuthenticationAndIdentificationEnum.CALYPSO,
     }
 
+    _power_type_to_current_type_map: dict[PowerType, CurrentTypeEnum] = {
+        PowerType.DC: CurrentTypeEnum.DC,
+        PowerType.AC_1_PHASE: CurrentTypeEnum.AC,
+        PowerType.AC_3_PHASE: CurrentTypeEnum.AC,
+    }
+
     _connector_format_map: dict[ConnectorFormat, ConnectorFormatTypeEnum] = {
         ConnectorFormat.SOCKET: ConnectorFormatTypeEnum.SOCKET,
         ConnectorFormat.CABLE: ConnectorFormatTypeEnum.CABLEMODE3,
     }
 
-    def map_locations_to_static_payload(self, locations: list[Location]) -> DATEXII3D2PayloadInput:
-        now = datetime.now(tz=timezone.utc).isoformat()
+    def map_locations_to_static_payload(self, locations: list[Location]) -> DATEXII3D2PayloadOutput:
+        now = datetime.now(tz=timezone.utc)
 
         sites = []
         for location in locations:
@@ -138,20 +136,20 @@ class DatexV37JSONStaticExportMapper:
             if site is not None:
                 sites.append(site)
 
-        payload = PayloadPublicationGInput(
+        payload = PayloadPublicationGOutput(
             modelBaseVersionG='3',
             versionG='3.7',
             profileNameG='Afir Energy Infrastructure',
             profileVersionG='01-00-00',
-            egiEnergyInfrastructureTablePublication=EnergyInfrastructureTablePublicationInput(
+            aegiEnergyInfrastructureTablePublication=EnergyInfrastructureTablePublicationOutput(
                 lang='de',
                 publicationTime=now,
-                publicationCreator=InternationalIdentifierInput(
+                publicationCreator=InternationalIdentifierOutput(
                     country='DE',
                     nationalIdentifier='OCPDB',
                 ),
                 energyInfrastructureTable=[
-                    EnergyInfrastructureTableInput(
+                    EnergyInfrastructureTableOutput(
                         idG='1',
                         versionG='1',
                         energyInfrastructureSite=sites,
@@ -159,9 +157,9 @@ class DatexV37JSONStaticExportMapper:
                 ],
             ),
         )
-        return DATEXII3D2PayloadInput(payload=payload)
+        return DATEXII3D2PayloadOutput(payload=payload)
 
-    def _map_location_to_site(self, location: Location) -> EnergyInfrastructureSiteInput | None:
+    def _map_location_to_site(self, location: Location) -> EnergyInfrastructureSiteOutput | None:
         if location.lat is None or location.lon is None:
             return None
 
@@ -174,7 +172,7 @@ class DatexV37JSONStaticExportMapper:
             station = self._map_charging_station_to_station(charging_station, location)
             stations.append(station)
 
-        site = EnergyInfrastructureSiteInput(
+        site = EnergyInfrastructureSiteOutput(
             idG=location.uid,
             versionG=version_g,
             locationReference=location_reference,
@@ -185,7 +183,7 @@ class DatexV37JSONStaticExportMapper:
             site.name = self._build_multilingual_string(location.name)
 
         if location.twentyfourseven:
-            site.operatingHours = OperatingHoursGInput(facOpenAllHours=OpenAllHoursInput())
+            site.operatingHours = OperatingHoursGOutput(afacOpenAllHours=OpenAllHoursOutput())
 
         if location.operator:
             site.operator = self._build_operator(location.operator)
@@ -196,7 +194,7 @@ class DatexV37JSONStaticExportMapper:
         self,
         charging_station: ChargingStation,
         location: Location,
-    ) -> EnergyInfrastructureStationInput:
+    ) -> EnergyInfrastructureStationOutput:
         version_g = charging_station.last_updated.isoformat()
 
         refill_points = []
@@ -204,7 +202,7 @@ class DatexV37JSONStaticExportMapper:
             refill_point = self._map_evse_to_refill_point(evse, location)
             refill_points.append(refill_point)
 
-        station = EnergyInfrastructureStationInput(
+        station = EnergyInfrastructureStationOutput(
             idG=charging_station.uid,
             versionG=version_g,
             refillPoint=refill_points,
@@ -221,24 +219,32 @@ class DatexV37JSONStaticExportMapper:
 
         return station
 
-    def _map_evse_to_refill_point(self, evse: Evse, location: Location) -> RefillPointGInput:
+    def _map_evse_to_refill_point(self, evse: Evse, location: Location) -> RefillPointGOutput:
         version_g = evse.last_updated.isoformat()
 
-        datex_connectors: list[ConnectorInput] = []
-        voltages: list[int] = []
-        powers: list[int] = []
+        current_type = CurrentTypeEnum.AC
+        if evse.connectors:
+            first_connector = evse.connectors[0]
+            if first_connector.power_type:
+                current_type = self._power_type_to_current_type_map.get(first_connector.power_type, CurrentTypeEnum.AC)
+
+        datex_connectors: list[ConnectorOutput] = []
+        voltages: list[float] = []
+        powers: list[float] = []
         for connector in evse.connectors:
             datex_connector = self._map_connector(connector)
             if datex_connector is not None:
                 datex_connectors.append(datex_connector)
             if connector.max_voltage:
-                voltages.append(connector.max_voltage)
+                voltages.append(float(connector.max_voltage))
             if connector.max_electric_power:
-                powers.append(connector.max_electric_power)
+                powers.append(float(connector.max_electric_power))
 
-        charging_point = ElectricChargingPointInput(
+        charging_point = ElectricChargingPointOutput(
             idG=evse.uid,
             versionG=version_g,
+            deliveryUnit=DeliveryUnitEnumGOutput(value=DeliveryUnitEnum.KWH),
+            currentType=CurrentTypeEnumGOutput(value=current_type),
             connector=datex_connectors,
         )
 
@@ -249,16 +255,17 @@ class DatexV37JSONStaticExportMapper:
             charging_point.availableChargingPower = powers
 
         if location.energy_mix and location.energy_mix.get('is_green_energy') is not None:
-            charging_point.electricEnergyMix = [
-                ElectricEnergyMixInput(
-                    energyMixIndex=0,
-                    isGreenEnergy=location.energy_mix['is_green_energy'],
+            charging_point.energyProduct = [
+                EnergyProductGOutput(
+                    aegiElectricEnergy=ElectricEnergyOutput(
+                        isGreenEnergy=location.energy_mix['is_green_energy'],
+                    ),
                 ),
             ]
 
-        return RefillPointGInput(egiElectricChargingPoint=charging_point)
+        return RefillPointGOutput(aegiElectricChargingPoint=charging_point)
 
-    def _map_connector(self, connector: Connector) -> DatexConnectorInput | None:
+    def _map_connector(self, connector: Connector) -> ConnectorOutput | None:
         if connector.standard is None:
             return None
 
@@ -268,54 +275,54 @@ class DatexV37JSONStaticExportMapper:
 
         max_power_kw = float(connector.max_electric_power) if connector.max_electric_power else 0.0
 
-        datex_connector = DatexConnectorInput(
-            connectorType=ConnectorTypeEnumGInput(value=connector_type_enum),
+        datex_connector = ConnectorOutput(
+            connectorType=ConnectorTypeEnumGOutput(value=connector_type_enum),
             maxPowerAtSocket=max_power_kw,
         )
 
         if connector.max_voltage:
-            datex_connector.voltage = connector.max_voltage
+            datex_connector.voltage = float(connector.max_voltage)
 
         if connector.max_amperage:
-            datex_connector.maximumCurrent = connector.max_amperage
+            datex_connector.maximumCurrent = float(connector.max_amperage)
 
         if connector.format:
             format_enum = self._connector_format_map.get(connector.format)
             if format_enum:
-                datex_connector.connectorFormat = ConnectorFormatTypeEnumGInput(value=format_enum)
+                datex_connector.connectorFormat = ConnectorFormatTypeEnumGOutput(value=format_enum)
 
         return datex_connector
 
-    def _build_location_reference(self, location: Location) -> LocationReferenceGInput:
-        coordinates = PointCoordinatesInput(
+    def _build_location_reference(self, location: Location) -> LocationReferenceGOutput:
+        coordinates = PointCoordinatesOutput(
             latitude=float(location.lat),
             longitude=float(location.lon),
         )
 
-        point_location = PointLocationInput(
-            pointByCoordinates=PointByCoordinatesInput(pointCoordinates=coordinates),
-            locLocationReferenceExtensionG=LocationReferenceExtensionTypeGInput(
-                FacilityLocation=self._build_facility_location(location),
+        point_location = PointLocationOutput(
+            pointByCoordinates=PointByCoordinatesOutput(pointCoordinates=coordinates),
+            locLocationExtensionG=LocationExtensionTypeGOutput(
+                AfirFacilityLocation=self._build_facility_location(location),
             ),
         )
 
-        return LocationReferenceGInput(locPointLocation=point_location)
+        return LocationReferenceGOutput(locPointLocation=point_location)
 
     def _build_facility_location(
         self,
         location: Location,
         include_timezone: bool = False,
-    ) -> FacilityLocationInput:
+    ) -> AfirFacilityLocationOutput:
         address = self._build_address(location)
-        facility = FacilityLocationInput(address=address)
+        facility = AfirFacilityLocationOutput(address=address)
 
         if include_timezone and location.time_zone:
             facility.timeZone = location.time_zone
 
         return facility
 
-    def _build_address(self, location: Location) -> AddressInput:
-        address = AddressInput()
+    def _build_address(self, location: Location) -> AddressOutput:
+        address = AddressOutput()
 
         if location.postal_code:
             address.postcode = location.postal_code
@@ -336,17 +343,17 @@ class DatexV37JSONStaticExportMapper:
             address_lines = []
             if street:
                 address_lines.append(
-                    AddressLineInput(
+                    AddressLineOutput(
                         order=1,
-                        type=AddressLineTypeEnumGInput(value=AddressLineTypeEnum.STREET),
+                        type=AddressLineTypeEnumGOutput(value=AddressLineTypeEnum.STREET),
                         text=self._build_multilingual_string(street),
                     )
                 )
             if house_number:
                 address_lines.append(
-                    AddressLineInput(
+                    AddressLineOutput(
                         order=2,
-                        type=AddressLineTypeEnumGInput(value=AddressLineTypeEnum.HOUSENUMBER),
+                        type=AddressLineTypeEnumGOutput(value=AddressLineTypeEnum.HOUSENUMBER),
                         text=self._build_multilingual_string(house_number),
                     )
                 )
@@ -356,31 +363,31 @@ class DatexV37JSONStaticExportMapper:
         return address
 
     @staticmethod
-    def _build_operator(business: Business) -> OrganisationGInput:
-        org = OrganisationSpecificationInput(
+    def _build_operator(business: Business) -> OrganisationGOutput:
+        org = ReferenceableOrganisationOutput(
             idG=business.emobility_uid or f'OP-{business.id}',
             versionG='1',
             name=DatexV37JSONStaticExportMapper._build_multilingual_string(business.name),
-            organisationUnit=[OrganisationUnitInput()],
+            organisationUnit=[OrganisationUnitOutput()],
         )
 
-        return OrganisationGInput(facOrganisationSpecification=org)
+        return OrganisationGOutput(afacReferenceableOrganisation=org)
 
     def _map_capabilities_to_auth_methods(
         self,
         capabilities: list[Capability],
-    ) -> list[AuthenticationAndIdentificationEnumGInput]:
+    ) -> list[AuthenticationAndIdentificationEnumGOutput]:
         methods = []
         for capability in capabilities:
             method = self._capability_to_auth_method_map.get(capability)
             if method:
-                methods.append(AuthenticationAndIdentificationEnumGInput(value=method))
+                methods.append(AuthenticationAndIdentificationEnumGOutput(value=method))
         return methods
 
     @staticmethod
-    def _build_multilingual_string(text: str, lang: str = 'de') -> MultilingualStringInput:
-        return MultilingualStringInput(
-            values=[MultiLingualStringValueInput(lang=lang, value=text)],
+    def _build_multilingual_string(text: str, lang: str = 'de') -> MultilingualStringOutput:
+        return MultilingualStringOutput(
+            values=[MultiLingualStringValueOutput(lang=lang, value=text)],
         )
 
     @staticmethod

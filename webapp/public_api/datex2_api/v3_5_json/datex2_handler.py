@@ -24,7 +24,7 @@ from webapp.shared.datex2.v3_5_json_realtime.models.d_a_t_e_x_i_i3_d2_payload_in
 from webapp.shared.datex2.v3_5_json_static.models.d_a_t_e_x_i_i3_d2_payload_input import (
     DATEXII3D2PayloadInput as DATEXII3D2StaticPayloadInput,
 )
-from webapp.shared.location_search_queries import LocationSearchQuery
+from webapp.shared.location_search_queries import LocationApiSearchQuery
 
 from .datex2_realtime_mapper import DatexV35JSONRealtimeExportMapper
 from .datex2_static_mapper import DatexV35JSONStaticExportMapper
@@ -43,12 +43,12 @@ class Datex2V35JSONHandler(PublicApiBaseHandler):
         self.datex_static_export_mapper = DatexV35JSONStaticExportMapper()
         self.datex_realtime_export_mapper = DatexV35JSONRealtimeExportMapper()
 
-    def get_datex2_payload(self, search_query: LocationSearchQuery) -> DATEXII3D2StaticPayloadInput:
-        locations = self.location_repository.fetch_locations(search_query)
+    def get_datex2_payload(self, search_query: LocationApiSearchQuery) -> DATEXII3D2StaticPayloadInput:
+        locations = self.location_repository.fetch_locations(search_query=search_query)
 
         return self.datex_static_export_mapper.map_locations_to_static_payload(locations)
 
-    def get_datex2_realtime_payload(self, search_query: LocationSearchQuery) -> DATEXII3D2RealtimePayloadInput:
-        locations = self.location_repository.fetch_locations(search_query)
+    def get_datex2_realtime_payload(self, search_query: LocationApiSearchQuery) -> DATEXII3D2RealtimePayloadInput:
+        locations = self.location_repository.fetch_locations(search_query=search_query)
 
         return self.datex_realtime_export_mapper.map_locations_to_realtime_payload(list(locations))

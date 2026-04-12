@@ -13,6 +13,12 @@ SOURCES:
     auto_fetch: false  # rather large dataset
 
 
+MOBILITHEK_NAME: binary butterfly GmbH
+MOBILITHEK_STATIC_PUBLICATION_ID: 980054862909370368
+MOBILITHEK_REALTIME_PUBLICATION_ID: 980084361378099200
+MOBILITHEK_CERTIFICATE_FILENAME: 'mobilithek-binary-butterfly.crt.pem'
+MOBILITHEK_KEY_FILENAME: 'mobilithek-binary-butterfly.key.pem'
+
 SERVER_AUTH_USERS:
   # Test user for local development
   dev:

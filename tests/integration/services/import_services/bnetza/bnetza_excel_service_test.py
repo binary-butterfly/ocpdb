@@ -88,6 +88,9 @@ def test_bnetza_excel_import(db: SQLAlchemy, requests_mock: Mocker) -> None:
         'charging_when_closed': None,
         'energy_mix': None,
         'help_phone': None,
+        'has_in_person_support': False,
+        'facilities': [],
+        'facility_description': '',
     }
 
     evses = (

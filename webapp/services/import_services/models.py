@@ -23,7 +23,14 @@ from math import sqrt
 
 from webapp.models.charging_station import Capability, ServiceType
 from webapp.models.connector import ConnectorFormat, ConnectorType, PowerType
-from webapp.models.enums import DayOfWeek, ReservationRestrictionType, TariffAudience, TariffDimensionType, TariffType
+from webapp.models.enums import (
+    DayOfWeek,
+    ReservationRestrictionType,
+    TariffAudience,
+    TariffDimensionType,
+    TariffType,
+    VehicleCategoryEnum,
+)
 from webapp.models.evse import EvseStatus, ParkingRestriction, PresenceStatus
 from webapp.models.image import ImageCategory
 from webapp.models.location import ChargingRateUnit, EnergySourceCategory, EnvironmentalImpactCategory, ParkingType
@@ -474,8 +481,21 @@ class MaxPowerUpdate(BaseUpdate):
 
 
 @dataclass(kw_only=True)
+class ParkingSpaceUpdate(BaseUpdate):
+    vehicle_types: list[VehicleCategoryEnum]
+    parking_space_count: int
+    max_weight: int | None = None  # in kg
+    max_height: int | None = None  # in cm
+    max_length: int | None = None  # in cm
+    max_width: int | None = None  # in cm
+    has_roof: bool = False
+    is_illuminated: bool = False
+    is_accessible: bool = False
+
+
+@dataclass(kw_only=True)
 class ChargingStationUpdate(BaseUpdate):
-    _object_keys = ('evses', 'images')
+    _object_keys = ('evses', 'images', 'parking_spaces')
 
     uid: str
     evses: list[EvseUpdate]
@@ -494,6 +514,7 @@ class ChargingStationUpdate(BaseUpdate):
     images: list[ImageUpdate] | None = None
 
     max_power: MaxPowerUpdate | None = None
+    parking_spaces: list[ParkingSpaceUpdate] | None = None
 
     def __post_init__(self):
         if self.lat is not None:
@@ -537,6 +558,7 @@ class LocationUpdate(BaseUpdate):
         'suboperator',
         'owner',
         'max_power',
+        'parking_spaces',
     )
 
     uid: str
@@ -551,6 +573,7 @@ class LocationUpdate(BaseUpdate):
     regular_hours: list[RegularHoursUpdate] | None = None
     energy_mix: EnergyMixUpdate | None = None
     max_power: MaxPowerUpdate | None = None
+    parking_spaces: list[ParkingSpaceUpdate] | None = None
 
     name: str | None = None
     address: str | None = None

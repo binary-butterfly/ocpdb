@@ -26,6 +26,7 @@ from webapp.common.contexts import TelemetryContext
 from webapp.common.logging.models import LogMessageType
 from webapp.common.remote_mixin import RemoteMixin
 from webapp.models import Business, ChargingStation, Connector, Evse, Image, Location, Source, Tariff, TariffAssociation
+from webapp.models.charging_station import ParkingSpace
 from webapp.models.source import SourceStatus
 from webapp.models.tariff import DisplayText, TariffElement, TariffEnergyMix, TariffPrice
 from webapp.repositories import (
@@ -213,6 +214,22 @@ class BaseImportService(BaseService, RemoteMixin, ABC):
                 location.max_power_unit = None
                 location.max_power_value = None
 
+        if location_update.parking_spaces is not None:
+            location.parking_spaces = [
+                ParkingSpace(
+                    vehicle_types=ps.vehicle_types,
+                    parking_space_count=ps.parking_space_count,
+                    max_weight=ps.max_weight,
+                    max_height=ps.max_height,
+                    max_length=ps.max_length,
+                    max_width=ps.max_width,
+                    has_roof=ps.has_roof,
+                    is_illuminated=ps.is_illuminated,
+                    is_accessible=ps.is_accessible,
+                )
+                for ps in location_update.parking_spaces
+            ]
+
         self.set_business(location, location_update, 'operator', businesses_by_name)
         self.set_business(location, location_update, 'suboperator', businesses_by_name)
         self.set_business(location, location_update, 'owner', businesses_by_name)
@@ -287,6 +304,22 @@ class BaseImportService(BaseService, RemoteMixin, ABC):
             else:
                 charging_station.max_power_unit = None
                 charging_station.max_power_value = None
+
+        if charging_station_update.parking_spaces is not None:
+            charging_station.parking_spaces = [
+                ParkingSpace(
+                    vehicle_types=ps.vehicle_types,
+                    parking_space_count=ps.parking_space_count,
+                    max_weight=ps.max_weight,
+                    max_height=ps.max_height,
+                    max_length=ps.max_length,
+                    max_width=ps.max_width,
+                    has_roof=ps.has_roof,
+                    is_illuminated=ps.is_illuminated,
+                    is_accessible=ps.is_accessible,
+                )
+                for ps in charging_station_update.parking_spaces
+            ]
 
         old_evses_by_uid = {evse.uid: evse for evse in charging_station.evses}
         new_evses: list[Evse] = []

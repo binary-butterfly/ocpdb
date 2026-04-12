@@ -45,7 +45,7 @@ class Datex2V37StaticApiTest:
         assert payload['profileNameG'] == 'Afir Energy Infrastructure'
         assert payload['profileVersionG'] == '01-00-00'
 
-        publication = payload['egiEnergyInfrastructureTablePublication']
+        publication = payload['aegiEnergyInfrastructureTablePublication']
         assert publication['lang'] == 'de'
         assert publication['publicationCreator'] == {'country': 'DE', 'nationalIdentifier': 'OCPDB'}
         assert publication['energyInfrastructureTable'] == [
@@ -65,7 +65,7 @@ class Datex2V37StaticApiTest:
         assert response.status_code == HTTPStatus.OK
         data = response.json
 
-        publication = data['payload']['egiEnergyInfrastructureTablePublication']
+        publication = data['payload']['aegiEnergyInfrastructureTablePublication']
         sites = publication['energyInfrastructureTable'][0]['energyInfrastructureSite']
         assert len(sites) == 1
 
@@ -73,7 +73,7 @@ class Datex2V37StaticApiTest:
         assert site['idG'] == 'LOCATION-1'
         assert site['versionG'] == ANY
         assert site['name'] == {'values': [{'lang': 'de', 'value': 'Test Location'}]}
-        assert site['operatingHours'] == {'facOpenAllHours': {}}
+        assert site['operatingHours'] == {'afacOpenAllHours': {}}
 
     @staticmethod
     def test_get_static_location_reference(
@@ -85,7 +85,7 @@ class Datex2V37StaticApiTest:
 
         response = test_client.get(path='/api/public/datex/v3.7/json/static')
 
-        site = response.json['payload']['egiEnergyInfrastructureTablePublication']['energyInfrastructureTable'][0][
+        site = response.json['payload']['aegiEnergyInfrastructureTablePublication']['energyInfrastructureTable'][0][
             'energyInfrastructureSite'
         ][0]
 
@@ -95,7 +95,7 @@ class Datex2V37StaticApiTest:
         assert coordinates['latitude'] == 52.52003
         assert coordinates['longitude'] == 13.40489
 
-        facility_location = point_location['locLocationReferenceExtensionG']['FacilityLocation']
+        facility_location = point_location['locLocationExtensionG']['AfirFacilityLocation']
         address = facility_location['address']
         assert address['postcode'] == '12345'
         assert address['city'] == {'values': [{'lang': 'de', 'value': 'Test City'}]}
@@ -120,12 +120,12 @@ class Datex2V37StaticApiTest:
 
         response = test_client.get(path='/api/public/datex/v3.7/json/static')
 
-        site = response.json['payload']['egiEnergyInfrastructureTablePublication']['energyInfrastructureTable'][0][
+        site = response.json['payload']['aegiEnergyInfrastructureTablePublication']['energyInfrastructureTable'][0][
             'energyInfrastructureSite'
         ][0]
 
         operator = site['operator']
-        org = operator['facOrganisationSpecification']
+        org = operator['afacReferenceableOrganisation']
         assert org['name'] == {'values': [{'lang': 'de', 'value': BUSINESS_1_NAME}]}
         assert org['versionG'] == '1'
         assert org['organisationUnit'] == [{}]
@@ -140,7 +140,7 @@ class Datex2V37StaticApiTest:
 
         response = test_client.get(path='/api/public/datex/v3.7/json/static')
 
-        site = response.json['payload']['egiEnergyInfrastructureTablePublication']['energyInfrastructureTable'][0][
+        site = response.json['payload']['aegiEnergyInfrastructureTablePublication']['energyInfrastructureTable'][0][
             'energyInfrastructureSite'
         ][0]
 
@@ -153,7 +153,7 @@ class Datex2V37StaticApiTest:
         refill_points = station['refillPoint']
         assert len(refill_points) == 2
 
-        charging_point = refill_points[0]['egiElectricChargingPoint']
+        charging_point = refill_points[0]['aegiElectricChargingPoint']
         assert charging_point['idG'] == 'EVSE-1'
 
     @staticmethod
@@ -166,10 +166,10 @@ class Datex2V37StaticApiTest:
 
         response = test_client.get(path='/api/public/datex/v3.7/json/static')
 
-        charging_point = response.json['payload']['egiEnergyInfrastructureTablePublication'][
+        charging_point = response.json['payload']['aegiEnergyInfrastructureTablePublication'][
             'energyInfrastructureTable'
         ][0]['energyInfrastructureSite'][0]['energyInfrastructureStation'][0]['refillPoint'][0][
-            'egiElectricChargingPoint'
+            'aegiElectricChargingPoint'
         ]
 
         assert charging_point['availableVoltage'] == [400.0]
@@ -195,10 +195,10 @@ class Datex2V37StaticApiTest:
 
         response = test_client.get(path='/api/public/datex/v3.7/json/static')
 
-        charging_point = response.json['payload']['egiEnergyInfrastructureTablePublication'][
+        charging_point = response.json['payload']['aegiEnergyInfrastructureTablePublication'][
             'energyInfrastructureTable'
         ][0]['energyInfrastructureSite'][0]['energyInfrastructureStation'][0]['refillPoint'][0][
-            'egiElectricChargingPoint'
+            'aegiElectricChargingPoint'
         ]
 
         connector = charging_point['connector'][0]
@@ -219,7 +219,7 @@ class Datex2V37StaticApiTest:
         response = test_client.get(path='/api/public/datex/v3.7/json/static')
 
         assert response.status_code == HTTPStatus.OK
-        site = response.json['payload']['egiEnergyInfrastructureTablePublication']['energyInfrastructureTable'][0][
+        site = response.json['payload']['aegiEnergyInfrastructureTablePublication']['energyInfrastructureTable'][0][
             'energyInfrastructureSite'
         ][0]
         assert 'name' not in site
@@ -235,7 +235,7 @@ class Datex2V37StaticApiTest:
         response = test_client.get(path='/api/public/datex/v3.7/json/static')
 
         assert response.status_code == HTTPStatus.OK
-        sites = response.json['payload']['egiEnergyInfrastructureTablePublication']['energyInfrastructureTable'][0][
+        sites = response.json['payload']['aegiEnergyInfrastructureTablePublication']['energyInfrastructureTable'][0][
             'energyInfrastructureSite'
         ]
         assert len(sites) == 2
@@ -254,7 +254,7 @@ class Datex2V37StaticApiTest:
         response = test_client.get(path=f'/api/public/datex/v3.7/json/static?source_uid={SOURCE_UID_1}')
 
         assert response.status_code == HTTPStatus.OK
-        sites = response.json['payload']['egiEnergyInfrastructureTablePublication']['energyInfrastructureTable'][0][
+        sites = response.json['payload']['aegiEnergyInfrastructureTablePublication']['energyInfrastructureTable'][0][
             'energyInfrastructureSite'
         ]
         assert len(sites) == 1
@@ -276,7 +276,7 @@ class Datex2V37StaticApiTest:
         )
 
         assert response.status_code == HTTPStatus.OK
-        sites = response.json['payload']['egiEnergyInfrastructureTablePublication']['energyInfrastructureTable'][0][
+        sites = response.json['payload']['aegiEnergyInfrastructureTablePublication']['energyInfrastructureTable'][0][
             'energyInfrastructureSite'
         ]
         assert len(sites) == 1

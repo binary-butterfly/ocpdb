@@ -160,7 +160,7 @@ class LocationRepository(BaseRepository[Location]):
             self.session.commit()
 
     def fetch_locations(
-        self, search_query: BaseSearchQuery | None = None, include_tariffs: bool = False
+        self, *, search_query: BaseSearchQuery | None = None, include_tariffs: bool = False
     ) -> PaginatedResult[Location]:
         options = [
             joinedload(Location.operator).joinedload(Business.logo),
@@ -194,20 +194,28 @@ class LocationRepository(BaseRepository[Location]):
                 'lat_max',
                 'lon_min',
                 'lon_max',
+                'evse_status_last_updated_since',
                 'last_updated_since',
             ]:
                 continue
 
             query = self._apply_bound_search_filter(query, bound_filter)
 
-        if last_updated_since := getattr(search_query, 'last_updated_since', None):
-            query = (
-                query
-                .join(Location.charging_pool)
-                .join(ChargingStation.evses)
-                .filter(or_(Location.last_updated >= last_updated_since, Evse.last_updated >= last_updated_since))
-                .distinct()
-            )
+        last_updated_since = getattr(search_query, 'last_updated_since', None)
+        evse_status_last_updated = getattr(search_query, 'evse_status_last_updated_since', None)
+
+        if last_updated_since or evse_status_last_updated:
+            query = query.join(Location.charging_pool).join(ChargingStation.evses).distinct()
+            if last_updated_since:
+                query = query.filter(
+                    or_(
+                        Location.last_updated >= last_updated_since,
+                        # ChargingStation.last_updaed >= last_updated_since,  # TODO: reactivate
+                        Evse.last_updated >= last_updated_since,
+                    ),
+                )
+            if evse_status_last_updated:
+                query = query.filter(Evse.status == evse_status_last_updated)
 
         if (
             getattr(search_query, 'lat', None)
