@@ -3,10 +3,13 @@ Copyright 2026 binary butterfly GmbH
 Use of this source code is governed by an MIT-style license that can be found in the LICENSE.txt.
 """
 
+from datetime import datetime
+
 from validataclass.dataclasses import Default, ValidataclassMixin, validataclass
 from validataclass.helpers import UnsetValue, UnsetValueType
 from validataclass.validators import (
     DataclassValidator,
+    DateTimeValidator,
     FloatValidator,
     IntegerValidator,
     ListValidator,
@@ -50,7 +53,7 @@ class ElectricChargingPointInput(ValidataclassMixin):
         ListValidator(DataclassValidator(MultilingualStringInput)),
         Default(UnsetValue),
     )
-    lastUpdated: str | UnsetValueType = StringValidator(), Default(UnsetValue)
+    lastUpdated: datetime | UnsetValueType = DateTimeValidator(), Default(UnsetValue)
     description: MultilingualStringInput | UnsetValueType = (
         DataclassValidator(MultilingualStringInput),
         Default(UnsetValue),
@@ -82,8 +85,8 @@ class ElectricChargingPointInput(ValidataclassMixin):
         Default(UnsetValue),
     )
     numberOfConnectors: int | UnsetValueType = IntegerValidator(min_value=0), Default(UnsetValue)
-    availableVoltage: list[int] | UnsetValueType = ListValidator(FloatValidator()), Default(UnsetValue)
-    availableChargingPower: list[int] | UnsetValueType = ListValidator(FloatValidator()), Default(UnsetValue)
+    availableVoltage: list[float] | UnsetValueType = ListValidator(FloatValidator()), Default(UnsetValue)
+    availableChargingPower: list[float] | UnsetValueType = ListValidator(FloatValidator()), Default(UnsetValue)
     chargingMode: ChargingModeEnumGInput | UnsetValueType = (
         DataclassValidator(ChargingModeEnumGInput),
         Default(UnsetValue),

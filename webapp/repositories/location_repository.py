@@ -215,7 +215,7 @@ class LocationRepository(BaseRepository[Location]):
                     ),
                 )
             if evse_status_last_updated:
-                query = query.filter(Evse.status == evse_status_last_updated)
+                query = query.filter(Evse.status_last_updated >= evse_status_last_updated)
 
         if (
             getattr(search_query, 'lat', None)

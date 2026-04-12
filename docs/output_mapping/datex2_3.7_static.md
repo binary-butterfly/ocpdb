@@ -7,8 +7,8 @@ This documents the output mapping from OCPDB internal models to the
 **Endpoint**: `GET /api/public/datex/v3.7/json/static`
 
 The response is a JSON object with a single `payload` key containing a `PayloadPublicationG` object. The hierarchical
-structure is: `egiEnergyInfrastructureTablePublication` -> `energyInfrastructureTable` ->
-`energyInfrastructureSite` -> `energyInfrastructureStation` -> `refillPoint` / `egiElectricChargingPoint` ->
+structure is: `aegiEnergyInfrastructureTablePublication` -> `energyInfrastructureTable` ->
+`energyInfrastructureSite` -> `energyInfrastructureStation` -> `refillPoint` / `aegiElectricChargingPoint` ->
 `connector`.
 
 
@@ -16,13 +16,13 @@ structure is: `egiEnergyInfrastructureTablePublication` -> `energyInfrastructure
 
 Top-level publication wrapper.
 
-| Field                                   | Type                                                                          | Mapping                      | Comment      |
-|-----------------------------------------|-------------------------------------------------------------------------------|------------------------------|--------------|
-| modelBaseVersionG                       | string                                                                        | `3`                          | Static value |
-| versionG                                | string                                                                        | `3.7`                        | Static value |
-| profileNameG                            | string                                                                        | `Afir Energy Infrastructure` | Static value |
-| profileVersionG                         | string                                                                        | `01-00-00`                   | Static value |
-| egiEnergyInfrastructureTablePublication | [EnergyInfrastructureTablePublication](#energyinfrastructuretablepublication) |                              |              |
+| Field                                    | Type                                                                          | Mapping                      | Comment      |
+|------------------------------------------|-------------------------------------------------------------------------------|------------------------------|--------------|
+| modelBaseVersionG                        | string                                                                        | `3`                          | Static value |
+| versionG                                 | string                                                                        | `3.7`                        | Static value |
+| profileNameG                             | string                                                                        | `Afir Energy Infrastructure` | Static value |
+| profileVersionG                          | string                                                                        | `01-00-00`                   | Static value |
+| aegiEnergyInfrastructureTablePublication | [EnergyInfrastructureTablePublication](#energyinfrastructuretablepublication) |                              |              |
 
 
 ## EnergyInfrastructureTablePublication
@@ -30,7 +30,7 @@ Top-level publication wrapper.
 | Field                                 | Type                                                      | Mapping          | Comment             |
 |---------------------------------------|-----------------------------------------------------------|------------------|---------------------|
 | lang                                  | string                                                    | `de`             | Static value        |
-| publicationTime                       | string (datetime)                                         | Current UTC time | ISO 8601 format     |
+| publicationTime                       | datetime                                                  | Current UTC time | datetime object     |
 | publicationCreator.country            | string                                                    | `DE`             | Static value        |
 | publicationCreator.nationalIdentifier | string                                                    | `OCPDB`          | Static value        |
 | energyInfrastructureTable             | [EnergyInfrastructureTable](#energyinfrastructuretable)[] |                  | Single-element list |
@@ -59,20 +59,20 @@ A `Location` maps to an `EnergyInfrastructureSite`. Locations without `lat`/`lon
 | operator                    | [OrganisationG](#organisationg)                               | location.operator        | Only set if operator is present       |
 | energyInfrastructureStation | [EnergyInfrastructureStation](#energyinfrastructurestation)[] | location.charging_pool   |                                       |
 
-Note: Unlike v3.5, the site name is set via the `name` field (not `additionalInformation`). Helpdesk is not mapped in
-v3.7.
+Note: Unlike v3.5, the site name is set via the `name` field (not `additionalInformation`). Helpdesk and parking
+spaces are not mapped in v3.7.
 
 
 ### LocationReferenceG
 
 A single location reference structure is used for both site and station level. Coordinates are provided via
-`pointByCoordinates.pointCoordinates` and address via `locLocationReferenceExtensionG.FacilityLocation`.
+`pointByCoordinates.pointCoordinates` and address via `locLocationExtensionG.AfirFacilityLocation`.
 
-| Field                                                                              | Type                | Mapping       | Comment   |
-|------------------------------------------------------------------------------------|---------------------|---------------|-----------|
-| locPointLocation.pointByCoordinates.pointCoordinates.latitude                      | decimal             | location.lat  |           |
-| locPointLocation.pointByCoordinates.pointCoordinates.longitude                     | decimal             | location.lon  |           |
-| locPointLocation.locLocationReferenceExtensionG.FacilityLocation.address           | [Address](#address) |               | See below |
+| Field                                                                        | Type                | Mapping       | Comment   |
+|------------------------------------------------------------------------------|---------------------|---------------|-----------|
+| locPointLocation.pointByCoordinates.pointCoordinates.latitude                | decimal             | location.lat  |           |
+| locPointLocation.pointByCoordinates.pointCoordinates.longitude               | decimal             | location.lon  |           |
+| locPointLocation.locLocationExtensionG.AfirFacilityLocation.address          | [Address](#address) |               | See below |
 
 
 ### Address
@@ -100,21 +100,22 @@ The address string is split by regex into street and optional house number.
 
 | Field            | Type         | Mapping                  | Comment                           |
 |------------------|--------------|--------------------------|-----------------------------------|
-| facOpenAllHours  | OpenAllHours | location.twentyfourseven | Empty object, presence means 24/7 |
+| afacOpenAllHours | OpenAllHours | location.twentyfourseven | Empty object, presence means 24/7 |
 
 
 ### OrganisationG
 
-Operator mapping. Uses `facOrganisationSpecification` (different from v3.5's `afacAnOrganisation`).
+Operator mapping. Uses `afacReferenceableOrganisation` with an `idG` derived from the operator.
 
-| Field                                              | Type                                      | Mapping                    | Comment                                     |
-|----------------------------------------------------|-------------------------------------------|----------------------------|---------------------------------------------|
-| facOrganisationSpecification.idG                   | string                                    | business.emobility_uid     | Falls back to `OP-{business.id}` if not set |
-| facOrganisationSpecification.versionG              | string                                    | `1`                        | Static value                                |
-| facOrganisationSpecification.name                  | [MultilingualString](#multilingualstring) | business.name              |                                             |
-| facOrganisationSpecification.organisationUnit       | OrganisationUnit[]                        |                            | Single empty element                        |
+| Field                                          | Type                                      | Mapping                    | Comment                                     |
+|------------------------------------------------|-------------------------------------------|----------------------------|---------------------------------------------|
+| afacReferenceableOrganisation.idG              | string                                    | business.emobility_uid     | Falls back to `OP-{business.id}` if not set |
+| afacReferenceableOrganisation.versionG         | string                                    | `1`                        | Static value                                |
+| afacReferenceableOrganisation.name             | [MultilingualString](#multilingualstring) | business.name              |                                             |
+| afacReferenceableOrganisation.organisationUnit | OrganisationUnit[]                        |                            | Single empty element                        |
 
-Note: Unlike v3.5, the operator does not include `externalIdentifier`. The `emobility_uid` is used as the `idG` instead.
+Note: Unlike v3.5, the operator does not include `externalIdentifier`. The `emobility_uid` is used as the `idG`
+instead.
 
 
 ## EnergyInfrastructureStation
@@ -152,34 +153,48 @@ An `Evse` maps to a `RefillPointG` wrapping an `ElectricChargingPoint`.
 
 | Field                     | Type                                            | Mapping | Comment |
 |---------------------------|-------------------------------------------------|---------|---------|
-| egiElectricChargingPoint  | [ElectricChargingPoint](#electricchargingpoint) |         |         |
+| aegiElectricChargingPoint | [ElectricChargingPoint](#electricchargingpoint) |         |         |
 
 
 ### ElectricChargingPoint
 
-Simpler than v3.5: no `deliveryUnit`, `currentType`, or `numberOfConnectors`.
+| Field                  | Type                                          | Mapping                             | Comment                                                    |
+|------------------------|-----------------------------------------------|-------------------------------------|------------------------------------------------------------|
+| idG                    | string                                        | evse.uid                            |                                                            |
+| versionG               | string (datetime)                             | evse.last_updated                   | ISO 8601 format                                            |
+| deliveryUnit           | DeliveryUnitEnumG                             | `kWh`                               | Static value                                               |
+| currentType            | CurrentTypeEnumG                              | first connector's power_type        | See [current type mapping](#current-type-mapping)          |
+| availableVoltage       | float[]                                       | connectors' max_voltage             | Collected from all connectors, only set if any             |
+| availableChargingPower | float[]                                       | connectors' max_electric_power      | Collected from all connectors, only set if any             |
+| energyProduct          | [EnergyProductG](#energyproductg)[]           | location.energy_mix.is_green_energy | Only set if energy_mix with `is_green_energy` exists       |
+| connector              | [Connector](#connector)[]                     | evse.connectors                     | Connectors with unmappable `standard` are skipped          |
 
-| Field                  | Type                                          | Mapping                             | Comment                                            |
-|------------------------|-----------------------------------------------|-------------------------------------|----------------------------------------------------|
-| idG                    | string                                        | evse.uid                            |                                                    |
-| versionG               | string (datetime)                             | evse.last_updated                   | ISO 8601 format                                    |
-| availableVoltage       | int[]                                         | connectors' max_voltage             | Collected from all connectors, only set if any     |
-| availableChargingPower | int[]                                         | connectors' max_electric_power      | Collected from all connectors, only set if any     |
-| electricEnergyMix      | [ElectricEnergyMix](#electricenergymix)[]     | location.energy_mix.is_green_energy | Only set if energy_mix with is_green_energy exists |
-| connector              | [Connector](#connector)[]                     | evse.connectors                     | Connectors without mappable `standard` are skipped |
-
-Note: Unlike v3.5, tariffs are not mapped in v3.7.
+Note: Unlike v3.5, tariffs are not mapped in v3.7. Energy mix uses `energyProduct` instead of `electricEnergy`.
 
 
-### ElectricEnergyMix
+### Current Type Mapping
 
-Energy mix uses a separate `ElectricEnergyMix` type (not `ElectricEnergy` as in v3.5), referenced via
-`electricEnergyMix` (not `electricEnergy`).
+Derived from the first connector's `power_type`. Defaults to `ac` if not available.
 
-| Field          | Type    | Mapping                             | Comment      |
-|----------------|---------|-------------------------------------|--------------|
-| energyMixIndex | integer | `0`                                 | Static value |
-| isGreenEnergy  | boolean | location.energy_mix.is_green_energy |              |
+| Internal (PowerType) | DATEX II (CurrentTypeEnum) |
+|----------------------|----------------------------|
+| DC                   | dc                         |
+| AC_1_PHASE           | ac                         |
+| AC_3_PHASE           | ac                         |
+
+
+### EnergyProductG
+
+| Field               | Type                                        | Mapping                             | Comment |
+|---------------------|---------------------------------------------|-------------------------------------|---------|
+| aegiElectricEnergy  | [ElectricEnergy](#electricenergy)           |                                     |         |
+
+
+### ElectricEnergy
+
+| Field         | Type    | Mapping                             | Comment |
+|---------------|---------|-------------------------------------|---------|
+| isGreenEnergy | boolean | location.energy_mix.is_green_energy |         |
 
 
 ### Connector
@@ -190,28 +205,30 @@ Connectors with an unmapped `standard` are skipped entirely (not included in out
 |------------------|--------------------------|------------------------------|-----------------------------------------------------------|
 | connectorType    | ConnectorTypeEnumG       | connector.standard           | See [connector type mapping](#connector-type-mapping)     |
 | maxPowerAtSocket | float                    | connector.max_electric_power | 0.0 if not available                                      |
-| voltage          | int                      | connector.max_voltage        | Only set if present                                       |
-| maximumCurrent   | int                      | connector.max_amperage       | Only set if present                                       |
+| voltage          | float                    | connector.max_voltage        | Only set if present                                       |
+| maximumCurrent   | float                    | connector.max_amperage       | Only set if present                                       |
 | connectorFormat  | ConnectorFormatTypeEnumG | connector.format             | See [connector format mapping](#connector-format-mapping) |
 
 
 ### Connector Type Mapping
 
+Note: v3.7 uses different enum values for domestic types (e.g. `domesticAType` instead of `domesticA`).
+
 | Internal (ConnectorType)   | DATEX II (ConnectorTypeEnum) |
 |----------------------------|------------------------------|
 | CHADEMO                    | chademo                      |
-| DOMESTIC_A                 | domesticA                    |
-| DOMESTIC_B                 | domesticB                    |
-| DOMESTIC_C                 | domesticC                    |
-| DOMESTIC_D                 | domesticD                    |
-| DOMESTIC_E                 | domesticE                    |
-| DOMESTIC_F                 | domesticF                    |
-| DOMESTIC_G                 | domesticG                    |
-| DOMESTIC_H                 | domesticH                    |
-| DOMESTIC_I                 | domesticI                    |
-| DOMESTIC_J                 | domesticJ                    |
-| DOMESTIC_K                 | domesticK                    |
-| DOMESTIC_L                 | domesticL                    |
+| DOMESTIC_A                 | domesticAType                |
+| DOMESTIC_B                 | domesticBType                |
+| DOMESTIC_C                 | domesticCType                |
+| DOMESTIC_D                 | domesticDType                |
+| DOMESTIC_E                 | domesticEType                |
+| DOMESTIC_F                 | domesticFType                |
+| DOMESTIC_G                 | domesticGType                |
+| DOMESTIC_H                 | domesticHType                |
+| DOMESTIC_I                 | domesticIType                |
+| DOMESTIC_J                 | domesticJType                |
+| DOMESTIC_K                 | domesticKType                |
+| DOMESTIC_L                 | domesticLType                |
 | IEC_60309_2_single_16      | iec60309x2Single16           |
 | IEC_60309_2_three_16       | iec60309x2Three16            |
 | IEC_60309_2_three_32       | iec60309x2Three32            |

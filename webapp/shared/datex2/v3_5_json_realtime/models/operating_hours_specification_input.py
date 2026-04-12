@@ -3,9 +3,11 @@ Copyright 2026 binary butterfly GmbH
 Use of this source code is governed by an MIT-style license that can be found in the LICENSE.txt.
 """
 
+from datetime import datetime
+
 from validataclass.dataclasses import Default, ValidataclassMixin, validataclass
 from validataclass.helpers import UnsetValue, UnsetValueType
-from validataclass.validators import BooleanValidator, DataclassValidator, StringValidator
+from validataclass.validators import BooleanValidator, DataclassValidator, DateTimeValidator, StringValidator
 
 from .closure_information_input import ClosureInformationInput
 from .extension_type_g_input import ExtensionTypeGInput
@@ -20,7 +22,7 @@ class OperatingHoursSpecificationInput(ValidataclassMixin):
 
     idG: str = StringValidator()
     versionG: str = StringValidator()
-    lastUpdated: str | UnsetValueType = StringValidator(), Default(UnsetValue)
+    lastUpdated: datetime | UnsetValueType = DateTimeValidator(), Default(UnsetValue)
     label: str | UnsetValueType = StringValidator(), Default(UnsetValue)
     operatingAllYear: bool | UnsetValueType = BooleanValidator(), Default(UnsetValue)
     urlLinkAddress: str | UnsetValueType = StringValidator(), Default(UnsetValue)

@@ -16,16 +16,18 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+from datetime import datetime, timezone
 from decimal import Decimal
 from http import HTTPStatus
 from unittest.mock import ANY
 
 from tests.integration.helpers import OpenApiFlaskClient
 from tests.integration.model_generators.business import BUSINESS_1_NAME, get_business_1
-from tests.integration.model_generators.evse import get_full_evse_1
+from tests.integration.model_generators.evse import get_full_evse_1, get_full_evse_2
 from tests.integration.model_generators.location import get_full_location_1, get_full_location_2, get_location_1
 from tests.integration.model_generators.source import SOURCE_UID_1
 from webapp.common.sqlalchemy import SQLAlchemy
+from webapp.models.evse import EvseStatus
 
 
 class Datex2V37StaticApiTest:
@@ -281,3 +283,257 @@ class Datex2V37StaticApiTest:
         ]
         assert len(sites) == 1
         assert sites[0]['idG'] == 'LOCATION-1'
+
+
+class Datex2V37RealtimeApiTest:
+    @staticmethod
+    def test_get_realtime_empty(
+        db: SQLAlchemy,
+        test_client: OpenApiFlaskClient,
+    ) -> None:
+        response = test_client.get(path='/api/public/datex/v3.7/json/realtime')
+
+        assert response.status_code == HTTPStatus.OK
+        data = response.json
+
+        assert 'payload' in data
+
+    @staticmethod
+    def test_get_realtime_payload_structure(
+        db: SQLAlchemy,
+        test_client: OpenApiFlaskClient,
+    ) -> None:
+        response = test_client.get(path='/api/public/datex/v3.7/json/realtime')
+
+        assert response.status_code == HTTPStatus.OK
+        payload = response.json['payload']
+
+        assert payload['versionG'] == '3.7'
+        assert payload['profileNameG'] == 'Afir Energy Infrastructure'
+        assert payload['profileVersionG'] == '01-00-00'
+
+        status_pub = payload['aegiEnergyInfrastructureStatusPublication']
+        assert status_pub['lang'] == 'de'
+        assert status_pub['publicationCreator'] == {'country': 'DE', 'nationalIdentifier': 'OCPDB'}
+
+    @staticmethod
+    def test_get_realtime_with_location(
+        db: SQLAlchemy,
+        test_client: OpenApiFlaskClient,
+    ) -> None:
+        db.session.add(get_full_location_1())
+        db.session.commit()
+
+        response = test_client.get(path='/api/public/datex/v3.7/json/realtime')
+
+        assert response.status_code == HTTPStatus.OK
+        status_pub = response.json['payload']['aegiEnergyInfrastructureStatusPublication']
+
+        site_statuses = status_pub['energyInfrastructureSiteStatus']
+        assert len(site_statuses) == 1
+
+        site_status = site_statuses[0]
+        assert site_status['reference']['targetClass'] == 'FacilityObject'
+        assert site_status['reference']['idG'] == 'LOCATION-1'
+        assert 'lastUpdated' in site_status
+
+    @staticmethod
+    def test_get_realtime_station_status(
+        db: SQLAlchemy,
+        test_client: OpenApiFlaskClient,
+    ) -> None:
+        db.session.add(get_full_location_1())
+        db.session.commit()
+
+        response = test_client.get(path='/api/public/datex/v3.7/json/realtime')
+
+        site_status = response.json['payload']['aegiEnergyInfrastructureStatusPublication'][
+            'energyInfrastructureSiteStatus'
+        ][0]
+
+        station_statuses = site_status['energyInfrastructureStationStatus']
+        assert len(station_statuses) == 1
+
+        station_status = station_statuses[0]
+        assert station_status['reference']['targetClass'] == 'FacilityObject'
+        assert station_status['reference']['idG'] == 'CS-1'
+
+    @staticmethod
+    def test_get_realtime_evse_status(
+        db: SQLAlchemy,
+        test_client: OpenApiFlaskClient,
+    ) -> None:
+        db.session.add(get_full_location_1())
+        db.session.commit()
+
+        response = test_client.get(path='/api/public/datex/v3.7/json/realtime')
+
+        station_status = response.json['payload']['aegiEnergyInfrastructureStatusPublication'][
+            'energyInfrastructureSiteStatus'
+        ][0]['energyInfrastructureStationStatus'][0]
+
+        refill_statuses = station_status['refillPointStatus']
+        assert len(refill_statuses) == 2
+
+        refill_status = refill_statuses[0]['aegiRefillPointStatus']
+        assert refill_status['reference']['targetClass'] == 'FacilityObject'
+        assert refill_status['reference']['idG'] == 'EVSE-1'
+        assert refill_status['status'] == {'value': 'available'}
+        assert 'lastUpdated' in refill_status
+
+    @staticmethod
+    def test_get_realtime_evse_status_mapping(
+        db: SQLAlchemy,
+        test_client: OpenApiFlaskClient,
+    ) -> None:
+        db.session.add(
+            get_location_1(
+                evses=[
+                    get_full_evse_1(status=EvseStatus.CHARGING),
+                    get_full_evse_2(status=EvseStatus.OUTOFORDER),
+                ],
+                operator=get_business_1(),
+            ),
+        )
+        db.session.commit()
+
+        response = test_client.get(path='/api/public/datex/v3.7/json/realtime')
+
+        refill_statuses = response.json['payload']['aegiEnergyInfrastructureStatusPublication'][
+            'energyInfrastructureSiteStatus'
+        ][0]['energyInfrastructureStationStatus'][0]['refillPointStatus']
+
+        statuses = {
+            rs['aegiRefillPointStatus']['reference']['idG']: rs['aegiRefillPointStatus']['status']['value']
+            for rs in refill_statuses
+        }
+        assert statuses == {
+            'EVSE-1': 'charging',
+            'EVSE-2': 'outOfOrder',
+        }
+
+    @staticmethod
+    def test_get_realtime_skips_static_evse(
+        db: SQLAlchemy,
+        test_client: OpenApiFlaskClient,
+    ) -> None:
+        db.session.add(
+            get_location_1(
+                evses=[
+                    get_full_evse_1(status=EvseStatus.AVAILABLE),
+                    get_full_evse_2(status=EvseStatus.STATIC),
+                ],
+                operator=get_business_1(),
+            ),
+        )
+        db.session.commit()
+
+        response = test_client.get(path='/api/public/datex/v3.7/json/realtime')
+
+        refill_statuses = response.json['payload']['aegiEnergyInfrastructureStatusPublication'][
+            'energyInfrastructureSiteStatus'
+        ][0]['energyInfrastructureStationStatus'][0]['refillPointStatus']
+
+        assert len(refill_statuses) == 1
+        assert refill_statuses[0]['aegiRefillPointStatus']['reference']['idG'] == 'EVSE-1'
+
+    @staticmethod
+    def test_get_realtime_skips_station_with_all_unmappable_evses(
+        db: SQLAlchemy,
+        test_client: OpenApiFlaskClient,
+    ) -> None:
+        db.session.add(
+            get_location_1(
+                evses=[
+                    get_full_evse_1(status=EvseStatus.STATIC),
+                    get_full_evse_2(status=EvseStatus.STATIC),
+                ],
+                operator=get_business_1(),
+            ),
+        )
+        db.session.commit()
+
+        response = test_client.get(path='/api/public/datex/v3.7/json/realtime')
+
+        site_statuses = response.json['payload']['aegiEnergyInfrastructureStatusPublication'][
+            'energyInfrastructureSiteStatus'
+        ]
+
+        assert len(site_statuses) == 0
+
+    @staticmethod
+    def test_get_realtime_multiple_locations(
+        db: SQLAlchemy,
+        test_client: OpenApiFlaskClient,
+    ) -> None:
+        db.session.add_all([get_full_location_1(), get_full_location_2()])
+        db.session.commit()
+
+        response = test_client.get(path='/api/public/datex/v3.7/json/realtime')
+
+        assert response.status_code == HTTPStatus.OK
+        site_statuses = response.json['payload']['aegiEnergyInfrastructureStatusPublication'][
+            'energyInfrastructureSiteStatus'
+        ]
+        assert len(site_statuses) == 2
+
+        site_ids = {ss['reference']['idG'] for ss in site_statuses}
+        assert site_ids == {'LOCATION-1', 'LOCATION-2'}
+
+    @staticmethod
+    def test_get_realtime_evse_status_last_updated_fallback(
+        db: SQLAlchemy,
+        test_client: OpenApiFlaskClient,
+    ) -> None:
+        now = datetime(2026, 3, 10, 8, 30, 0, tzinfo=timezone.utc)
+        status_updated = datetime(2026, 1, 15, 12, 0, 0, tzinfo=timezone.utc)
+
+        db.session.add(
+            get_location_1(
+                evses=[
+                    get_full_evse_1(last_updated=now, status_last_updated=status_updated),
+                    get_full_evse_2(last_updated=now, status_last_updated=None),
+                ],
+                operator=get_business_1(),
+            ),
+        )
+        db.session.commit()
+
+        response = test_client.get(path='/api/public/datex/v3.7/json/realtime')
+
+        refill_statuses = response.json['payload']['aegiEnergyInfrastructureStatusPublication'][
+            'energyInfrastructureSiteStatus'
+        ][0]['energyInfrastructureStationStatus'][0]['refillPointStatus']
+
+        evse_1_status = next(
+            rs['aegiRefillPointStatus']
+            for rs in refill_statuses
+            if rs['aegiRefillPointStatus']['reference']['idG'] == 'EVSE-1'
+        )
+        evse_1_last_updated = datetime.fromisoformat(evse_1_status['lastUpdated'])
+        assert evse_1_last_updated == status_updated
+
+        evse_2_status = next(
+            rs['aegiRefillPointStatus']
+            for rs in refill_statuses
+            if rs['aegiRefillPointStatus']['reference']['idG'] == 'EVSE-2'
+        )
+        evse_2_last_updated = datetime.fromisoformat(evse_2_status['lastUpdated'])
+        assert evse_2_last_updated == now
+
+    @staticmethod
+    def test_get_realtime_filter_by_source_uid(
+        db: SQLAlchemy,
+        test_client: OpenApiFlaskClient,
+    ) -> None:
+        db.session.add_all([get_full_location_1(), get_full_location_2(source='OTHER-SOURCE')])
+        db.session.commit()
+
+        response = test_client.get(path=f'/api/public/datex/v3.7/json/realtime?source_uid={SOURCE_UID_1}')
+
+        assert response.status_code == HTTPStatus.OK
+        site_statuses = response.json['payload']['aegiEnergyInfrastructureStatusPublication'][
+            'energyInfrastructureSiteStatus'
+        ]
+        assert len(site_statuses) == 1
+        assert site_statuses[0]['reference']['idG'] == 'LOCATION-1'

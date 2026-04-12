@@ -3,9 +3,11 @@ Copyright 2026 binary butterfly GmbH
 Use of this source code is governed by an MIT-style license that can be found in the LICENSE.txt.
 """
 
+from datetime import datetime
+
 from validataclass.dataclasses import Default, ValidataclassMixin, validataclass
 from validataclass.helpers import UnsetValue, UnsetValueType
-from validataclass.validators import BooleanValidator, DataclassValidator, IntegerValidator, StringValidator
+from validataclass.validators import BooleanValidator, DataclassValidator, DateTimeValidator, IntegerValidator
 
 from .extension_type_g_input import ExtensionTypeGInput
 from .facility_object_versioned_reference_g_input import FacilityObjectVersionedReferenceGInput
@@ -23,7 +25,7 @@ class SupplementalFacilityStatusInput(ValidataclassMixin):
     """
 
     reference: FacilityObjectVersionedReferenceGInput = DataclassValidator(FacilityObjectVersionedReferenceGInput)
-    lastUpdated: str | UnsetValueType = StringValidator(), Default(UnsetValue)
+    lastUpdated: datetime | UnsetValueType = DateTimeValidator(), Default(UnsetValue)
     openingStatus: OpeningStatusEnumGInput | UnsetValueType = (
         DataclassValidator(OpeningStatusEnumGInput),
         Default(UnsetValue),

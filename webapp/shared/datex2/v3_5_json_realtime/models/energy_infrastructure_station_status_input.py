@@ -3,9 +3,11 @@ Copyright 2026 binary butterfly GmbH
 Use of this source code is governed by an MIT-style license that can be found in the LICENSE.txt.
 """
 
+from datetime import datetime
+
 from validataclass.dataclasses import Default, ValidataclassMixin, validataclass
 from validataclass.helpers import UnsetValue, UnsetValueType
-from validataclass.validators import BooleanValidator, DataclassValidator, ListValidator, StringValidator
+from validataclass.validators import BooleanValidator, DataclassValidator, DateTimeValidator, ListValidator
 
 from .energy_rate_update_input import EnergyRateUpdateInput
 from .extension_type_g_input import ExtensionTypeGInput
@@ -27,7 +29,7 @@ class EnergyInfrastructureStationStatusInput(ValidataclassMixin):
     """
 
     reference: FacilityObjectVersionedReferenceGInput = DataclassValidator(FacilityObjectVersionedReferenceGInput)
-    lastUpdated: str | UnsetValueType = StringValidator(), Default(UnsetValue)
+    lastUpdated: datetime | UnsetValueType = DateTimeValidator(), Default(UnsetValue)
     openingStatus: OpeningStatusEnumGInput | UnsetValueType = (
         DataclassValidator(OpeningStatusEnumGInput),
         Default(UnsetValue),

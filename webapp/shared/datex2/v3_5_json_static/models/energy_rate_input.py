@@ -3,11 +3,14 @@ Copyright 2026 binary butterfly GmbH
 Use of this source code is governed by an MIT-style license that can be found in the LICENSE.txt.
 """
 
+from datetime import datetime
+
 from validataclass.dataclasses import Default, ValidataclassMixin, validataclass
 from validataclass.helpers import UnsetValue, UnsetValueType
 from validataclass.validators import (
     BooleanValidator,
     DataclassValidator,
+    DateTimeValidator,
     FloatValidator,
     ListValidator,
     StringValidator,
@@ -29,7 +32,7 @@ class EnergyRateInput(ValidataclassMixin):
 
     idG: str = StringValidator()
     ratePolicy: RatePolicyEnumGInput = DataclassValidator(RatePolicyEnumGInput)
-    lastUpdated: str = StringValidator()
+    lastUpdated: datetime = DateTimeValidator()
     applicableCurrency: list[str] = ListValidator(StringValidator())
     rateName: MultilingualStringInput | UnsetValueType = (
         DataclassValidator(MultilingualStringInput),

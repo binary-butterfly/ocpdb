@@ -16,7 +16,6 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from datetime import datetime
 from decimal import Decimal
 
 from pycountry import countries
@@ -369,7 +368,6 @@ class Datex2V35JSONStaticMapper:
                 tariff_uid = f'{evse.uid}:{energy_rate.idG}'
                 tariff_update = self._map_energy_rate(energy_rate, tariff_uid, source)
 
-                last_updated = datetime.fromisoformat(energy_rate.lastUpdated)
                 audience = self._rate_policy_audience_map.get(energy_rate.ratePolicy.value)
 
                 evse.tariff_association = [
@@ -377,8 +375,8 @@ class Datex2V35JSONStaticMapper:
                         uid=tariff_uid,
                         source=source,
                         audience=audience,
-                        start_date_time=last_updated,
-                        last_updated=last_updated,
+                        start_date_time=energy_rate.lastUpdated,
+                        last_updated=energy_rate.lastUpdated,
                         tariff=tariff_update,
                     )
                 ]
@@ -386,7 +384,6 @@ class Datex2V35JSONStaticMapper:
     def _map_energy_rate(self, energy_rate: EnergyRateInput, tariff_uid: str, source: str) -> TariffUpdate:
         tariff_type = self._rate_policy_map.get(energy_rate.ratePolicy.value)
         currency = energy_rate.applicableCurrency[0] if energy_rate.applicableCurrency else None
-        last_updated = datetime.fromisoformat(energy_rate.lastUpdated)
 
         tariff_elements: list[TariffElementUpdate] = []
         if energy_rate.energyPrice is not UnsetValue:
@@ -426,7 +423,7 @@ class Datex2V35JSONStaticMapper:
             source=source,
             currency=currency,
             type=tariff_type,
-            last_updated=last_updated,
+            last_updated=energy_rate.lastUpdated,
             elements=tariff_elements,
         )
 
@@ -710,15 +707,11 @@ class Datex2V35JSONStaticMapper:
         if status is None:
             return None
 
-        last_updated = None
-        if refill_point_status.lastUpdated is not UnsetValue:
-            last_updated = datetime.fromisoformat(refill_point_status.lastUpdated)
-
         return EvseRealtimeUpdate(
             uid=refill_point_status.reference.idG,
             evse_id=refill_point_status.reference.idG,
             status=status,
-            last_updated=last_updated,
+            last_updated=None if refill_point_status.lastUpdated is UnsetValue else refill_point_status.lastUpdated,
         )
 
     @staticmethod

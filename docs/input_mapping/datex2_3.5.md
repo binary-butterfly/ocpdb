@@ -27,41 +27,41 @@ Realtime data is delivered as an `aegiEnergyInfrastructureStatusPublication` con
 
 An `energyInfrastructureSite` maps to a `Location`.
 
-| Field                          | Type                                                                  | Cardinality | Mapping                  | Comment                                              |
-|--------------------------------|-----------------------------------------------------------------------|-------------|--------------------------|------------------------------------------------------|
-| idG                            | string                                                                | 1           | location.uid             |                                                      |
-| versionG                       | string                                                                | 1           |                          |                                                      |
-| name                           | [MultilingualString](#MultilingualString)                             | ?           | location.name            |                                                      |
-| alias                          | [MultilingualString](#MultilingualString)                             | *           |                          | Not mapped                                           |
-| lastUpdated                    | string (datetime)                                                     | ?           | location.last_updated    |                                                      |
-| description                    | [MultilingualString](#MultilingualString)                             | ?           |                          | Not mapped                                           |
-| additionalInformation          | [MultilingualString](#MultilingualString)                             | *           |                          | Not mapped, contains human-readable site description |
-| accessibility                  | [AccessibilityEnum](#AccessibilityEnum)                               | *           |                          | Not mapped                                           |
-| typeOfSite                     | [EnergyInfrastructureSiteTypeEnum](#EnergyInfrastructureSiteTypeEnum) | ?           |                          | Not mapped                                           |
-| brand                          | [MultilingualString](#MultilingualString)                             | ?           |                          | Not mapped                                           |
-| exclusiveUsers                 | UserTypeEnum                                                          | *           |                          | Not mapped                                           |
-| preferredUsers                 | UserTypeEnum                                                          | *           |                          | Not mapped                                           |
-| externalIdentifier             | [ExternalIdentifier](#ExternalIdentifier)                             | *           |                          | Not mapped                                           |
-| informationWebsite             | UrlLink                                                               | *           |                          | Not mapped                                           |
-| photoUrl                       | UrlLink                                                               | *           |                          | Not mapped                                           |
-| photo                          | Image                                                                 | *           |                          | Not mapped                                           |
-| operatingHours                 | [OperatingHoursG](#OperatingHoursG)                                   | ?           | location.twentyfourseven | Only `afacOpenAllHours` is evaluated                 |
-| locationReference              | [LocationReferenceG](#LocationReferenceG)                             | ?           |                          | Provides lat/lon and address, see sub-table          |
-| owner                          | [OrganisationG](#OrganisationG)                                       | ?           |                          | Not mapped                                           |
-| operator                       | [OrganisationG](#OrganisationG)                                       | ?           | location.operator        | See [OrganisationG](#OrganisationG)                  |
-| helpdesk                       | [OrganisationG](#OrganisationG)                                       | ?           | location.help_phone      | Telephone extracted from helpdesk organisation       |
-| applicableForVehicles          | VehicleCharacteristics                                                | *           |                          | Not mapped                                           |
-| dimension                      | Dimension                                                             | ?           |                          | Not mapped                                           |
-| amenities                      | Amenities                                                             | ?           |                          | Not mapped                                           |
-| supplementalFacility           | SupplementalFacilityG                                                 | *           |                          | Not mapped                                           |
-| dedicatedParkingSpaces         | DedicatedParkingSpaces                                                | *           |                          | Not mapped                                           |
-| serviceType                    | ServiceType                                                           | *           |                          | Not mapped                                           |
-| entrance                       | LocationG                                                             | *           |                          | Not mapped                                           |
-| exit                           | LocationG                                                             | *           |                          | Not mapped                                           |
-| energyInfrastructureStation    | [EnergyInfrastructureStation](#energyInfrastructureStation)           | *           | location.charging_pool   |                                                      |
-| energyDistributor              | OrganisationG                                                         | ?           |                          | Not mapped                                           |
-| mobilityServiceProvider        | OrganisationG                                                         | *           |                          | Not mapped                                           |
-| roamingPlatfom                 | OrganisationG                                                         | *           |                          | Not mapped                                           |
+| Field                          | Type                                                                  | Cardinality | Mapping                  | Comment                                                                        |
+|--------------------------------|-----------------------------------------------------------------------|-------------|--------------------------|--------------------------------------------------------------------------------|
+| idG                            | string                                                                | 1           | location.uid             |                                                                                |
+| versionG                       | string                                                                | 1           |                          | Not mapped                                                                     |
+| name                           | [MultilingualString](#MultilingualString)                             | ?           | location.name            |                                                                                |
+| alias                          | [MultilingualString](#MultilingualString)                             | *           |                          | Not mapped                                                                     |
+| lastUpdated                    | string (datetime)                                                     | ?           | location.last_updated    |                                                                                |
+| description                    | [MultilingualString](#MultilingualString)                             | ?           |                          | Not mapped                                                                     |
+| additionalInformation          | [MultilingualString](#MultilingualString)                             | *           |                          | Not mapped, contains human-readable site description                           |
+| accessibility                  | [AccessibilityEnum](#AccessibilityEnum)                               | *           |                          | Not mapped at site level                                                       |
+| typeOfSite                     | [EnergyInfrastructureSiteTypeEnum](#EnergyInfrastructureSiteTypeEnum) | ?           |                          | Not mapped                                                                     |
+| brand                          | [MultilingualString](#MultilingualString)                             | ?           |                          | Not mapped                                                                     |
+| exclusiveUsers                 | UserTypeEnum                                                          | *           |                          | Not mapped                                                                     |
+| preferredUsers                 | UserTypeEnum                                                          | *           |                          | Not mapped                                                                     |
+| externalIdentifier             | [ExternalIdentifier](#ExternalIdentifier)                             | *           |                          | Not mapped                                                                     |
+| informationWebsite             | UrlLink                                                               | *           |                          | Not mapped                                                                     |
+| photoUrl                       | UrlLink                                                               | *           |                          | Not mapped                                                                     |
+| photo                          | Image                                                                 | *           |                          | Not mapped                                                                     |
+| operatingHours                 | [OperatingHoursG](#OperatingHoursG)                                   | ?           | location.twentyfourseven | Only `afacOpenAllHours` is evaluated                                           |
+| locationReference              | [LocationReferenceG](#LocationReferenceG)                             | ?           |                          | Provides lat/lon and address, see sub-table                                    |
+| owner                          | [OrganisationG](#OrganisationG)                                       | ?           |                          | Not mapped                                                                     |
+| operator                       | [OrganisationG](#OrganisationG)                                       | ?           | location.operator        | See [OrganisationG](#OrganisationG)                                            |
+| helpdesk                       | [OrganisationG](#OrganisationG)                                       | ?           | location.help_phone      | Telephone extracted from helpdesk organisation                                 |
+| applicableForVehicles          | VehicleCharacteristics                                                | *           |                          | Not mapped                                                                     |
+| dimension                      | Dimension                                                             | ?           |                          | Not mapped                                                                     |
+| amenities                      | [Amenities](#Amenities)                                               | ?           | location.parking_spaces  | Fallback for parking space `has_roof` / `is_illuminated`                       |
+| supplementalFacility           | SupplementalFacilityG                                                 | *           |                          | Not mapped                                                                     |
+| dedicatedParkingSpaces         | [DedicatedParkingSpaces](#DedicatedParkingSpaces)                     | *           | location.parking_spaces  | See [DedicatedParkingSpaces](#DedicatedParkingSpaces)                          |
+| serviceType                    | ServiceType                                                           | *           |                          | Not mapped at site level                                                       |
+| entrance                       | LocationG                                                             | *           |                          | Not mapped                                                                     |
+| exit                           | LocationG                                                             | *           |                          | Not mapped                                                                     |
+| energyInfrastructureStation    | [EnergyInfrastructureStation](#energyInfrastructureStation)           | *           | location.charging_pool   |                                                                                |
+| energyDistributor              | OrganisationG                                                         | ?           |                          | Not mapped                                                                     |
+| mobilityServiceProvider        | OrganisationG                                                         | *           |                          | Not mapped                                                                     |
+| roamingPlatfom                 | OrganisationG                                                         | *           |                          | Not mapped                                                                     |
 
 
 ## LocationReferenceG
@@ -153,13 +153,13 @@ An `energyInfrastructureStation` maps to a `ChargingStation`. Multiple stations 
 | Field                                  | Type                                                                        | Cardinality | Mapping                                   | Comment                                                                                       |
 |----------------------------------------|-----------------------------------------------------------------------------|-------------|-------------------------------------------|-----------------------------------------------------------------------------------------------|
 | idG                                    | string                                                                      | 1           | charging_station.uid                      |                                                                                               |
-| versionG                               | string                                                                      | 1           |                                           |                                                                                               |
+| versionG                               | string                                                                      | 1           |                                           | Not mapped                                                                                    |
 | name                                   | [MultilingualString](#MultilingualString)                                   | ?           | charging_station.name                     |                                                                                               |
 | alias                                  | [MultilingualString](#MultilingualString)                                   | *           |                                           | Not mapped                                                                                    |
 | lastUpdated                            | string (datetime)                                                           | ?           | charging_station.last_updated             | Falls back to location.last_updated                                                           |
 | description                            | [MultilingualString](#MultilingualString)                                   | ?           |                                           | Not mapped                                                                                    |
 | additionalInformation                  | [MultilingualString](#MultilingualString)                                   | *           |                                           | Not mapped                                                                                    |
-| accessibility                          | [AccessibilityEnum](#AccessibilityEnum)                                     | *           |                                           | Not mapped                                                                                    |
+| accessibility                          | [AccessibilityEnum](#AccessibilityEnum)                                     | *           |                                           | Not mapped at station level                                                                   |
 | totalMaximumPower                      | float                                                                       | 1           | charging_station.max_power.value          | Unit set to W                                                                                 |
 | authenticationAndIdentificationMethods | [AuthenticationAndIdentificationEnum](#AuthenticationAndIdentificationEnum) | *           | charging_station.capabilities             | See [AuthenticationAndIdentificationEnum](#AuthenticationAndIdentificationEnum) mapping table |
 | numberOfRefillPoints                   | integer                                                                     | 1           |                                           | Not mapped                                                                                    |
@@ -175,9 +175,9 @@ An `energyInfrastructureStation` maps to a `ChargingStation`. Multiple stations 
 | helpdesk                               | [OrganisationG](#OrganisationG)                                             | ?           |                                           | Not mapped at station level                                                                   |
 | applicableForVehicles                  | VehicleCharacteristics                                                      | *           |                                           | Not mapped                                                                                    |
 | dimension                              | Dimension                                                                   | ?           |                                           | Not mapped                                                                                    |
-| amenities                              | Amenities                                                                   | ?           |                                           | Not mapped                                                                                    |
+| amenities                              | [Amenities](#Amenities)                                                     | ?           | charging_station.parking_spaces           | Fallback for parking space `has_roof` / `is_illuminated`                                      |
 | supplementalFacility                   | SupplementalFacilityG                                                       | *           |                                           | Not mapped                                                                                    |
-| dedicatedParkingSpaces                 | DedicatedParkingSpaces                                                      | *           |                                           | Not mapped                                                                                    |
+| dedicatedParkingSpaces                 | [DedicatedParkingSpaces](#DedicatedParkingSpaces)                           | *           | charging_station.parking_spaces           | See [DedicatedParkingSpaces](#DedicatedParkingSpaces)                                         |
 | serviceType                            | [ServiceType](#ServiceTypeEnum)                                             | *           | charging_station.service_type             | See [ServiceTypeEnum](#ServiceTypeEnum) mapping table, first match used                       |
 | energyDistributor                      | [OrganisationG](#OrganisationG)                                             | ?           |                                           | Not mapped                                                                                    |
 | mobilityServiceProvider                | [OrganisationG](#OrganisationG)                                             | *           |                                           | Not mapped                                                                                    |
@@ -194,7 +194,7 @@ physical charging outlet that can serve one vehicle at a time.
 | Field                          | Type                                      | Cardinality | Mapping                      | Comment                                                                                   |
 |--------------------------------|-------------------------------------------|-------------|------------------------------|-------------------------------------------------------------------------------------------|
 | idG                            | string                                    | 1           | evse.uid                     | Also mapped to evse.evse_id                                                               |
-| versionG                       | string                                    | 1           |                              |                                                                                           |
+| versionG                       | string                                    | 1           |                              | Not mapped                                                                                |
 | name                           | [MultilingualString](#MultilingualString) | ?           |                              | Not mapped                                                                                |
 | alias                          | [MultilingualString](#MultilingualString) | *           |                              | Not mapped                                                                                |
 | lastUpdated                    | string (datetime)                         | ?           | evse.last_updated            | Falls back to charging_station.last_updated                                               |
@@ -434,6 +434,100 @@ seconds.
 | paymentMode  | PaymentModeEnum | *           |         | Not mapped                                   |
 
 
+# DedicatedParkingSpaces
+
+`DedicatedParkingSpaces` maps to `ParkingSpaceUpdate` at both the site level (-> `location.parking_spaces`) and the
+station level (-> `charging_station.parking_spaces`). Parking spaces with identical properties (vehicle types,
+dimensions, amenities, accessibility) are deduplicated by summing their counts.
+
+| Field                | Type                                                            | Cardinality | Mapping                           | Comment                                                                       |
+|----------------------|-----------------------------------------------------------------|-------------|-----------------------------------|-------------------------------------------------------------------------------|
+| numberOfSpaces       | integer                                                         | 1           | parking_space.parking_space_count |                                                                               |
+| applicableForVehicles| [VehicleCharacteristics](#VehicleCharacteristics)               | *           | parking_space.vehicle_types       | EU vehicle categories mapped, see [EuVehicleCategoryEnum](#EuVehicleCategoryEnum) |
+| accessibility        | [AccessibilityEnum](#AccessibilityEnum)                         | *           | parking_space.is_accessible       | `true` if any accessible value present, see below                             |
+| amenities            | [Amenities](#Amenities)                                         | ?           | parking_space.has_roof, parking_space.is_illuminated | Per-space amenities, falls back to site/station amenities   |
+
+
+## VehicleCharacteristics
+
+Vehicle characteristics provide vehicle type categories and dimension constraints for dedicated parking spaces.
+
+| Field                                                        | Type                                                      | Cardinality | Mapping                       | Comment                                              |
+|--------------------------------------------------------------|-----------------------------------------------------------|-------------|-------------------------------|------------------------------------------------------|
+| comVehicleCharacteristicsExtensionG.VehicleCharacteristicsExtended.euVehicleCategory | [EuVehicleCategoryEnum](#EuVehicleCategoryEnum) | * | parking_space.vehicle_types | See mapping table below                     |
+| grossWeightCharacteristic[].grossVehicleWeight               | float                                                     | ?           | parking_space.max_weight      | Converted: tonnes * 1000 = kg                        |
+| heightCharacteristic[].vehicleHeight                         | float                                                     | ?           | parking_space.max_height      | Converted: metres * 100 = cm                         |
+| lengthCharacteristic[].vehicleLength                         | float                                                     | ?           | parking_space.max_length      | Converted: metres * 100 = cm                         |
+| widthCharacteristic[].vehicleWidth                           | float                                                     | ?           | parking_space.max_width       | Converted: metres * 100 = cm                         |
+
+
+## EuVehicleCategoryEnum
+
+DATEX II EU vehicle categories map to `VehicleCategoryEnum`. N1 sub-classes all map to `N1`.
+
+| Key              | Mapping |
+|------------------|---------|
+| l1               | L1      |
+| l2               | L2      |
+| l3               | L3      |
+| l4               | L4      |
+| l5               | L5      |
+| l6               | L6      |
+| l7               | L7      |
+| m                | M       |
+| m1               | M1      |
+| m2               | M2      |
+| m3               | M3      |
+| n                | N       |
+| n1               | N1      |
+| n1ClassI         | N1      |
+| n1ClassII        | N1      |
+| n1ClassIII       | N1      |
+| n1ClassIIIAndN2  | N1      |
+| n2               | N2      |
+| n3               | N3      |
+| o                | O       |
+| o1               | O1      |
+| o2               | O2      |
+| o3               | O3      |
+| o4               | O4      |
+| r1               | R1      |
+| r2               | R2      |
+| r3               | R3      |
+| r4               | R4      |
+| t1               | T1      |
+| t2               | T2      |
+| t3               | T3      |
+| t4               | T4      |
+| t41              | T41     |
+| t42              | T42     |
+| t43              | T43     |
+
+
+## Amenities
+
+`Amenities` provides facility information for parking spaces. Used at site, station, and per-parking-space level.
+Per-parking-space amenities take precedence; site/station amenities are used as fallback.
+
+| Field       | Type    | Cardinality | Mapping                       | Comment |
+|-------------|---------|-------------|-------------------------------|---------|
+| roofed      | boolean | ?           | parking_space.has_roof        |         |
+| illuminated | boolean | ?           | parking_space.is_illuminated  |         |
+
+
+## AccessibilityEnum
+
+Used within `DedicatedParkingSpaces` to determine if parking spaces are accessible.
+
+| Key                      | Sets `is_accessible` |
+|--------------------------|----------------------|
+| barrierFreeAccessible    | true                 |
+| disabilityAccessible     | true                 |
+| wheelchairAccessible     | true                 |
+| none                     |                      |
+| extendedG                |                      |
+
+
 # MultilingualString
 
 A `MultilingualString` contains language-tagged values. The first value is used.
@@ -482,11 +576,6 @@ DATEX II `serviceType` maps to `ServiceType`. The first matching entry from the 
 | physicalAttendance | PHYSICAL_ATTENDANCE  |
 | unattended         | UNATTENDED           |
 | extendedG          |                      |
-
-
-# AccessibilityEnum
-
-Not mapped. Contains accessibility information for the site/station.
 
 
 # EnergyInfrastructureSiteTypeEnum

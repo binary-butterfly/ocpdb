@@ -52,12 +52,23 @@ class BaseDatex2V35ImportService(BaseImportService, ABC):
     v3_5_json_static_datex_mapper = Datex2V35JSONStaticMapper()
 
     def fetch_static_data(self):
+        data = self.request_data(self.config.get('static_subscription_id'))
+        self.import_static_data(data)
+
+    def fetch_realtime_data(self):
+        source = self.get_source()
+        if source.static_status != SourceStatus.ACTIVE:
+            return
+
+        data = self.request_data(self.config.get('realtime_subscription_id'))
+        self.import_realtime_data(data)
+
+    def import_static_data(self, data: dict):
         source = self.get_source()
         error_count = 0
         success_count = 0
         location_updates: list[LocationUpdate] = []
         static_data_updated_at = datetime.now(timezone.utc)
-        data = self.request_data(self.config.get('static_subscription_id'))
 
         try:
             datex_input = self.v3_5_json_static_datex_validator.validate(data)
@@ -83,19 +94,7 @@ class BaseDatex2V35ImportService(BaseImportService, ABC):
 
         publication_input = datex_input.payload.aegiEnergyInfrastructureTablePublication.energyInfrastructureTable[0]
 
-        for energy_infrastructure_site_dict in publication_input.energyInfrastructureSite:
-            try:
-                energy_infrastructure_site_input = self.energy_infrastructure_site_validator.validate(
-                    energy_infrastructure_site_dict
-                )
-            except ValidationError as e:
-                logger.warning(
-                    f'DATEX2 EnergyInfrastructureSite {energy_infrastructure_site_dict} has error: {e.to_dict()}',
-                    extra={'attributes': {'type': LogMessageType.IMPORT_SOURCE}},
-                )
-                error_count += 1
-                continue
-
+        for energy_infrastructure_site_input in publication_input.energyInfrastructureSite:
             location_update = self.v3_5_json_static_datex_mapper.map_energy_infrastructure_site_to_location(
                 self.source_info.uid,
                 energy_infrastructure_site_input,
@@ -119,15 +118,11 @@ class BaseDatex2V35ImportService(BaseImportService, ABC):
             extra={'attributes': {'type': LogMessageType.IMPORT_LOCATION}},
         )
 
-    def fetch_realtime_data(self):
+    def import_realtime_data(self, data: dict):
         source = self.get_source()
-        if source.static_status != SourceStatus.ACTIVE:
-            return
-
         realtime_error_count = 0
         realtime_success_count = 0
         realtime_data_updated_at = datetime.now(timezone.utc)
-        data = self.request_data(self.config.get('realtime_subscription_id'))
 
         try:
             realtime_data = {'payload': data['messageContainer']['payload'][0]}
@@ -166,16 +161,7 @@ class BaseDatex2V35ImportService(BaseImportService, ABC):
         for site_status in datex_input.payload.aegiEnergyInfrastructureStatusPublication.energyInfrastructureSiteStatus:
             if site_status.energyInfrastructureStationStatus is UnsetValue:
                 continue
-            for station_status_dict in site_status.energyInfrastructureStationStatus:
-                try:
-                    station_status = self.energy_infrastructure_station_status_validator.validate(station_status_dict)
-                except ValidationError as e:
-                    logger.warning(
-                        f'DATEX2 EnergyInfrastructureStationStatus {station_status_dict} has error: {e.to_dict()}',
-                        extra={'attributes': {'type': LogMessageType.IMPORT_SOURCE}},
-                    )
-                    realtime_error_count += 1
-                    continue
+            for station_status in site_status.energyInfrastructureStationStatus:
                 if station_status.refillPointStatus is UnsetValue:
                     continue
                 for refill_point_status_g in station_status.refillPointStatus:

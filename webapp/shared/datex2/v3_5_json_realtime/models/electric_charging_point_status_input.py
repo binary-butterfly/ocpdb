@@ -3,14 +3,16 @@ Copyright 2026 binary butterfly GmbH
 Use of this source code is governed by an MIT-style license that can be found in the LICENSE.txt.
 """
 
+from datetime import datetime
+
 from validataclass.dataclasses import Default, ValidataclassMixin, validataclass
 from validataclass.helpers import UnsetValue, UnsetValueType
 from validataclass.validators import (
     BooleanValidator,
     DataclassValidator,
+    DateTimeValidator,
     FloatValidator,
     ListValidator,
-    StringValidator,
 )
 
 from .duration_value_input import DurationValueInput
@@ -34,7 +36,7 @@ class ElectricChargingPointStatusInput(ValidataclassMixin):
     """
 
     reference: FacilityObjectVersionedReferenceGInput = DataclassValidator(FacilityObjectVersionedReferenceGInput)
-    lastUpdated: str | UnsetValueType = StringValidator(), Default(UnsetValue)
+    lastUpdated: datetime | UnsetValueType = DateTimeValidator(), Default(UnsetValue)
     openingStatus: OpeningStatusEnumGInput | UnsetValueType = (
         DataclassValidator(OpeningStatusEnumGInput),
         Default(UnsetValue),
@@ -53,7 +55,10 @@ class ElectricChargingPointStatusInput(ValidataclassMixin):
     remainingChargingTime: float | UnsetValueType = FloatValidator(), Default(UnsetValue)
     currentVoltage: float | UnsetValueType = FloatValidator(), Default(UnsetValue)
     currentChargingPower: float | UnsetValueType = FloatValidator(), Default(UnsetValue)
-    nextAvailableChargingSlots: list[str] | UnsetValueType = ListValidator(StringValidator()), Default(UnsetValue)
+    nextAvailableChargingSlots: list[datetime] | UnsetValueType = (
+        ListValidator(DateTimeValidator()),
+        Default(UnsetValue),
+    )
     newOperatingHours: OperatingHoursGInput | UnsetValueType = (
         DataclassValidator(OperatingHoursGInput),
         Default(UnsetValue),

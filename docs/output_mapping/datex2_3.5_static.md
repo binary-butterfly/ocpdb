@@ -49,16 +49,17 @@ Top-level publication wrapper.
 
 A `Location` maps to an `EnergyInfrastructureSite`. Locations without `lat`/`lon` are skipped.
 
-| Field                       | Type                                                          | Mapping                  | Comment                               |
-|-----------------------------|---------------------------------------------------------------|--------------------------|---------------------------------------|
-| idG                         | string                                                        | location.uid             |                                       |
-| versionG                    | string (datetime)                                             | location.last_updated    | ISO 8601 format                       |
-| additionalInformation       | [MultilingualString](#multilingualstring)[]                   | location.name            | Only set if name is present           |
-| operatingHours              | [OperatingHoursG](#operatinghoursg)                           | location.twentyfourseven | Only set if `twentyfourseven` is true |
-| locationReference           | [LocationReferenceG (site)](#locationreferenceg-site-level)   |                          | See sub-table                         |
-| operator                    | [OrganisationG](#organisationg)                               | location.operator        | Only set if operator is present       |
-| helpdesk                    | [OrganisationG](#organisationg-helpdesk)                      | location.help_phone      | Only set if help_phone is present     |
-| energyInfrastructureStation | [EnergyInfrastructureStation](#energyinfrastructurestation)[] | location.charging_pool   |                                       |
+| Field                       | Type                                                          | Mapping                  | Comment                                |
+|-----------------------------|---------------------------------------------------------------|--------------------------|----------------------------------------|
+| idG                         | string                                                        | location.uid             |                                        |
+| versionG                    | string (datetime)                                             | location.last_updated    | ISO 8601 format                        |
+| additionalInformation       | [MultilingualString](#multilingualstring)[]                   | location.name            | Only set if name is present            |
+| operatingHours              | [OperatingHoursG](#operatinghoursg)                           | location.twentyfourseven | Only set if `twentyfourseven` is true  |
+| locationReference           | [LocationReferenceG (site)](#locationreferenceg-site-level)   |                          | See sub-table                          |
+| operator                    | [OrganisationG](#organisationg)                               | location.operator        | Only set if operator is present        |
+| helpdesk                    | [OrganisationG](#organisationg-helpdesk)                      | location.help_phone      | Only set if help_phone is present      |
+| dedicatedParkingSpaces      | [DedicatedParkingSpaces](#dedicatedparkingspaces)[]           | location.parking_spaces  | Only set if parking spaces are present |
+| energyInfrastructureStation | [EnergyInfrastructureStation](#energyinfrastructurestation)[] | location.charging_pool   |                                        |
 
 
 ### LocationReferenceG (site level)
@@ -137,6 +138,44 @@ Helpdesk organisation, only set when `location.help_phone` is present.
 | afacReferenceableOrganisation.organisationUnit[0].contactInformation[0].afacContactInformation.telephoneNumber | string                                    | location.help_phone   |                                         |
 
 
+## DedicatedParkingSpaces
+
+Each `ParkingSpace` on the location maps to a `DedicatedParkingSpaces` entry.
+
+| Field               | Type                                                   | Mapping                           | Comment                                                  |
+|---------------------|--------------------------------------------------------|-----------------------------------|----------------------------------------------------------|
+| idG                 | string                                                 | `PARKING`                         | Static value                                             |
+| versionG            | string (datetime)                                      | location.last_updated             | ISO 8601 format                                          |
+| numberOfSpaces      | integer                                                | parking_space.parking_space_count |                                                          |
+| applicableForVehicles | [VehicleCharacteristics](#vehiclecharacteristics)[]  | parking_space.vehicle_types       | Only set if vehicle types can be mapped                  |
+| amenities.roofed    | boolean                                                | parking_space.has_roof            |                                                          |
+| amenities.illuminated | boolean                                              | parking_space.is_illuminated      |                                                          |
+| accessibility       | AccessibilityEnumG[]                                   | parking_space.is_accessible       | `barrierFreeAccessible` if accessible, otherwise not set |
+
+
+### VehicleCharacteristics
+
+| Field                                                                            | Type                           | Mapping                      | Comment                                           |
+|----------------------------------------------------------------------------------|--------------------------------|------------------------------|---------------------------------------------------|
+| comVehicleCharacteristicsExtensionG.VehicleCharacteristicsExtended.euVehicleCategory | EuVehicleCategoryEnumG[]   | parking_space.vehicle_types  | See [vehicle category mapping](#vehicle-category-mapping) |
+| grossWeightCharacteristic[0].grossVehicleWeight                                  | float                          | parking_space.max_weight     | Converted: kg / 1000 = tonnes, `lessThanOrEqualTo` |
+| heightCharacteristic[0].vehicleHeight                                            | float                          | parking_space.max_height     | Converted: cm / 100 = metres, `lessThanOrEqualTo`  |
+| lengthCharacteristic[0].vehicleLength                                            | float                          | parking_space.max_length     | Converted: cm / 100 = metres, `lessThanOrEqualTo`  |
+| widthCharacteristic[0].vehicleWidth                                              | float                          | parking_space.max_width      | Converted: cm / 100 = metres, `lessThanOrEqualTo`  |
+
+
+### Vehicle Category Mapping
+
+| Internal (VehicleCategoryEnum) | DATEX II (EuVehicleCategoryEnum) |
+|--------------------------------|----------------------------------|
+| L1 - L7                       | l1 - l7                         |
+| M, M1 - M3                    | m, m1 - m3                      |
+| N, N1 - N3                    | n, n1 - n3                      |
+| O, O1 - O4                    | o, o1 - o4                      |
+| R1 - R4                       | r1 - r4                         |
+| T1 - T4, T41 - T43            | t1 - t4, t41 - t43              |
+
+
 ## EnergyInfrastructureStation
 
 A `ChargingStation` maps to an `EnergyInfrastructureStation`.
@@ -201,8 +240,8 @@ An `Evse` maps to a `RefillPointG` wrapping an `ElectricChargingPoint`.
 | deliveryUnit           | DeliveryUnitEnumG                     | `kWh`                               | Static value                                       |
 | currentType            | CurrentTypeEnumG                      | first connector's power_type        | See [current type mapping](#current-type-mapping)  |
 | numberOfConnectors     | integer                               | len(evse.connectors)                |                                                    |
-| availableVoltage       | float[]                               | connectors' max_voltage             | Collected from all connectors, only set if any     |
-| availableChargingPower | float[]                               | connectors' max_electric_power      | Collected from all connectors, only set if any     |
+| availableVoltage       | int[]                                 | connectors' max_voltage             | Collected from all connectors, only set if any     |
+| availableChargingPower | int[]                                 | connectors' max_electric_power      | Collected from all connectors, only set if any     |
 | electricEnergy         | [ElectricEnergy](#electricenergy)[]   | location.energy_mix, evse.tariffs   | Only set if energy mix or tariffs exist            |
 | connector              | [Connector](#connector)[]             | evse.connectors                     | Connectors without `standard` are skipped          |
 
@@ -255,12 +294,14 @@ Tariffs associated with the EVSE are mapped to `EnergyRate` entries. The `idG` i
 
 Each tariff element's price component maps to an `EnergyPrice`.
 
-| Field                  | Type                                                  | Mapping                         | Comment                                                   |
-|------------------------|-------------------------------------------------------|---------------------------------|-----------------------------------------------------------|
-| priceType              | [PriceTypeEnumG](#pricetypeenum)                      | price_component.type            | See [PriceTypeEnum](#pricetypeenum) mapping               |
-| value                  | float                                                 | price_component.price           | Defaults to 0 if not set                                  |
-| taxRate                | float                                                 | price_component.taxes[0].percentage | Only set if tax with percentage exists                |
-| timeBasedApplicability | [TimeBasedApplicability](#timebasedapplicability)     | tariff_element.restrictions     | Only set if min_duration or max_duration is present       |
+| Field                    | Type                                                  | Mapping                                    | Comment                                                              |
+|--------------------------|-------------------------------------------------------|--------------------------------------------|----------------------------------------------------------------------|
+| priceType                | [PriceTypeEnumG](#pricetypeenum)                      | price_component.type                       | See [PriceTypeEnum](#pricetypeenum) mapping                          |
+| value                    | float                                                 | price_component.price                      | Defaults to 0 if not set                                             |
+| taxRate                  | float                                                 | price_component.taxes[0].percentage        | Only set if tax with percentage exists                               |
+| timeBasedApplicability   | [TimeBasedApplicability](#timebasedapplicability)     | tariff_element.restrictions                | Only set if min_duration or max_duration is present                  |
+| overallPeriod            | [OverallPeriod](#overallperiod)                       | tariff_element.restrictions                | Only set if start_time or end_time is present                        |
+| energyBasedApplicability | [EnergyBasedApplicability](#energybasedapplicability) | tariff_element.restrictions                | Only set if min_energy or max_energy is present                      |
 
 
 ### PriceTypeEnum
@@ -276,10 +317,31 @@ Each tariff element's price component maps to an `EnergyPrice`.
 
 ### TimeBasedApplicability
 
-| Field      | Type    | Mapping                              | Comment                                    |
-|------------|---------|--------------------------------------|--------------------------------------------|
-| fromMinute | integer | tariff_element.restrictions.min_duration | Converted: seconds / 60 = minutes      |
-| toMinute   | integer | tariff_element.restrictions.max_duration | Converted: seconds / 60 = minutes      |
+| Field      | Type    | Mapping                                  | Comment                                |
+|------------|---------|------------------------------------------|----------------------------------------|
+| fromMinute | integer | tariff_element.restrictions.min_duration  | Converted: seconds / 60 = minutes      |
+| toMinute   | integer | tariff_element.restrictions.max_duration  | Converted: seconds / 60 = minutes      |
+
+
+### OverallPeriod
+
+Only set when `tariff_element.restrictions.start_time` or `end_time` is present.
+
+| Field                                          | Type              | Mapping                              | Comment                                                  |
+|------------------------------------------------|-------------------|--------------------------------------|----------------------------------------------------------|
+| overallStartTime                               | string (datetime) | tariff_association.start_date_time   | Falls back to current UTC time                           |
+| validPeriod[0].recurringTimePeriodOfDay[0].startTimeOfPeriod | string  | tariff_element.restrictions.start_time | Falls back to `00:00`                        |
+| validPeriod[0].recurringTimePeriodOfDay[0].endTimeOfPeriod   | string  | tariff_element.restrictions.end_time   | Falls back to `23:59`                        |
+
+
+### EnergyBasedApplicability
+
+Only set when `tariff_element.restrictions.min_energy` or `max_energy` is present.
+
+| Field   | Type    | Mapping                                 | Comment    |
+|---------|---------|-----------------------------------------|------------|
+| fromKWh | integer | tariff_element.restrictions.min_energy  | Cast to int |
+| toKWh   | integer | tariff_element.restrictions.max_energy  | Cast to int |
 
 
 ### Connector

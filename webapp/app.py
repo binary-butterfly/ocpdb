@@ -28,6 +28,7 @@ from webapp.common.config import ConfigLoader
 from webapp.common.constants import BaseConfig
 from webapp.common.error_handling import ErrorDispatcher
 from webapp.common.flask_app import App
+from webapp.common.helper import AnyDict
 from webapp.common.rest import RestApiErrorHandler
 from webapp.dependencies import dependencies
 from webapp.extensions import celery, db
@@ -39,7 +40,7 @@ from webapp.server_rest_api import ServerRestApi
 __all__ = ['launch']
 
 
-def launch(app_class: type[App] = App, config_overrides: dict | None = None) -> App:
+def launch(app_class: type[App] = App, config_overrides: AnyDict | None = None) -> App:
     app = app_class(BaseConfig.PROJECT_NAME)
     configure_app(app, config_overrides)
     configure_extensions(app)
@@ -49,7 +50,7 @@ def launch(app_class: type[App] = App, config_overrides: dict | None = None) -> 
     return app
 
 
-def configure_app(app: App, config_overrides: dict | None = None) -> None:
+def configure_app(app: App, config_overrides: AnyDict | None = None) -> None:
     config_loader = ConfigLoader()
     config_loader.configure_app(app, config_overrides)
 
@@ -91,5 +92,5 @@ def configure_error_handlers(app: App) -> None:
 
 @celery.on_after_configure.connect
 def configure_periodic_tasks(**kwargs):
-    task_runner = dependencies.get_generic_import_runner()
-    task_runner.start()
+    beat_runner = dependencies.get_generic_beat_runner()
+    beat_runner.start()

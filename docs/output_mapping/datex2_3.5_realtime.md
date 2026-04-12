@@ -1,62 +1,30 @@
-# DATEX II Realtime Output Mapping
+# DATEX II 3.5 Realtime Output Mapping
 
 This documents the output mapping from OCPDB internal models to the
 [DATEX II German Energy Infrastructure Profile](https://github.com/MobilithekDE/AFIR-DATEX-II-Recharging-Profil/)
-(JSON) realtime data endpoint.
+(JSON, version 3.5) realtime data endpoint.
 
-**Endpoint**: `GET /api/public/datex/v3.6/recharging/realtime`
+**Endpoint**: `GET /api/public/datex/v3.5/json/realtime`
 
-The response is a JSON object with a `messageContainer` key containing a `MessageContainer` with exchange information
-and a payload. The payload contains an `aegiEnergyInfrastructureStatusPublication` with the hierarchical structure:
+The response is a JSON object with a single `payload` key containing a `PayloadPublicationG` object. The payload
+contains an `aegiEnergyInfrastructureStatusPublication` with the hierarchical structure:
 `energyInfrastructureSiteStatus` -> `energyInfrastructureStationStatus` -> `refillPointStatus`.
 
 The realtime data references static data objects by their `idG`, allowing consumers to correlate status information
 with the static endpoint's structural data.
 
 
-## MessageContainer
-
-Top-level message wrapper.
-
-| Field               | Type                                          | Mapping | Comment             |
-|---------------------|-----------------------------------------------|---------|---------------------|
-| payload             | [PayloadPublicationG](#payloadpublicationg)[] |         | Single-element list |
-| exchangeInformation | [ExchangeInformation](#exchangeinformation)   |         |                     |
-
-
-## ExchangeInformation
-
-| Field              | Type                                      | Mapping | Comment |
-|--------------------|-------------------------------------------|---------|---------|
-| exchangeContext    | [ExchangeContext](#exchangecontext)       |         |         |
-| dynamicInformation | [DynamicInformation](#dynamicinformation) |         |         |
-
-
-### ExchangeContext
-
-| Field                        | Type             | Mapping        | Comment      |
-|------------------------------|------------------|----------------|--------------|
-| codedExchangeProtocol.value  | ProtocolTypeEnum | `snapshotPull` | Static value |
-| exchangeSpecificationVersion | string           | `3.6`          | Static value |
-| supplierOrCisRequester.name  | string           | `OCPDB`        | Static value |
-
-
-### DynamicInformation
-
-| Field                      | Type               | Mapping          | Comment         |
-|----------------------------|--------------------|------------------|-----------------|
-| exchangeStatus.value       | ExchangeStatusEnum | `online`         | Static value    |
-| messageGenerationTimestamp | string (datetime)  | Current UTC time | ISO 8601 format |
-
-
 ## PayloadPublicationG
 
-| Field                                     | Type                                                                            | Mapping                      | Comment      |
-|-------------------------------------------|---------------------------------------------------------------------------------|------------------------------|--------------|
-| versionG                                  | string                                                                          | `3.6`                        | Static value |
-| profileNameG                              | string                                                                          | `AFIR Energy Infrastructure` | Static value |
-| profileVersionG                           | string                                                                          | `01-00-00`                   | Static value |
-| aegiEnergyInfrastructureStatusPublication | [EnergyInfrastructureStatusPublication](#energyinfrastructurestatuspublication) |                              |              |
+Top-level publication wrapper.
+
+| Field                                      | Type                                                                            | Mapping                      | Comment      |
+|--------------------------------------------|---------------------------------------------------------------------------------|------------------------------|--------------|
+| modelBaseVersionG                          | string                                                                          | `3`                          | Static value |
+| versionG                                   | string                                                                          | `3.5`                        | Static value |
+| profileNameG                               | string                                                                          | `AFIR Energy Infrastructure` | Static value |
+| profileVersionG                            | string                                                                          | `01-00-00`                   | Static value |
+| aegiEnergyInfrastructureStatusPublication  | [EnergyInfrastructureStatusPublication](#energyinfrastructurestatuspublication) |                              |              |
 
 
 ## EnergyInfrastructureStatusPublication
