@@ -1,5 +1,14 @@
 # Changelog
 
+## 2.10.0
+
+Released 2026-04-13
+
+### Features
+
+* [Datex2 Tariff](https://github.com/binary-butterfly/ocpdb/pull/190)
+
+
 ## Version 2.9.0
 
 Released 2026-03-23
