@@ -16,7 +16,7 @@ class DurationValueInput(ValidataclassMixin):
     A measured or calculated value of a period of time.
     """
 
-    duration: int = FloatValidator()
+    duration: float = FloatValidator()
     comDataValueExtensionG: ExtensionTypeGInput | UnsetValueType = (
         DataclassValidator(ExtensionTypeGInput),
         Default(UnsetValue),

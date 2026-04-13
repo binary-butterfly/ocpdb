@@ -18,22 +18,34 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from webapp.public_api.base_handler import PublicApiBaseHandler
 from webapp.repositories import LocationRepository
-from webapp.shared.datex2.v3_7_json_static.models.d_a_t_e_x_i_i3_d2_payload_input import DATEXII3D2PayloadInput
-from webapp.shared.location_search_queries import LocationSearchQuery
-
-from .datex2_static_mapper import DatexV37JSONStaticExportMapper
+from webapp.shared.datex2.v3_7.realtime.d_a_t_e_x_i_i3_d2_payload_output import (
+    DATEXII3D2PayloadOutput as DATEXII3D2RealtimePayloadOutput,
+)
+from webapp.shared.datex2.v3_7.static.d_a_t_e_x_i_i3_d2_payload_output import (
+    DATEXII3D2PayloadOutput as DATEXII3D2StaticPayloadOutput,
+)
+from webapp.shared.datex2.v3_7_realtime_export_mapper import DatexV37JSONRealtimeExportMapper
+from webapp.shared.datex2.v3_7_static_export_mapper import DatexV37JSONStaticExportMapper
+from webapp.shared.location_search_queries import LocationApiSearchQuery
 
 
 class Datex2V37JSONHandler(PublicApiBaseHandler):
     location_repository: LocationRepository
     datex_static_export_mapper: DatexV37JSONStaticExportMapper
+    datex_realtime_export_mapper: DatexV37JSONRealtimeExportMapper
 
     def __init__(self, *args, location_repository: LocationRepository, **kwargs):
         super().__init__(*args, **kwargs)
         self.location_repository = location_repository
         self.datex_static_export_mapper = DatexV37JSONStaticExportMapper()
+        self.datex_realtime_export_mapper = DatexV37JSONRealtimeExportMapper()
 
-    def get_datex2_payload(self, search_query: LocationSearchQuery) -> DATEXII3D2PayloadInput:
-        locations = self.location_repository.fetch_locations(search_query)
+    def get_datex2_payload(self, search_query: LocationApiSearchQuery) -> DATEXII3D2StaticPayloadOutput:
+        locations = self.location_repository.fetch_locations(search_query=search_query)
 
         return self.datex_static_export_mapper.map_locations_to_static_payload(list(locations))
+
+    def get_datex2_realtime_payload(self, search_query: LocationApiSearchQuery) -> DATEXII3D2RealtimePayloadOutput:
+        locations = self.location_repository.fetch_locations(search_query=search_query)
+
+        return self.datex_realtime_export_mapper.map_locations_to_realtime_payload(list(locations))

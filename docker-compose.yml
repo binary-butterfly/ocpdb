@@ -42,8 +42,6 @@ services:
   flask:
     <<: *flask-defaults
     command: ["python3", "run_flask_dev.py"]
-    ports:
-      - '5010:5000'
 
   worker:
     <<: *flask-defaults
@@ -55,12 +53,6 @@ services:
 
   postgre:
     image: postgis/postgis:15-3.5-alpine
-    ports:
-      - '5442:5432'
-    volumes:
-      - postgres:/var/lib/postgresql/data/
-      - ./scripts:/scripts
-      - ./data/regionalschluessel:/data
     environment:
       - POSTGRES_USER=ocpdb
       - POSTGRES_PASSWORD=development
@@ -109,6 +101,3 @@ services:
       interval: 1s
       timeout: 1s
       retries: 20
-
-volumes:
-  postgres:

@@ -36,7 +36,7 @@ from webapp.dependencies import dependencies
 from webapp.public_api.base_blueprint import BaseBlueprint
 from webapp.public_api.charging_station_api.charging_station_handler import ChargingStationHandler
 from webapp.public_api.charging_station_api.charging_station_search_queries import ChargingStationSearchQuery
-from webapp.shared.ocpi_schema import all_charging_station_components
+from webapp.shared.v3_0.location_schema import all_charging_station_components
 
 
 class Ocpi30ChargingStationBlueprint(BaseBlueprint):

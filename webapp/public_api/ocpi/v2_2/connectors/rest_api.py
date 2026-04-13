@@ -36,7 +36,7 @@ from webapp.dependencies import dependencies
 from webapp.public_api.base_blueprint import BaseBlueprint
 from webapp.public_api.connector_api.connector_handler import ConnectorHandler
 from webapp.public_api.connector_api.connector_search_queries import ConnectorSearchQuery
-from webapp.shared.ocpi_schema import all_connector_components
+from webapp.shared.connector_schema import all_connector_components
 
 
 class OcpiConnectorBlueprint(BaseBlueprint):

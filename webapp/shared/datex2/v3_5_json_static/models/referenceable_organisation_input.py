@@ -3,9 +3,17 @@ Copyright 2026 binary butterfly GmbH
 Use of this source code is governed by an MIT-style license that can be found in the LICENSE.txt.
 """
 
+from datetime import datetime
+
 from validataclass.dataclasses import Default, ValidataclassMixin, validataclass
 from validataclass.helpers import UnsetValue, UnsetValueType
-from validataclass.validators import BooleanValidator, DataclassValidator, ListValidator, StringValidator
+from validataclass.validators import (
+    BooleanValidator,
+    DataclassValidator,
+    DateTimeValidator,
+    ListValidator,
+    StringValidator,
+)
 
 from .extension_type_g_input import ExtensionTypeGInput
 from .external_identifier_input import ExternalIdentifierInput
@@ -23,7 +31,7 @@ class ReferenceableOrganisationInput(ValidataclassMixin):
 
     idG: str = StringValidator()
     versionG: str = StringValidator()
-    lastUpdated: str | UnsetValueType = StringValidator(), Default(UnsetValue)
+    lastUpdated: datetime | UnsetValueType = DateTimeValidator(), Default(UnsetValue)
     name: MultilingualStringInput = DataclassValidator(MultilingualStringInput)
     legalName: MultilingualStringInput | UnsetValueType = (
         DataclassValidator(MultilingualStringInput),

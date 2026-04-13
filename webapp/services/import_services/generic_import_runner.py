@@ -20,19 +20,26 @@ from celery.schedules import crontab
 
 from webapp.extensions import celery
 from webapp.services.base_service import BaseService
+from webapp.services.push_services.datex_push_service import ChargeLocationService
 
 from .generic_import_heartbeat_tasks import image_import_task, realtime_import_task, static_import_task
 from .import_services import ImportServices
 
 
-class GenericImportRunner(BaseService):
+class GenericBeatRunner(BaseService):
     import_services: ImportServices
+    charge_location_service: ChargeLocationService
 
-    def __init__(self, *, import_services: ImportServices, **kwargs):
+    def __init__(self, *, import_services: ImportServices, charge_location_service: ChargeLocationService, **kwargs):
         super().__init__(**kwargs)
         self.import_services = import_services
+        self.charge_location_service = charge_location_service
 
     def start(self):
+        self._schedule_imports()
+        self._schedule_push()
+
+    def _schedule_imports(self):
         if self.config_helper.get('DISABLE_AUTOFETCH'):
             return
 
@@ -70,3 +77,34 @@ class GenericImportRunner(BaseService):
                     realtime_import_task,
                     kwargs={'source': importer_service.source_info.uid},
                 )
+
+    def _schedule_push(self):
+        if not self.config_helper.get('MOBILITHEK_ENABLED', False):
+            return
+
+        celery.add_periodic_task(
+            crontab(
+                minute=str(self.config_helper.get('DATEX_STATIC_PUSH_MINUTE', 0)),
+                hour=str(self.config_helper.get('DATEX_STATIC_PUSH_HOUR', 3)),
+            ),
+            push_datex_static_task,
+        )
+
+        celery.add_periodic_task(
+            self.config_helper.get('DATEX_REALTIME_PUSH_FREQUENCY', 60),
+            push_datex_realtime_task,
+        )
+
+
+@celery.task()
+def push_datex_static_task():
+    from webapp.dependencies import dependencies
+
+    dependencies.get_charge_location_service().push_datex_static()
+
+
+@celery.task()
+def push_datex_realtime_task():
+    from webapp.dependencies import dependencies
+
+    dependencies.get_charge_location_service().push_datex_realtime(incremental_update=True)

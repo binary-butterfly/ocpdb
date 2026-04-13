@@ -34,8 +34,8 @@ from validataclass.validators import DataclassValidator
 from webapp.common.rest import BaseMethodView
 from webapp.dependencies import dependencies
 from webapp.public_api.base_blueprint import BaseBlueprint
-from webapp.shared.location_search_queries import LocationSearchQuery
-from webapp.shared.ocpi_schema import all_ocpi_30_location_components
+from webapp.shared.location_search_queries import LocationApiSearchQuery
+from webapp.shared.v3_0.location_schema import all_ocpi_30_location_components
 
 from .handler import Ocpi30LocationHandler
 
@@ -79,7 +79,7 @@ class Ocpi30LocationBaseMethodView(BaseMethodView):
 
 
 class Ocpi30LocationListMethodView(Ocpi30LocationBaseMethodView):
-    search_query_validator = DataclassValidator(LocationSearchQuery)
+    search_query_validator = DataclassValidator(LocationApiSearchQuery)
 
     @document(
         description='Get list of Locations in OCPI 3.0 format with ChargingStation hierarchy',

@@ -19,7 +19,7 @@ class HeightCoordinateInput(ValidataclassMixin):
     Third coordinate for points defined geodetically
     """
 
-    heightValue: int = FloatValidator()
+    heightValue: float = FloatValidator()
     heightType: HeightTypeEnumGInput | UnsetValueType = DataclassValidator(HeightTypeEnumGInput), Default(UnsetValue)
     altitudeConfidence: AltitudeConfidenceInput | UnsetValueType = (
         DataclassValidator(AltitudeConfidenceInput),

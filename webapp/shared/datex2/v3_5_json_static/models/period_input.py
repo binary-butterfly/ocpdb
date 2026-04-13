@@ -3,9 +3,11 @@ Copyright 2026 binary butterfly GmbH
 Use of this source code is governed by an MIT-style license that can be found in the LICENSE.txt.
 """
 
+from datetime import datetime
+
 from validataclass.dataclasses import Default, ValidataclassMixin, validataclass
 from validataclass.helpers import UnsetValue, UnsetValueType
-from validataclass.validators import DataclassValidator, ListValidator, StringValidator
+from validataclass.validators import DataclassValidator, DateTimeValidator, ListValidator
 
 from .day_week_month_g_input import DayWeekMonthGInput
 from .extension_type_g_input import ExtensionTypeGInput
@@ -20,8 +22,8 @@ class PeriodInput(ValidataclassMixin):
     A continuous time period or a set of discontinuous time periods defined by the intersection of a set of criteria all within an overall delimiting interval.
     """
 
-    startOfPeriod: str | UnsetValueType = StringValidator(), Default(UnsetValue)
-    endOfPeriod: str | UnsetValueType = StringValidator(), Default(UnsetValue)
+    startOfPeriod: datetime | UnsetValueType = DateTimeValidator(), Default(UnsetValue)
+    endOfPeriod: datetime | UnsetValueType = DateTimeValidator(), Default(UnsetValue)
     periodName: MultilingualStringInput | UnsetValueType = (
         DataclassValidator(MultilingualStringInput),
         Default(UnsetValue),

@@ -55,7 +55,7 @@ def test_get_ocpi_22_locations_strict(
     db.session.commit()
 
     response = public_test_client.get(
-        path='/api/ocpi/2.2/locations?strict=true',
+        path='/api/public/ocpi/2.2/locations?strict=true',
     )
     assert response.status_code == HTTPStatus.OK
     assert response.json == LOCATIONS_RESPONSE
@@ -69,7 +69,7 @@ def test_get_ocpi_22_location(
     db.session.commit()
 
     response = test_client.get(
-        path='/api/ocpi/2.2/locations/1',
+        path='/api/public/ocpi/2.2/locations/1',
     )
     assert response.status_code == HTTPStatus.OK
     data = response.json
@@ -92,7 +92,7 @@ def test_get_ocpi_22_locations_by_source_strict(
     db.session.commit()
 
     response = public_test_client.get(
-        path=f'/api/ocpi/2.2/locations?strict=true&source_uid={SOURCE_UID_1}',
+        path=f'/api/public/ocpi/2.2/locations?strict=true&source_uid={SOURCE_UID_1}',
     )
     assert response.status_code == HTTPStatus.OK
     assert response.json == {
@@ -116,7 +116,7 @@ def test_get_ocpi_22_locations_by_bounding_box(
     db.session.commit()
 
     response = public_test_client.get(
-        path='/api/ocpi/2.2/locations?strict=true&lat_min=52.0&lat_max=53.0&lon_min=13.0&lon_max=14.0',
+        path='/api/public/ocpi/2.2/locations?strict=true&lat_min=52.0&lat_max=53.0&lon_min=13.0&lon_max=14.0',
     )
     assert response.status_code == HTTPStatus.OK
     assert response.json['total_count'] == 1
@@ -163,7 +163,7 @@ def test_get_ocpi_22_locations_by_last_updated_since(
 
     filter_timestamp = (now - timedelta(days=1)).strftime('%Y-%m-%dT%H:%M:%SZ')
     response = public_test_client.get(
-        path=f'/api/ocpi/2.2/locations?strict=true&last_updated_since={filter_timestamp}',
+        path=f'/api/public/ocpi/2.2/locations?strict=true&last_updated_since={filter_timestamp}',
     )
     assert response.status_code == HTTPStatus.OK
     assert response.json['total_count'] == 1
@@ -179,7 +179,7 @@ def test_get_ocpi_22_location_non_strict(
     db.session.commit()
 
     response = test_client.get(
-        path='/api/ocpi/2.2/locations/1',
+        path='/api/public/ocpi/2.2/locations/1',
     )
     assert response.status_code == HTTPStatus.OK
     data = response.json

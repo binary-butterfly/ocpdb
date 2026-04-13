@@ -19,7 +19,7 @@ class GrossWeightCharacteristicInput(ValidataclassMixin):
     """
 
     comparisonOperator: ComparisonOperatorEnumGInput = DataclassValidator(ComparisonOperatorEnumGInput)
-    grossVehicleWeight: int = FloatValidator()
+    grossVehicleWeight: float = FloatValidator()
     typeOfWeight: WeightTypeEnumGInput = DataclassValidator(WeightTypeEnumGInput)
     comGrossWeightCharacteristicExtensionG: ExtensionTypeGInput | UnsetValueType = (
         DataclassValidator(ExtensionTypeGInput),

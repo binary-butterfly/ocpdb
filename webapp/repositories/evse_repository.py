@@ -153,6 +153,7 @@ class EvseRepository(BaseRepository[Evse]):
         query = (
             self.session
             .query(Evse)
+            .options(selectinload(Evse.connectors))
             .filter(Evse.uid.in_(uids))
             .join(Evse.charging_station)
             .join(ChargingStation.location)
@@ -199,6 +200,6 @@ class EvseRepository(BaseRepository[Evse]):
         )
         result: list[EvseStatusSummary] = []
         for item in items:
-            result.append(EvseStatusSummary(**dict(item)))
+            result.append(EvseStatusSummary(**dict(item._mapping)))
 
         return result

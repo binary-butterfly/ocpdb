@@ -29,9 +29,9 @@ class ConnectorInput(ValidataclassMixin):
         DataclassValidator(ConnectorFormatTypeEnumGInput),
         Default(UnsetValue),
     )
-    maxPowerAtSocket: int = FloatValidator()
-    voltage: int | UnsetValueType = FloatValidator(), Default(UnsetValue)
-    maximumCurrent: int | UnsetValueType = FloatValidator(), Default(UnsetValue)
+    maxPowerAtSocket: float = FloatValidator()
+    voltage: float | UnsetValueType = FloatValidator(), Default(UnsetValue)
+    maximumCurrent: float | UnsetValueType = FloatValidator(), Default(UnsetValue)
     externalIdentifier: list[ExternalIdentifierInput] | UnsetValueType = (
         ListValidator(DataclassValidator(ExternalIdentifierInput)),
         Default(UnsetValue),

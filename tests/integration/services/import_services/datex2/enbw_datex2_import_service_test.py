@@ -23,7 +23,8 @@ from requests_mock import Mocker
 
 from webapp.common.sqlalchemy import SQLAlchemy
 from webapp.dependencies import dependencies
-from webapp.models import Business, ChargingStation, Connector, Evse, Location
+from webapp.models import Business, ChargingStation, Connector, Evse, Location, Tariff
+from webapp.models.enums import VehicleCategoryEnum
 from webapp.models.evse import EvseStatus
 from webapp.services.import_services.datex2 import EnBWDatex2ImportService
 
@@ -59,6 +60,26 @@ def test_enbw_datex2_static_import(
     assert db.session.query(Evse).count() == 57
     assert db.session.query(Connector).count() == 57
     assert db.session.query(Business).count() == 1
+    assert db.session.query(Tariff).count() == 57
+
+    # Check that site-level parking spaces are mapped to locations
+    location = db.session.query(Location).filter(Location.uid == '800030182').first()
+    assert location is not None
+    assert len(location.parking_spaces) == 1
+    parking_space = location.parking_spaces[0]
+    assert parking_space.vehicle_types == [VehicleCategoryEnum.M1]
+    assert parking_space.parking_space_count == 4
+    assert parking_space.has_roof is False
+    assert parking_space.is_illuminated is False
+    assert parking_space.is_accessible is False
+
+    # Each EVSE and its connector should be linked to a tariff association
+    evse = db.session.query(Evse).filter(Evse.uid == 'DE*EBW*E914082*1').first()
+    assert len(evse.tariff_associations) == 1
+    assert len(evse.connectors) == 1
+    # assert len(evse.connectors[0].tariff_associations) == 1
+    # EVSE and its connector share the same tariff association
+    # assert evse.tariff_associations[0].id == evse.connectors[0].tariff_associations[0].id
 
 
 def test_enbw_datex2_realtime_import(db: SQLAlchemy, requests_mock: Mocker) -> None:

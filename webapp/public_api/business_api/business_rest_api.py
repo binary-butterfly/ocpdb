@@ -35,7 +35,7 @@ from validataclass.validators import DataclassValidator
 from webapp.common.rest import BaseMethodView
 from webapp.dependencies import dependencies
 from webapp.public_api.base_blueprint import BaseBlueprint
-from webapp.shared.ocpi_schema import business_details_example, business_details_schema, image_example, image_schema
+from webapp.shared.location_schema import business_details_example, business_details_schema, image_example, image_schema
 
 from .business_handler import BusinessHandler
 from .business_search_queries import BusinessSearchQuery

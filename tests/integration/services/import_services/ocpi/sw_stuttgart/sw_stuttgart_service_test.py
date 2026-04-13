@@ -95,6 +95,9 @@ def test_sw_stuttgart_import(db: SQLAlchemy, requests_mock: Mocker) -> None:
         'charging_when_closed': None,
         'energy_mix': None,
         'help_phone': None,
+        'has_in_person_support': False,
+        'facilities': [],
+        'facility_description': '',
     }
     assert sum(len(cs.evses) for cs in sample_location.charging_pool) == 10
     assert sample_location.operator.to_dict() == {

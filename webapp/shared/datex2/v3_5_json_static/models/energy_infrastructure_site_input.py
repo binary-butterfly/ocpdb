@@ -3,9 +3,11 @@ Copyright 2026 binary butterfly GmbH
 Use of this source code is governed by an MIT-style license that can be found in the LICENSE.txt.
 """
 
+from datetime import datetime
+
 from validataclass.dataclasses import Default, ValidataclassMixin, validataclass
 from validataclass.helpers import UnsetValue, UnsetValueType
-from validataclass.validators import DataclassValidator, ListValidator, StringValidator
+from validataclass.validators import DataclassValidator, DateTimeValidator, ListValidator, StringValidator
 
 from .accessibility_enum_g_input import AccessibilityEnumGInput
 from .amenities_input import AmenitiesInput
@@ -41,7 +43,7 @@ class EnergyInfrastructureSiteInput(ValidataclassMixin):
         ListValidator(DataclassValidator(MultilingualStringInput)),
         Default(UnsetValue),
     )
-    lastUpdated: str | UnsetValueType = StringValidator(), Default(UnsetValue)
+    lastUpdated: datetime | UnsetValueType = DateTimeValidator(), Default(UnsetValue)
     description: MultilingualStringInput | UnsetValueType = (
         DataclassValidator(MultilingualStringInput),
         Default(UnsetValue),
