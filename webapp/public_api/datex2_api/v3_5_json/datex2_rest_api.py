@@ -20,80 +20,23 @@ from flask import jsonify
 from flask_cors import cross_origin
 from flask_openapi.decorator import (
     ExampleReference,
-    Parameter,
     Response,
     ResponseData,
     SchemaReference,
     document,
 )
-from flask_openapi.schema import AnyOfField, DateTimeField, IntegerField, NumericField, StringField
 from validataclass.validators import DataclassValidator
 
-from webapp.common.dataclass import filter_unset_value
+from webapp.common.dataclass import filter_none_recursive, filter_unset_value, recursive_to_dict
 from webapp.common.rest import BaseMethodView
 from webapp.dependencies import dependencies
 from webapp.public_api.base_blueprint import BaseBlueprint
+from webapp.public_api.datex2_api.location_schema import location_search_query_parameters
 from webapp.shared.datex2.v3_5_json_realtime.schema import all_datex2_v35_realtime_components
 from webapp.shared.datex2.v3_5_json_static.schema import all_datex2_v35_static_components
 from webapp.shared.location_search_queries import LocationApiSearchQuery
 
 from .datex2_handler import Datex2V35JSONHandler
-
-location_search_query_parameters = [
-    Parameter(
-        'sorted_by',
-        schema=AnyOfField(allowed_values=['name', 'created', 'modified'], required=False, default='name'),
-    ),
-    Parameter('name', schema=StringField(required=False)),
-    Parameter('source_uid', schema=StringField(required=False), example='bnetza_api'),
-    Parameter(
-        'source_uids',
-        schema=StringField(required=False),
-        example='bnetza_api,something_else',
-        description='Comma separated list of sources',
-    ),
-    Parameter(
-        'exclude_source_uid',
-        schema=StringField(required=False),
-        example='bnetza_api',
-        description='Sources to exclude',
-    ),
-    Parameter(
-        'exclude_source_uids',
-        schema=StringField(required=False),
-        example='bnetza_api,something_else',
-        description='Comma separated list of sources which should be excluded',
-    ),
-    Parameter('address', schema=StringField(required=False), example='Erlenweg', description='Contain query'),
-    Parameter('postal_code', schema=StringField(required=False), example='59423'),
-    Parameter('city', schema=StringField(required=False), example='Bad Gateway', description='Contain query'),
-    Parameter('country', schema=StringField(required=False), example='59423'),
-    Parameter('operator_name', schema=StringField(required=False), example='Electro Inc'),
-    Parameter(
-        'lat',
-        schema=NumericField(required=False),
-        example='51.58',
-        description='Radius, lat and lon always have to be set together.',
-    ),
-    Parameter(
-        'lon',
-        schema=NumericField(required=False),
-        example='7.67',
-        description='Radius, lat and lon always have to be set together.',
-    ),
-    Parameter(
-        'radius',
-        schema=IntegerField(required=False),
-        example='1000',
-        description='In meter. Radius, lat and lon always have to be set together.',
-    ),
-    Parameter('lat_min', schema=NumericField(), example=55.0, description='Bounding box'),
-    Parameter('lat_max', schema=NumericField(), example=55.5, description='Bounding box'),
-    Parameter('lon_min', schema=NumericField(), example=5.0, description='Bounding box'),
-    Parameter('lon_max', schema=NumericField(), example=5.5, description='Bounding box'),
-    Parameter('last_updated_since', schema=DateTimeField(), example='2023-01-01T00:00:00Z'),
-    Parameter('limit', schema=IntegerField(maximum=1000, required=False, default=100)),
-]
 
 
 class Datex2V35JSONBlueprint(BaseBlueprint):
@@ -122,6 +65,15 @@ class Datex2V35JSONBlueprint(BaseBlueprint):
             '/json/realtime',
             view_func=Datex2V35JSONRealtimeMethodView.as_view(
                 'datex_v3_5_json_realtime',
+                **self.get_base_method_view_dependencies(),
+                datex2_handler=self.datex2_handler,
+            ),
+        )
+
+        self.add_url_rule(
+            '/json/mobilithek/realtime',
+            view_func=Datex2V35JSONMobilithekRealtimeMethodView.as_view(
+                'datex_v3_5_json_mobilithek_realtime',
                 **self.get_base_method_view_dependencies(),
                 datex2_handler=self.datex2_handler,
             ),
@@ -180,7 +132,26 @@ class Datex2V35JSONRealtimeMethodView(BaseMethodView):
     )
     @cross_origin()
     def get(self):
-        search_query = self.validate_query_args(self.search_query_validator)
+        search_query: LocationApiSearchQuery = self.validate_query_args(self.search_query_validator)
         result = self.datex2_handler.get_datex2_realtime_payload(search_query)
 
         return jsonify(filter_unset_value(result.to_dict()))
+
+
+class Datex2V35JSONMobilithekRealtimeMethodView(BaseMethodView):
+    datex2_handler: Datex2V35JSONHandler
+    search_query_validator = DataclassValidator(LocationApiSearchQuery)
+
+    def __init__(self, *args, datex2_handler: Datex2V35JSONHandler, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.datex2_handler = datex2_handler
+
+    @cross_origin()
+    def get(self):
+        search_query: LocationApiSearchQuery = self.validate_query_args(self.search_query_validator)
+
+        result = self.datex2_handler.get_datex2_mobilithek_realtime(
+            search_query=search_query,
+        )
+
+        return jsonify(filter_none_recursive(filter_unset_value(recursive_to_dict(result))))

@@ -1,6 +1,6 @@
 """
 Open ChargePoint DataBase OCPDB
-Copyright (C) 2021 binary butterfly GmbH
+Copyright (C) 2026 binary butterfly GmbH
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published by
@@ -16,6 +16,19 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from .ocpi_redirect import OcpiPathRewriteMiddleware
-from .v2_2 import Ocpi22Blueprint
-from .v3_0 import Ocpi30Blueprint
+from datetime import datetime, timezone
+
+from validataclass.dataclasses import Default, validataclass
+from validataclass.validators import DateTimeFormat, DateTimeValidator
+
+
+@validataclass
+class MobilithekRealtimeQuery:
+    last_modified_since: datetime | None = (
+        DateTimeValidator(
+            DateTimeFormat.LOCAL_OR_UTC,
+            local_timezone=timezone.utc,
+            target_timezone=timezone.utc,
+        ),
+        Default(None),
+    )

@@ -390,7 +390,7 @@ class Datex2V35JSONStaticMapper:
             for energy_price in energy_rate.energyPrice:
                 price_component = PriceComponentUpdate(
                     type=self._price_type_map.get(energy_price.priceType.value),
-                    price=Decimal(energy_price.value),
+                    price=Decimal(round(energy_price.value, 8)),
                 )
                 if energy_price.taxRate is not UnsetValue:
                     price_component.taxes = [

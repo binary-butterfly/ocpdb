@@ -118,9 +118,12 @@ class BaseImportService(BaseService, RemoteMixin, ABC):
                 continue
 
             evse.last_updated = evse_update.last_updated or datetime.now(tz=timezone.utc)
+            evse.status_last_updated = (
+                evse_update.status_last_updated or evse_update.last_updated or datetime.now(tz=timezone.utc)
+            )
 
             for key, value in evse_update.to_dict().items():
-                if key == 'last_updated':
+                if key in ['last_updated', 'status_last_updated']:
                     continue
                 setattr(evse, key, value)
 

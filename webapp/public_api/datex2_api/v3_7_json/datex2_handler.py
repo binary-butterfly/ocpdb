@@ -16,8 +16,22 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+from datetime import datetime, timezone
+
 from webapp.public_api.base_handler import PublicApiBaseHandler
 from webapp.repositories import LocationRepository
+from webapp.shared.datex2.models import (
+    AgentOutput,
+    DynamicInformationOutput,
+    ExchangeContextOutput,
+    ExchangeInformationOutput,
+    ExchangeStatusEnum,
+    ExchangeStatusEnumGOutput,
+    MessageContainerOutput,
+    MessageContainerWrapperOutput,
+    ProtocolTypeEnum,
+    ProtocolTypeEnumGOutput,
+)
 from webapp.shared.datex2.v3_7.realtime.d_a_t_e_x_i_i3_d2_payload_output import (
     DATEXII3D2PayloadOutput as DATEXII3D2RealtimePayloadOutput,
 )
@@ -49,3 +63,37 @@ class Datex2V37JSONHandler(PublicApiBaseHandler):
         locations = self.location_repository.fetch_locations(search_query=search_query)
 
         return self.datex_realtime_export_mapper.map_locations_to_realtime_payload(list(locations))
+
+    def get_datex2_mobilithek_realtime(self, search_query: LocationApiSearchQuery) -> MessageContainerWrapperOutput:
+        locations = list(self.location_repository.fetch_locations(search_query=search_query))
+        payload_result = self.datex_realtime_export_mapper.map_locations_to_realtime_payload(locations)
+
+        if search_query.evse_status_last_updated_since is None:
+            protocol_type = ProtocolTypeEnum.SNAPSHOT_PUSH
+        else:
+            protocol_type = ProtocolTypeEnum.DELTA_PUSH
+
+        message_container = MessageContainerOutput(
+            payload=[payload_result.payload],
+            exchangeInformation=ExchangeInformationOutput(
+                exchangeContext=ExchangeContextOutput(
+                    codedExchangeProtocol=ProtocolTypeEnumGOutput(
+                        value=protocol_type,
+                    ),
+                    exchangeSpecificationVersion='3.7',
+                    supplierOrCisRequester=AgentOutput(
+                        name=self.config_helper.get('MOBILITHEK_NAME'),
+                    ),
+                ),
+                dynamicInformation=DynamicInformationOutput(
+                    exchangeStatus=ExchangeStatusEnumGOutput(
+                        value=ExchangeStatusEnum.ONLINE,
+                    ),
+                    messageGenerationTimestamp=datetime.now(tz=timezone.utc),
+                ),
+            ),
+        )
+
+        return MessageContainerWrapperOutput(
+            message_container=message_container,
+        )

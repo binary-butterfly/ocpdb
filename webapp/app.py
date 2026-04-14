@@ -35,6 +35,7 @@ from webapp.extensions import celery, db
 from webapp.frontend import FrontendBlueprint
 from webapp.prometheus_api import PrometheusRestApi
 from webapp.public_api import PublicApi
+from webapp.public_api.ocpi import OcpiPathRewriteMiddleware
 from webapp.server_rest_api import ServerRestApi
 
 __all__ = ['launch']
@@ -47,6 +48,7 @@ def launch(app_class: type[App] = App, config_overrides: AnyDict | None = None) 
     configure_blueprints(app)
     configure_error_handlers(app)
     configure_periodic_tasks()
+    app.wsgi_app = OcpiPathRewriteMiddleware(app.wsgi_app)
     return app
 
 

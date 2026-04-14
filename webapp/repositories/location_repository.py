@@ -210,7 +210,7 @@ class LocationRepository(BaseRepository[Location]):
                 query = query.filter(
                     or_(
                         Location.last_updated >= last_updated_since,
-                        # ChargingStation.last_updaed >= last_updated_since,  # TODO: reactivate
+                        # ChargingStation.last_updated >= last_updated_since,  # TODO: reactivate
                         Evse.last_updated >= last_updated_since,
                     ),
                 )
