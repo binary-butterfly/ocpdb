@@ -1,6 +1,6 @@
 """
 Open ChargePoint DataBase OCPDB
-Copyright (C) 2021 binary butterfly GmbH
+Copyright (C) 2026 binary butterfly GmbH
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published by
@@ -16,6 +16,18 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from .ocpi_redirect import OcpiPathRewriteMiddleware
-from .v2_2 import Ocpi22Blueprint
-from .v3_0 import Ocpi30Blueprint
+from collections.abc import Callable, Iterable
+
+
+class OcpiPathRewriteMiddleware:
+    """WSGI middleware that rewrites /api/ocpi/ paths to /api/public/ocpi/ so the existing
+    OCPI endpoints are transparently available under both prefixes."""
+
+    def __init__(self, app: Callable):
+        self.app = app
+
+    def __call__(self, environ: dict, start_response: Callable) -> Iterable:
+        path = environ.get('PATH_INFO', '')
+        if path == '/api/ocpi' or path.startswith('/api/ocpi/'):
+            environ['PATH_INFO'] = '/api/public' + path[4:]
+        return self.app(environ, start_response)

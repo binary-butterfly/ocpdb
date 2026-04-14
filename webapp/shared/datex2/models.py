@@ -113,3 +113,9 @@ class MessageContainerOutput:
     ) = None
     exchangeInformation: ExchangeInformationOutput
     conMessageContainerExtensionG: ExtensionTypeGOutput | None = None
+
+
+@dataclass(kw_only=True)
+class MessageContainerWrapperOutput:
+    message_container: MessageContainerOutput | None = None
+    exchangeInformation: ExchangeInformationOutput | None = None

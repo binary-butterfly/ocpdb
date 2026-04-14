@@ -99,6 +99,14 @@ class LocationApiSearchQuery(SortingMixin, OffsetPaginationMixin, BaseSearchQuer
             target_timezone=timezone.utc,
         ),
     )
+    evse_status_last_updated_since: datetime | None = (
+        SearchParamSince(),
+        DateTimeValidator(
+            DateTimeFormat.LOCAL_OR_UTC,
+            local_timezone=timezone.utc,
+            target_timezone=timezone.utc,
+        ),
+    )
 
     # Pagination
     limit: int = PaginationLimitValidator(optional=False, max_value=1000), Default(100)
