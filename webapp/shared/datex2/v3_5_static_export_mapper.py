@@ -320,12 +320,10 @@ class DatexV35JSONStaticExportMapper:
             refill_point = self._map_evse_to_refill_point(evse, location)
             refill_points.append(refill_point)
 
-        service_type_list: list[ServiceTypeInput] = []
-        if charging_station.service_type:
-            datex_service_type = self._service_type_map.get(charging_station.service_type, ServiceTypeEnum.UNATTENDED)
-            service_type_list = [
-                ServiceTypeInput(serviceType=ServiceTypeEnumGInput(value=datex_service_type)),
-            ]
+        datex_service_type = self._service_type_map.get(charging_station.service_type, ServiceTypeEnum.UNATTENDED)
+        service_type_list = [
+            ServiceTypeInput(serviceType=ServiceTypeEnumGInput(value=datex_service_type)),
+        ]
 
         if charging_station.max_power_value is None:
             total_maximum_power = 0.0

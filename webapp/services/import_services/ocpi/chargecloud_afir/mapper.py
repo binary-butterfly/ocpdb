@@ -69,7 +69,7 @@ class ChargecloudAfirMapper(OcpiMapper):
             price_components = [
                 PriceComponentUpdate(
                     type=pc.type,
-                    price=Decimal(str(pc.price)),
+                    price=Decimal(str(round(pc.price, 4))),
                 )
                 for pc in element_input.price_components
             ]
