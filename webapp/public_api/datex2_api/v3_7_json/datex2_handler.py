@@ -74,7 +74,7 @@ class Datex2V37JSONHandler(PublicApiBaseHandler):
             protocol_type = ProtocolTypeEnum.DELTA_PUSH
 
         message_container = MessageContainerOutput(
-            payload=payload_result.payload,
+            payload=[payload_result.payload],
             exchangeInformation=ExchangeInformationOutput(
                 exchangeContext=ExchangeContextOutput(
                     codedExchangeProtocol=ProtocolTypeEnumGOutput(

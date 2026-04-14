@@ -70,12 +70,12 @@ class Datex2V37MobilithekRealtimeApiTest:
         assert exchange_info['exchangeContext']['codedExchangeProtocol']['value'] == 'snapshotPush'
 
     @staticmethod
-    def test_get_realtime_delta_protocol_with_last_modified_since(
+    def test_get_realtime_delta_protocol_with_evse_status_last_updated_since(
         db: SQLAlchemy,
         test_client: OpenApiFlaskClient,
     ) -> None:
         response = test_client.get(
-            path='/api/public/datex/v3.7/json/mobilithek/realtime?last_modified_since=2020-01-01T00:00:00Z',
+            path='/api/public/datex/v3.7/json/mobilithek/realtime?evse_status_last_updated_since=2020-01-01T00:00:00Z',
         )
 
         assert response.status_code == HTTPStatus.OK
@@ -93,7 +93,7 @@ class Datex2V37MobilithekRealtimeApiTest:
         response = test_client.get(path='/api/public/datex/v3.7/json/mobilithek/realtime')
 
         assert response.status_code == HTTPStatus.OK
-        payload = response.json['message_container']['payload']
+        payload = response.json['message_container']['payload'][0]
         status_pub = payload['aegiEnergyInfrastructureStatusPublication']
 
         site_statuses = status_pub['energyInfrastructureSiteStatus']
@@ -111,9 +111,8 @@ class Datex2V37MobilithekRealtimeApiTest:
         response = test_client.get(path='/api/public/datex/v3.7/json/mobilithek/realtime')
 
         assert response.status_code == HTTPStatus.OK
-        site_statuses = response.json['message_container']['payload']['aegiEnergyInfrastructureStatusPublication'][
-            'energyInfrastructureSiteStatus'
-        ]
+        payload = response.json['message_container']['payload'][0]
+        site_statuses = payload['aegiEnergyInfrastructureStatusPublication']['energyInfrastructureSiteStatus']
         assert len(site_statuses) == 2
 
         site_ids = {ss['reference']['idG'] for ss in site_statuses}
@@ -137,15 +136,16 @@ class Datex2V37MobilithekRealtimeApiTest:
 
         response = test_client.get(path='/api/public/datex/v3.7/json/mobilithek/realtime')
 
-        refill_statuses = response.json['message_container']['payload']['aegiEnergyInfrastructureStatusPublication'][
-            'energyInfrastructureSiteStatus'
-        ][0]['energyInfrastructureStationStatus'][0]['refillPointStatus']
+        payload = response.json['message_container']['payload'][0]
+        refill_statuses = payload['aegiEnergyInfrastructureStatusPublication']['energyInfrastructureSiteStatus'][0][
+            'energyInfrastructureStationStatus'
+        ][0]['refillPointStatus']
 
         assert len(refill_statuses) == 1
         assert refill_statuses[0]['aegiRefillPointStatus']['reference']['idG'] == 'EVSE-1'
 
     @staticmethod
-    def test_get_realtime_last_modified_since_filters_locations(
+    def test_get_realtime_evse_status_last_updated_since_filters_locations(
         db: SQLAlchemy,
         test_client: OpenApiFlaskClient,
     ) -> None:
@@ -172,13 +172,12 @@ class Datex2V37MobilithekRealtimeApiTest:
         db.session.commit()
 
         response = test_client.get(
-            path='/api/public/datex/v3.7/json/mobilithek/realtime?last_modified_since=2025-01-01T00:00:00Z',
+            path='/api/public/datex/v3.7/json/mobilithek/realtime?evse_status_last_updated_since=2025-01-01T00:00:00Z',
         )
 
         assert response.status_code == HTTPStatus.OK
-        site_statuses = response.json['message_container']['payload']['aegiEnergyInfrastructureStatusPublication'][
-            'energyInfrastructureSiteStatus'
-        ]
+        payload = response.json['message_container']['payload'][0]
+        site_statuses = payload['aegiEnergyInfrastructureStatusPublication']['energyInfrastructureSiteStatus']
         assert len(site_statuses) == 1
         assert site_statuses[0]['reference']['idG'] == 'LOCATION-2'
 
@@ -229,12 +228,12 @@ class Datex2V35MobilithekRealtimeApiTest:
         assert exchange_info['exchangeContext']['codedExchangeProtocol']['value'] == 'snapshotPush'
 
     @staticmethod
-    def test_get_realtime_delta_protocol_with_last_modified_since(
+    def test_get_realtime_delta_protocol_with_evse_status_last_updated_since(
         db: SQLAlchemy,
         test_client: OpenApiFlaskClient,
     ) -> None:
         response = test_client.get(
-            path='/api/public/datex/v3.5/json/mobilithek/realtime?last_modified_since=2020-01-01T00:00:00Z',
+            path='/api/public/datex/v3.5/json/mobilithek/realtime?evse_status_last_updated_since=2020-01-01T00:00:00Z',
         )
 
         assert response.status_code == HTTPStatus.OK
@@ -252,7 +251,7 @@ class Datex2V35MobilithekRealtimeApiTest:
         response = test_client.get(path='/api/public/datex/v3.5/json/mobilithek/realtime')
 
         assert response.status_code == HTTPStatus.OK
-        payload = response.json['message_container']['payload']
+        payload = response.json['message_container']['payload'][0]
         status_pub = payload['aegiEnergyInfrastructureStatusPublication']
 
         site_statuses = status_pub['energyInfrastructureSiteStatus']
@@ -270,9 +269,8 @@ class Datex2V35MobilithekRealtimeApiTest:
         response = test_client.get(path='/api/public/datex/v3.5/json/mobilithek/realtime')
 
         assert response.status_code == HTTPStatus.OK
-        site_statuses = response.json['message_container']['payload']['aegiEnergyInfrastructureStatusPublication'][
-            'energyInfrastructureSiteStatus'
-        ]
+        payload = response.json['message_container']['payload'][0]
+        site_statuses = payload['aegiEnergyInfrastructureStatusPublication']['energyInfrastructureSiteStatus']
         assert len(site_statuses) == 2
 
         site_ids = {ss['reference']['idG'] for ss in site_statuses}
@@ -296,15 +294,16 @@ class Datex2V35MobilithekRealtimeApiTest:
 
         response = test_client.get(path='/api/public/datex/v3.5/json/mobilithek/realtime')
 
-        refill_statuses = response.json['message_container']['payload']['aegiEnergyInfrastructureStatusPublication'][
-            'energyInfrastructureSiteStatus'
-        ][0]['energyInfrastructureStationStatus'][0]['refillPointStatus']
+        payload = response.json['message_container']['payload'][0]
+        refill_statuses = payload['aegiEnergyInfrastructureStatusPublication']['energyInfrastructureSiteStatus'][0][
+            'energyInfrastructureStationStatus'
+        ][0]['refillPointStatus']
 
         assert len(refill_statuses) == 1
         assert refill_statuses[0]['aegiRefillPointStatus']['reference']['idG'] == 'EVSE-1'
 
     @staticmethod
-    def test_get_realtime_last_modified_since_filters_locations(
+    def test_get_realtime_evse_status_last_updated_since_filters_locations(
         db: SQLAlchemy,
         test_client: OpenApiFlaskClient,
     ) -> None:
@@ -331,13 +330,12 @@ class Datex2V35MobilithekRealtimeApiTest:
         db.session.commit()
 
         response = test_client.get(
-            path='/api/public/datex/v3.5/json/mobilithek/realtime?last_modified_since=2025-01-01T00:00:00Z',
+            path='/api/public/datex/v3.5/json/mobilithek/realtime?evse_status_last_updated_since=2025-01-01T00:00:00Z',
         )
 
         assert response.status_code == HTTPStatus.OK
-        site_statuses = response.json['message_container']['payload']['aegiEnergyInfrastructureStatusPublication'][
-            'energyInfrastructureSiteStatus'
-        ]
+        payload = response.json['message_container']['payload'][0]
+        site_statuses = payload['aegiEnergyInfrastructureStatusPublication']['energyInfrastructureSiteStatus']
         assert len(site_statuses) == 1
         assert site_statuses[0]['reference']['idG'] == 'LOCATION-2'
 
