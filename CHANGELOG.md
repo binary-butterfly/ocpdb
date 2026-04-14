@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.10.1
+
+Released 2026-04-14
+
+* [Fix multiple issues with datex2 outputs, with new mobilithek-optimized realtime endpoint](https://github.com/binary-butterfly/ocpdb/pull/191)
+
 ## 2.10.0
 
 Released 2026-04-13
