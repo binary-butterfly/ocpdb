@@ -216,7 +216,7 @@ class TariffPriceComponent(DataclassMixin):
             taxes = [TariffTax.from_dict(t) for t in data['taxes']]
         return cls(
             type=data.get('type'),
-            price=round(float(data.get('price')), 4),
+            price=round(float(data.get('price')), 8),
             taxes=taxes,
         )
 
