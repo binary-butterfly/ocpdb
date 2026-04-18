@@ -18,8 +18,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import logging
 
+from flask import request as flask_request
+
 from webapp.common.logging.models import LogMessageType
-from webapp.common.rest.exceptions import NotFoundException
+from webapp.common.rest.exceptions import NotFoundException, UnauthorizedException
+from webapp.common.server_auth import ServerAuthRole
+from webapp.dependencies import dependencies as app_dependencies
 from webapp.server_rest_api.base_handler import ServerApiBaseHandler
 from webapp.services.import_services import ImportServices
 from webapp.services.import_services.datex2.base_datex2_v3_5_import_service import BaseDatex2V35ImportService
@@ -43,6 +47,21 @@ class Datex2Handler(ServerApiBaseHandler):
             raise NotFoundException(message=f'Source {source_uid} is not a DATEX2 v3.5 source')
 
         return service
+
+    def authenticate(self, source_uid: str) -> None:
+        service = self._get_import_service(source_uid)
+
+        key = flask_request.args.get('key')
+        api_key = service.config.get('api_key')
+
+        if key is not None:
+            if api_key and key == api_key:
+                return
+            raise UnauthorizedException(message='Invalid API key')
+
+        server_auth_helper = app_dependencies.get_server_auth_helper()
+        server_auth_helper.authenticate_request(flask_request)
+        server_auth_helper.require_roles(ServerAuthRole.DATEX2)
 
     def handle_static_push(self, source_uid: str, data: dict) -> None:
         service = self._get_import_service(source_uid)

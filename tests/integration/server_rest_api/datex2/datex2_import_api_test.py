@@ -30,6 +30,7 @@ from webapp.models.evse import EvseStatus
 AUTH_HEADER = {'Authorization': f'Basic {b64encode(b"dev:test").decode()}'}
 
 SOURCE_UID = 'datex2_enbw'
+API_KEY = 'test-datex2-api-key'
 
 
 def _load_test_data(filename: str) -> dict:
@@ -90,6 +91,30 @@ class Datex2StaticImportApiV35Test:
         assert response.status_code == HTTPStatus.UNAUTHORIZED
 
     @staticmethod
+    def test_push_static_v35_with_api_key(db: SQLAlchemy, test_client: OpenApiFlaskClient) -> None:
+        data = _load_test_data('datex2_enbw_static_reduced.json')
+
+        response = test_client.post(
+            path=f'/api/server/v1/datex/v3.5/{SOURCE_UID}/static?key={API_KEY}',
+            json=data,
+        )
+
+        assert response.status_code == HTTPStatus.NO_CONTENT
+        assert db.session.query(Location).count() == 10
+
+    @staticmethod
+    def test_push_static_v35_invalid_api_key(db: SQLAlchemy, test_client: OpenApiFlaskClient) -> None:
+        data = _load_test_data('datex2_enbw_static_reduced.json')
+
+        response = test_client.post(
+            path=f'/api/server/v1/datex/v3.5/{SOURCE_UID}/static?key=wrong-key',
+            json=data,
+        )
+
+        assert response.status_code == HTTPStatus.UNAUTHORIZED
+        assert db.session.query(Location).count() == 0
+
+    @staticmethod
     def test_push_static_v35_unknown_source(db: SQLAlchemy, test_client: OpenApiFlaskClient) -> None:
         data = _load_test_data('datex2_enbw_static_reduced.json')
 
@@ -144,6 +169,37 @@ class Datex2RealtimeImportApiV35Test:
         # EVSEs not in realtime data should remain UNKNOWN
         evse_unchanged = db.session.query(Evse).filter(Evse.uid == 'DE*EBW*E916701*2').first()
         assert evse_unchanged.status == EvseStatus.UNKNOWN
+
+    @staticmethod
+    def test_push_realtime_v35_with_api_key(db: SQLAlchemy, test_client: OpenApiFlaskClient) -> None:
+        static_data = _load_test_data('datex2_enbw_static_reduced.json')
+        response = test_client.post(
+            path=f'/api/server/v1/datex/v3.5/{SOURCE_UID}/static?key={API_KEY}',
+            json=static_data,
+        )
+        assert response.status_code == HTTPStatus.NO_CONTENT
+
+        realtime_data = _load_test_data('datex2_enbw_realtime_reduced.json')
+        response = test_client.post(
+            path=f'/api/server/v1/datex/v3.5/{SOURCE_UID}/realtime?key={API_KEY}',
+            json=realtime_data,
+        )
+        assert response.status_code == HTTPStatus.NO_CONTENT
+
+        db.session.expire_all()
+        evse_available = db.session.query(Evse).filter(Evse.uid == 'DE*EBW*E914082*2').first()
+        assert evse_available.status == EvseStatus.AVAILABLE
+
+    @staticmethod
+    def test_push_realtime_v35_invalid_api_key(db: SQLAlchemy, test_client: OpenApiFlaskClient) -> None:
+        realtime_data = _load_test_data('datex2_enbw_realtime_reduced.json')
+
+        response = test_client.post(
+            path=f'/api/server/v1/datex/v3.5/{SOURCE_UID}/realtime?key=wrong-key',
+            json=realtime_data,
+        )
+
+        assert response.status_code == HTTPStatus.UNAUTHORIZED
 
     @staticmethod
     def test_push_realtime_v35_unauthorized(db: SQLAlchemy, test_client: OpenApiFlaskClient) -> None:

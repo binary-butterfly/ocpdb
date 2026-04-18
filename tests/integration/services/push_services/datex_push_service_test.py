@@ -150,6 +150,35 @@ class DatexPushServiceStaticTest:
         assert sites[0]['idG'] == 'LOCATION-1'
 
     @staticmethod
+    def test_push_static_v35_skips_location_with_only_static_evses(db: SQLAlchemy, requests_mock: Mocker) -> None:
+        db.session.add(
+            get_location_1(
+                evses=[
+                    get_full_evse_1(status=EvseStatus.STATIC),
+                    get_full_evse_2(status=EvseStatus.STATIC),
+                ],
+                operator=get_business_1(),
+            ),
+        )
+        db.session.commit()
+
+        service = _build_service(
+            dependencies.get_config_helper(),
+            dependencies.get_context_helper(),
+            version='3.5',
+        )
+        mock = requests_mock.post(f'{MOBILITHEK_BASE_URL}/{STATIC_PUBLICATION_ID}', status_code=200)
+
+        service.push_datex_static()
+
+        assert mock.called_once
+        body = json.loads(mock.last_request.body)
+        sites = body['payload']['aegiEnergyInfrastructureTablePublication']['energyInfrastructureTable'][0][
+            'energyInfrastructureSite'
+        ]
+        assert sites == []
+
+    @staticmethod
     def test_push_static_v35_multiple_locations(db: SQLAlchemy, requests_mock: Mocker) -> None:
         db.session.add_all([get_full_location_1(), get_full_location_2()])
         db.session.commit()
@@ -293,6 +322,94 @@ class DatexPushServiceRealtimeTest:
             'EVSE-1': 'charging',
             'EVSE-2': 'outOfOrder',
         }
+
+    @staticmethod
+    def test_push_realtime_v35_filters_static_evse(db: SQLAlchemy, requests_mock: Mocker) -> None:
+        db.session.add(
+            get_location_1(
+                evses=[
+                    get_full_evse_1(status=EvseStatus.AVAILABLE),
+                    get_full_evse_2(status=EvseStatus.STATIC),
+                ],
+                operator=get_business_1(),
+            ),
+        )
+        db.session.commit()
+
+        service = _build_service(
+            dependencies.get_config_helper(),
+            dependencies.get_context_helper(),
+            version='3.5',
+        )
+        mock = requests_mock.post(f'{MOBILITHEK_BASE_URL}/{REALTIME_PUBLICATION_ID}', status_code=200)
+
+        service.push_datex_realtime()
+
+        assert mock.called_once
+        body = json.loads(mock.last_request.body)
+        refill_statuses = body['payload']['aegiEnergyInfrastructureStatusPublication'][
+            'energyInfrastructureSiteStatus'
+        ][0]['energyInfrastructureStationStatus'][0]['refillPointStatus']
+
+        assert len(refill_statuses) == 1
+        assert refill_statuses[0]['aegiRefillPointStatus']['reference']['idG'] == 'EVSE-1'
+
+    @staticmethod
+    def test_push_realtime_v37_filters_static_evse(db: SQLAlchemy, requests_mock: Mocker) -> None:
+        db.session.add(
+            get_location_1(
+                evses=[
+                    get_full_evse_1(status=EvseStatus.AVAILABLE),
+                    get_full_evse_2(status=EvseStatus.STATIC),
+                ],
+                operator=get_business_1(),
+            ),
+        )
+        db.session.commit()
+
+        service = _build_service(
+            dependencies.get_config_helper(),
+            dependencies.get_context_helper(),
+            version='3.7',
+        )
+        mock = requests_mock.post(f'{MOBILITHEK_BASE_URL}/{REALTIME_PUBLICATION_ID}', status_code=200)
+
+        service.push_datex_realtime()
+
+        assert mock.called_once
+        body = json.loads(mock.last_request.body)
+        refill_statuses = body['payload']['aegiEnergyInfrastructureStatusPublication'][
+            'energyInfrastructureSiteStatus'
+        ][0]['energyInfrastructureStationStatus'][0]['refillPointStatus']
+
+        assert len(refill_statuses) == 1
+        assert refill_statuses[0]['aegiRefillPointStatus']['reference']['idG'] == 'EVSE-1'
+
+    @staticmethod
+    def test_push_realtime_skips_location_with_only_static_evses(db: SQLAlchemy, requests_mock: Mocker) -> None:
+        db.session.add(
+            get_location_1(
+                evses=[
+                    get_full_evse_1(status=EvseStatus.STATIC),
+                    get_full_evse_2(status=EvseStatus.STATIC),
+                ],
+                operator=get_business_1(),
+            ),
+        )
+        db.session.commit()
+
+        service = _build_service(
+            dependencies.get_config_helper(),
+            dependencies.get_context_helper(),
+        )
+        mock = requests_mock.post(f'{MOBILITHEK_BASE_URL}/{REALTIME_PUBLICATION_ID}', status_code=200)
+
+        service.push_datex_realtime()
+
+        assert mock.called_once
+        body = json.loads(mock.last_request.body)
+        site_statuses = body['payload']['aegiEnergyInfrastructureStatusPublication']['energyInfrastructureSiteStatus']
+        assert site_statuses == []
 
     @staticmethod
     def test_push_realtime_stores_timestamp_in_redis(db: SQLAlchemy, requests_mock: Mocker) -> None:

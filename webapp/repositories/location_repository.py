@@ -34,14 +34,6 @@ from .base_repository import BaseRepository
 class LocationRepository(BaseRepository[Location]):
     model_cls = Location
 
-    def fetch_all_locations_with_children(self) -> list[Location]:
-        cs_load = selectinload(Location.charging_pool)
-        options = [
-            selectinload(Location.operator),
-            cs_load.selectinload(ChargingStation.evses).selectinload(Evse.connectors),
-        ]
-        return self.session.query(Location).options(*options).all()
-
     def fetch_locations_by_source(self, source: str, include_children: bool = True) -> list[Location]:
         query = self.session.query(Location)
 
@@ -160,16 +152,35 @@ class LocationRepository(BaseRepository[Location]):
             self.session.commit()
 
     def fetch_locations(
-        self, *, search_query: BaseSearchQuery | None = None, include_tariffs: bool = False
+        self,
+        *,
+        search_query: BaseSearchQuery | None = None,
+        include_operators: bool = False,
+        include_logos: bool = False,
+        include_location_images: bool = False,
+        include_charging_stations: bool = False,
+        include_evses: bool = False,
+        include_evse_images: bool = False,
+        include_connectors: bool = False,
+        include_tariffs: bool = False,
     ) -> PaginatedResult[Location]:
-        options = [
-            joinedload(Location.operator).joinedload(Business.logo),
-            joinedload(Location.suboperator).joinedload(Business.logo),
-            joinedload(Location.owner).joinedload(Business.logo),
-            selectinload(Location.images),
-            selectinload(Location.charging_pool).selectinload(ChargingStation.evses).selectinload(Evse.connectors),
-            selectinload(Location.charging_pool).selectinload(ChargingStation.evses).selectinload(Evse.images),
-        ]
+
+        options: list[LoaderOption] = []
+        if include_logos:
+            options.append(joinedload(Location.operator).joinedload(Business.logo))
+            options.append(joinedload(Location.suboperator).joinedload(Business.logo))
+            options.append(joinedload(Location.owner).joinedload(Business.logo))
+        elif include_operators:
+            options.append(joinedload(Location.operator))
+            options.append(joinedload(Location.suboperator))
+            options.append(joinedload(Location.owner))
+
+        if include_location_images:
+            options.append(selectinload(Location.images))
+        if include_connectors:
+            options.append(
+                selectinload(Location.charging_pool).selectinload(ChargingStation.evses).selectinload(Evse.connectors)
+            )
         if include_tariffs:
             options.append(
                 selectinload(Location.charging_pool)
@@ -177,6 +188,18 @@ class LocationRepository(BaseRepository[Location]):
                 .selectinload(Evse.tariff_associations)
                 .selectinload(TariffAssociation.tariff)
             )
+
+        if include_evses:
+            options.append(selectinload(Location.charging_pool).selectinload(ChargingStation.evses))
+        if include_charging_stations:
+            options.append(selectinload(Location.charging_pool))
+
+        if include_evse_images:
+            options.append(
+                selectinload(Location.charging_pool).selectinload(ChargingStation.evses).selectinload(Evse.images)
+            )
+        if include_location_images:
+            options.append(selectinload(Location.images))
 
         query = self.session.query(Location).options(*options)
         return self._search_and_paginate(query, search_query)
@@ -194,6 +217,8 @@ class LocationRepository(BaseRepository[Location]):
                 'lat_max',
                 'lon_min',
                 'lon_max',
+                'evse_status',
+                'exclude_evse_status',
                 'evse_status_last_updated_since',
                 'last_updated_since',
             ]:
@@ -203,8 +228,10 @@ class LocationRepository(BaseRepository[Location]):
 
         last_updated_since = getattr(search_query, 'last_updated_since', None)
         evse_status_last_updated = getattr(search_query, 'evse_status_last_updated_since', None)
+        evse_status = getattr(search_query, 'evse_status', None)
+        exclude_evse_status = getattr(search_query, 'exclude_evse_status', None)
 
-        if last_updated_since or evse_status_last_updated:
+        if any((last_updated_since, evse_status_last_updated, evse_status, exclude_evse_status)):
             query = query.join(Location.charging_pool).join(ChargingStation.evses).distinct()
             if last_updated_since:
                 query = query.filter(
@@ -216,6 +243,10 @@ class LocationRepository(BaseRepository[Location]):
                 )
             if evse_status_last_updated:
                 query = query.filter(Evse.status_last_updated >= evse_status_last_updated)
+            if evse_status:
+                query = query.filter(Evse.status.in_(evse_status))
+            if exclude_evse_status:
+                query = query.filter(Evse.status.notin_(exclude_evse_status))
 
         if (
             getattr(search_query, 'lat', None)

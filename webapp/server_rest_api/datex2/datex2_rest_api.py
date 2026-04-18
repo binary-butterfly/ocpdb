@@ -18,7 +18,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from webapp.common.response import empty_json_response
 from webapp.common.rest import BaseMethodView
-from webapp.common.server_auth import ServerAuthRole, require_role
 from webapp.dependencies import dependencies
 from webapp.server_rest_api.base_blueprint import ServerApiBaseBlueprint
 
@@ -36,22 +35,26 @@ class Datex2ImportBlueprint(ServerApiBaseBlueprint):
         super().__init__('datex2', __name__, url_prefix='/datex')
 
         for version_url, version_name in (('v3.5', 'v3_5'), ('v3.7', 'v3_7')):
+            static_view = Datex2StaticMethodView.as_view(
+                f'datex2_{version_name}_static',
+                **self.get_base_method_view_dependencies(),
+                datex2_handler=self.datex2_handler,
+            )
+            static_view.skip_basic_auth = True
             self.add_url_rule(
                 f'/{version_url}/<source_uid>/static',
-                view_func=Datex2StaticMethodView.as_view(
-                    f'datex2_{version_name}_static',
-                    **self.get_base_method_view_dependencies(),
-                    datex2_handler=self.datex2_handler,
-                ),
+                view_func=static_view,
                 methods=['POST'],
             )
+            realtime_view = Datex2RealtimeMethodView.as_view(
+                f'datex2_{version_name}_realtime',
+                **self.get_base_method_view_dependencies(),
+                datex2_handler=self.datex2_handler,
+            )
+            realtime_view.skip_basic_auth = True
             self.add_url_rule(
                 f'/{version_url}/<source_uid>/realtime',
-                view_func=Datex2RealtimeMethodView.as_view(
-                    f'datex2_{version_name}_realtime',
-                    **self.get_base_method_view_dependencies(),
-                    datex2_handler=self.datex2_handler,
-                ),
+                view_func=realtime_view,
                 methods=['POST'],
             )
 
@@ -65,16 +68,16 @@ class Datex2BaseMethodView(BaseMethodView):
 
 
 class Datex2StaticMethodView(Datex2BaseMethodView):
-    @require_role(ServerAuthRole.DATEX2)
     def post(self, source_uid: str):
+        self.datex2_handler.authenticate(source_uid)
         data = self.request_helper.get_parsed_json()
         self.datex2_handler.handle_static_push(source_uid, data)
         return empty_json_response(), 204
 
 
 class Datex2RealtimeMethodView(Datex2BaseMethodView):
-    @require_role(ServerAuthRole.DATEX2)
     def post(self, source_uid: str):
+        self.datex2_handler.authenticate(source_uid)
         data = self.request_helper.get_parsed_json()
         self.datex2_handler.handle_realtime_push(source_uid, data)
         return empty_json_response(), 204
