@@ -77,6 +77,7 @@ class RemoteMixin(ABC):
                 url=url,
                 http_status=response.status_code,
                 message=f'Invalid status code {response.status_code}',
+                data=response.text,
             )
 
         return response

@@ -18,19 +18,22 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import logging
 from abc import ABC
-from datetime import datetime, timezone
+from dataclasses import dataclass, field
+from datetime import datetime, timedelta, timezone
+from email.utils import format_datetime, parsedate_to_datetime
 
 from validataclass.exceptions import ValidationError
 from validataclass.helpers import UnsetValue
 from validataclass.validators import DataclassValidator
 
+from webapp.common.error_handling.exceptions import RemoteException
 from webapp.common.logging.models import LogMessageType
+from webapp.common.rest.exceptions import IncompleteConfigException
 from webapp.models import SourceStatus
 from webapp.services.import_services.base_import_service import BaseImportService
-from webapp.services.import_services.models import LocationUpdate
-from webapp.shared.datex2.v3_5_json_realtime.models.d_a_t_e_x_i_i3_d2_payload_input import (
-    DATEXII3D2PayloadInput as DATEXII3D2RealtimePayloadInput,
-)
+from webapp.services.import_services.exceptions import ImportException
+from webapp.services.import_services.models import EvseRealtimeUpdate, LocationUpdate
+from webapp.shared.datex2.models import MessageContainerWrapperOutput
 from webapp.shared.datex2.v3_5_json_realtime.models.energy_infrastructure_station_status_input import (
     EnergyInfrastructureStationStatusInput,
 )
@@ -44,34 +47,34 @@ from .datex2_v3_5_json_static_mapper import Datex2V35JSONStaticMapper
 logger = logging.getLogger(__name__)
 
 
+@dataclass(kw_only=True)
+class RealtimeResult:
+    realtime_error_count: int = 0
+    realtime_success_count: int = 0
+    evse_updates_by_evse: dict[str, EvseRealtimeUpdate] = field(default_factory=dict)
+
+
 class BaseDatex2V35ImportService(BaseImportService, ABC):
     v3_5_json_static_datex_validator = DataclassValidator(DATEXII3D2StaticPayloadInput)
-    v3_5_json_realtime_datex_validator = DataclassValidator(DATEXII3D2RealtimePayloadInput)
+    message_container_validator = DataclassValidator(MessageContainerWrapperOutput)
     energy_infrastructure_site_validator = DataclassValidator(EnergyInfrastructureSiteInput)
     energy_infrastructure_station_status_validator = DataclassValidator(EnergyInfrastructureStationStatusInput)
     v3_5_json_static_datex_mapper = Datex2V35JSONStaticMapper()
 
     def fetch_static_data(self):
-        data = self.request_data(self.config.get('static_subscription_id'))
-        self.import_static_data(data)
+        subscription_id: int | None = self.config.get('static_subscription_id')
+        if subscription_id is None:
+            raise IncompleteConfigException(message='Missing static_subscription_id in config')
 
-    def fetch_realtime_data(self):
-        source = self.get_source()
-        if source.static_status != SourceStatus.ACTIVE:
-            return
+        data, last_modified = self.request_data(subscription_id)
 
-        data = self.request_data(self.config.get('realtime_subscription_id'))
-        self.import_realtime_data(data)
-
-    def import_static_data(self, data: dict):
         source = self.get_source()
         error_count = 0
         success_count = 0
         location_updates: list[LocationUpdate] = []
-        static_data_updated_at = datetime.now(timezone.utc)
 
         try:
-            datex_input = self.v3_5_json_static_datex_validator.validate(data)
+            datex_input: DATEXII3D2StaticPayloadInput = self.v3_5_json_static_datex_validator.validate(data)
         except ValidationError as e:
             logger.error(
                 f'missing payload or aegiEnergyInfrastructureTablePublication in {self.source_info.uid} static data {data}: {e.to_dict()}',
@@ -110,7 +113,7 @@ class BaseDatex2V35ImportService(BaseImportService, ABC):
             source=source,
             static_status=SourceStatus.ACTIVE,
             static_error_count=error_count,
-            static_data_updated_at=static_data_updated_at,
+            static_data_updated_at=last_modified,
         )
         logger.info(
             f'Successfully updated {self.source_info.uid} static data with {success_count} valid '
@@ -118,47 +121,114 @@ class BaseDatex2V35ImportService(BaseImportService, ABC):
             extra={'attributes': {'type': LogMessageType.IMPORT_LOCATION}},
         )
 
-    def import_realtime_data(self, data: dict):
+    def fetch_realtime_data(self):
         source = self.get_source()
-        realtime_error_count = 0
-        realtime_success_count = 0
-        realtime_data_updated_at = datetime.now(timezone.utc)
+        last_modified = datetime.now(tz=timezone.utc)
 
-        try:
-            realtime_data = {'payload': data['messageContainer']['payload'][0]}
-        except (KeyError, IndexError, TypeError):
-            logger.error(
-                f'missing messageContainer or payload in {self.source_info.uid} realtime data',
-                extra={'attributes': {'type': LogMessageType.IMPORT_SOURCE}},
-            )
-            self.update_source(source, realtime_status=SourceStatus.FAILED)
+        if source.static_status != SourceStatus.ACTIVE:
             return
 
+        if self.config.get('use_realtime_push'):
+            return
+
+        subscription_id: int | None = self.config.get('realtime_subscription_id')
+        if subscription_id is None:
+            raise IncompleteConfigException(message='Missing static_subscription_id in config')
+
+        source = self.get_source()
+        result = RealtimeResult()
+
+        counter = 0
+        if source.realtime_data_updated_at:
+            if_modified_since = source.realtime_data_updated_at.replace(tzinfo=timezone.utc)
+        else:
+            if_modified_since = datetime.now(tz=timezone.utc) - timedelta(hours=1)
+
+        while counter < 25000:
+            try:
+                data, last_modified = self.request_data(subscription_id, if_modified_since)
+            except RemoteException as e:
+                logger.error(
+                    f'Datex2 realtime request failed: {e.to_dict()}. Text: {e.data}',
+                    extra={'attributes': {'type': LogMessageType.IMPORT_SOURCE}},
+                )
+                self.update_source(source, realtime_status=SourceStatus.FAILED)
+                return
+
+            if not last_modified:
+                logger.error(
+                    f'Missing Last-Modified header in {self.source_info.uid} realtime data.',
+                    extra={'attributes': {'type': LogMessageType.IMPORT_SOURCE}},
+                )
+                self.update_source(source, realtime_status=SourceStatus.FAILED)
+                return
+
+            try:
+                message_container = self.add_realtime_data(data, result)
+            except ImportException as e:
+                logger.error(
+                    e.message,
+                    extra={'attributes': {'type': LogMessageType.IMPORT_SOURCE}},
+                )
+                self.update_source(source, realtime_status=SourceStatus.FAILED)
+                return
+
+            protocol_type = (
+                message_container.messageContainer.exchangeInformation.exchangeContext.codedExchangeProtocol.value
+            )
+
+            logger.info(
+                f'Got {protocol_type.value} from {last_modified}',
+                extra={'attributes': {'type': LogMessageType.IMPORT_LOCATION}},
+            )
+
+            if if_modified_since == last_modified:
+                break
+
+            counter += 1
+            if_modified_since = last_modified
+
+        self.save_evse_updates(list(result.evse_updates_by_evse.values()))
+
+        self.update_source(
+            source=source,
+            realtime_status=SourceStatus.ACTIVE,
+            realtime_error_count=result.realtime_error_count,
+            realtime_data_updated_at=last_modified,
+        )
+        logger.info(
+            f'Successfully updated {self.source_info.uid} realtime with {result.realtime_success_count} valid '
+            f'EVSEs and {result.realtime_error_count} failed EVSEs.',
+            extra={'attributes': {'type': LogMessageType.IMPORT_LOCATION}},
+        )
+
+    def add_realtime_data(self, data: dict, result: RealtimeResult) -> MessageContainerWrapperOutput:
         try:
-            datex_input = self.v3_5_json_realtime_datex_validator.validate(realtime_data)
+            datex_input: MessageContainerWrapperOutput = self.message_container_validator.validate(data)
         except ValidationError as e:
-            logger.error(
-                f'invalid {self.source_info.uid} realtime data: {e.to_dict()}',
-                extra={'attributes': {'type': LogMessageType.IMPORT_SOURCE}},
-            )
-            self.update_source(source, realtime_status=SourceStatus.FAILED)
-            return
+            raise ImportException(
+                message=f'missing messageContainer or payload in {self.source_info.uid} realtime data',
+            ) from e
 
         if (
-            datex_input.payload is UnsetValue
-            or datex_input.payload.aegiEnergyInfrastructureStatusPublication is UnsetValue
-            or datex_input.payload.aegiEnergyInfrastructureStatusPublication.energyInfrastructureSiteStatus
-            is UnsetValue
+            datex_input.messageContainer is None
+            or datex_input.messageContainer.payload is None
+            or not len(datex_input.messageContainer.payload)
         ):
-            logger.error(
-                f'missing payload or aegiEnergyInfrastructureStatusPublication in {self.source_info.uid} realtime data',
-                extra={'attributes': {'type': LogMessageType.IMPORT_SOURCE}},
+            raise ImportException(
+                message=f'missing payload in {self.source_info.uid} realtime data',
             )
-            self.update_source(source, realtime_status=SourceStatus.FAILED)
-            return
 
-        evse_updates = []
-        for site_status in datex_input.payload.aegiEnergyInfrastructureStatusPublication.energyInfrastructureSiteStatus:
+        payload = datex_input.messageContainer.payload[0]
+        if (
+            payload.aegiEnergyInfrastructureStatusPublication is UnsetValue
+            or payload.aegiEnergyInfrastructureStatusPublication.energyInfrastructureSiteStatus is UnsetValue
+        ):
+            raise ImportException(
+                message=f'missing aegiEnergyInfrastructureStatusPublication in {self.source_info.uid} realtime data',
+            )
+
+        for site_status in payload.aegiEnergyInfrastructureStatusPublication.energyInfrastructureSiteStatus:
             if site_status.energyInfrastructureStationStatus is UnsetValue:
                 continue
             for station_status in site_status.energyInfrastructureStationStatus:
@@ -169,32 +239,35 @@ class BaseDatex2V35ImportService(BaseImportService, ABC):
                         refill_point_status_g,
                     )
                     if evse_update is None:
-                        realtime_error_count += 1
+                        result.realtime_error_count += 1
                         continue
-                    evse_updates.append(evse_update)
-                    realtime_success_count += 1
+                    result.evse_updates_by_evse[evse_update.evse_id] = evse_update
+                    result.realtime_success_count += 1
 
-        self.save_evse_updates(evse_updates)
+        return datex_input
 
-        self.update_source(
-            source=source,
-            realtime_status=SourceStatus.ACTIVE,
-            realtime_error_count=realtime_error_count,
-            realtime_data_updated_at=realtime_data_updated_at,
-        )
-        logger.info(
-            f'Successfully updated {self.source_info.uid} realtime with {realtime_success_count} valid EVSEs '
-            f'and {realtime_error_count} failed EVSEs.',
-            extra={'attributes': {'type': LogMessageType.IMPORT_LOCATION}},
-        )
-
-    def request_data(self, subscription_id: int) -> dict:
+    def request_data(
+        self,
+        subscription_id: int,
+        if_modified_since: datetime | None = None,
+    ) -> tuple[dict, datetime | None]:
         url = f'https://mobilithek.info:8443/mobilithek/api/v1.0/subscription?subscriptionID={subscription_id}'
-        return self.json_request(
+        headers: dict[str, str] = {}
+
+        if if_modified_since:
+            headers['If-Modified-Since'] = format_datetime(if_modified_since, usegmt=True)
+
+        response = self.request(
             url=url,
+            headers=headers,
             cert=(
                 self.config.get('mobilithek_cert_path'),
                 self.config.get('mobilithek_key_path'),
             ),
-            fix_encoding=True,
         )
+        last_modified_string = response.headers.get('Last-Modified')
+
+        if last_modified_string is None:
+            return response.json(), None
+
+        return response.json(), parsedate_to_datetime(last_modified_string)

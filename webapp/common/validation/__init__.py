@@ -21,6 +21,8 @@ from .date_validator import ParsedDateValidator
 from .datetime_to_utc_datetime_validator import DateTimeToUtcDateTimeValidator
 from .emptystring_to_noneable import EmptystringToNoneable
 from .integer_to_string_validator import IntegerToStringValidator
+from .multi_dict_validator import MultiDictValidationError, MultiDictValidator
+from .multi_validataclass_validator import MultiValidataclassValidationError, MultiValidataclassValidator
 from .nonable_to_unset import NoneableToUnsetValue
 from .printable_string_validator import PrintableStringValidator
 from .rounding_integer_validator import RoundingIntegerValidator
