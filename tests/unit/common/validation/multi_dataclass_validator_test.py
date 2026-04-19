@@ -20,7 +20,8 @@ import pytest
 from validataclass.dataclasses import Default, ValidataclassMixin, validataclass
 from validataclass.exceptions import InvalidValidatorOptionException, ValidationError
 from validataclass.validators import IntegerValidator, StringValidator
-from webapp.common.validation.multi_dataclass_validator import (
+
+from webapp.common.validation import (
     MultiValidataclassValidationError,
     MultiValidataclassValidator,
 )

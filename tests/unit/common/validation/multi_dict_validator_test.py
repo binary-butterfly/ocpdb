@@ -20,7 +20,7 @@ import pytest
 from validataclass.exceptions import InvalidValidatorOptionException, ValidationError
 from validataclass.validators import DictValidator, IntegerValidator, StringValidator
 
-from webapp.common.validation.multi_dict_validator import MultiDictValidationError, MultiDictValidator
+from webapp.common.validation import MultiDictValidationError, MultiDictValidator
 
 
 def _string_shape_validator() -> DictValidator:
