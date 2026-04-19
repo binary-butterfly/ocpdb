@@ -113,5 +113,5 @@ class Datex2V37JSONHandler(PublicApiBaseHandler):
         )
 
         return MessageContainerWrapperOutput(
-            message_container=message_container,
+            messageContainer=message_container,
         )

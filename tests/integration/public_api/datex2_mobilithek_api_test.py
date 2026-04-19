@@ -46,8 +46,8 @@ class Datex2V37MobilithekRealtimeApiTest:
         assert response.status_code == HTTPStatus.OK
         data = response.json
 
-        assert 'message_container' in data
-        message_container = data['message_container']
+        assert 'messageContainer' in data
+        message_container = data['messageContainer']
 
         assert 'payload' in message_container
         assert 'exchangeInformation' in message_container
@@ -66,7 +66,7 @@ class Datex2V37MobilithekRealtimeApiTest:
         response = test_client.get(path='/api/public/datex/v3.7/json/mobilithek/realtime')
 
         assert response.status_code == HTTPStatus.OK
-        exchange_info = response.json['message_container']['exchangeInformation']
+        exchange_info = response.json['messageContainer']['exchangeInformation']
         assert exchange_info['exchangeContext']['codedExchangeProtocol']['value'] == 'snapshotPush'
 
     @staticmethod
@@ -79,7 +79,7 @@ class Datex2V37MobilithekRealtimeApiTest:
         )
 
         assert response.status_code == HTTPStatus.OK
-        exchange_info = response.json['message_container']['exchangeInformation']
+        exchange_info = response.json['messageContainer']['exchangeInformation']
         assert exchange_info['exchangeContext']['codedExchangeProtocol']['value'] == 'deltaPush'
 
     @staticmethod
@@ -93,7 +93,7 @@ class Datex2V37MobilithekRealtimeApiTest:
         response = test_client.get(path='/api/public/datex/v3.7/json/mobilithek/realtime')
 
         assert response.status_code == HTTPStatus.OK
-        payload = response.json['message_container']['payload'][0]
+        payload = response.json['messageContainer']['payload'][0]
         status_pub = payload['aegiEnergyInfrastructureStatusPublication']
 
         site_statuses = status_pub['energyInfrastructureSiteStatus']
@@ -111,7 +111,7 @@ class Datex2V37MobilithekRealtimeApiTest:
         response = test_client.get(path='/api/public/datex/v3.7/json/mobilithek/realtime')
 
         assert response.status_code == HTTPStatus.OK
-        payload = response.json['message_container']['payload'][0]
+        payload = response.json['messageContainer']['payload'][0]
         site_statuses = payload['aegiEnergyInfrastructureStatusPublication']['energyInfrastructureSiteStatus']
         assert len(site_statuses) == 2
 
@@ -136,7 +136,7 @@ class Datex2V37MobilithekRealtimeApiTest:
 
         response = test_client.get(path='/api/public/datex/v3.7/json/mobilithek/realtime')
 
-        payload = response.json['message_container']['payload'][0]
+        payload = response.json['messageContainer']['payload'][0]
         refill_statuses = payload['aegiEnergyInfrastructureStatusPublication']['energyInfrastructureSiteStatus'][0][
             'energyInfrastructureStationStatus'
         ][0]['refillPointStatus']
@@ -176,7 +176,7 @@ class Datex2V37MobilithekRealtimeApiTest:
         )
 
         assert response.status_code == HTTPStatus.OK
-        payload = response.json['message_container']['payload'][0]
+        payload = response.json['messageContainer']['payload'][0]
         site_statuses = payload['aegiEnergyInfrastructureStatusPublication']['energyInfrastructureSiteStatus']
         assert len(site_statuses) == 1
         assert site_statuses[0]['reference']['idG'] == 'LOCATION-2'
@@ -189,7 +189,7 @@ class Datex2V37MobilithekRealtimeApiTest:
         response = test_client.get(path='/api/public/datex/v3.7/json/mobilithek/realtime')
 
         assert response.status_code == HTTPStatus.OK
-        dynamic_info = response.json['message_container']['exchangeInformation']['dynamicInformation']
+        dynamic_info = response.json['messageContainer']['exchangeInformation']['dynamicInformation']
         assert 'messageGenerationTimestamp' in dynamic_info
 
 
@@ -204,8 +204,8 @@ class Datex2V35MobilithekRealtimeApiTest:
         assert response.status_code == HTTPStatus.OK
         data = response.json
 
-        assert 'message_container' in data
-        message_container = data['message_container']
+        assert 'messageContainer' in data
+        message_container = data['messageContainer']
 
         assert 'payload' in message_container
         assert 'exchangeInformation' in message_container
@@ -224,7 +224,7 @@ class Datex2V35MobilithekRealtimeApiTest:
         response = test_client.get(path='/api/public/datex/v3.5/json/mobilithek/realtime')
 
         assert response.status_code == HTTPStatus.OK
-        exchange_info = response.json['message_container']['exchangeInformation']
+        exchange_info = response.json['messageContainer']['exchangeInformation']
         assert exchange_info['exchangeContext']['codedExchangeProtocol']['value'] == 'snapshotPush'
 
     @staticmethod
@@ -237,7 +237,7 @@ class Datex2V35MobilithekRealtimeApiTest:
         )
 
         assert response.status_code == HTTPStatus.OK
-        exchange_info = response.json['message_container']['exchangeInformation']
+        exchange_info = response.json['messageContainer']['exchangeInformation']
         assert exchange_info['exchangeContext']['codedExchangeProtocol']['value'] == 'deltaPush'
 
     @staticmethod
@@ -251,7 +251,7 @@ class Datex2V35MobilithekRealtimeApiTest:
         response = test_client.get(path='/api/public/datex/v3.5/json/mobilithek/realtime')
 
         assert response.status_code == HTTPStatus.OK
-        payload = response.json['message_container']['payload'][0]
+        payload = response.json['messageContainer']['payload'][0]
         status_pub = payload['aegiEnergyInfrastructureStatusPublication']
 
         site_statuses = status_pub['energyInfrastructureSiteStatus']
@@ -269,7 +269,7 @@ class Datex2V35MobilithekRealtimeApiTest:
         response = test_client.get(path='/api/public/datex/v3.5/json/mobilithek/realtime')
 
         assert response.status_code == HTTPStatus.OK
-        payload = response.json['message_container']['payload'][0]
+        payload = response.json['messageContainer']['payload'][0]
         site_statuses = payload['aegiEnergyInfrastructureStatusPublication']['energyInfrastructureSiteStatus']
         assert len(site_statuses) == 2
 
@@ -294,7 +294,7 @@ class Datex2V35MobilithekRealtimeApiTest:
 
         response = test_client.get(path='/api/public/datex/v3.5/json/mobilithek/realtime')
 
-        payload = response.json['message_container']['payload'][0]
+        payload = response.json['messageContainer']['payload'][0]
         refill_statuses = payload['aegiEnergyInfrastructureStatusPublication']['energyInfrastructureSiteStatus'][0][
             'energyInfrastructureStationStatus'
         ][0]['refillPointStatus']
@@ -334,7 +334,7 @@ class Datex2V35MobilithekRealtimeApiTest:
         )
 
         assert response.status_code == HTTPStatus.OK
-        payload = response.json['message_container']['payload'][0]
+        payload = response.json['messageContainer']['payload'][0]
         site_statuses = payload['aegiEnergyInfrastructureStatusPublication']['energyInfrastructureSiteStatus']
         assert len(site_statuses) == 1
         assert site_statuses[0]['reference']['idG'] == 'LOCATION-2'
@@ -347,5 +347,5 @@ class Datex2V35MobilithekRealtimeApiTest:
         response = test_client.get(path='/api/public/datex/v3.5/json/mobilithek/realtime')
 
         assert response.status_code == HTTPStatus.OK
-        dynamic_info = response.json['message_container']['exchangeInformation']['dynamicInformation']
+        dynamic_info = response.json['messageContainer']['exchangeInformation']['dynamicInformation']
         assert 'messageGenerationTimestamp' in dynamic_info

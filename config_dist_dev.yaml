@@ -28,6 +28,7 @@ SOURCES:
     auto_fetch: false
     static_subscription_id: 12345
     realtime_subscription_id: 67890
+    api_key: test-datex2-api-key
 
 SERVER_AUTH_USERS:
   dev:
