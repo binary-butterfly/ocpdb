@@ -24,6 +24,7 @@ import requests
 from webapp.common.dataclass import filter_none_recursive, filter_unset_value, recursive_to_dict
 from webapp.common.json import DefaultJSONEncoder
 from webapp.common.redis import RedisHelper, RedisKeyNotFoundException
+from webapp.models.evse import EvseStatus
 from webapp.repositories import LocationRepository
 from webapp.services.base_service import BaseService
 from webapp.shared.datex2.models import (
@@ -60,7 +61,17 @@ class ChargeLocationService(BaseService):
         self.redis_helper = redis_helper
 
     def push_datex_static(self) -> None:
-        locations = self.location_repository.fetch_all_locations_with_children()
+        search_query = LocationSearchQuery(
+            exclude_evse_status=[EvseStatus.STATIC],
+        )
+        locations = self.location_repository.fetch_locations(
+            search_query=search_query,
+            include_charging_stations=True,
+            include_evses=True,
+            include_connectors=True,
+            include_tariffs=True,
+            include_operators=True,
+        )
 
         version = self.config_helper.get('MOBILITHEK_VERSION', '3.5')
         if version == '3.7':
@@ -92,7 +103,11 @@ class ChargeLocationService(BaseService):
             evse_status_last_updated_since=updated_since,
         )
 
-        locations = list(self.location_repository.fetch_locations(search_query=search_query))
+        locations = self.location_repository.fetch_locations(
+            search_query=search_query,
+            include_charging_stations=True,
+            include_evses=True,
+        )
 
         version = self.config_helper.get('MOBILITHEK_VERSION', '3.5')
         if version == '3.7':

@@ -16,10 +16,21 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from dataclasses import dataclass
 from datetime import datetime
 from enum import Enum
 
+from validataclass.dataclasses import Default, ValidataclassMixin, validataclass
+from validataclass.validators import (
+    AnythingValidator,
+    DataclassValidator,
+    DateTimeValidator,
+    EnumValidator,
+    ListValidator,
+    Noneable,
+    StringValidator,
+)
+
+from webapp.common.validation import MultiValidataclassValidator
 from webapp.shared.datex2.v3_5_json_realtime.models.payload_publication_g_input import (
     PayloadPublicationGInput as PayloadPublicationGV35RealtimeOutput,
 )
@@ -59,63 +70,96 @@ class ExchangeStatusEnum(Enum):
     EXTENDED_G = 'extendedG'
 
 
-@dataclass(kw_only=True)
-class AgentOutput:
-    address: str | None = None
-    name: str | None = None
-    referenceID: str | None = None
-    serviceURL: str | None = None
-    internationalIdentifier: InternationalIdentifierOutput | None = None
-    exAgentExtensionG: ExtensionTypeGOutput | None = None
+@validataclass
+class AgentOutput(ValidataclassMixin):
+    address: str | None = Noneable(StringValidator(max_length=1024)), Default(None)
+    name: str | None = Noneable(StringValidator(max_length=1024)), Default(None)
+    referenceID: str | None = Noneable(StringValidator(max_length=1024)), Default(None)
+    serviceURL: str | None = Noneable(StringValidator(max_length=1024)), Default(None)
+    internationalIdentifier: InternationalIdentifierOutput | None = (
+        Noneable(DataclassValidator(InternationalIdentifierOutput)),
+        Default(None),
+    )
+    exAgentExtensionG: ExtensionTypeGOutput | None = (
+        Noneable(DataclassValidator(ExtensionTypeGOutput)),
+        Default(None),
+    )
 
 
-@dataclass(kw_only=True)
-class ProtocolTypeEnumGOutput:
-    value: ProtocolTypeEnum
-    extendedValueG: str | None = None
+@validataclass
+class ProtocolTypeEnumGOutput(ValidataclassMixin):
+    value: ProtocolTypeEnum = EnumValidator(ProtocolTypeEnum)
+    extendedValueG: str | None = Noneable(StringValidator(max_length=1024)), Default(None)
 
 
-@dataclass(kw_only=True)
-class ExchangeContextOutput:
-    codedExchangeProtocol: ProtocolTypeEnumGOutput
-    exchangeSpecificationVersion: str
-    supplierOrCisRequester: AgentOutput
+@validataclass
+class ExchangeContextOutput(ValidataclassMixin):
+    codedExchangeProtocol: ProtocolTypeEnumGOutput = DataclassValidator(ProtocolTypeEnumGOutput)
+    exchangeSpecificationVersion: str = StringValidator(max_length=1024)
+    supplierOrCisRequester: AgentOutput = DataclassValidator(AgentOutput)
 
 
-@dataclass(kw_only=True)
-class ExchangeStatusEnumGOutput:
-    value: ExchangeStatusEnum
-    extendedValueG: str | None = None
+@validataclass
+class ExchangeStatusEnumGOutput(ValidataclassMixin):
+    value: ExchangeStatusEnum = EnumValidator(ExchangeStatusEnum)
+    extendedValueG: str | None = Noneable(StringValidator(max_length=1024)), Default(None)
 
 
-@dataclass(kw_only=True)
-class DynamicInformationOutput:
-    exchangeStatus: ExchangeStatusEnumGOutput
-    messageGenerationTimestamp: datetime
-    exDynamicInformationExtensionG: ExtensionTypeGOutput | None = None
+@validataclass
+class DynamicInformationOutput(ValidataclassMixin):
+    exchangeStatus: ExchangeStatusEnumGOutput = DataclassValidator(ExchangeStatusEnumGOutput)
+    messageGenerationTimestamp: datetime = DateTimeValidator()
+    exDynamicInformationExtensionG: ExtensionTypeGOutput | None = (
+        Noneable(AnythingValidator(allowed_types=[ExtensionTypeGOutput])),
+        Default(None),
+    )
 
 
-@dataclass(kw_only=True)
-class ExchangeInformationOutput:
-    exchangeContext: ExchangeContextOutput
-    dynamicInformation: DynamicInformationOutput
-    exExchangeInformationExtensionG: ExtensionTypeGOutput | None = None
+@validataclass
+class ExchangeInformationOutput(ValidataclassMixin):
+    exchangeContext: ExchangeContextOutput = DataclassValidator(ExchangeContextOutput)
+    dynamicInformation: DynamicInformationOutput = DataclassValidator(DynamicInformationOutput)
+    exExchangeInformationExtensionG: ExtensionTypeGOutput | None = (
+        Noneable(DataclassValidator(ExtensionTypeGOutput)),
+        Default(None),
+    )
 
 
-@dataclass(kw_only=True)
-class MessageContainerOutput:
+@validataclass
+class MessageContainerOutput(ValidataclassMixin):
     payload: (
-        PayloadPublicationGV35StaticOutput
-        | PayloadPublicationGV35RealtimeOutput
-        | PayloadPublicationGV37StaticOutput
-        | PayloadPublicationGV37RealtimeOutput
+        list[
+            PayloadPublicationGV35StaticOutput
+            | PayloadPublicationGV35RealtimeOutput
+            | PayloadPublicationGV37StaticOutput
+            | PayloadPublicationGV37RealtimeOutput
+        ]
         | None
-    ) = None
-    exchangeInformation: ExchangeInformationOutput
-    conMessageContainerExtensionG: ExtensionTypeGOutput | None = None
+    ) = (
+        Noneable(
+            ListValidator(
+                MultiValidataclassValidator(
+                    PayloadPublicationGV35StaticOutput,
+                    PayloadPublicationGV35RealtimeOutput,
+                ),
+            )
+        ),
+        Default(None),
+    )
+    exchangeInformation: ExchangeInformationOutput = DataclassValidator(ExchangeInformationOutput)
+    conMessageContainerExtensionG: ExtensionTypeGOutput | None = (
+        Noneable(DataclassValidator(ExtensionTypeGOutput)),
+        Default(None),
+    )
 
 
-@dataclass(kw_only=True)
-class MessageContainerWrapperOutput:
-    message_container: MessageContainerOutput | None = None
-    exchangeInformation: ExchangeInformationOutput | None = None
+@validataclass
+class MessageContainerWrapperOutput(ValidataclassMixin):
+    messageContainer: MessageContainerOutput | None = (
+        Noneable(DataclassValidator(MessageContainerOutput)),
+        Default(None),
+    )
+    exchangeInformation: ExchangeInformationOutput | None = (
+        Noneable(DataclassValidator(ExchangeInformationOutput)),
+        Default(None),
+    )

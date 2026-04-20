@@ -58,3 +58,8 @@ class UnauthorizedException(RestApiException):
 class NotFoundException(RestApiException):
     code = 'not_found'
     http_status = 404
+
+
+class IncompleteConfigException(RestApiException):
+    code = 'incomplete_config'
+    http_status = 500

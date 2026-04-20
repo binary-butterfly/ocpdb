@@ -40,9 +40,10 @@ from validataclass_search_queries.filters import (
 from validataclass_search_queries.pagination import OffsetPaginationMixin, PaginationLimitValidator
 from validataclass_search_queries.search_queries import BaseSearchQuery, search_query_dataclass
 from validataclass_search_queries.sorting import SortingMixin
-from validataclass_search_queries.validators import MultiSelectValidator
+from validataclass_search_queries.validators import MultiSelectEnumValidator, MultiSelectValidator
 
 from webapp.common.validation import SearchParamNotInList, SearchParamUnequal
+from webapp.models.evse import EvseStatus
 
 
 @search_query_dataclass
@@ -55,10 +56,12 @@ class LocationSearchQuery(BaseSearchQuery):
             target_timezone=timezone.utc,
         ),
     )
+    evse_status: list[EvseStatus] | None = SearchParamMultiSelect('status'), MultiSelectEnumValidator(EvseStatus)
+    exclude_evse_status: list[EvseStatus] | None = SearchParamNotInList('status'), MultiSelectEnumValidator(EvseStatus)
 
 
 @search_query_dataclass
-class LocationApiSearchQuery(SortingMixin, OffsetPaginationMixin, BaseSearchQuery):
+class LocationApiSearchQuery(LocationSearchQuery, SortingMixin, OffsetPaginationMixin, BaseSearchQuery):
     # Set allowed sorting keys and default sorting key
     sorted_by: str = AnyOfValidator(['id', 'name', 'created', 'modified']), Default('id')
 
@@ -92,14 +95,6 @@ class LocationApiSearchQuery(SortingMixin, OffsetPaginationMixin, BaseSearchQuer
     lon_max: Decimal | None = SearchParamCustom(), NumericValidator()
 
     last_updated_since: datetime | None = (
-        SearchParamSince(),
-        DateTimeValidator(
-            DateTimeFormat.LOCAL_OR_UTC,
-            local_timezone=timezone.utc,
-            target_timezone=timezone.utc,
-        ),
-    )
-    evse_status_last_updated_since: datetime | None = (
         SearchParamSince(),
         DateTimeValidator(
             DateTimeFormat.LOCAL_OR_UTC,

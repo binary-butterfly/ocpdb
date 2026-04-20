@@ -16,6 +16,8 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+from gzip import GzipFile
+
 from flask import Response, request
 
 from webapp.common.base_blueprint import BaseBlueprint
@@ -40,6 +42,17 @@ class ServerRestApi(BaseBlueprint):
         ]
         for blueprint in self.blueprints:
             self.register_blueprint(blueprint())
+
+        @self.before_request
+        def decode_gzip() -> None:
+            if not request.path.startswith('/api/server/v1'):
+                return
+
+            content_encoding = getattr(request, 'content_encoding', None)
+            if content_encoding != 'gzip':
+                return
+
+            request.stream = GzipFile(fileobj=request.stream)
 
         @self.after_request
         def after_request(response: Response):

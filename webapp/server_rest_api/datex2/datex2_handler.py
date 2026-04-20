@@ -17,12 +17,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 import logging
+from datetime import datetime, timezone
 
 from webapp.common.logging.models import LogMessageType
-from webapp.common.rest.exceptions import NotFoundException
+from webapp.common.rest.exceptions import NotFoundException, UnauthorizedException
+from webapp.models import SourceStatus
 from webapp.server_rest_api.base_handler import ServerApiBaseHandler
 from webapp.services.import_services import ImportServices
-from webapp.services.import_services.datex2.base_datex2_v3_5_import_service import BaseDatex2V35ImportService
+from webapp.services.import_services.datex2.base_datex2_v3_5_import_service import (
+    BaseDatex2V35ImportService,
+    RealtimeResult,
+)
+from webapp.services.import_services.exceptions import ImportException
 
 logger = logging.getLogger(__name__)
 
@@ -34,7 +40,7 @@ class Datex2Handler(ServerApiBaseHandler):
         super().__init__(**kwargs)
         self.import_services = import_services
 
-    def _get_import_service(self, source_uid: str) -> BaseDatex2V35ImportService:
+    def handle_realtime_push(self, source_uid: str, key: str | None, data: dict) -> None:
         if source_uid not in self.import_services.importer_by_uid:
             raise NotFoundException(message=f'Source {source_uid} not found')
 
@@ -42,22 +48,38 @@ class Datex2Handler(ServerApiBaseHandler):
         if not isinstance(service, BaseDatex2V35ImportService):
             raise NotFoundException(message=f'Source {source_uid} is not a DATEX2 v3.5 source')
 
-        return service
+        source = service.get_source()
+        if not key or key != service.config.get('api_key'):
+            raise UnauthorizedException(message='Invalid API key')
 
-    def handle_static_push(self, source_uid: str, data: dict) -> None:
-        service = self._get_import_service(source_uid)
-        service.import_static_data(data)
+        last_modified = datetime.now(tz=timezone.utc)
+        result = RealtimeResult()
 
-        logger.info(
-            f'Imported DATEX2 static data for {source_uid} via REST API.',
-            extra={'attributes': {'type': LogMessageType.IMPORT_LOCATION}},
+        try:
+            message_container = service.add_realtime_data(data, result)
+        except ImportException as e:
+            logger.error(
+                e.message,
+                extra={'attributes': {'type': LogMessageType.IMPORT_SOURCE}},
+            )
+            service.update_source(source, realtime_status=SourceStatus.FAILED)
+            return
+
+        service.save_evse_updates(list(result.evse_updates_by_evse.values()))
+
+        if message_container.messageContainer.payload:
+            payload = message_container.messageContainer.payload[0]
+            if payload.aegiEnergyInfrastructureStatusPublication.publicationTime:
+                last_modified = payload.aegiEnergyInfrastructureStatusPublication.publicationTime
+
+        service.update_source(
+            source=source,
+            realtime_status=SourceStatus.ACTIVE,
+            realtime_error_count=result.realtime_error_count,
+            realtime_data_updated_at=last_modified,
         )
-
-    def handle_realtime_push(self, source_uid: str, data: dict) -> None:
-        service = self._get_import_service(source_uid)
-        service.import_realtime_data(data)
-
         logger.info(
-            f'Imported DATEX2 realtime data for {source_uid} via REST API.',
+            f'Imported DATEX2 realtime data for {source_uid} via REST API with {result.realtime_success_count} '
+            f'valid EVSEs and {result.realtime_error_count} failed EVSEs.',
             extra={'attributes': {'type': LogMessageType.IMPORT_LOCATION}},
         )
