@@ -1,10 +1,25 @@
 # Changelog
 
+## 2.10.2
+
+Released 2026-04-20
+
+### Fixes
+
+* Fix endpoint for Mobilithek by adding gzip support
+* Fix access management by adding key support
+* Fix Datex2 client by adding iteration mechanism for delta push updates
+* Fix MessageContainer output
+
+
 ## 2.10.1
 
 Released 2026-04-14
 
+### Fixes
+
 * [Fix multiple issues with datex2 outputs, with new mobilithek-optimized realtime endpoint](https://github.com/binary-butterfly/ocpdb/pull/191)
+
 
 ## 2.10.0
 
