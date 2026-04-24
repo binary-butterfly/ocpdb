@@ -31,8 +31,8 @@ class ElectricEnergyInput(ValidataclassMixin):
         Default(UnsetValue),
     )
     isGreenEnergy: bool | UnsetValueType = BooleanValidator(), Default(UnsetValue)
-    carbonDioxideImpact: float | UnsetValueType = FloatValidator(), Default(UnsetValue)
-    nuclearWasteImpact: float | UnsetValueType = FloatValidator(), Default(UnsetValue)
+    carbonDioxideImpact: float | UnsetValueType = FloatValidator(allow_integers=True), Default(UnsetValue)
+    nuclearWasteImpact: float | UnsetValueType = FloatValidator(allow_integers=True), Default(UnsetValue)
     energyRateByReference: list[EnergyRateReferenceGInput] | UnsetValueType = (
         ListValidator(DataclassValidator(EnergyRateReferenceGInput)),
         Default(UnsetValue),

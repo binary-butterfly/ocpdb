@@ -18,7 +18,7 @@ class WidthCharacteristicInput(ValidataclassMixin):
     """
 
     comparisonOperator: ComparisonOperatorEnumGInput = DataclassValidator(ComparisonOperatorEnumGInput)
-    vehicleWidth: float = FloatValidator()
+    vehicleWidth: float = FloatValidator(allow_integers=True)
     comWidthCharacteristicExtensionG: ExtensionTypeGInput | UnsetValueType = (
         DataclassValidator(ExtensionTypeGInput),
         Default(UnsetValue),

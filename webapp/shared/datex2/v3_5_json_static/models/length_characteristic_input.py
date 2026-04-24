@@ -18,7 +18,7 @@ class LengthCharacteristicInput(ValidataclassMixin):
     """
 
     comparisonOperator: ComparisonOperatorEnumGInput = DataclassValidator(ComparisonOperatorEnumGInput)
-    vehicleLength: float = FloatValidator()
+    vehicleLength: float = FloatValidator(allow_integers=True)
     comLengthCharacteristicExtensionG: ExtensionTypeGInput | UnsetValueType = (
         DataclassValidator(ExtensionTypeGInput),
         Default(UnsetValue),

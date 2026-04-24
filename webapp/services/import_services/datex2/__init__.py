@@ -16,4 +16,11 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+from .ecomovement_datex2_import_service import EcoMovementDatex2ImportService
 from .enbw_datex2_import_service import EnBWDatex2ImportService
+from .eround_datex2_import_service import ERoundDatex2ImportService
+from .gridandco_datex2_import_service import GridAndCoDatex2ImportService
+from .midorion_datex2_import_service import MidorionDatex2ImportService
+from .msu_datex2_import_service import MsuDatex2ImportService
+from .tesla_datex2_import_service import TeslaDatex2ImportService
+from .volkswagen_datex2_import_service import VolkswagenDatex2ImportService

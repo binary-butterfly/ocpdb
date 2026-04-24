@@ -16,9 +16,9 @@ class DimensionInput(ValidataclassMixin):
     A component that provides dimension information. Especially for multi-storey buildings, the usable area might be larger than the product from its length and width.
     """
 
-    length: float | UnsetValueType = FloatValidator(), Default(UnsetValue)
-    width: float | UnsetValueType = FloatValidator(), Default(UnsetValue)
-    height: float | UnsetValueType = FloatValidator(), Default(UnsetValue)
+    length: float | UnsetValueType = FloatValidator(allow_integers=True), Default(UnsetValue)
+    width: float | UnsetValueType = FloatValidator(allow_integers=True), Default(UnsetValue)
+    height: float | UnsetValueType = FloatValidator(allow_integers=True), Default(UnsetValue)
     usableArea: int | UnsetValueType = IntegerValidator(min_value=0), Default(UnsetValue)
     afacDimensionExtensionG: ExtensionTypeGInput | UnsetValueType = (
         DataclassValidator(ExtensionTypeGInput),

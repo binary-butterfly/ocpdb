@@ -18,7 +18,7 @@ class HeightCharacteristicInput(ValidataclassMixin):
     """
 
     comparisonOperator: ComparisonOperatorEnumGInput = DataclassValidator(ComparisonOperatorEnumGInput)
-    vehicleHeight: float = FloatValidator()
+    vehicleHeight: float = FloatValidator(allow_integers=True)
     comHeightCharacteristicExtensionG: ExtensionTypeGInput | UnsetValueType = (
         DataclassValidator(ExtensionTypeGInput),
         Default(UnsetValue),

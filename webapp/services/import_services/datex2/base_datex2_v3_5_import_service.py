@@ -103,6 +103,7 @@ class BaseDatex2V35ImportService(BaseImportService, ABC):
                 energy_infrastructure_site_input,
             )
             if location_update is None:
+                error_count += 1
                 continue
             location_updates.append(location_update)
             success_count += 1

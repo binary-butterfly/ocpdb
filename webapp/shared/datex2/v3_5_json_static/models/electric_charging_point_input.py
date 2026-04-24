@@ -85,8 +85,14 @@ class ElectricChargingPointInput(ValidataclassMixin):
         Default(UnsetValue),
     )
     numberOfConnectors: int | UnsetValueType = IntegerValidator(min_value=0), Default(UnsetValue)
-    availableVoltage: list[float] | UnsetValueType = ListValidator(FloatValidator()), Default(UnsetValue)
-    availableChargingPower: list[float] | UnsetValueType = ListValidator(FloatValidator()), Default(UnsetValue)
+    availableVoltage: list[float] | UnsetValueType = (
+        ListValidator(FloatValidator(allow_integers=True)),
+        Default(UnsetValue),
+    )
+    availableChargingPower: list[float] | UnsetValueType = (
+        ListValidator(FloatValidator(allow_integers=True)),
+        Default(UnsetValue),
+    )
     chargingMode: ChargingModeEnumGInput | UnsetValueType = (
         DataclassValidator(ChargingModeEnumGInput),
         Default(UnsetValue),

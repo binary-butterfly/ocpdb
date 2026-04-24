@@ -30,7 +30,16 @@ from webapp.repositories.image_repository import ImageRepository
 from webapp.services.base_service import BaseService
 from webapp.services.import_services.base_import_service import BaseImportService
 from webapp.services.import_services.bnetza import BnetzaApiImportService, BnetzaExcelImportService
-from webapp.services.import_services.datex2 import EnBWDatex2ImportService
+from webapp.services.import_services.datex2 import (
+    EcoMovementDatex2ImportService,
+    EnBWDatex2ImportService,
+    ERoundDatex2ImportService,
+    GridAndCoDatex2ImportService,
+    MidorionDatex2ImportService,
+    MsuDatex2ImportService,
+    TeslaDatex2ImportService,
+    VolkswagenDatex2ImportService,
+)
 from webapp.services.import_services.giroe import GiroeImportService
 from webapp.services.import_services.goldbeck_ipcm import HeilbronnNeckarbogenImportService
 from webapp.services.import_services.lichtblick import LichtblickImportService
@@ -55,17 +64,24 @@ class ImportServices(BaseService):
         BnetzaApiImportService,
         BnetzaExcelImportService,
         EaazePbwImportService,
+        EcoMovementDatex2ImportService,
         EnBWDatex2ImportService,
+        ERoundDatex2ImportService,
         GiroeImportService,
+        GridAndCoDatex2ImportService,
         HeilbronnNeckarbogenImportService,
         LadenetzOchpImportService,
         LichtblickImportService,
         LudwigsburgImportService,
+        MidorionDatex2ImportService,
+        MsuDatex2ImportService,
         OpendataSwissImportService,
         PforzheimImportService,
         StadtnaviImportService,
         SWStuttgartImportService,
+        TeslaDatex2ImportService,
         TuebingenImportService,
+        VolkswagenDatex2ImportService,
     ]
 
     def __init__(

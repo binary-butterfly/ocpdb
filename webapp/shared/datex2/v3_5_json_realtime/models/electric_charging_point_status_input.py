@@ -51,10 +51,10 @@ class ElectricChargingPointStatusInput(ValidataclassMixin):
         Default(UnsetValue),
     )
     status: RefillPointStatusEnumGInput = DataclassValidator(RefillPointStatusEnumGInput)
-    unitsInStock: float | UnsetValueType = FloatValidator(), Default(UnsetValue)
-    remainingChargingTime: float | UnsetValueType = FloatValidator(), Default(UnsetValue)
-    currentVoltage: float | UnsetValueType = FloatValidator(), Default(UnsetValue)
-    currentChargingPower: float | UnsetValueType = FloatValidator(), Default(UnsetValue)
+    unitsInStock: float | UnsetValueType = FloatValidator(allow_integers=True), Default(UnsetValue)
+    remainingChargingTime: float | UnsetValueType = FloatValidator(allow_integers=True), Default(UnsetValue)
+    currentVoltage: float | UnsetValueType = FloatValidator(allow_integers=True), Default(UnsetValue)
+    currentChargingPower: float | UnsetValueType = FloatValidator(allow_integers=True), Default(UnsetValue)
     nextAvailableChargingSlots: list[datetime] | UnsetValueType = (
         ListValidator(DateTimeValidator()),
         Default(UnsetValue),

@@ -16,9 +16,9 @@ class PositionAccuracyInput(ValidataclassMixin):
     Horizontal position accuracy parameters defined according to EN 16803-1
     """
 
-    accuracyPercentile50: float | UnsetValueType = FloatValidator(), Default(UnsetValue)
-    accuracyPercentile75: float | UnsetValueType = FloatValidator(), Default(UnsetValue)
-    accuracyPercentile95: float | UnsetValueType = FloatValidator(), Default(UnsetValue)
+    accuracyPercentile50: float | UnsetValueType = FloatValidator(allow_integers=True), Default(UnsetValue)
+    accuracyPercentile75: float | UnsetValueType = FloatValidator(allow_integers=True), Default(UnsetValue)
+    accuracyPercentile95: float | UnsetValueType = FloatValidator(allow_integers=True), Default(UnsetValue)
     locPositionAccuracyExtensionG: ExtensionTypeGInput | UnsetValueType = (
         DataclassValidator(ExtensionTypeGInput),
         Default(UnsetValue),

@@ -4,10 +4,12 @@ Use of this source code is governed by an MIT-style license that can be found in
 """
 
 from validataclass.dataclasses import ValidataclassMixin, validataclass
-from validataclass.validators import RegexValidator, StringValidator
+from validataclass.validators import RegexValidator
+
+from webapp.common.validation.replacing_string_validator import ReplacingStringValidator
 
 
 @validataclass
 class MultiLingualStringValueInput(ValidataclassMixin):
     lang: str = RegexValidator(pattern=r'^[a-z]{2}$')
-    value: str = StringValidator()
+    value: str = ReplacingStringValidator(mapping={'\n': '; '})

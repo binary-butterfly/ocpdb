@@ -159,6 +159,7 @@ class LocationRepository(BaseRepository[Location]):
         include_logos: bool = False,
         include_location_images: bool = False,
         include_charging_stations: bool = False,
+        include_charging_station_images: bool = False,
         include_evses: bool = False,
         include_evse_images: bool = False,
         include_connectors: bool = False,
@@ -175,8 +176,6 @@ class LocationRepository(BaseRepository[Location]):
             options.append(joinedload(Location.suboperator))
             options.append(joinedload(Location.owner))
 
-        if include_location_images:
-            options.append(selectinload(Location.images))
         if include_connectors:
             options.append(
                 selectinload(Location.charging_pool).selectinload(ChargingStation.evses).selectinload(Evse.connectors)
@@ -194,12 +193,15 @@ class LocationRepository(BaseRepository[Location]):
         if include_charging_stations:
             options.append(selectinload(Location.charging_pool))
 
+        if include_location_images:
+            options.append(selectinload(Location.images))
+        if include_charging_station_images:
+            options.append(selectinload(Location.charging_pool).selectinload(ChargingStation.images))
+
         if include_evse_images:
             options.append(
                 selectinload(Location.charging_pool).selectinload(ChargingStation.evses).selectinload(Evse.images)
             )
-        if include_location_images:
-            options.append(selectinload(Location.images))
 
         query = self.session.query(Location).options(*options)
         return self._search_and_paginate(query, search_query)
