@@ -31,14 +31,20 @@ from webapp.services.base_service import BaseService
 from webapp.services.import_services.base_import_service import BaseImportService
 from webapp.services.import_services.bnetza import BnetzaApiImportService, BnetzaExcelImportService
 from webapp.services.import_services.datex2 import (
+    AmpecoDatex2ImportService,
     EcoMovementDatex2ImportService,
+    EluMobilityDatex2ImportService,
     EnBWDatex2ImportService,
     ERoundDatex2ImportService,
     GridAndCoDatex2ImportService,
     MidorionDatex2ImportService,
+    MontaDatex2ImportService,
     MsuDatex2ImportService,
+    QwelloDatex2ImportService,
     TeslaDatex2ImportService,
+    VaylensDatex2ImportService,
     VolkswagenDatex2ImportService,
+    WirelaneDatex2ImportService,
 )
 from webapp.services.import_services.giroe import GiroeImportService
 from webapp.services.import_services.goldbeck_ipcm import HeilbronnNeckarbogenImportService
@@ -61,10 +67,12 @@ class ImportServices(BaseService):
 
     importer_classes: list[type[BaseImportService]] = [
         AlbwerkOchpImportService,
+        AmpecoDatex2ImportService,
         BnetzaApiImportService,
         BnetzaExcelImportService,
         EaazePbwImportService,
         EcoMovementDatex2ImportService,
+        EluMobilityDatex2ImportService,
         EnBWDatex2ImportService,
         ERoundDatex2ImportService,
         GiroeImportService,
@@ -74,14 +82,18 @@ class ImportServices(BaseService):
         LichtblickImportService,
         LudwigsburgImportService,
         MidorionDatex2ImportService,
+        MontaDatex2ImportService,
         MsuDatex2ImportService,
         OpendataSwissImportService,
         PforzheimImportService,
+        QwelloDatex2ImportService,
         StadtnaviImportService,
         SWStuttgartImportService,
         TeslaDatex2ImportService,
         TuebingenImportService,
+        VaylensDatex2ImportService,
         VolkswagenDatex2ImportService,
+        WirelaneDatex2ImportService,
     ]
 
     def __init__(

@@ -67,6 +67,9 @@ class BaseDatex2V35ImportService(BaseImportService, ABC):
             raise IncompleteConfigException(message='Missing static_subscription_id in config')
 
         data, last_modified = self.request_data(subscription_id)
+        # Hack to support invalid MessageContainer
+        if 'messageContainer' in data:
+            data = {'payload': data['messageContainer']['payload'][0]}
 
         source = self.get_source()
         error_count = 0
