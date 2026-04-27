@@ -1,6 +1,6 @@
 """
 Open ChargePoint DataBase OCPDB
-Copyright (C) 2026 binary butterfly GmbH
+Copyright (C) 2024 binary butterfly GmbH
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published by
@@ -16,17 +16,16 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from datetime import time
-from typing import Any
-
-from validataclass.validators import TimeValidator
+from webapp.services.import_services.datex2.base_datex2_v3_5_import_service import BaseDatex2V35ImportService
+from webapp.services.import_services.models import SourceInfo
 
 
-class OffsetAwareTimeValidator(TimeValidator):
-    def validate(self, input_data: Any, **kwargs: Any) -> time:
-        self._ensure_type(input_data, str)
-
-        # Cut off the timezone offset
-        input_data = input_data.split('+')[0].replace('Z', '')
-
-        return super().validate(input_data)
+class VaylensDatex2ImportService(BaseDatex2V35ImportService):
+    source_info = SourceInfo(
+        uid='datex2_vaylens',
+        name='Vaylens Datex II',
+        public_url='https://mobilithek.info/offers/979363267193040896',
+        source_url='https://mobilithek.info/offers/979363267193040896',
+        attribution_license='CC-0',
+        has_realtime_data=True,
+    )

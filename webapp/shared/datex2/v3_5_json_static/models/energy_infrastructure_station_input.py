@@ -64,7 +64,7 @@ class EnergyInfrastructureStationInput(ValidataclassMixin):
         ListValidator(DataclassValidator(MultilingualStringInput)),
         Default(UnsetValue),
     )
-    totalMaximumPower: float = FloatValidator()
+    totalMaximumPower: float = FloatValidator(allow_integers=True)
     authenticationAndIdentificationMethods: list[AuthenticationAndIdentificationEnumGInput] | UnsetValueType = (
         ListValidator(DataclassValidator(AuthenticationAndIdentificationEnumGInput)),
         Default(UnsetValue),

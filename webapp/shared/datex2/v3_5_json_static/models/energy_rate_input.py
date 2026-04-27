@@ -39,9 +39,9 @@ class EnergyRateInput(ValidataclassMixin):
         Default(UnsetValue),
     )
     combinationWithParkingFee: bool | UnsetValueType = BooleanValidator(), Default(UnsetValue)
-    maximumDeliveryFee: float | UnsetValueType = FloatValidator(), Default(UnsetValue)
-    minimumDeliveryFee: float | UnsetValueType = FloatValidator(), Default(UnsetValue)
-    discount: float | UnsetValueType = FloatValidator(), Default(UnsetValue)
+    maximumDeliveryFee: float | UnsetValueType = FloatValidator(allow_integers=True), Default(UnsetValue)
+    minimumDeliveryFee: float | UnsetValueType = FloatValidator(allow_integers=True), Default(UnsetValue)
+    discount: float | UnsetValueType = FloatValidator(allow_integers=True), Default(UnsetValue)
     additionalInformation: MultilingualStringInput | UnsetValueType = (
         DataclassValidator(MultilingualStringInput),
         Default(UnsetValue),

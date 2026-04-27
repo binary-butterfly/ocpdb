@@ -18,7 +18,7 @@ class HeaviestAxleWeightCharacteristicInput(ValidataclassMixin):
     """
 
     comparisonOperator: ComparisonOperatorEnumGInput = DataclassValidator(ComparisonOperatorEnumGInput)
-    heaviestAxleWeight: float = FloatValidator()
+    heaviestAxleWeight: float = FloatValidator(allow_integers=True)
     comHeaviestAxleWeightCharacteristicExtensionG: ExtensionTypeGInput | UnsetValueType = (
         DataclassValidator(ExtensionTypeGInput),
         Default(UnsetValue),

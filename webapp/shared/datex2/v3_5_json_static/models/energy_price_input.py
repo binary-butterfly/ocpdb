@@ -22,10 +22,10 @@ class EnergyPriceInput(ValidataclassMixin):
     """
 
     priceType: PriceTypeEnumGInput = DataclassValidator(PriceTypeEnumGInput)
-    value: float = FloatValidator()
-    priceCap: float | UnsetValueType = FloatValidator(), Default(UnsetValue)
+    value: float = FloatValidator(allow_integers=True)
+    priceCap: float | UnsetValueType = FloatValidator(allow_integers=True), Default(UnsetValue)
     taxIncluded: bool | UnsetValueType = BooleanValidator(), Default(UnsetValue)
-    taxRate: float | UnsetValueType = FloatValidator(), Default(UnsetValue)
+    taxRate: float | UnsetValueType = FloatValidator(allow_integers=True), Default(UnsetValue)
     additionalInformation: MultilingualStringInput | UnsetValueType = (
         DataclassValidator(MultilingualStringInput),
         Default(UnsetValue),

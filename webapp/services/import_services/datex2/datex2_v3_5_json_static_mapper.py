@@ -17,6 +17,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 from decimal import Decimal
+from hashlib import sha256
 
 from pycountry import countries
 from validataclass.helpers import UnsetValue, UnsetValueType
@@ -70,9 +71,12 @@ from webapp.shared.datex2.v3_5_json_static.models.energy_infrastructure_station_
 from webapp.shared.datex2.v3_5_json_static.models.energy_rate_input import EnergyRateInput
 from webapp.shared.datex2.v3_5_json_static.models.eu_vehicle_category_enum import EuVehicleCategoryEnum
 from webapp.shared.datex2.v3_5_json_static.models.external_identifier_input import ExternalIdentifierInput
+from webapp.shared.datex2.v3_5_json_static.models.facility_location_input import FacilityLocationInput
+from webapp.shared.datex2.v3_5_json_static.models.location_reference_g_input import LocationReferenceGInput
 from webapp.shared.datex2.v3_5_json_static.models.multilingual_string_input import MultilingualStringInput
 from webapp.shared.datex2.v3_5_json_static.models.operating_hours_g_input import OperatingHoursGInput
 from webapp.shared.datex2.v3_5_json_static.models.organisation_g_input import OrganisationGInput
+from webapp.shared.datex2.v3_5_json_static.models.point_coordinates_input import PointCoordinatesInput
 from webapp.shared.datex2.v3_5_json_static.models.point_location_input import PointLocationInput
 from webapp.shared.datex2.v3_5_json_static.models.price_type_enum import PriceTypeEnum
 from webapp.shared.datex2.v3_5_json_static.models.rate_policy_enum import RatePolicyEnum
@@ -108,29 +112,21 @@ class Datex2V35JSONStaticMapper:
         source: str,
         energy_infrastructure_site: EnergyInfrastructureSiteInput,
     ) -> LocationUpdate | None:
-        # Check if all lot/lon required fields are present
-        if not energy_infrastructure_site.locationReference:
-            return None
-        if not energy_infrastructure_site.locationReference.locAreaLocation:
-            return None
-        if not energy_infrastructure_site.locationReference.locAreaLocation.coordinatesForDisplay:
-            return None
+        coordinates = self._get_coordinates(energy_infrastructure_site)
+        facility_location = self._get_facility_location(energy_infrastructure_site)
 
-        # Check if all address required fields are present
-        if not energy_infrastructure_site.locationReference.locPointLocation.locLocationExtensionG:
+        if not facility_location:
             return None
-        if not energy_infrastructure_site.locationReference.locPointLocation.locLocationExtensionG.FacilityLocation:
+        if not facility_location.address:
             return None
-        if not energy_infrastructure_site.locationReference.locPointLocation.locLocationExtensionG.FacilityLocation.address:
-            return None
-        if not energy_infrastructure_site.locationReference.locPointLocation.locLocationExtensionG.FacilityLocation.address.addressLine:
+        if not facility_location.address.addressLine:
             return None
 
         location = LocationUpdate(
             source=source,
             uid=energy_infrastructure_site.idG,
-            lat=Decimal(energy_infrastructure_site.locationReference.locAreaLocation.coordinatesForDisplay.latitude),
-            lon=Decimal(energy_infrastructure_site.locationReference.locAreaLocation.coordinatesForDisplay.longitude),
+            lat=Decimal(coordinates.latitude),
+            lon=Decimal(coordinates.longitude),
             time_zone='Europe/Berlin',
             charging_pool=[],
         )
@@ -141,7 +137,7 @@ class Datex2V35JSONStaticMapper:
         if energy_infrastructure_site.lastUpdated is not UnsetValue:
             location.last_updated = energy_infrastructure_site.lastUpdated
 
-        self._apply_point_location(energy_infrastructure_site.locationReference.locPointLocation, location)
+        self._apply_point_location(facility_location, location)
         self._apply_operator(energy_infrastructure_site.operator, location)
         self._apply_operating_hours(energy_infrastructure_site.operatingHours, location)
         self._apply_helpdesk(energy_infrastructure_site.helpdesk, location)
@@ -155,30 +151,105 @@ class Datex2V35JSONStaticMapper:
 
         return location
 
-    def _apply_point_location(self, point_location: PointLocationInput | UnsetValueType, location: LocationUpdate):
-        if point_location is UnsetValue:
+    def _get_coordinates(
+        self, energy_infrastructure_site: EnergyInfrastructureSiteInput
+    ) -> PointLocationInput | PointCoordinatesInput | None:
+        if energy_infrastructure_site.locationReference:
+            coordinates = self.get_coordinates_by_location_reference(energy_infrastructure_site.locationReference)
+            if coordinates:
+                return coordinates
+
+        if (
+            energy_infrastructure_site.energyInfrastructureStation
+            and energy_infrastructure_site.energyInfrastructureStation[0].locationReference
+        ):
+            # We just take the first location reference
+            return self.get_coordinates_by_location_reference(
+                energy_infrastructure_site.energyInfrastructureStation[0].locationReference
+            )
+
+        return None
+
+    @staticmethod
+    def get_coordinates_by_location_reference(
+        location_reference: LocationReferenceGInput,
+    ) -> PointLocationInput | PointCoordinatesInput | None:
+        # Check if coordinates are present. There might be two places for the address, locPointLocation
+        # and locAreaLocation.
+        if location_reference.locAreaLocation and location_reference.locAreaLocation.coordinatesForDisplay:
+            return location_reference.locAreaLocation.coordinatesForDisplay
+
+        if location_reference.locPointLocation and location_reference.locPointLocation.coordinatesForDisplay:
+            return location_reference.locPointLocation.coordinatesForDisplay
+
+        elif (
+            location_reference.locPointLocation
+            and location_reference.locPointLocation.pointByCoordinates
+            and location_reference.locPointLocation.pointByCoordinates.pointCoordinates
+        ):
+            return location_reference.locPointLocation.pointByCoordinates.pointCoordinates
+
+        return None
+
+    def _get_facility_location(
+        self, energy_infrastructure_site: EnergyInfrastructureSiteInput
+    ) -> FacilityLocationInput | None:
+        if energy_infrastructure_site.locationReference:
+            coordinates = self._get_facility_location_by_location_reference(
+                energy_infrastructure_site.locationReference,
+            )
+            if coordinates:
+                return coordinates
+
+        if (
+            energy_infrastructure_site.energyInfrastructureStation
+            and energy_infrastructure_site.energyInfrastructureStation[0].locationReference
+        ):
+            # We just take the first location reference
+            return self._get_facility_location_by_location_reference(
+                energy_infrastructure_site.energyInfrastructureStation[0].locationReference
+            )
+
+        return None
+
+    @staticmethod
+    def _get_facility_location_by_location_reference(
+        location_reference: LocationReferenceGInput,
+    ) -> FacilityLocationInput | None:
+        # Check if all address required fields are present. There might be two places for the address,
+        # locPointLocation and locAreaLocation.
+        if location_reference.locPointLocation and location_reference.locPointLocation.locLocationExtensionG:
+            return location_reference.locPointLocation.locLocationExtensionG.FacilityLocation
+
+        if location_reference.locAreaLocation.locLocationExtensionG:
+            return location_reference.locAreaLocation.locLocationExtensionG.FacilityLocation
+
+        return None
+
+    def _apply_point_location(self, facility_location: FacilityLocationInput, location: LocationUpdate) -> None:
+        if not facility_location.address or not facility_location.address.addressLine:
             return
 
         address_fragments: list[str] = []
-        for address_line in point_location.locLocationExtensionG.FacilityLocation.address.addressLine:
+        for address_line in facility_location.address.addressLine:
             if address_line.type.value == AddressLineTypeEnum.STREET:
                 address_fragments.append(self.get_multilanguage_string(address_line.text))
             elif address_line.type.value == AddressLineTypeEnum.HOUSENUMBER:
                 address_fragments.append(self.get_multilanguage_string(address_line.text))
         location.address = ' '.join(address_fragments)
 
-        location.postal_code = point_location.locLocationExtensionG.FacilityLocation.address.postcode
+        location.postal_code = facility_location.address.postcode or None
         location.city = self.get_multilanguage_string(
-            point_location.locLocationExtensionG.FacilityLocation.address.city,
+            facility_location.address.city,
         )
-        if point_location.locLocationExtensionG.FacilityLocation.address.countryCode:
+        if facility_location.address.countryCode:
             location.country = countries.get(
-                alpha_2=point_location.locLocationExtensionG.FacilityLocation.address.countryCode,
+                alpha_2=facility_location.address.countryCode,
             ).alpha_3
 
-        location.time_zone = point_location.locLocationExtensionG.FacilityLocation.timeZone or 'Europe/Berlin'
+        location.time_zone = facility_location.timeZone or 'Europe/Berlin'
 
-    def _apply_operator(self, organization: OrganisationGInput | UnsetValueType, location: LocationUpdate):
+    def _apply_operator(self, organization: OrganisationGInput | UnsetValueType, location: LocationUpdate) -> None:
         if organization is UnsetValue:
             return
         if organization.afacAnOrganisation is UnsetValue:
@@ -365,7 +436,7 @@ class Datex2V35JSONStaticMapper:
             if electric_energy.energyRate is UnsetValue:
                 continue
             for energy_rate in electric_energy.energyRate:
-                tariff_uid = f'{evse.uid}:{energy_rate.idG}'
+                tariff_uid = sha256(f'{evse.uid}:{energy_rate.idG}'.encode()).hexdigest()[:32]
                 tariff_update = self._map_energy_rate(energy_rate, tariff_uid, source)
 
                 audience = self._rate_policy_audience_map.get(energy_rate.ratePolicy.value)

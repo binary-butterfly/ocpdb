@@ -32,7 +32,18 @@ class Ocpi30LocationHandler(PublicApiBaseHandler):
         self.location_repository = location_repository
 
     def get_locations(self, search_query: LocationApiSearchQuery, strict: bool = False) -> PaginatedResult[dict]:
-        locations = self.location_repository.fetch_locations(search_query=search_query)
+        locations = self.location_repository.fetch_locations(
+            search_query=search_query,
+            include_operators=True,
+            include_logos=True,
+            include_location_images=True,
+            include_charging_stations=True,
+            include_charging_station_images=True,
+            include_evses=True,
+            include_evse_images=True,
+            include_connectors=True,
+            include_tariffs=True,
+        )
         return locations.map(lambda location: self._map_location_to_ocpi_30(location, strict=strict))
 
     def get_location(self, location_id: int, strict: bool = False) -> dict:
