@@ -1,5 +1,20 @@
 # Changelog
 
+## 2.11.0
+
+Released 2026-04-27
+
+### Features
+
+* Several new Datex2 data sources (see README.md for details)
+
+
+### Fixes
+
+* Location API SQL Query optimization
+* Optimizations and fixes for Datex2 validation system
+
+
 ## 2.10.2
 
 Released 2026-04-20
