@@ -16,23 +16,24 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from flask import make_response
+from flask import Response, make_response
 from lxml import etree
+from lxml.etree import ElementTree
 
 
-def xml_response(xml_tree):
+def xml_response(xml_tree: ElementTree) -> Response:
     response = make_response(etree.tostring(xml_tree, pretty_print=False))
     response.mimetype = 'text/xml'
     return response
 
 
-def protobuf_response(data: bytes):
+def protobuf_response(data: bytes) -> Response:
     response = make_response(data)
     response.headers['Content-Type'] = 'application/x-protobuf'
     return response
 
 
-def empty_json_response():
+def empty_json_response() -> Response:
     response = make_response('')
     response.mimetype = 'application/json'
     return response

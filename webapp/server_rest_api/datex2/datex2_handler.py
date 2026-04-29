@@ -21,7 +21,7 @@ from datetime import datetime, timezone
 
 from webapp.common.logging.models import LogMessageType
 from webapp.common.rest.exceptions import NotFoundException, UnauthorizedException
-from webapp.models import SourceStatus
+from webapp.models import Source, SourceStatus
 from webapp.server_rest_api.base_handler import ServerApiBaseHandler
 from webapp.services.import_services import ImportServices
 from webapp.services.import_services.datex2.base_datex2_v3_5_import_service import (
@@ -40,18 +40,13 @@ class Datex2Handler(ServerApiBaseHandler):
         super().__init__(**kwargs)
         self.import_services = import_services
 
+    def get_last_modified(self, source_uid: str, key: str | None) -> datetime | None:
+        source, _ = self._get_source_and_service(source_uid, key)
+
+        return source.realtime_data_updated_at
+
     def handle_realtime_push(self, source_uid: str, key: str | None, data: dict) -> None:
-        if source_uid not in self.import_services.importer_by_uid:
-            raise NotFoundException(message=f'Source {source_uid} not found')
-
-        service = self.import_services.importer_by_uid[source_uid]
-        if not isinstance(service, BaseDatex2V35ImportService):
-            raise NotFoundException(message=f'Source {source_uid} is not a DATEX2 v3.5 source')
-
-        source = service.get_source()
-        if not key or key != service.config.get('api_key'):
-            raise UnauthorizedException(message='Invalid API key')
-
+        source, service = self._get_source_and_service(source_uid, key)
         last_modified = datetime.now(tz=timezone.utc)
         result = RealtimeResult()
 
@@ -83,3 +78,17 @@ class Datex2Handler(ServerApiBaseHandler):
             f'valid EVSEs and {result.realtime_error_count} failed EVSEs.',
             extra={'attributes': {'type': LogMessageType.IMPORT_LOCATION}},
         )
+
+    def _get_source_and_service(self, source_uid: str, key: str | None) -> tuple[Source, BaseDatex2V35ImportService]:
+        if source_uid not in self.import_services.importer_by_uid:
+            raise NotFoundException(message=f'Source {source_uid} not found')
+
+        service = self.import_services.importer_by_uid[source_uid]
+        if not isinstance(service, BaseDatex2V35ImportService):
+            raise NotFoundException(message=f'Source {source_uid} is not a DATEX2 v3.5 source')
+
+        source = service.get_source()
+        if not key or key != service.config.get('api_key'):
+            raise UnauthorizedException(message='Invalid API key')
+
+        return source, service
