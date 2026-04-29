@@ -16,7 +16,11 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+import logging
+import traceback
+
 from webapp.common.contexts import TelemetryContext
+from webapp.common.logging.models import LogMessageType
 from webapp.repositories import (
     ConnectorRepository,
     EvseRepository,
@@ -60,6 +64,8 @@ from webapp.services.import_services.ocpi.chargecloud_public.tuebingen import Tu
 from webapp.services.import_services.ocpi.eaaze_pbw import EaazePbwImportService
 from webapp.services.import_services.ocpi.stadtnavi.stadtnavi_service import StadtnaviImportService
 from webapp.services.import_services.opendata_swiss import OpendataSwissImportService
+
+logger = logging.getLogger(__name__)
 
 
 class ImportServices(BaseService):
@@ -145,8 +151,13 @@ class ImportServices(BaseService):
                 continue
             if self.config_helper.get('SOURCES')[source_uid].get('fetch_at_init', True) is False:
                 continue
-
-            self.fetch_source(source_uid)
+            try:
+                self.fetch_source(source_uid)
+            except Exception as e:
+                logger.error(
+                    f'Import for {source_uid} fails due {e}: {traceback.format_exc()}',
+                    extra={'attributes': {'type': LogMessageType.IMPORT_SOURCE}},
+                )
 
     def fetch_source(self, source_uid: str) -> None:
         """
