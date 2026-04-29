@@ -16,6 +16,7 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+from email.utils import format_datetime
 from http import HTTPStatus
 
 from flask import Response
@@ -48,7 +49,7 @@ class Datex2ImportBlueprint(ServerApiBaseBlueprint):
         self.add_url_rule(
             '/v3.5/<source_uid>/realtime',
             view_func=realtime_view,
-            methods=['POST'],
+            methods=['HEAD', 'POST'],
         )
 
 
@@ -62,6 +63,18 @@ class Datex2BaseMethodView(BaseMethodView):
 
 class Datex2RealtimeMethodView(Datex2BaseMethodView):
     decorators = [skip_basic_auth]
+
+    def head(self, source_uid: str) -> tuple[Response, HTTPStatus]:
+        last_modified = self.datex2_handler.get_last_modified(
+            source_uid=source_uid,
+            key=self.request_helper.get_query_args().get('key'),
+        )
+        response = empty_json_response()
+        if last_modified is not None:
+            response.headers['Last-Modified'] = format_datetime(last_modified)
+
+        # Mobilithek expects HTTP 200 instead of HTTP 204
+        return response, HTTPStatus.OK
 
     def post(self, source_uid: str) -> tuple[Response, HTTPStatus]:
         data = self.request_helper.get_parsed_json()
