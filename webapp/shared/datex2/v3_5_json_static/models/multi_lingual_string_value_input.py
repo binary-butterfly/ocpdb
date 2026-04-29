@@ -12,4 +12,4 @@ from webapp.common.validation.replacing_string_validator import ReplacingStringV
 @validataclass
 class MultiLingualStringValueInput(ValidataclassMixin):
     lang: str = RegexValidator(pattern=r'^[a-z]{2}$')
-    value: str = ReplacingStringValidator(mapping={'\n': '; '})
+    value: str = ReplacingStringValidator(mapping={'\n': '; ', '\t': ' '})
