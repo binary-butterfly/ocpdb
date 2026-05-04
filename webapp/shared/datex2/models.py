@@ -32,18 +32,18 @@ from validataclass.validators import (
 
 from webapp.common.validation import MultiValidataclassValidator
 from webapp.shared.datex2.v3_5_json_realtime.models.payload_publication_g_input import (
-    PayloadPublicationGInput as PayloadPublicationGV35RealtimeOutput,
+    PayloadPublicationGInput as PayloadPublicationGV35RealtimeInput,
 )
 from webapp.shared.datex2.v3_5_json_static.models.payload_publication_g_input import (
-    PayloadPublicationGInput as PayloadPublicationGV35StaticOutput,
+    PayloadPublicationGInput as PayloadPublicationGV35StaticInput,
 )
-from webapp.shared.datex2.v3_7.realtime.payload_publication_g_output import (
-    PayloadPublicationGOutput as PayloadPublicationGV37RealtimeOutput,
+from webapp.shared.datex2.v3_7.realtime.payload_publication_g_input import (
+    PayloadPublicationGInput as PayloadPublicationGV37RealtimeInput,
 )
-from webapp.shared.datex2.v3_7.shared.extension_type_g_output import ExtensionTypeGOutput
-from webapp.shared.datex2.v3_7.shared.international_identifier_output import InternationalIdentifierOutput
-from webapp.shared.datex2.v3_7.static.payload_publication_g_output import (
-    PayloadPublicationGOutput as PayloadPublicationGV37StaticOutput,
+from webapp.shared.datex2.v3_7.shared.extension_type_g_input import ExtensionTypeGInput as ExtensionTypeGInput
+from webapp.shared.datex2.v3_7.shared.international_identifier_input import InternationalIdentifierInput
+from webapp.shared.datex2.v3_7.static.payload_publication_g_input import (
+    PayloadPublicationGInput as PayloadPublicationGV37StaticInput,
 )
 
 
@@ -71,95 +71,95 @@ class ExchangeStatusEnum(Enum):
 
 
 @validataclass
-class AgentOutput(ValidataclassMixin):
+class AgentInput(ValidataclassMixin):
     address: str | None = Noneable(StringValidator(max_length=1024)), Default(None)
     name: str | None = Noneable(StringValidator(max_length=1024)), Default(None)
     referenceID: str | None = Noneable(StringValidator(max_length=1024)), Default(None)
     serviceURL: str | None = Noneable(StringValidator(max_length=1024)), Default(None)
-    internationalIdentifier: InternationalIdentifierOutput | None = (
-        Noneable(DataclassValidator(InternationalIdentifierOutput)),
+    internationalIdentifier: InternationalIdentifierInput | None = (
+        Noneable(DataclassValidator(InternationalIdentifierInput)),
         Default(None),
     )
-    exAgentExtensionG: ExtensionTypeGOutput | None = (
-        Noneable(DataclassValidator(ExtensionTypeGOutput)),
+    exAgentExtensionG: ExtensionTypeGInput | None = (
+        Noneable(DataclassValidator(ExtensionTypeGInput)),
         Default(None),
     )
 
 
 @validataclass
-class ProtocolTypeEnumGOutput(ValidataclassMixin):
+class ProtocolTypeEnumGInput(ValidataclassMixin):
     value: ProtocolTypeEnum = EnumValidator(ProtocolTypeEnum)
     extendedValueG: str | None = Noneable(StringValidator(max_length=1024)), Default(None)
 
 
 @validataclass
-class ExchangeContextOutput(ValidataclassMixin):
-    codedExchangeProtocol: ProtocolTypeEnumGOutput = DataclassValidator(ProtocolTypeEnumGOutput)
+class ExchangeContextInput(ValidataclassMixin):
+    codedExchangeProtocol: ProtocolTypeEnumGInput = DataclassValidator(ProtocolTypeEnumGInput)
     exchangeSpecificationVersion: str = StringValidator(max_length=1024)
-    supplierOrCisRequester: AgentOutput = DataclassValidator(AgentOutput)
+    supplierOrCisRequester: AgentInput = DataclassValidator(AgentInput)
 
 
 @validataclass
-class ExchangeStatusEnumGOutput(ValidataclassMixin):
+class ExchangeStatusEnumGInput(ValidataclassMixin):
     value: ExchangeStatusEnum = EnumValidator(ExchangeStatusEnum)
     extendedValueG: str | None = Noneable(StringValidator(max_length=1024)), Default(None)
 
 
 @validataclass
-class DynamicInformationOutput(ValidataclassMixin):
-    exchangeStatus: ExchangeStatusEnumGOutput = DataclassValidator(ExchangeStatusEnumGOutput)
+class DynamicInformationInput(ValidataclassMixin):
+    exchangeStatus: ExchangeStatusEnumGInput = DataclassValidator(ExchangeStatusEnumGInput)
     messageGenerationTimestamp: datetime = DateTimeValidator()
-    exDynamicInformationExtensionG: ExtensionTypeGOutput | None = (
-        Noneable(AnythingValidator(allowed_types=[ExtensionTypeGOutput])),
+    exDynamicInformationExtensionG: ExtensionTypeGInput | None = (
+        Noneable(AnythingValidator(allowed_types=[ExtensionTypeGInput])),
         Default(None),
     )
 
 
 @validataclass
-class ExchangeInformationOutput(ValidataclassMixin):
-    exchangeContext: ExchangeContextOutput = DataclassValidator(ExchangeContextOutput)
-    dynamicInformation: DynamicInformationOutput = DataclassValidator(DynamicInformationOutput)
-    exExchangeInformationExtensionG: ExtensionTypeGOutput | None = (
-        Noneable(DataclassValidator(ExtensionTypeGOutput)),
+class ExchangeInformationInput(ValidataclassMixin):
+    exchangeContext: ExchangeContextInput = DataclassValidator(ExchangeContextInput)
+    dynamicInformation: DynamicInformationInput = DataclassValidator(DynamicInformationInput)
+    exExchangeInformationExtensionG: ExtensionTypeGInput | None = (
+        Noneable(DataclassValidator(ExtensionTypeGInput)),
         Default(None),
     )
 
 
 @validataclass
-class MessageContainerOutput(ValidataclassMixin):
+class MessageContainerInput(ValidataclassMixin):
     payload: (
         list[
-            PayloadPublicationGV35StaticOutput
-            | PayloadPublicationGV35RealtimeOutput
-            | PayloadPublicationGV37StaticOutput
-            | PayloadPublicationGV37RealtimeOutput
+            PayloadPublicationGV35StaticInput
+            | PayloadPublicationGV35RealtimeInput
+            | PayloadPublicationGV37StaticInput
+            | PayloadPublicationGV37RealtimeInput
         ]
         | None
     ) = (
         Noneable(
             ListValidator(
                 MultiValidataclassValidator(
-                    PayloadPublicationGV35StaticOutput,
-                    PayloadPublicationGV35RealtimeOutput,
+                    PayloadPublicationGV35StaticInput,
+                    PayloadPublicationGV35RealtimeInput,
                 ),
             )
         ),
         Default(None),
     )
-    exchangeInformation: ExchangeInformationOutput = DataclassValidator(ExchangeInformationOutput)
-    conMessageContainerExtensionG: ExtensionTypeGOutput | None = (
-        Noneable(DataclassValidator(ExtensionTypeGOutput)),
+    exchangeInformation: ExchangeInformationInput = DataclassValidator(ExchangeInformationInput)
+    conMessageContainerExtensionG: ExtensionTypeGInput | None = (
+        Noneable(DataclassValidator(ExtensionTypeGInput)),
         Default(None),
     )
 
 
 @validataclass
-class MessageContainerWrapperOutput(ValidataclassMixin):
-    messageContainer: MessageContainerOutput | None = (
-        Noneable(DataclassValidator(MessageContainerOutput)),
+class MessageContainerWrapperInput(ValidataclassMixin):
+    messageContainer: MessageContainerInput | None = (
+        Noneable(DataclassValidator(MessageContainerInput)),
         Default(None),
     )
-    exchangeInformation: ExchangeInformationOutput | None = (
-        Noneable(DataclassValidator(ExchangeInformationOutput)),
+    exchangeInformation: ExchangeInformationInput | None = (
+        Noneable(DataclassValidator(ExchangeInformationInput)),
         Default(None),
     )

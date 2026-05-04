@@ -1,0 +1,22 @@
+"""
+Copyright 2026 binary butterfly GmbH
+Use of this source code is governed by an MIT-style license that can be found in the LICENSE.txt.
+"""
+
+from validataclass.dataclasses import Default, ValidataclassMixin, validataclass
+from validataclass.helpers import UnsetValue, UnsetValueType
+from validataclass.validators import DataclassValidator, StringValidator
+
+from .extension_type_g_input import ExtensionTypeGInput
+from .multilingual_string_input import MultilingualStringInput
+
+
+@validataclass
+class LegalBasisInput(ValidataclassMixin):
+    name: MultilingualStringInput = DataclassValidator(MultilingualStringInput)
+    version: str | UnsetValueType = StringValidator(), Default(UnsetValue)
+    date: str | UnsetValueType = StringValidator(), Default(UnsetValue)
+    troLegalBasisExtensionG: ExtensionTypeGInput | UnsetValueType = (
+        DataclassValidator(ExtensionTypeGInput),
+        Default(UnsetValue),
+    )

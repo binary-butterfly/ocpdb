@@ -16,24 +16,27 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from .ampeco_datex2_import_service import AmpecoDatex2ImportService
-from .chargecloud_datex2_import_service import ChargecloudDatex2ImportService
-from .ecomovement_datex2_import_service import EcoMovementDatex2ImportService
-from .elu_mobility_datex2_import_service import EluMobilityDatex2ImportService
-from .enbw_datex2_import_service import EnBWDatex2ImportService
-from .enio_datex2_import_service import EnioDatex2ImportService
-from .erft_datex2_import_service import ErftDatex2ImportService
-from .eround_datex2_import_service import ERoundDatex2ImportService
-from .gridandco_datex2_import_service import GridAndCoDatex2ImportService
-from .ladebusiness_datex2_import_service import LadebusinessDatex2ImportService
-from .lichtblick_datex2_import_service import LichtblickDatex2ImportService
-from .midorion_datex2_import_service import MidorionDatex2ImportService
-from .monta_datex2_import_service import MontaDatex2ImportService
-from .msu_datex2_import_service import MsuDatex2ImportService
-from .pump_datex2_import_service import PumpDatex2ImportService
-from .qwello_datex2_import_service import QwelloDatex2ImportService
-from .smatrics_datex2_import_service import SmatricsDatex2ImportService
-from .tesla_datex2_import_service import TeslaDatex2ImportService
-from .vaylens_datex2_import_service import VaylensDatex2ImportService
-from .volkswagen_datex2_import_service import VolkswagenDatex2ImportService
-from .wirelane_datex2_import_service import WirelaneDatex2ImportService
+from .v3_5 import (
+    AmpecoDatex2ImportService,
+    ChargecloudDatex2ImportService,
+    EcoMovementDatex2ImportService,
+    EluMobilityDatex2ImportService,
+    EnBWDatex2ImportService,
+    EnioDatex2ImportService,
+    ErftDatex2ImportService,
+    ERoundDatex2ImportService,
+    GridAndCoDatex2ImportService,
+    LadebusinessDatex2ImportService,
+    LichtblickDatex2ImportService,
+    MidorionDatex2ImportService,
+    MontaDatex2ImportService,
+    MsuDatex2ImportService,
+    PumpDatex2ImportService,
+    QwelloDatex2ImportService,
+    SmatricsDatex2ImportService,
+    TeslaDatex2ImportService,
+    VaylensDatex2ImportService,
+    VolkswagenDatex2ImportService,
+    WirelaneDatex2ImportService,
+)
+from .v3_7 import GiroEDatex2ImportService

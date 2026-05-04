@@ -1,0 +1,52 @@
+"""
+Copyright 2026 binary butterfly GmbH
+Use of this source code is governed by an MIT-style license that can be found in the LICENSE.txt.
+"""
+
+from enum import Enum
+
+
+class GeneralInstructionToRoadUsersTypeEnum(Enum):
+    ALLOWEMERGENCYVEHICLESTOPASS = 'allowEmergencyVehiclesToPass'
+    APPROACHWITHCARE = 'approachWithCare'
+    AVOIDTHEAREA = 'avoidTheArea'
+    CLOSEALLWINDOWSTURNOFFHEATERANDVENTS = 'closeAllWindowsTurnOffHeaterAndVents'
+    CROSSJUNCTIONWITHCARE = 'crossJunctionWithCare'
+    DONOTALLOWUNNECESSARYGAPS = 'doNotAllowUnnecessaryGaps'
+    DONOTLEAVEYOURVEHICLE = 'doNotLeaveYourVehicle'
+    DONOTTHROWOUTANYBURNINGOBJECTS = 'doNotThrowOutAnyBurningObjects'
+    DONOTUSENAVIGATIONSYSTEMS = 'doNotUseNavigationSystems'
+    DRIVECAREFULLY = 'driveCarefully'
+    DRIVEWITHEXTREMECAUTION = 'driveWithExtremeCaution'
+    FLASHYOURLIGHTS = 'flashYourLights'
+    FOLLOWTHEVEHICLEINFRONTSMOOTHLY = 'followTheVehicleInFrontSmoothly'
+    INCREASENORMALFOLLOWINGDISTANCE = 'increaseNormalFollowingDistance'
+    INEMERGENCYWAITFORPATROLSERVICE = 'inEmergencyWaitForPatrolService'
+    KEEPYOURDISTANCE = 'keepYourDistance'
+    LEAVEYOURVEHICLEPROCEEDTONEXTSAFEPLACE = 'leaveYourVehicleProceedToNextSafePlace'
+    NONAKEDFLAMES = 'noNakedFlames'
+    NOOVERTAKING = 'noOvertaking'
+    NOSMOKING = 'noSmoking'
+    NOSTOPPING = 'noStopping'
+    NOUTURNS = 'noUturns'
+    OBSERVEAMBERALERT = 'observeAmberAlert'
+    OBSERVESIGNALS = 'observeSignals'
+    OBSERVESIGNS = 'observeSigns'
+    ONLYTRAVELIFABSOLUTELYNECESSARY = 'onlyTravelIfAbsolutelyNecessary'
+    OVERTAKEWITHCARE = 'overtakeWithCare'
+    PULLOVERTOTHEEDGEOFTHEROADWAY = 'pullOverToTheEdgeOfTheRoadway'
+    STOPATNEXTSAFEPLACE = 'stopAtNextSafePlace'
+    STOPATNEXTSERVICEAREA = 'stopAtNextServiceArea'
+    SWITCHOFFENGINE = 'switchOffEngine'
+    SWITCHOFFMOBILEPHONESANDTWOWAYRADIOS = 'switchOffMobilePhonesAndTwoWayRadios'
+    TESTYOURBRAKES = 'testYourBrakes'
+    USEBUSSERVICE = 'useBusService'
+    USEFOGLIGHTS = 'useFogLights'
+    USEHAZARDWARNINGLIGHTS = 'useHazardWarningLights'
+    USEHEADLIGHTS = 'useHeadlights'
+    USERAILSERVICE = 'useRailService'
+    USETRAMSERVICE = 'useTramService'
+    USEUNDERGROUNDSERVICE = 'useUndergroundService'
+    WAITFORESCORTVEHICLE = 'waitForEscortVehicle'
+    OTHER = 'other'
+    EXTENDEDG = 'extendedG'
