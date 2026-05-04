@@ -29,6 +29,11 @@ SOURCES:
     static_subscription_id: 12345
     realtime_subscription_id: 67890
     api_key: test-datex2-api-key
+  datex2_giroe:
+    auto_fetch: false
+    static_subscription_id: 13579
+    realtime_subscription_id: 24680
+    api_key: test-datex2-api-key
 
 SERVER_AUTH_USERS:
   dev:
