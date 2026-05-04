@@ -22,16 +22,16 @@ from webapp.models.evse import EvseStatus
 from webapp.public_api.base_handler import PublicApiBaseHandler
 from webapp.repositories import LocationRepository, TariffRepository
 from webapp.shared.datex2.models import (
-    AgentOutput,
-    DynamicInformationOutput,
-    ExchangeContextOutput,
-    ExchangeInformationOutput,
+    AgentInput,
+    DynamicInformationInput,
+    ExchangeContextInput,
+    ExchangeInformationInput,
     ExchangeStatusEnum,
-    ExchangeStatusEnumGOutput,
-    MessageContainerOutput,
-    MessageContainerWrapperOutput,
+    ExchangeStatusEnumGInput,
+    MessageContainerInput,
+    MessageContainerWrapperInput,
     ProtocolTypeEnum,
-    ProtocolTypeEnumGOutput,
+    ProtocolTypeEnumGInput,
 )
 from webapp.shared.datex2.v3_5_json_realtime.models.d_a_t_e_x_i_i3_d2_payload_input import (
     DATEXII3D2PayloadInput as DATEXII3D2RealtimePayloadInput,
@@ -79,7 +79,7 @@ class Datex2V35JSONHandler(PublicApiBaseHandler):
 
         return self.datex_realtime_export_mapper.map_locations_to_realtime_payload(list(locations))
 
-    def get_datex2_mobilithek_realtime(self, search_query: LocationApiSearchQuery) -> MessageContainerWrapperOutput:
+    def get_datex2_mobilithek_realtime(self, search_query: LocationApiSearchQuery) -> MessageContainerWrapperInput:
         search_query.exclude_evse_status = [EvseStatus.STATIC]
         locations = self.location_repository.fetch_locations(
             search_query=search_query,
@@ -93,20 +93,20 @@ class Datex2V35JSONHandler(PublicApiBaseHandler):
         else:
             protocol_type = ProtocolTypeEnum.DELTA_PUSH
 
-        message_container = MessageContainerOutput(
+        message_container = MessageContainerInput(
             payload=[payload_result.payload],
-            exchangeInformation=ExchangeInformationOutput(
-                exchangeContext=ExchangeContextOutput(
-                    codedExchangeProtocol=ProtocolTypeEnumGOutput(
+            exchangeInformation=ExchangeInformationInput(
+                exchangeContext=ExchangeContextInput(
+                    codedExchangeProtocol=ProtocolTypeEnumGInput(
                         value=protocol_type,
                     ),
                     exchangeSpecificationVersion='3.5',
-                    supplierOrCisRequester=AgentOutput(
+                    supplierOrCisRequester=AgentInput(
                         name=self.config_helper.get('MOBILITHEK_NAME'),
                     ),
                 ),
-                dynamicInformation=DynamicInformationOutput(
-                    exchangeStatus=ExchangeStatusEnumGOutput(
+                dynamicInformation=DynamicInformationInput(
+                    exchangeStatus=ExchangeStatusEnumGInput(
                         value=ExchangeStatusEnum.ONLINE,
                     ),
                     messageGenerationTimestamp=datetime.now(tz=timezone.utc),
@@ -114,6 +114,6 @@ class Datex2V35JSONHandler(PublicApiBaseHandler):
             ),
         )
 
-        return MessageContainerWrapperOutput(
+        return MessageContainerWrapperInput(
             messageContainer=message_container,
         )

@@ -7,8 +7,8 @@ from enum import Enum
 
 
 class RoadTypeEnum(Enum):
+    EXPRESSROAD = 'expressRoad'
+    INSIDEBUILTUPAREAS = 'insideBuiltUpAreas'
     MOTORWAY = 'motorway'
-    TRUNKROAD = 'trunkRoad'
-    MAINROAD = 'mainRoad'
-    OTHER = 'other'
+    OUTSIDEBUILTUPAREAS = 'outsideBuiltUpAreas'
     EXTENDEDG = 'extendedG'

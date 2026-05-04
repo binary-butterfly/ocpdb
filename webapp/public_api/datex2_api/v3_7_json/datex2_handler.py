@@ -22,22 +22,22 @@ from webapp.models.evse import EvseStatus
 from webapp.public_api.base_handler import PublicApiBaseHandler
 from webapp.repositories import LocationRepository
 from webapp.shared.datex2.models import (
-    AgentOutput,
-    DynamicInformationOutput,
-    ExchangeContextOutput,
-    ExchangeInformationOutput,
+    AgentInput,
+    DynamicInformationInput,
+    ExchangeContextInput,
+    ExchangeInformationInput,
     ExchangeStatusEnum,
-    ExchangeStatusEnumGOutput,
-    MessageContainerOutput,
-    MessageContainerWrapperOutput,
+    ExchangeStatusEnumGInput,
+    MessageContainerInput,
+    MessageContainerWrapperInput,
     ProtocolTypeEnum,
-    ProtocolTypeEnumGOutput,
+    ProtocolTypeEnumGInput,
 )
-from webapp.shared.datex2.v3_7.realtime.d_a_t_e_x_i_i3_d2_payload_output import (
-    DATEXII3D2PayloadOutput as DATEXII3D2RealtimePayloadOutput,
+from webapp.shared.datex2.v3_7.realtime.d_a_t_e_x_i_i3_d2_payload_input import (
+    DATEXII3D2PayloadInput as DATEXII3D2RealtimePayloadInput,
 )
-from webapp.shared.datex2.v3_7.static.d_a_t_e_x_i_i3_d2_payload_output import (
-    DATEXII3D2PayloadOutput as DATEXII3D2StaticPayloadOutput,
+from webapp.shared.datex2.v3_7.static.d_a_t_e_x_i_i3_d2_payload_input import (
+    DATEXII3D2PayloadInput as DATEXII3D2StaticPayloadInput,
 )
 from webapp.shared.datex2.v3_7_realtime_export_mapper import DatexV37JSONRealtimeExportMapper
 from webapp.shared.datex2.v3_7_static_export_mapper import DatexV37JSONStaticExportMapper
@@ -55,7 +55,7 @@ class Datex2V37JSONHandler(PublicApiBaseHandler):
         self.datex_static_export_mapper = DatexV37JSONStaticExportMapper()
         self.datex_realtime_export_mapper = DatexV37JSONRealtimeExportMapper()
 
-    def get_datex2_payload(self, search_query: LocationApiSearchQuery) -> DATEXII3D2StaticPayloadOutput:
+    def get_datex2_payload(self, search_query: LocationApiSearchQuery) -> DATEXII3D2StaticPayloadInput:
         locations = self.location_repository.fetch_locations(
             search_query=search_query,
             include_charging_stations=True,
@@ -67,7 +67,7 @@ class Datex2V37JSONHandler(PublicApiBaseHandler):
 
         return self.datex_static_export_mapper.map_locations_to_static_payload(list(locations))
 
-    def get_datex2_realtime_payload(self, search_query: LocationApiSearchQuery) -> DATEXII3D2RealtimePayloadOutput:
+    def get_datex2_realtime_payload(self, search_query: LocationApiSearchQuery) -> DATEXII3D2RealtimePayloadInput:
         search_query.exclude_evse_status = [EvseStatus.STATIC]
         locations = self.location_repository.fetch_locations(
             search_query=search_query,
@@ -77,7 +77,7 @@ class Datex2V37JSONHandler(PublicApiBaseHandler):
 
         return self.datex_realtime_export_mapper.map_locations_to_realtime_payload(list(locations))
 
-    def get_datex2_mobilithek_realtime(self, search_query: LocationApiSearchQuery) -> MessageContainerWrapperOutput:
+    def get_datex2_mobilithek_realtime(self, search_query: LocationApiSearchQuery) -> MessageContainerWrapperInput:
         search_query.exclude_evse_status = [EvseStatus.STATIC]
         locations = self.location_repository.fetch_locations(
             search_query=search_query,
@@ -91,20 +91,20 @@ class Datex2V37JSONHandler(PublicApiBaseHandler):
         else:
             protocol_type = ProtocolTypeEnum.DELTA_PUSH
 
-        message_container = MessageContainerOutput(
+        message_container = MessageContainerInput(
             payload=[payload_result.payload],
-            exchangeInformation=ExchangeInformationOutput(
-                exchangeContext=ExchangeContextOutput(
-                    codedExchangeProtocol=ProtocolTypeEnumGOutput(
+            exchangeInformation=ExchangeInformationInput(
+                exchangeContext=ExchangeContextInput(
+                    codedExchangeProtocol=ProtocolTypeEnumGInput(
                         value=protocol_type,
                     ),
                     exchangeSpecificationVersion='3.7',
-                    supplierOrCisRequester=AgentOutput(
+                    supplierOrCisRequester=AgentInput(
                         name=self.config_helper.get('MOBILITHEK_NAME'),
                     ),
                 ),
-                dynamicInformation=DynamicInformationOutput(
-                    exchangeStatus=ExchangeStatusEnumGOutput(
+                dynamicInformation=DynamicInformationInput(
+                    exchangeStatus=ExchangeStatusEnumGInput(
                         value=ExchangeStatusEnum.ONLINE,
                     ),
                     messageGenerationTimestamp=datetime.now(tz=timezone.utc),
@@ -112,6 +112,6 @@ class Datex2V37JSONHandler(PublicApiBaseHandler):
             ),
         )
 
-        return MessageContainerWrapperOutput(
+        return MessageContainerWrapperInput(
             messageContainer=message_container,
         )

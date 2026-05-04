@@ -28,15 +28,15 @@ from webapp.models.evse import EvseStatus
 from webapp.repositories import LocationRepository
 from webapp.services.base_service import BaseService
 from webapp.shared.datex2.models import (
-    AgentOutput,
-    DynamicInformationOutput,
-    ExchangeContextOutput,
-    ExchangeInformationOutput,
+    AgentInput,
+    DynamicInformationInput,
+    ExchangeContextInput,
+    ExchangeInformationInput,
     ExchangeStatusEnum,
-    ExchangeStatusEnumGOutput,
-    MessageContainerOutput,
+    ExchangeStatusEnumGInput,
+    MessageContainerInput,
     ProtocolTypeEnum,
-    ProtocolTypeEnumGOutput,
+    ProtocolTypeEnumGInput,
 )
 from webapp.shared.datex2.v3_5_realtime_export_mapper import DatexV35JSONRealtimeExportMapper
 from webapp.shared.datex2.v3_5_static_export_mapper import DatexV35JSONStaticExportMapper
@@ -126,7 +126,7 @@ class ChargeLocationService(BaseService):
         )
         self.redis_helper.set('last_datex_realtime_push', datex_realtime_push.isoformat())
 
-    def push_to_mobilithek(self, data: MessageContainerOutput, subscription_id: int) -> None:
+    def push_to_mobilithek(self, data: MessageContainerInput, subscription_id: int) -> None:
         key_dir: str = self.config_helper.get('KEY_DIR')
         url = f'https://mobilithek.info:8443/mobilithek/api/v1.0/publication/{subscription_id}'
         response = requests.post(
@@ -145,22 +145,22 @@ class ChargeLocationService(BaseService):
         self,
         payload,
         protocol_type: ProtocolTypeEnum,
-    ) -> MessageContainerOutput:
+    ) -> MessageContainerInput:
         version = self.config_helper.get('MOBILITHEK_VERSION', '3.5')
-        return MessageContainerOutput(
+        return MessageContainerInput(
             payload=payload,
-            exchangeInformation=ExchangeInformationOutput(
-                exchangeContext=ExchangeContextOutput(
-                    codedExchangeProtocol=ProtocolTypeEnumGOutput(
+            exchangeInformation=ExchangeInformationInput(
+                exchangeContext=ExchangeContextInput(
+                    codedExchangeProtocol=ProtocolTypeEnumGInput(
                         value=protocol_type,
                     ),
                     exchangeSpecificationVersion=version,
-                    supplierOrCisRequester=AgentOutput(
+                    supplierOrCisRequester=AgentInput(
                         name=self.config_helper.get('MOBILITHEK_NAME'),
                     ),
                 ),
-                dynamicInformation=DynamicInformationOutput(
-                    exchangeStatus=ExchangeStatusEnumGOutput(
+                dynamicInformation=DynamicInformationInput(
+                    exchangeStatus=ExchangeStatusEnumGInput(
                         value=ExchangeStatusEnum.ONLINE,
                     ),
                     messageGenerationTimestamp=datetime.now(tz=timezone.utc),

@@ -24,7 +24,7 @@ from webapp.common.rest.exceptions import NotFoundException, UnauthorizedExcepti
 from webapp.models import Source, SourceStatus
 from webapp.server_rest_api.base_handler import ServerApiBaseHandler
 from webapp.services.import_services import ImportServices
-from webapp.services.import_services.datex2.base_datex2_v3_5_import_service import (
+from webapp.services.import_services.datex2.v3_5.base_datex2_v3_5_import_service import (
     BaseDatex2V35ImportService,
     RealtimeResult,
 )
