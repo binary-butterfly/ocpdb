@@ -139,6 +139,7 @@ class Datex2V35JSONStaticMapper:
 
         self._apply_point_location(facility_location, location)
         self._apply_operator(energy_infrastructure_site.operator, location)
+        self._apply_owner(energy_infrastructure_site.owner, location)
         self._apply_operating_hours(energy_infrastructure_site.operatingHours, location)
         self._apply_helpdesk(energy_infrastructure_site.helpdesk, location)
         location.parking_spaces = self._map_dedicated_parking_spaces(
@@ -258,6 +259,19 @@ class Datex2V35JSONStaticMapper:
             name=self.get_multilanguage_string(organization.afacAnOrganisation.name),
             emobility_uid=self._get_external_identifier(
                 organization.afacAnOrganisation.externalIdentifier,
+                TypeOfIdentifierEnumExtensionTypeG.OPERATORID,
+            ),
+        )
+
+    def _apply_owner(self, organization: OrganisationGInput | UnsetValueType, location: LocationUpdate) -> None:
+        if organization is UnsetValue:
+            return
+        if organization.afacReferenceableOrganisation is UnsetValue:
+            return
+        location.owner = BusinessUpdate(
+            name=self.get_multilanguage_string(organization.afacReferenceableOrganisation.name),
+            emobility_uid=self._get_external_identifier(
+                organization.afacReferenceableOrganisation.externalIdentifier,
                 TypeOfIdentifierEnumExtensionTypeG.OPERATORID,
             ),
         )
