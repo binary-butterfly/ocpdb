@@ -1,5 +1,21 @@
 # Changelog
 
+# 2.12.0
+
+Released 2026-05-04
+
+### Features
+
+* [Datex2 v3.7 Import](https://github.com/binary-butterfly/ocpdb/pull/197)
+* [more datex sources](https://github.com/binary-butterfly/ocpdb/pull/196)
+* [Datex2 head response](https://github.com/binary-butterfly/ocpdb/pull/195) fixing Mobilithek push update
+
+
+### Fixes
+
+* [map datex2 owner](https://github.com/binary-butterfly/ocpdb/pull/198)
+
+
 ## 2.11.0
 
 Released 2026-04-27
