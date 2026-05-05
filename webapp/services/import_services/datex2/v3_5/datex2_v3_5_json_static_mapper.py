@@ -49,6 +49,7 @@ from webapp.shared.datex2.v3_5_json_realtime.models.refill_point_status_g_input 
 from webapp.shared.datex2.v3_5_json_static.models.accessibility_enum import AccessibilityEnum
 from webapp.shared.datex2.v3_5_json_static.models.address_line_type_enum import AddressLineTypeEnum
 from webapp.shared.datex2.v3_5_json_static.models.amenities_input import AmenitiesInput
+from webapp.shared.datex2.v3_5_json_static.models.an_organisation_input import AnOrganisationInput
 from webapp.shared.datex2.v3_5_json_static.models.authentication_and_identification_enum import (
     AuthenticationAndIdentificationEnum,
 )
@@ -80,6 +81,7 @@ from webapp.shared.datex2.v3_5_json_static.models.point_coordinates_input import
 from webapp.shared.datex2.v3_5_json_static.models.point_location_input import PointLocationInput
 from webapp.shared.datex2.v3_5_json_static.models.price_type_enum import PriceTypeEnum
 from webapp.shared.datex2.v3_5_json_static.models.rate_policy_enum import RatePolicyEnum
+from webapp.shared.datex2.v3_5_json_static.models.referenceable_organisation_input import ReferenceableOrganisationInput
 from webapp.shared.datex2.v3_5_json_static.models.refill_point_g_input import RefillPointGInput
 from webapp.shared.datex2.v3_5_json_static.models.service_type_enum import ServiceTypeEnum
 from webapp.shared.datex2.v3_5_json_static.models.service_type_input import ServiceTypeInput
@@ -138,8 +140,12 @@ class Datex2V35JSONStaticMapper:
             location.last_updated = energy_infrastructure_site.lastUpdated
 
         self._apply_point_location(facility_location, location)
-        self._apply_operator(energy_infrastructure_site.operator, location)
-        self._apply_owner(energy_infrastructure_site.owner, location)
+        operator = self._organization_to_business(energy_infrastructure_site.operator)
+        if operator:
+            location.operator = operator
+        owner = self._organization_to_business(energy_infrastructure_site.owner)
+        if owner:
+            location.operator = owner
         self._apply_operating_hours(energy_infrastructure_site.operatingHours, location)
         self._apply_helpdesk(energy_infrastructure_site.helpdesk, location)
         location.parking_spaces = self._map_dedicated_parking_spaces(
@@ -250,28 +256,22 @@ class Datex2V35JSONStaticMapper:
 
         location.time_zone = facility_location.timeZone or 'Europe/Berlin'
 
-    def _apply_operator(self, organization: OrganisationGInput | UnsetValueType, location: LocationUpdate) -> None:
+    def _organization_to_business(self, organization: OrganisationGInput | UnsetValueType) -> BusinessUpdate | None:
         if organization is UnsetValue:
-            return
-        if organization.afacAnOrganisation is UnsetValue:
-            return
-        location.operator = BusinessUpdate(
-            name=self.get_multilanguage_string(organization.afacAnOrganisation.name),
-            emobility_uid=self._get_external_identifier(
-                organization.afacAnOrganisation.externalIdentifier,
-                TypeOfIdentifierEnumExtensionTypeG.OPERATORID,
-            ),
-        )
+            return None
 
-    def _apply_owner(self, organization: OrganisationGInput | UnsetValueType, location: LocationUpdate) -> None:
-        if organization is UnsetValue:
-            return
-        if organization.afacReferenceableOrganisation is UnsetValue:
-            return
-        location.owner = BusinessUpdate(
-            name=self.get_multilanguage_string(organization.afacReferenceableOrganisation.name),
+        sub_organization: AnOrganisationInput | ReferenceableOrganisationInput
+        if organization.afacAnOrganisation:
+            sub_organization = organization.afacAnOrganisation
+        elif organization.afacReferenceableOrganisation:
+            sub_organization = organization.afacReferenceableOrganisation
+        else:
+            return None
+
+        return BusinessUpdate(
+            name=self.get_multilanguage_string(sub_organization.name),
             emobility_uid=self._get_external_identifier(
-                organization.afacReferenceableOrganisation.externalIdentifier,
+                sub_organization.externalIdentifier,
                 TypeOfIdentifierEnumExtensionTypeG.OPERATORID,
             ),
         )
