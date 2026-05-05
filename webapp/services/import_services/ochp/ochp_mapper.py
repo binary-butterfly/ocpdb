@@ -274,7 +274,6 @@ class OchpMapper:
         evse_update = EvseRealtimeUpdate(
             uid=evse_status.evseId,
             evse_id=evse_status.evseId,
-            last_updated=evse_status.ttl,
             status=status,
         )
 
