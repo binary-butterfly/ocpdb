@@ -76,6 +76,7 @@ from webapp.shared.datex2.v3_7.shared.type_of_identifier_enum import TypeOfIdent
 from webapp.shared.datex2.v3_7.shared.type_of_identifier_enum_extension_type_g import (
     TypeOfIdentifierEnumExtensionTypeG,
 )
+from webapp.shared.datex2.v3_7.static.an_organisation_input import AnOrganisationInput
 from webapp.shared.datex2.v3_7.static.dedicated_parking_spaces_input import DedicatedParkingSpacesInput
 from webapp.shared.datex2.v3_7.static.electric_charging_point_input import ElectricChargingPointInput
 from webapp.shared.datex2.v3_7.static.energy_infrastructure_site_input import EnergyInfrastructureSiteInput
@@ -84,6 +85,7 @@ from webapp.shared.datex2.v3_7.static.location_reference_g_input import (
     LocationReferenceGInput as StaticLocationReferenceGInput,
 )
 from webapp.shared.datex2.v3_7.static.organisation_g_input import OrganisationGInput
+from webapp.shared.datex2.v3_7.static.referenceable_organisation_input import ReferenceableOrganisationInput
 from webapp.shared.datex2.v3_7.static.refill_point_g_input import RefillPointGInput
 
 
@@ -138,7 +140,12 @@ class Datex2V37JSONStaticMapper:
             location.last_updated = energy_infrastructure_site.lastUpdated
 
         self._apply_point_location(facility_location, location)
-        self._apply_operator(energy_infrastructure_site.operator, location)
+        operator = self._organization_to_business(energy_infrastructure_site.operator)
+        if operator:
+            location.operator = operator
+        owner = self._organization_to_business(energy_infrastructure_site.owner)
+        if owner:
+            location.operator = owner
         self._apply_operating_hours(energy_infrastructure_site.operatingHours, location)
         self._apply_helpdesk(energy_infrastructure_site.helpdesk, location)
         location.parking_spaces = self._map_dedicated_parking_spaces(
@@ -243,17 +250,20 @@ class Datex2V37JSONStaticMapper:
 
         location.time_zone = facility_location.timeZone or 'Europe/Berlin'
 
-    def _apply_operator(self, organization: OrganisationGInput | UnsetValueType, location: LocationUpdate) -> None:
+    def _organization_to_business(self, organization: OrganisationGInput | UnsetValueType) -> BusinessUpdate | None:
         if organization is UnsetValue:
-            return
-        if organization.afacAnOrganisation is UnsetValue:
-            return
-        location.operator = BusinessUpdate(
-            name=self.get_multilanguage_string(organization.afacAnOrganisation.name),
-            emobility_uid=self._get_external_identifier(
-                organization.afacAnOrganisation.externalIdentifier,
-                TypeOfIdentifierEnumExtensionTypeG.EVSEID,
-            ),
+            return None
+
+        sub_organization: AnOrganisationInput | ReferenceableOrganisationInput
+        if organization.afacAnOrganisation:
+            sub_organization = organization.afacAnOrganisation
+        elif organization.afacReferenceableOrganisation:
+            sub_organization = organization.afacReferenceableOrganisation
+        else:
+            return None
+
+        return BusinessUpdate(
+            name=self.get_multilanguage_string(sub_organization.name),
         )
 
     @staticmethod
