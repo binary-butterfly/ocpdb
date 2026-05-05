@@ -1,5 +1,14 @@
 # Changelog
 
+# 2.12.1
+
+Released 2026-05-05
+
+### Fixes
+
+* [proper business outputs](https://github.com/binary-butterfly/ocpdb/pull/199)
+
+
 # 2.12.0
 
 Released 2026-05-04
