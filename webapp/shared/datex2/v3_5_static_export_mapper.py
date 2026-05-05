@@ -299,6 +299,9 @@ class DatexV35JSONStaticExportMapper:
         if location.operator:
             site.operator = self._build_operator(location.operator)
 
+        if location.owner:
+            site.owner = self._build_operator(location.owner)
+
         if location.help_phone:
             site.helpdesk = self._build_helpdesk(location.help_phone, version_g, location.operator)
 
@@ -692,12 +695,12 @@ class DatexV35JSONStaticExportMapper:
 
     @staticmethod
     def _build_operator(business: Business) -> OrganisationGInput:
-        org = AnOrganisationInput(
+        organisation = AnOrganisationInput(
             name=DatexV35JSONStaticExportMapper._build_multilingual_string(business.name),
         )
 
         if business.emobility_uid:
-            org.externalIdentifier = [
+            organisation.externalIdentifier = [
                 ExternalIdentifierInput(
                     identifier=business.emobility_uid,
                     typeOfIdentifier=TypeOfIdentifierEnumGInput(
@@ -707,7 +710,7 @@ class DatexV35JSONStaticExportMapper:
                 ),
             ]
 
-        return OrganisationGInput(afacAnOrganisation=org)
+        return OrganisationGInput(afacAnOrganisation=organisation)
 
     @staticmethod
     def _build_helpdesk(
