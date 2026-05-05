@@ -1,5 +1,13 @@
 # Changelog
 
+# 2.12.3
+
+Released 2026-05-05
+
+## Fixes
+
+* [operator / owner assignement fix](https://github.com/binary-butterfly/ocpdb/pull/201)
+
 # 2.12.2
 
 Released 2026-05-05
