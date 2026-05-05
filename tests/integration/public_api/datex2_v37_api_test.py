@@ -127,10 +127,8 @@ class Datex2V37StaticApiTest:
         ][0]
 
         operator = site['operator']
-        org = operator['afacReferenceableOrganisation']
+        org = operator['afacAnOrganisation']
         assert org['name'] == {'values': [{'lang': 'de', 'value': BUSINESS_1_NAME}]}
-        assert org['versionG'] == '1'
-        assert org['organisationUnit'] == [{}]
 
     @staticmethod
     def test_get_static_station_and_evse(

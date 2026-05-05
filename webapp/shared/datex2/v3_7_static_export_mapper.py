@@ -26,6 +26,9 @@ from webapp.models.charging_station import Capability, ChargingStation
 from webapp.models.connector import Connector, ConnectorFormat, ConnectorType, PowerType
 from webapp.models.evse import Evse
 from webapp.models.location import Location
+from webapp.shared.datex2.v3_5_json_static.models.type_of_identifier_enum_extension_type_g import (
+    TypeOfIdentifierEnumExtensionTypeG,
+)
 from webapp.shared.datex2.v3_7.shared.address_input import AddressInput as AddressInput
 from webapp.shared.datex2.v3_7.shared.address_line_input import AddressLineInput as AddressLineInput
 from webapp.shared.datex2.v3_7.shared.address_line_type_enum import AddressLineTypeEnum
@@ -54,6 +57,7 @@ from webapp.shared.datex2.v3_7.shared.current_type_enum import CurrentTypeEnum
 from webapp.shared.datex2.v3_7.shared.current_type_enum_g_input import CurrentTypeEnumGInput as CurrentTypeEnumGInput
 from webapp.shared.datex2.v3_7.shared.delivery_unit_enum import DeliveryUnitEnum
 from webapp.shared.datex2.v3_7.shared.delivery_unit_enum_g_input import DeliveryUnitEnumGInput as DeliveryUnitEnumGInput
+from webapp.shared.datex2.v3_7.shared.external_identifier_input import ExternalIdentifierInput
 from webapp.shared.datex2.v3_7.shared.international_identifier_input import (
     InternationalIdentifierInput as InternationalIdentifierInput,
 )
@@ -72,6 +76,9 @@ from webapp.shared.datex2.v3_7.shared.point_by_coordinates_input import (
     PointByCoordinatesInput as PointByCoordinatesInput,
 )
 from webapp.shared.datex2.v3_7.shared.point_coordinates_input import PointCoordinatesInput as PointCoordinatesInput
+from webapp.shared.datex2.v3_7.shared.type_of_identifier_enum import TypeOfIdentifierEnum
+from webapp.shared.datex2.v3_7.shared.type_of_identifier_enum_g_input import TypeOfIdentifierEnumGInput
+from webapp.shared.datex2.v3_7.static.an_organisation_input import AnOrganisationInput
 from webapp.shared.datex2.v3_7.static.d_a_t_e_x_i_i3_d2_payload_input import (
     DATEXII3D2PayloadInput as DATEXII3D2PayloadInput,
 )
@@ -221,6 +228,9 @@ class DatexV37JSONStaticExportMapper:
 
         if location.operator:
             site.operator = self._build_operator(location.operator)
+
+        if location.owner:
+            site.owner = self._build_operator(location.owner)
 
         return site
 
@@ -398,14 +408,24 @@ class DatexV37JSONStaticExportMapper:
 
     @staticmethod
     def _build_operator(business: Business) -> OrganisationGInput:
-        org = ReferenceableOrganisationInput(
-            idG=business.emobility_uid or f'OP-{business.id}',
-            versionG='1',
+        organisation = AnOrganisationInput(
             name=DatexV37JSONStaticExportMapper._build_multilingual_string(business.name),
-            organisationUnit=[OrganisationUnitInput()],
         )
 
-        return OrganisationGInput(afacReferenceableOrganisation=org)
+        if business.emobility_uid:
+            organisation.externalIdentifier = [
+                ExternalIdentifierInput(
+                    identifier=business.emobility_uid,
+                    typeOfIdentifier=TypeOfIdentifierEnumGInput(
+                        value=TypeOfIdentifierEnum.EXTENDEDG,
+                        # We use the 3.5 TypeOfIdentifierEnumExtensionTypeG here because we lack the same thing at 3.7
+                        # TODO: find out if there is a better way
+                        extendedValueG=TypeOfIdentifierEnumExtensionTypeG.OPERATORID,
+                    ),
+                ),
+            ]
+
+        return OrganisationGInput(afacAnOrganisation=organisation)
 
     def _map_capabilities_to_auth_methods(
         self,
