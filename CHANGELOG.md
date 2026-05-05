@@ -1,5 +1,14 @@
 # Changelog
 
+# 2.12.2
+
+Released 2026-05-05
+
+## Fixes
+
+* [better business input mapping](https://github.com/binary-butterfly/ocpdb/pull/200)
+
+
 # 2.12.1
 
 Released 2026-05-05
