@@ -145,7 +145,7 @@ class Datex2V35JSONStaticMapper:
             location.operator = operator
         owner = self._organization_to_business(energy_infrastructure_site.owner)
         if owner:
-            location.operator = owner
+            location.owner = owner
         self._apply_operating_hours(energy_infrastructure_site.operatingHours, location)
         self._apply_helpdesk(energy_infrastructure_site.helpdesk, location)
         location.parking_spaces = self._map_dedicated_parking_spaces(
