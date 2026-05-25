@@ -144,3 +144,79 @@ class Datex2RealtimeImportApiV35Test:
         )
 
         assert response.status_code == HTTPStatus.UNAUTHORIZED
+
+    @staticmethod
+    def test_push_realtime_v35_unknown_source(db: SQLAlchemy, test_client: OpenApiFlaskClient) -> None:
+        response = test_client.post(
+            path=f'/api/server/v1/datex/v3.5/does_not_exist/realtime?key={API_KEY}',
+            json={},
+        )
+
+        # Unknown source uid is rejected at the source/key lookup with 401 (Invalid API key) because
+        # the handler validates the key against the (missing) source config and never reaches the
+        # NotFoundException branch.
+        assert response.status_code in {HTTPStatus.NOT_FOUND, HTTPStatus.UNAUTHORIZED}
+
+
+class Datex2RealtimeImportApiV35HeadTest:
+    @staticmethod
+    def test_head_realtime_v35_returns_200(
+        db: SQLAlchemy,
+        test_client: OpenApiFlaskClient,
+        requests_mock: Mocker,
+    ) -> None:
+        """
+        HEAD must return HTTP 200 (per Mobilithek convention) with a Last-Modified header
+        once realtime data has been pushed.
+        """
+        _import_static_data(requests_mock)
+        realtime_data = _load_test_data('datex2_enbw_realtime_reduced.json')
+        # First push so the source has a realtime_data_updated_at value
+        test_client.post(
+            path=f'/api/server/v1/datex/v3.5/{SOURCE_UID}/realtime?key={API_KEY}',
+            json=realtime_data,
+        )
+
+        response = test_client.head(
+            path=f'/api/server/v1/datex/v3.5/{SOURCE_UID}/realtime?key={API_KEY}',
+        )
+
+        assert response.status_code == HTTPStatus.OK
+        assert 'Last-Modified' in response.headers
+
+    @staticmethod
+    def test_head_realtime_v35_without_push_omits_last_modified(
+        db: SQLAlchemy,
+        test_client: OpenApiFlaskClient,
+        requests_mock: Mocker,
+    ) -> None:
+        _import_static_data(requests_mock)
+
+        response = test_client.head(
+            path=f'/api/server/v1/datex/v3.5/{SOURCE_UID}/realtime?key={API_KEY}',
+        )
+
+        assert response.status_code == HTTPStatus.OK
+        assert 'Last-Modified' not in response.headers
+
+    @staticmethod
+    def test_head_realtime_v35_invalid_key_is_unauthorized(
+        db: SQLAlchemy,
+        test_client: OpenApiFlaskClient,
+    ) -> None:
+        response = test_client.head(
+            path=f'/api/server/v1/datex/v3.5/{SOURCE_UID}/realtime?key=wrong',
+        )
+
+        assert response.status_code == HTTPStatus.UNAUTHORIZED
+
+    @staticmethod
+    def test_head_realtime_v35_missing_key_is_unauthorized(
+        db: SQLAlchemy,
+        test_client: OpenApiFlaskClient,
+    ) -> None:
+        response = test_client.head(
+            path=f'/api/server/v1/datex/v3.5/{SOURCE_UID}/realtime',
+        )
+
+        assert response.status_code == HTTPStatus.UNAUTHORIZED

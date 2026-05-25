@@ -34,6 +34,11 @@ SOURCES:
     static_subscription_id: 13579
     realtime_subscription_id: 24680
     api_key: test-datex2-api-key
+  giroe:
+    auto_fetch: false
+    fetch_at_init: false
+    user: dev
+    password: test
 
 SERVER_AUTH_USERS:
   dev:
@@ -41,6 +46,10 @@ SERVER_AUTH_USERS:
     roles:
       - bnetza
       - datex2
+      - giroe
+  unprivileged:
+    hash: 9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08  # test
+    roles: []
 
 
 # This is a template. You can rename it to the config value LOGGING and adapt it to your needs.

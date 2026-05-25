@@ -20,6 +20,17 @@ from email.utils import format_datetime
 from http import HTTPStatus
 
 from flask import Response
+from flask_openapi.decorator import (
+    ErrorResponse,
+    Parameter,
+    Request,
+    ResponseData,
+    document,
+)
+from flask_openapi.decorator import (
+    Response as DocumentedResponse,
+)
+from flask_openapi.schema import StringField
 
 from webapp.common.response import empty_json_response
 from webapp.common.rest import BaseMethodView
@@ -31,6 +42,7 @@ from .datex2_handler import Datex2Handler
 
 
 class Datex2ImportBlueprint(ServerApiBaseBlueprint):
+    documented = True
     datex2_handler: Datex2Handler
     skip_basic_auth = True
 
@@ -76,6 +88,27 @@ class Datex2RealtimeMethodView(Datex2BaseMethodView):
         # Mobilithek expects HTTP 200 instead of HTTP 204
         return response, HTTPStatus.OK
 
+    @document(
+        summary='Push DATEX II v3.5 realtime EVSE statuses',
+        description=(
+            'Accepts a Mobilithek-style DATEX II v3.5 JSON payload (`messageContainer.payload[0]` '
+            '`aegiEnergyInfrastructureStatusPublication`) and applies it as a realtime update for the '
+            "given source. The `key` query parameter must match the source's configured `api_key`."
+        ),
+        path=[Parameter('source_uid', schema=StringField())],
+        query=[
+            Parameter('key', schema=StringField(), description='Per-source API key (matches `api_key` in `SOURCES`).')
+        ],
+        request=[Request(mimetype='application/json')],
+        response=[
+            DocumentedResponse(
+                ResponseData(),
+                http_status=HTTPStatus.OK,
+                description='Realtime payload accepted (Mobilithek expects HTTP 200, not 204).',
+            ),
+            ErrorResponse(error_codes=[HTTPStatus.BAD_REQUEST, HTTPStatus.UNAUTHORIZED, HTTPStatus.NOT_FOUND]),
+        ],
+    )
     def post(self, source_uid: str) -> tuple[Response, HTTPStatus]:
         data = self.request_helper.get_parsed_json()
 

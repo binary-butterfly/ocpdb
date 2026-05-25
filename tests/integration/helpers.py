@@ -17,6 +17,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 import os
+from base64 import b64encode
 from typing import Any
 
 from flask.testing import FlaskClient
@@ -32,14 +33,38 @@ from webapp.common.sqlalchemy import SQLAlchemy
 OPENAPI_BY_REALM = {}
 
 
+def basic_auth_header(username: str, password: str) -> str:
+    """
+    Build a HTTP Basic Authorization header value from a username and password.
+    """
+    token = b64encode(f'{username}:{password}'.encode()).decode()
+    return f'Basic {token}'
+
+
 class OpenApiFlaskClient(FlaskClient):
     openapi_realm: str | None = None
+    default_auth_header: str | None = None
 
-    def __init__(self, *args: Any, openapi_realm: str | None = None, **kwargs: Any) -> None:
+    def __init__(
+        self,
+        *args: Any,
+        openapi_realm: str | None = None,
+        default_auth_header: str | None = None,
+        **kwargs: Any,
+    ) -> None:
         super().__init__(*args, **kwargs)
         self.openapi_realm = openapi_realm
+        self.default_auth_header = default_auth_header
 
     def open(self, *args: Any, **kwargs: Any) -> TestResponse:
+        if self.default_auth_header is not None:
+            headers = kwargs.get('headers') or {}
+            if isinstance(headers, dict):
+                headers = dict(headers)
+                if 'Authorization' not in headers:
+                    headers['Authorization'] = self.default_auth_header
+            kwargs['headers'] = headers
+
         response = super().open(*args, **kwargs)
 
         if self.openapi_realm is None or os.environ.get('OPENAPI_SKIP_VALIDATION'):
@@ -48,6 +73,7 @@ class OpenApiFlaskClient(FlaskClient):
         if self.openapi_realm not in OPENAPI_BY_REALM:
             openapi_dict = generate_openapi(self.openapi_realm)
             openapi_dict = self.no_additional_properties(openapi_dict)
+            self.drop_empty_response_content(openapi_dict)
 
             OPENAPI_BY_REALM[self.openapi_realm] = OpenAPI.from_dict(openapi_dict)
 
@@ -70,6 +96,28 @@ class OpenApiFlaskClient(FlaskClient):
             return [self.no_additional_properties(item) for item in data]
 
         return data
+
+    @staticmethod
+    def drop_empty_response_content(openapi_dict: dict) -> None:
+        """
+        flask_openapi emits ``content: {<mimetype>: {}}`` for responses declared via
+        ``EmptyResponse`` (and ``content: {}`` for responses with no declared body at all).
+        openapi_core then rejects empty-bodied HTTP 200/204 replies with ``MissingData``.
+        Strip those placeholder blocks so the validator treats the response as having no
+        body.
+        """
+        for path_item in openapi_dict.get('paths', {}).values():
+            for operation in path_item.values():
+                if not isinstance(operation, dict):
+                    continue
+                for response in operation.get('responses', {}).values():
+                    if not isinstance(response, dict):
+                        continue
+                    content = response.get('content')
+                    if content is None:
+                        continue
+                    if not content or all(entry == {} for entry in content.values()):
+                        response.pop('content')
 
 
 class TestApp(App):
