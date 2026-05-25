@@ -16,11 +16,13 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+import json
 import logging
 from abc import ABC
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta, timezone
 from email.utils import format_datetime, parsedate_to_datetime
+from pathlib import Path
 
 from validataclass.exceptions import ValidationError
 from validataclass.helpers import UnsetValue
@@ -203,6 +205,54 @@ class BaseDatex2V35ImportService(BaseImportService, ABC):
         logger.info(
             f'Successfully updated {self.source_info.uid} realtime with {result.realtime_success_count} valid '
             f'EVSEs and {result.realtime_error_count} failed EVSEs.',
+            extra={'attributes': {'type': LogMessageType.IMPORT_LOCATION}},
+        )
+
+    def import_realtime_data_from_file(self, import_file_path: Path) -> None:
+        """
+        Load a previously persisted DATEX II v3.5 realtime payload from disk and apply it to this
+        source. Used by the celery task that processes asynchronous pushes from the REST API.
+        """
+        with import_file_path.open('rb') as data_file:
+            data = json.load(data_file)
+        self.import_realtime_data(data)
+
+    def import_realtime_data(self, data: dict) -> None:
+        """
+        Apply a parsed DATEX II v3.5 realtime payload to this source: parse the
+        ``messageContainer`` envelope, upsert EVSE statuses, and update the source's
+        ``realtime_data_updated_at`` / ``realtime_status`` accordingly.
+        """
+        source = self.get_source()
+        last_modified = datetime.now(tz=timezone.utc)
+        result = RealtimeResult()
+
+        try:
+            message_container = self.add_realtime_data(data, result)
+        except ImportException as e:
+            logger.error(
+                e.message,
+                extra={'attributes': {'type': LogMessageType.IMPORT_SOURCE}},
+            )
+            self.update_source(source, realtime_status=SourceStatus.FAILED)
+            return
+
+        self.save_evse_updates(list(result.evse_updates_by_evse.values()))
+
+        if message_container.messageContainer.payload:
+            payload = message_container.messageContainer.payload[0]
+            if payload.aegiEnergyInfrastructureStatusPublication.publicationTime:
+                last_modified = payload.aegiEnergyInfrastructureStatusPublication.publicationTime
+
+        self.update_source(
+            source=source,
+            realtime_status=SourceStatus.ACTIVE,
+            realtime_error_count=result.realtime_error_count,
+            realtime_data_updated_at=last_modified,
+        )
+        logger.info(
+            f'Imported DATEX2 realtime data for {self.source_info.uid} via async push with '
+            f'{result.realtime_success_count} valid EVSEs and {result.realtime_error_count} failed EVSEs.',
             extra={'attributes': {'type': LogMessageType.IMPORT_LOCATION}},
         )
 

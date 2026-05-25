@@ -18,6 +18,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from email.utils import format_datetime
 from http import HTTPStatus
+from pathlib import Path
+from uuid import uuid4
 
 from flask import Response
 from flask_openapi.decorator import (
@@ -32,31 +34,33 @@ from flask_openapi.decorator import (
 )
 from flask_openapi.schema import StringField
 
+from webapp.common.celery import CeleryHelper
 from webapp.common.response import empty_json_response
 from webapp.common.rest import BaseMethodView
+from webapp.common.rest.exceptions import InputValidationException
 from webapp.common.server_auth import skip_basic_auth
 from webapp.dependencies import dependencies
 from webapp.server_rest_api.base_blueprint import ServerApiBaseBlueprint
+from webapp.services.import_services.import_celery import datex2_v3_5_realtime_import_by_file
 
 from .datex2_handler import Datex2Handler
 
 
 class Datex2ImportBlueprint(ServerApiBaseBlueprint):
     documented = True
-    datex2_handler: Datex2Handler
     skip_basic_auth = True
 
     def __init__(self):
-        self.datex2_handler = Datex2Handler(
-            **self.get_base_handler_dependencies(),
-            import_services=dependencies.get_import_services(),
-        )
         super().__init__('datex2', __name__, url_prefix='/datex')
 
         realtime_view = Datex2RealtimeMethodView.as_view(
             'datex2_v3_5_realtime',
             **self.get_base_method_view_dependencies(),
-            datex2_handler=self.datex2_handler,
+            datex2_handler=Datex2Handler(
+                import_services=dependencies.get_import_services(),
+                **self.get_base_handler_dependencies(),
+            ),
+            celery_helper=dependencies.get_celery_helper(),
         )
         self.add_url_rule(
             '/v3.5/<source_uid>/realtime',
@@ -75,6 +79,11 @@ class Datex2BaseMethodView(BaseMethodView):
 
 class Datex2RealtimeMethodView(Datex2BaseMethodView):
     decorators = [skip_basic_auth]
+    celery_helper: CeleryHelper
+
+    def __init__(self, *args, celery_helper: CeleryHelper, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.celery_helper = celery_helper
 
     def head(self, source_uid: str) -> tuple[Response, HTTPStatus]:
         last_modified = self.datex2_handler.get_last_modified(
@@ -92,8 +101,10 @@ class Datex2RealtimeMethodView(Datex2BaseMethodView):
         summary='Push DATEX II v3.5 realtime EVSE statuses',
         description=(
             'Accepts a Mobilithek-style DATEX II v3.5 JSON payload (`messageContainer.payload[0]` '
-            '`aegiEnergyInfrastructureStatusPublication`) and applies it as a realtime update for the '
-            "given source. The `key` query parameter must match the source's configured `api_key`."
+            '`aegiEnergyInfrastructureStatusPublication`). The request body is persisted to '
+            '`DATEX2_IMPORT_DIR` and processed asynchronously by a Celery worker so very large '
+            'payloads do not block the request thread. The `key` query parameter must match the '
+            "source's configured `api_key`."
         ),
         path=[Parameter('source_uid', schema=StringField())],
         query=[
@@ -104,18 +115,32 @@ class Datex2RealtimeMethodView(Datex2BaseMethodView):
             DocumentedResponse(
                 ResponseData(),
                 http_status=HTTPStatus.OK,
-                description='Realtime payload accepted (Mobilithek expects HTTP 200, not 204).',
+                description='Realtime payload accepted for asynchronous processing.',
             ),
             ErrorResponse(error_codes=[HTTPStatus.BAD_REQUEST, HTTPStatus.UNAUTHORIZED, HTTPStatus.NOT_FOUND]),
         ],
     )
     def post(self, source_uid: str) -> tuple[Response, HTTPStatus]:
-        data = self.request_helper.get_parsed_json()
-
-        self.datex2_handler.handle_realtime_push(
+        # Validate the source + API key synchronously so unauthorized/unknown sources fail fast
+        # before we persist the payload to disk.
+        self.datex2_handler.validate_realtime_request(
             source_uid=source_uid,
             key=self.request_helper.get_query_args().get('key'),
-            data=data,
         )
+
+        data = self.request_helper.get_request_body()
+        if not data:
+            raise InputValidationException(message='no realtime payload')
+
+        base_path = Path(self.config_helper.get('DATEX2_IMPORT_DIR'))
+        if not base_path.is_dir():
+            base_path.mkdir(parents=True, exist_ok=True)
+
+        import_path = base_path.joinpath(f'{source_uid}_{uuid4()}.json')
+        with import_path.open('wb') as data_file:
+            data_file.write(data)
+
+        self.celery_helper.delay(datex2_v3_5_realtime_import_by_file, source_uid, str(import_path))
+
         # Mobilithek expects HTTP 200 instead of HTTP 204
         return empty_json_response(), HTTPStatus.OK
