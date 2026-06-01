@@ -20,7 +20,9 @@ import gzip
 import json
 from http import HTTPStatus
 from pathlib import Path
+from unittest.mock import patch
 
+import pytest
 from requests_mock import Mocker
 
 from tests.integration.helpers import OpenApiFlaskClient
@@ -54,20 +56,99 @@ def _import_static_data(requests_mock: Mocker) -> None:
     dependencies.get_import_services().importer_by_uid[SOURCE_UID].fetch_static_data()
 
 
+@pytest.fixture
+def isolated_datex2_dir(tmp_path: Path):
+    """Redirect DATEX2_IMPORT_DIR to a per-test temp directory."""
+    config = dependencies.get_config_helper().get_config()
+    original = config.get('DATEX2_IMPORT_DIR')
+    config['DATEX2_IMPORT_DIR'] = str(tmp_path)
+    try:
+        yield tmp_path
+    finally:
+        config['DATEX2_IMPORT_DIR'] = original
+
+
+@pytest.fixture
+def eager_celery_helper():
+    """
+    Run any celery task queued via ``CeleryHelper.delay`` synchronously, so the realtime import
+    is executed inline within the request thread of the test and we can assert on its outcome.
+    """
+
+    def run_task_synchronously(task, *args, **kwargs):
+        return task(*args, **kwargs)
+
+    with patch.object(dependencies.get_celery_helper(), 'delay', side_effect=run_task_synchronously) as mock_delay:
+        yield mock_delay
+
+
+@pytest.fixture
+def stubbed_celery_delay():
+    """Replace ``CeleryHelper.delay`` with a no-op mock for tests that don't need the task to run."""
+    with patch.object(dependencies.get_celery_helper(), 'delay') as mock_delay:
+        yield mock_delay
+
+
 class Datex2RealtimeImportApiV35Test:
     @staticmethod
-    def test_push_realtime_v35(
+    def test_push_realtime_v35_persists_payload_and_queues_task(
         db: SQLAlchemy,
         test_client: OpenApiFlaskClient,
         requests_mock: Mocker,
+        isolated_datex2_dir: Path,
+        stubbed_celery_delay,
     ) -> None:
-        # First populate with static data via the pull service
+        """
+        The endpoint must accept the payload, write it to ``DATEX2_IMPORT_DIR`` and queue the
+        celery task — without actually doing the import on the request thread.
+        """
+        _import_static_data(requests_mock)
+        realtime_data = _load_test_data('datex2_enbw_realtime_reduced.json')
+
+        response = test_client.post(
+            path=f'/api/server/v1/datex/v3.5/{SOURCE_UID}/realtime?key={API_KEY}',
+            json=realtime_data,
+        )
+        assert response.status_code == HTTPStatus.OK
+
+        # Exactly one file was written under the configured import dir.
+        written = list(isolated_datex2_dir.iterdir())
+        assert len(written) == 1
+        assert written[0].name.startswith(f'{SOURCE_UID}_')
+        assert written[0].suffix == '.json'
+
+        # The persisted body matches the payload we sent.
+        with written[0].open('rb') as f:
+            assert json.load(f) == realtime_data
+
+        # Celery task was queued with (source_uid, file_path).
+        stubbed_celery_delay.assert_called_once()
+        args, _ = stubbed_celery_delay.call_args
+        assert args[1] == SOURCE_UID
+        assert args[2] == str(written[0])
+
+        # Because the celery task did not run, EVSE statuses should be untouched.
+        db.session.expire_all()
+        evse_charging = db.session.query(Evse).filter(Evse.uid == 'DE*EBW*E914082*1').first()
+        assert evse_charging.status == EvseStatus.UNKNOWN
+
+    @staticmethod
+    def test_push_realtime_v35_async_applies_status_updates(
+        db: SQLAlchemy,
+        test_client: OpenApiFlaskClient,
+        requests_mock: Mocker,
+        isolated_datex2_dir: Path,
+        eager_celery_helper,
+    ) -> None:
+        """
+        With the celery task executed inline, EVSE statuses must be updated exactly the same way
+        the synchronous endpoint used to update them.
+        """
         _import_static_data(requests_mock)
 
         # All EVSEs should start as UNKNOWN
         assert db.session.query(Evse).filter(Evse.status == EvseStatus.UNKNOWN).count() == 57
 
-        # Push realtime data
         realtime_data = _load_test_data('datex2_enbw_realtime_reduced.json')
         response = test_client.post(
             path=f'/api/server/v1/datex/v3.5/{SOURCE_UID}/realtime?key={API_KEY}',
@@ -77,7 +158,6 @@ class Datex2RealtimeImportApiV35Test:
 
         db.session.expire_all()
 
-        # Verify status updates
         evse_available = db.session.query(Evse).filter(Evse.uid == 'DE*EBW*E914082*2').first()
         assert evse_available.status == EvseStatus.AVAILABLE
 
@@ -94,15 +174,20 @@ class Datex2RealtimeImportApiV35Test:
         evse_unchanged = db.session.query(Evse).filter(Evse.uid == 'DE*EBW*E916701*2').first()
         assert evse_unchanged.status == EvseStatus.UNKNOWN
 
+        # The celery task deletes its source file once it has been processed.
+        assert list(isolated_datex2_dir.iterdir()) == []
+
     @staticmethod
     def test_push_realtime_v35_gzip_encoded(
         db: SQLAlchemy,
         test_client: OpenApiFlaskClient,
         requests_mock: Mocker,
+        isolated_datex2_dir: Path,
+        eager_celery_helper,
     ) -> None:
         """
-        Realtime payloads gzip-compressed with Content-Encoding: gzip must be transparently decoded by the
-        server_rest_api before_request hook and processed like any other push.
+        Realtime payloads gzip-compressed with Content-Encoding: gzip must be transparently decoded
+        by the server_rest_api before_request hook, persisted, and processed identically.
         """
         _import_static_data(requests_mock)
 
@@ -124,7 +209,29 @@ class Datex2RealtimeImportApiV35Test:
         assert evse_charging.status == EvseStatus.CHARGING
 
     @staticmethod
-    def test_push_realtime_v35_invalid_api_key(db: SQLAlchemy, test_client: OpenApiFlaskClient) -> None:
+    def test_push_realtime_v35_empty_body_returns_400(
+        db: SQLAlchemy,
+        test_client: OpenApiFlaskClient,
+        isolated_datex2_dir: Path,
+        stubbed_celery_delay,
+    ) -> None:
+        response = test_client.post(
+            path=f'/api/server/v1/datex/v3.5/{SOURCE_UID}/realtime?key={API_KEY}',
+            data=b'',
+            content_type='application/json',
+        )
+
+        assert response.status_code == HTTPStatus.BAD_REQUEST
+        assert list(isolated_datex2_dir.iterdir()) == []
+        stubbed_celery_delay.assert_not_called()
+
+    @staticmethod
+    def test_push_realtime_v35_invalid_api_key_does_not_persist(
+        db: SQLAlchemy,
+        test_client: OpenApiFlaskClient,
+        isolated_datex2_dir: Path,
+        stubbed_celery_delay,
+    ) -> None:
         realtime_data = _load_test_data('datex2_enbw_realtime_reduced.json')
 
         response = test_client.post(
@@ -133,9 +240,17 @@ class Datex2RealtimeImportApiV35Test:
         )
 
         assert response.status_code == HTTPStatus.UNAUTHORIZED
+        # Unauthorized requests must not leak the payload to disk or queue the task.
+        assert list(isolated_datex2_dir.iterdir()) == []
+        stubbed_celery_delay.assert_not_called()
 
     @staticmethod
-    def test_push_realtime_v35_unauthorized(db: SQLAlchemy, test_client: OpenApiFlaskClient) -> None:
+    def test_push_realtime_v35_missing_key_is_unauthorized(
+        db: SQLAlchemy,
+        test_client: OpenApiFlaskClient,
+        isolated_datex2_dir: Path,
+        stubbed_celery_delay,
+    ) -> None:
         realtime_data = _load_test_data('datex2_enbw_realtime_reduced.json')
 
         response = test_client.post(
@@ -144,18 +259,25 @@ class Datex2RealtimeImportApiV35Test:
         )
 
         assert response.status_code == HTTPStatus.UNAUTHORIZED
+        assert list(isolated_datex2_dir.iterdir()) == []
+        stubbed_celery_delay.assert_not_called()
 
     @staticmethod
-    def test_push_realtime_v35_unknown_source(db: SQLAlchemy, test_client: OpenApiFlaskClient) -> None:
+    def test_push_realtime_v35_unknown_source(
+        db: SQLAlchemy,
+        test_client: OpenApiFlaskClient,
+        isolated_datex2_dir: Path,
+        stubbed_celery_delay,
+    ) -> None:
         response = test_client.post(
             path=f'/api/server/v1/datex/v3.5/does_not_exist/realtime?key={API_KEY}',
             json={},
         )
 
-        # Unknown source uid is rejected at the source/key lookup with 401 (Invalid API key) because
-        # the handler validates the key against the (missing) source config and never reaches the
-        # NotFoundException branch.
-        assert response.status_code in {HTTPStatus.NOT_FOUND, HTTPStatus.UNAUTHORIZED}
+        # Unknown source surfaces as 404 from _get_source_and_service.
+        assert response.status_code == HTTPStatus.NOT_FOUND
+        assert list(isolated_datex2_dir.iterdir()) == []
+        stubbed_celery_delay.assert_not_called()
 
 
 class Datex2RealtimeImportApiV35HeadTest:
@@ -164,6 +286,8 @@ class Datex2RealtimeImportApiV35HeadTest:
         db: SQLAlchemy,
         test_client: OpenApiFlaskClient,
         requests_mock: Mocker,
+        isolated_datex2_dir: Path,
+        eager_celery_helper,
     ) -> None:
         """
         HEAD must return HTTP 200 (per Mobilithek convention) with a Last-Modified header
@@ -171,7 +295,8 @@ class Datex2RealtimeImportApiV35HeadTest:
         """
         _import_static_data(requests_mock)
         realtime_data = _load_test_data('datex2_enbw_realtime_reduced.json')
-        # First push so the source has a realtime_data_updated_at value
+        # First push so the source has a realtime_data_updated_at value (eager celery so the
+        # update actually lands in the DB before we issue HEAD).
         test_client.post(
             path=f'/api/server/v1/datex/v3.5/{SOURCE_UID}/realtime?key={API_KEY}',
             json=realtime_data,

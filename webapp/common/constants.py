@@ -36,6 +36,7 @@ class BaseConfig:
     DYNAMIC_IMAGE_DIR = os.path.abspath(os.path.join(PROJECT_ROOT, os.pardir, 'data', 'images'))
     DEBUG_DUMP_DIR = os.path.abspath(os.path.join(PROJECT_ROOT, os.pardir, 'data', 'debug'))
     BNETZA_IMPORT_DIR = os.path.abspath(os.path.join(PROJECT_ROOT, os.pardir, 'data', 'bnetza-import'))
+    DATEX2_IMPORT_DIR = os.path.abspath(os.path.join(PROJECT_ROOT, os.pardir, 'data', 'datex2-import'))
 
     PUBLIC_IMAGE_PATH = '/data/images'
 
