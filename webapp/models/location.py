@@ -224,7 +224,12 @@ class Location(BaseModel):
     def related_locations(self) -> list[dict] | None:
         if self._related_locations is None:
             return None
-        return json.loads(self._related_locations)
+        related_locations = json.loads(self._related_locations)
+        for related_location in related_locations:
+            for key in ('latitude', 'longitude'):
+                if related_location.get(key) is not None:
+                    related_location[key] = float(related_location[key])
+        return related_locations
 
     @related_locations.setter
     def related_locations(self, related_locations: list[dict] | None) -> None:
@@ -385,14 +390,14 @@ class Location(BaseModel):
             result['opening_times']['exceptional_closings'] = self.exceptional_closings
 
         result['coordinates'] = {
-            'latitude': self.lat,
-            'longitude': self.lon,
+            'latitude': float(self.lat),
+            'longitude': float(self.lon),
         }
 
         # TODO: remove this after migration period
         if not strict:
-            result['coordinates']['lat'] = self.lat
-            result['coordinates']['lon'] = self.lon
+            result['coordinates']['lat'] = float(self.lat)
+            result['coordinates']['lon'] = float(self.lon)
 
         return result
 

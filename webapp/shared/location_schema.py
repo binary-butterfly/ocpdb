@@ -21,7 +21,6 @@ from flask_openapi.schema import (
     ArrayField,
     BooleanField,
     DateTimeField,
-    DecimalField,
     EnumField,
     IntegerField,
     JsonSchema,
@@ -48,17 +47,11 @@ additional_geo_location_schema = JsonSchema(
     description='This class defines an additional geo location that is relevant for the Charge Point. The geodetic system to be used is '
     'WGS 84.',
     properties={
-        'latitude': DecimalField(
-            precision=9,
-            scale=7,
-            description='Latitude of the point in decimal degree. Example: 50.770774. Decimal separator: "." '
-            r'Regex: -?[0-9]{1,2}\.[0-9]{5,7}',
+        'latitude': NumericField(
+            description='Latitude of the point in decimal degree. Example: 50.770774.',
         ),
-        'longitude': DecimalField(
-            precision=10,
-            scale=7,
-            description='Longitude of the point in decimal degree. Example: -126.104965. Decimal separator: "." '
-            r'Regex: -?[0-9]{1,3}\.[0-9]{5,7},',
+        'longitude': NumericField(
+            description='Longitude of the point in decimal degree. Example: -126.104965.',
         ),
         'name': Reference(
             obj='DisplayText',
@@ -210,17 +203,11 @@ geo_location_schema = JsonSchema(
     title='GeoLocation',
     description='This class defines the geo location of the Charge Point. The geodetic system to be used is WGS 84.',
     properties={
-        'latitude': DecimalField(
-            precision=9,
-            scale=7,
-            description='Latitude of the point in decimal degree. Example: 50.770774. Decimal separator: "." '
-            r'Regex: -?[0-9]{1,2}\.[0-9]{5,7}',
+        'latitude': NumericField(
+            description='Latitude of the point in decimal degree. Example: 50.770774.',
         ),
-        'longitude': DecimalField(
-            precision=10,
-            scale=7,
-            description='Longitude of the point in decimal degree. Example: -126.104965. Decimal separator: "." '
-            r'Regex: -?[0-9]{1,3}\.[0-9]{5,7},',
+        'longitude': NumericField(
+            description='Longitude of the point in decimal degree. Example: -126.104965.',
         ),
     },
 )
