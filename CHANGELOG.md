@@ -1,5 +1,25 @@
 # Changelog
 
+# 2.13.0
+
+Released 2026-06-01
+
+## Features
+
+* [async status handling](https://github.com/binary-butterfly/ocpdb/pull/207)
+
+
+## Fixes
+
+* [lat/lon float outpu](https://github.com/binary-butterfly/ocpdb/pull/206)
+* [fix and extend server openapi](https://github.com/binary-butterfly/ocpdb/pull/205)
+
+
+## Maintenance
+
+* [dependency updates](https://github.com/binary-butterfly/ocpdb/pull/208)
+
+
 # 2.12.3
 
 Released 2026-05-05
