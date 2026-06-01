@@ -1,5 +1,5 @@
-pytest~=9.0.2
-pytest-cov~=7.0.0
+pytest~=9.0.3
+pytest-cov~=7.1.0
 requests-mock~=1.12.1
-ruff~=0.15.6
-openapi-core~=0.23.0
+ruff~=0.15.15
+openapi-core~=0.23.1
