@@ -16,6 +16,18 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+from http import HTTPStatus
+
+from flask_openapi.decorator import (
+    EmptyResponse,
+    ErrorResponse,
+    ExampleReference,
+    Parameter,
+    Request,
+    SchemaReference,
+    document,
+)
+from flask_openapi.schema import IntegerField, StringField
 from validataclass.validators import DataclassValidator
 
 from webapp.common.response import empty_json_response
@@ -26,6 +38,7 @@ from webapp.server_rest_api.base_blueprint import ServerApiBaseBlueprint
 from webapp.services.import_services.giroe.giroe_validator import LocationInput
 
 from .giroe_handler import GiroeHandler
+from .giroe_schema import giroe_connector_patch_component, giroe_location_input_component
 from .giroe_validator import ConnectorPatchInput
 
 
@@ -73,28 +86,69 @@ class GiroeBaseMethodView(BaseMethodView):
 class GiroeLocationMethodView(GiroeBaseMethodView):
     location_validator = DataclassValidator(LocationInput)
 
+    @document(
+        summary='Upsert a giro-e location',
+        description=(
+            'Create or update an OCPDB location from a giro-e payload. '
+            'If the request body has `public: false` and the location already exists, it is deleted instead.'
+        ),
+        path=[Parameter('location_id', schema=IntegerField(minimum=1))],
+        request=[
+            Request(
+                schema=SchemaReference('GiroeLocationInput'),
+                example=ExampleReference('GiroeLocationInput'),
+            ),
+        ],
+        response=[
+            EmptyResponse(),
+            ErrorResponse(error_codes=[HTTPStatus.BAD_REQUEST, HTTPStatus.UNAUTHORIZED, HTTPStatus.NOT_FOUND]),
+        ],
+        components=[giroe_location_input_component],
+    )
     @require_role(ServerAuthRole.GIROE)
     def put(self, location_id: int):
         input_data = self.validate_request(self.location_validator)
 
         self.giroe_handler.handle_put_location(location_id, input_data)
 
-        return empty_json_response(), 204
+        return empty_json_response(), HTTPStatus.NO_CONTENT
 
+    @document(
+        summary='Delete a giro-e location',
+        description='Remove a previously imported giro-e location from OCPDB.',
+        path=[Parameter('location_id', schema=IntegerField(minimum=1))],
+        response=[EmptyResponse(), ErrorResponse(error_codes=[HTTPStatus.UNAUTHORIZED, HTTPStatus.NOT_FOUND])],
+    )
     @require_role(ServerAuthRole.GIROE)
     def delete(self, location_id: int):
         self.giroe_handler.handle_delete_location(location_id)
 
-        return empty_json_response(), 204
+        return empty_json_response(), HTTPStatus.NO_CONTENT
 
 
 class GiroeConnectorMethodView(GiroeBaseMethodView):
     connector_patch_validator = DataclassValidator(ConnectorPatchInput)
 
+    @document(
+        summary='Patch a giro-e connector status',
+        description='Apply a realtime status update (and modified timestamp) to a giro-e EVSE.',
+        path=[Parameter('connector_uid', schema=StringField())],
+        request=[
+            Request(
+                schema=SchemaReference('GiroeConnectorPatch'),
+                example=ExampleReference('GiroeConnectorPatch'),
+            ),
+        ],
+        response=[
+            EmptyResponse(),
+            ErrorResponse(error_codes=[HTTPStatus.BAD_REQUEST, HTTPStatus.UNAUTHORIZED, HTTPStatus.NOT_FOUND]),
+        ],
+        components=[giroe_connector_patch_component],
+    )
     @require_role(ServerAuthRole.GIROE)
     def patch(self, connector_uid: str):
         connector_input = self.validate_request(self.connector_patch_validator)
 
         self.giroe_handler.handle_patch_connector(connector_uid, connector_input)
 
-        return empty_json_response(), 204
+        return empty_json_response(), HTTPStatus.NO_CONTENT

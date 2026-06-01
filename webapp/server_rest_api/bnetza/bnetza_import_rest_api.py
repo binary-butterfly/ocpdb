@@ -16,10 +16,12 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+from http import HTTPStatus
 from pathlib import Path
 from uuid import uuid4
 
 from flask_cors import cross_origin
+from flask_openapi.decorator import ErrorResponse, Request, Response, ResponseData, document
 
 from webapp.common.celery import CeleryHelper
 from webapp.common.response import empty_json_response
@@ -32,6 +34,8 @@ from webapp.services.import_services.import_celery import bnetza_import_by_file
 
 
 class BnetzaImportBlueprint(ServerApiBaseBlueprint):
+    documented = True
+
     def __init__(self):
         super().__init__('import', __name__, url_prefix='/bnetza')
 
@@ -53,6 +57,19 @@ class BnetzaImportBaseMethodView(BaseMethodView):
         super().__init__(*args, **kwargs)
         self.celery_helper = celery_helper
 
+    @document(
+        summary='Upload a BNetzA charge-point excel for ingestion',
+        description=(
+            'Accepts the raw BNetzA Ladesäulenregister XLSX as the request body, persists it to '
+            '`BNETZA_IMPORT_DIR`, and queues an async import. Returns immediately; the import itself '
+            'runs in a Celery worker.'
+        ),
+        request=[Request(mimetype='application/octet-stream')],
+        response=[
+            Response(ResponseData(), http_status=HTTPStatus.OK),
+            ErrorResponse(error_codes=[HTTPStatus.BAD_REQUEST, HTTPStatus.UNAUTHORIZED]),
+        ],
+    )
     @require_role(ServerAuthRole.BNETZA)
     @cross_origin()
     def post(self):

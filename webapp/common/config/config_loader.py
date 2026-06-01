@@ -84,6 +84,13 @@ class ConfigLoader:
                 extra={'attributes': {'type': LogMessageType.MAIN}},
             )
             for key, values in app.config['REMOTE_SERVERS'].items():
+                if key not in mapping:
+                    logger.warning(
+                        'Ignoring unknown legacy REMOTE_SERVERS entry %r — drop it from your config.',
+                        key,
+                        extra={'attributes': {'type': LogMessageType.MAIN}},
+                    )
+                    continue
                 app.config['SOURCES'][mapping[key]] = values
 
         if config_overrides is not None:

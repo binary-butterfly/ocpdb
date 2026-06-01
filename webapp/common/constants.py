@@ -35,6 +35,7 @@ class BaseConfig:
     PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir))
     DYNAMIC_IMAGE_DIR = os.path.abspath(os.path.join(PROJECT_ROOT, os.pardir, 'data', 'images'))
     DEBUG_DUMP_DIR = os.path.abspath(os.path.join(PROJECT_ROOT, os.pardir, 'data', 'debug'))
+    BNETZA_IMPORT_DIR = os.path.abspath(os.path.join(PROJECT_ROOT, os.pardir, 'data', 'bnetza-import'))
 
     PUBLIC_IMAGE_PATH = '/data/images'
 
