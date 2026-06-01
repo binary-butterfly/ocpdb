@@ -17,7 +17,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 import json
-from decimal import Decimal
 from pathlib import Path
 from unittest.mock import ANY
 
@@ -91,10 +90,10 @@ def test_ludwigsburg_fetch_static_data(db: SQLAlchemy, requests_mock: Mocker) ->
         'country': 'DEU',
         'official_region_code': None,
         'coordinates': {
-            'lat': Decimal('48.89233'),
-            'lon': Decimal('9.18329'),
-            'latitude': Decimal('48.89233'),
-            'longitude': Decimal('9.18329'),
+            'lat': 48.89233,
+            'lon': 9.18329,
+            'latitude': 48.89233,
+            'longitude': 9.18329,
         },
         'directions': [{'text': 'öffentliche Ladestation, durchgehend geöffnet', 'language': 'DE'}],
         'related_locations': None,

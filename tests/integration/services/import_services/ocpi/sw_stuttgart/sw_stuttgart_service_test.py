@@ -16,7 +16,6 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from decimal import Decimal
 from unittest.mock import ANY
 
 from requests_mock import Mocker
@@ -71,10 +70,10 @@ def test_sw_stuttgart_import(db: SQLAlchemy, requests_mock: Mocker) -> None:
         'country': 'DEU',
         'official_region_code': None,
         'coordinates': {
-            'lat': Decimal('48.7774100'),
-            'lon': Decimal('9.1762120'),
-            'latitude': Decimal('48.7774100'),
-            'longitude': Decimal('9.1762120'),
+            'lat': 48.77741,
+            'lon': 9.176212,
+            'latitude': 48.77741,
+            'longitude': 9.176212,
         },
         'directions': [
             {
