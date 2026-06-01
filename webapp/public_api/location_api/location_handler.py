@@ -67,8 +67,8 @@ class LocationHandler(PublicApiBaseHandler):
                     evse_dict['floor_level'] = charging_station.floor_level
                 if charging_station.lat is not None and charging_station.lon is not None:
                     evse_dict['coordinates'] = {
-                        'latitude': charging_station.lat,
-                        'longitude': charging_station.lon,
+                        'latitude': float(charging_station.lat),
+                        'longitude': float(charging_station.lon),
                     }
                 if charging_station.directions:
                     evse_dict['directions'] = charging_station.directions

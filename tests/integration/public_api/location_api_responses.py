@@ -32,7 +32,7 @@ LOCATIONS_1_RESPONSE = {
     'id': '1',
     'publish': True,
     'opening_times': {'twentyfourseven': True},
-    'coordinates': {'latitude': '52.5200300', 'longitude': '13.4048900'},
+    'coordinates': {'latitude': 52.52003, 'longitude': 13.40489},
     'operator': {'name': 'Electro Inc'},
     'evses': [
         {
@@ -90,7 +90,7 @@ LOCATIONS_2_RESPONSE = {
     'id': '2',
     'publish': True,
     'opening_times': {'twentyfourseven': True},
-    'coordinates': {'latitude': '52.5200300', 'longitude': '13.4048900'},
+    'coordinates': {'latitude': 52.52003, 'longitude': 13.40489},
     'operator': {'name': 'Electro Inc'},
     'evses': [
         {
@@ -149,7 +149,7 @@ LOCATIONS_3_RESPONSE = {
     'id': '3',
     'publish': True,
     'opening_times': {'twentyfourseven': True},
-    'coordinates': {'latitude': '52.5200300', 'longitude': '13.4048900'},
+    'coordinates': {'latitude': 52.52003, 'longitude': 13.40489},
     'operator': {'name': 'Power Inc'},
     'evses': [
         {

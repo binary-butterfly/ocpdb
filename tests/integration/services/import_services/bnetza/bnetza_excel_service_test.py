@@ -16,7 +16,6 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from decimal import Decimal
 from pathlib import Path
 from unittest.mock import ANY
 
@@ -73,10 +72,10 @@ def test_bnetza_excel_import(db: SQLAlchemy, requests_mock: Mocker) -> None:
         'country': 'DEU',
         'official_region_code': None,
         'coordinates': {
-            'lat': Decimal('48.4423980'),
-            'lon': Decimal('9.6590750'),
-            'latitude': Decimal('48.4423980'),
-            'longitude': Decimal('9.6590750'),
+            'lat': 48.442398,
+            'lon': 9.659075,
+            'latitude': 48.442398,
+            'longitude': 9.659075,
         },
         'directions': None,
         'related_locations': None,

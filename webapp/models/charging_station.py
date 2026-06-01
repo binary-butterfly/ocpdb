@@ -203,8 +203,8 @@ class ChargingStation(BaseModel):
 
         if self.lat is not None and self.lon is not None:
             result['coordinates'] = {
-                'latitude': self.lat,
-                'longitude': self.lon,
+                'latitude': float(self.lat),
+                'longitude': float(self.lon),
             }
 
         return result
