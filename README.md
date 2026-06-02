@@ -155,7 +155,7 @@ flask location assign-regionalschluessel --re-assign
 to re-assign regional codes to all locations.
 
 
-## System requirements & installatiion
+## System requirements and installation
 
 The installation process is documented at [INSTALL.md](https://github.com/binary-butterfly/ocpdb/blob/main/INSTALL.md).
 

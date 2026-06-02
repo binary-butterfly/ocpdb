@@ -11,7 +11,7 @@ Released 2026-06-01
 
 ## Fixes
 
-* [lat/lon float outpu](https://github.com/binary-butterfly/ocpdb/pull/206)
+* [lat/lon float output](https://github.com/binary-butterfly/ocpdb/pull/206)
 * [fix and extend server openapi](https://github.com/binary-butterfly/ocpdb/pull/205)
 
 
