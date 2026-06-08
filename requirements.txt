@@ -31,4 +31,4 @@ urllib3~=2.7.0
 --extra-index-url https://git.binary-butterfly.de/api/v4/groups/262/-/packages/pypi/simple
 flask-openapi~=2.3.0
 validataclass-search-queries~=0.5.1
-butterfly_pubsub~=2.1.1
+butterfly_pubsub~=3.0.0
