@@ -34,6 +34,7 @@ from .v3_5 import (
     PumpDatex2ImportService,
     QwelloDatex2ImportService,
     SmatricsDatex2ImportService,
+    TaubertDatex2ImportService,
     TeslaDatex2ImportService,
     VaylensDatex2ImportService,
     VolkswagenDatex2ImportService,

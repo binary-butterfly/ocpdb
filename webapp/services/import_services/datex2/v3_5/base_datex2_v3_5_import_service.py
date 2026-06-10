@@ -91,7 +91,7 @@ class BaseDatex2V35ImportService(BaseImportService, ABC):
         if (
             not datex_input.payload
             or not datex_input.payload.aegiEnergyInfrastructureTablePublication
-            or len(datex_input.payload.aegiEnergyInfrastructureTablePublication.energyInfrastructureTable) != 1
+            or not datex_input.payload.aegiEnergyInfrastructureTablePublication.energyInfrastructureTable
         ):
             logger.error(
                 f'missing payload or aegiEnergyInfrastructureTablePublication in {self.source_info.uid} static data {data}',
@@ -100,18 +100,17 @@ class BaseDatex2V35ImportService(BaseImportService, ABC):
             self.update_source(source, static_status=SourceStatus.FAILED, realtime_status=SourceStatus.FAILED)
             return
 
-        publication_input = datex_input.payload.aegiEnergyInfrastructureTablePublication.energyInfrastructureTable[0]
-
-        for energy_infrastructure_site_input in publication_input.energyInfrastructureSite:
-            location_update = self.v3_5_json_static_datex_mapper.map_energy_infrastructure_site_to_location(
-                self.source_info.uid,
-                energy_infrastructure_site_input,
-            )
-            if location_update is None:
-                error_count += 1
-                continue
-            location_updates.append(location_update)
-            success_count += 1
+        for publication_input in datex_input.payload.aegiEnergyInfrastructureTablePublication.energyInfrastructureTable:
+            for energy_infrastructure_site_input in publication_input.energyInfrastructureSite:
+                location_update = self.v3_5_json_static_datex_mapper.map_energy_infrastructure_site_to_location(
+                    self.source_info.uid,
+                    energy_infrastructure_site_input,
+                )
+                if location_update is None:
+                    error_count += 1
+                    continue
+                location_updates.append(location_update)
+                success_count += 1
 
         self.save_location_updates(location_updates)
 
