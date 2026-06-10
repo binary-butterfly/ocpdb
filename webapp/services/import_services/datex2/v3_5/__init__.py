@@ -35,6 +35,7 @@ from .msu_datex2_import_service import MsuDatex2ImportService
 from .pump_datex2_import_service import PumpDatex2ImportService
 from .qwello_datex2_import_service import QwelloDatex2ImportService
 from .smatrics_datex2_import_service import SmatricsDatex2ImportService
+from .taubert_datex2_import_service import TaubertDatex2ImportService
 from .tesla_datex2_import_service import TeslaDatex2ImportService
 from .vaylens_datex2_import_service import VaylensDatex2ImportService
 from .volkswagen_datex2_import_service import VolkswagenDatex2ImportService
