@@ -127,6 +127,7 @@ class EaazePbwImportService(BaseImportService, ABC):
                 'Authorization': f'Token {self.config.get("token")}',
                 # OCPI requires a unique request identifier per request; eaaze_pbw enforces it.
                 'X-Request-ID': str(uuid4()),
+                'X-Correlation-ID': str(uuid4()),
             },
             params={'limit': 1000},
         )
