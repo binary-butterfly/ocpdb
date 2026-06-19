@@ -17,6 +17,8 @@ SOURCES:
     auto_fetch: false  # rather large dataset
   chargecloud_ludwigsburg:
     api_key: test-api-key
+  eaaze_pbw:
+    token: test-token
   chargecloud_pforzheim:
   chargecloud_stuttgart:
   heilbronn_neckarbogen:
