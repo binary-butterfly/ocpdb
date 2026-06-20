@@ -4,8 +4,8 @@ Flask-Failsafe~=0.2.0
 Flask-SQLAlchemy~=3.1.1
 Flask-Celery-Helper~=1.1.0
 Flask-Migrate~=4.1.0
-Flask-CORS~=6.0.2
-SQLAlchemy~=2.0.50
+Flask-CORS~=6.0.5
+SQLAlchemy~=2.0.51
 requests~=2.34.2
 alembic~=1.18.4
 alembic~=1.18.1
@@ -16,19 +16,19 @@ python-dotenv~=1.2.2
 click~=8.4.1
 pymysql~=1.2.0
 pyyaml~=6.0.3
-validataclass~=0.11.0
+validataclass~=0.13.0
 SQLAlchemy-Utc~=0.14.0
 openpyxl~=3.1.5
 pycountry~=26.2.16
 ngram~=4.0.3
 geopy~=2.4.1
 celery~=5.6.3
-kombu~=5.6.1
+kombu~=5.6.2
 mapbox-vector-tile~=2.2.0
 urllib3~=2.7.0
 
 # binary butterfly shared libraries (https://git.binary-butterfly.de/public_libraries)
 --extra-index-url https://git.binary-butterfly.de/api/v4/groups/262/-/packages/pypi/simple
-flask-openapi~=2.3.0
-validataclass-search-queries~=0.5.1
-butterfly_pubsub~=2.1.1
+flask-openapi~=2.3.3
+validataclass-search-queries~=0.6.1
+butterfly_pubsub~=3.0.0
