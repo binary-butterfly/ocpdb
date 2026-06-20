@@ -106,6 +106,18 @@ class LocationApiSearchQuery(LocationSearchQuery, SortingMixin, OffsetPagination
     # Pagination
     limit: int = PaginationLimitValidator(optional=False, max_value=1000000), Default(100)
 
+    @staticmethod
+    def __pre_validate__(input_data: dict) -> dict:
+        if (
+            input_data.get('lat_min') is not None
+            and input_data.get('lat_max') is not None
+            and input_data.get('lon_min') is not None
+            and input_data.get('lon_max') is not None
+            and input_data.get('limit') is None
+        ):
+            input_data['limit'] = 1000
+        return input_data
+
     def __post_init__(self):
         if (self.lat is not None or self.lon is not None or self.radius is not None) and not (
             self.lat and self.lon and self.radius
