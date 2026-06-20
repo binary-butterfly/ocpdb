@@ -20,7 +20,7 @@ jobs:
 
     steps:
     - name: checkout
-      uses: actions/checkout@v6
+      uses: actions/checkout@v7
 
     - name: install uv
       uses: astral-sh/setup-uv@v6
@@ -47,7 +47,7 @@ jobs:
 
     steps:
     - name: checkout
-      uses: actions/checkout@v6
+      uses: actions/checkout@v7
 
     - name: install uv
       uses: astral-sh/setup-uv@v6
@@ -85,7 +85,7 @@ jobs:
 
     steps:
     - name: checkout
-      uses: actions/checkout@v6
+      uses: actions/checkout@v7
 
     - name: install uv
       uses: astral-sh/setup-uv@v6
