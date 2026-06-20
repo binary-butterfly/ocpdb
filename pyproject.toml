@@ -1,5 +1,71 @@
 [project]
+name = "ocpdb"
+version = "2.13.0"
+description = "Open ChargePoint DataBase - aggregates EV charging station data from multiple sources."
 requires-python = ">= 3.12"
+dependencies = [
+    "gunicorn~=26.0.0",
+    "Flask~=3.1.3",
+    "Flask-Failsafe~=0.2.0",
+    "Flask-SQLAlchemy~=3.1.1",
+    "Flask-Celery-Helper~=1.1.0",
+    "Flask-Migrate~=4.1.0",
+    "Flask-CORS~=6.0.5",
+    "SQLAlchemy~=2.0.51",
+    "requests~=2.34.2",
+    "alembic~=1.18.4",
+    "lxml~=6.1.1",
+    "mercantile~=1.2.1",
+    "psycopg2-binary~=2.9.12",
+    "python-dotenv~=1.2.2",
+    "click~=8.4.1",
+    "pymysql~=1.2.0",
+    "pyyaml~=6.0.3",
+    "validataclass~=0.13.0",
+    "SQLAlchemy-Utc~=0.14.0",
+    "openpyxl~=3.1.5",
+    "pycountry~=26.2.16",
+    "ngram~=4.0.3",
+    "geopy~=2.4.1",
+    "celery~=5.6.3",
+    "kombu~=5.6.2",
+    "mapbox-vector-tile~=2.2.0",
+    "urllib3~=2.7.0",
+    # binary butterfly shared libraries (https://git.binary-butterfly.de/public_libraries)
+    # flask-openapi and butterfly_pubsub are served from the private index (see [tool.uv.sources]);
+    # validataclass-search-queries is published on PyPI.
+    "flask-openapi~=2.3.3",
+    "validataclass-search-queries~=0.6.1",
+    "butterfly_pubsub~=3.0.0",
+]
+
+# Development and test dependencies (PEP 735 dependency group, installed by `uv sync`).
+[dependency-groups]
+dev = [
+    "pytest~=9.1.1",
+    "pytest-cov~=7.1.0",
+    "requests-mock~=1.12.1",
+    "ruff~=0.15.18",
+    "openapi-core~=0.23.1",
+]
+
+[tool.uv]
+# This is a deployable application, not a distributable package, so uv should not
+# try to build/install the project itself - only its dependencies.
+package = false
+
+# flask-openapi and butterfly_pubsub are only published on binary butterfly's private package
+# index. The index is marked `explicit`, so it is consulted only for the packages that opt in via
+# [tool.uv.sources] below; everything else (including validataclass-search-queries) resolves from
+# PyPI. This avoids dependency-confusion between the two indexes.
+[[tool.uv.index]]
+name = "binary-butterfly"
+url = "https://git.binary-butterfly.de/api/v4/groups/262/-/packages/pypi/simple"
+explicit = true
+
+[tool.uv.sources]
+flask-openapi = { index = "binary-butterfly" }
+butterfly_pubsub = { index = "binary-butterfly" }
 
 [tool.pytest.ini_options]
 minversion = 6.0

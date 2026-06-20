@@ -161,6 +161,41 @@ to re-assign regional codes to all locations.
 The installation process is documented at [INSTALL.md](https://github.com/binary-butterfly/ocpdb/blob/main/INSTALL.md).
 
 
+## Dependency management
+
+This project uses [uv](https://docs.astral.sh/uv/) for dependency management. All runtime and
+development dependencies are declared in `pyproject.toml`, and exact versions are pinned in
+`uv.lock`. There are no `requirements.txt` files anymore.
+
+- **Runtime dependencies** live in `[project.dependencies]`.
+- **Development / test dependencies** live in the `dev` group under `[dependency-groups]`.
+- The shared `flask-openapi` and `butterfly_pubsub` libraries are served from binary butterfly's
+  private package index, which is configured under `[tool.uv.sources]` / `[[tool.uv.index]]`.
+
+Common commands (all run inside the Docker containers in development, see the `Makefile`):
+
+```bash
+# Install all dependencies (incl. dev) into a virtual environment, respecting the lockfile
+uv sync
+
+# Install only runtime dependencies (used for the production image)
+uv sync --no-dev
+
+# Add / remove a dependency (updates pyproject.toml and uv.lock)
+uv add some-package
+uv remove some-package
+
+# Upgrade the lockfile to the latest allowed versions
+uv lock --upgrade
+
+# Run a command inside the environment
+uv run flask import all
+```
+
+After changing dependencies, rebuild the dev image with `make docker-build` so the containers pick
+up the new packages.
+
+
 ## Logging
 
 The application uses the logging module with some optional extensions. Logging can be configured using the `config.yml`.

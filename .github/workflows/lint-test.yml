@@ -7,6 +7,11 @@ on:
   # make workflow "callable" by others
   workflow_call:
 
+env:
+  # Use the Python interpreter provided by the container image instead of letting uv download a
+  # managed one.
+  UV_PYTHON_PREFERENCE: only-system
+
 jobs:
   lint:
     runs-on: ubuntu-latest
@@ -17,14 +22,20 @@ jobs:
     - name: checkout
       uses: actions/checkout@v6
 
-    - name: pip install
-      run: pip install -r requirements.txt -r requirements-dev.txt
+    - name: install uv
+      uses: astral-sh/setup-uv@v6
+      with:
+        version: "0.11.18"
+        enable-cache: true
+
+    - name: install dependencies
+      run: uv sync --frozen
 
     - name: lint check using ruff
-      run: ruff check --output-format github ./webapp ./tests ./migrations
+      run: uv run ruff check --output-format github ./webapp ./tests ./migrations
 
     - name: format check using ruff
-      run: ruff format --check ./webapp ./tests ./migrations
+      run: uv run ruff format --check ./webapp ./tests ./migrations
 
   test-unit:
     runs-on: ubuntu-latest
@@ -38,11 +49,17 @@ jobs:
     - name: checkout
       uses: actions/checkout@v6
 
-    - name: pip install
-      run: pip install -r requirements.txt -r requirements-dev.txt
+    - name: install uv
+      uses: astral-sh/setup-uv@v6
+      with:
+        version: "0.11.18"
+        enable-cache: true
+
+    - name: install dependencies
+      run: uv sync --frozen
 
     - name: run pytest
-      run: python -m pytest tests/unit
+      run: uv run python -m pytest tests/unit
 
   test-integration:
     runs-on: ubuntu-latest
@@ -70,8 +87,14 @@ jobs:
     - name: checkout
       uses: actions/checkout@v6
 
-    - name: pip install
-      run: pip install -r requirements.txt -r requirements-dev.txt
+    - name: install uv
+      uses: astral-sh/setup-uv@v6
+      with:
+        version: "0.11.18"
+        enable-cache: true
+
+    - name: install dependencies
+      run: uv sync --frozen
 
     - name: run pytest
-      run: python -m pytest tests/integration
+      run: uv run python -m pytest tests/integration

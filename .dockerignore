@@ -4,5 +4,9 @@
 !webapp
 !migrations
 !.flaskenv
-!requirements.txt
-!requirements-dev.txt
+!pyproject.toml
+!uv.lock
+
+# Only ship the data directory structure (the .gitignore placeholders), not the large local
+# runtime data (debug dumps, downloaded geopackage, imported images), which is mounted at runtime.
+!data/**/.gitignore
