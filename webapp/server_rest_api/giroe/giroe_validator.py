@@ -32,4 +32,4 @@ class ConnectorPatchInput:
         local_timezone=timezone.utc,
         target_timezone=timezone.utc,
     )
-    status: OptionalUnset[EvseStatus] = EnumValidator(EvseStatus), DefaultUnset()
+    status: OptionalUnset[EvseStatus] = EnumValidator(EvseStatus), DefaultUnset
