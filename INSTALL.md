@@ -64,12 +64,19 @@ You will need database and rabbitmq, which you can configure via docker-compose,
 
 ### Deploy via virtual environment
 
-1) Use `virtualenv venv` to create a virtual environment
-2) Use `./venv/bin/pip install -r requirements.txt` to install required packages
-3) Move `/config_dist_dev.yaml` zu `/config.yaml` and fill in all necessary data
-4) Use `./venv/bin/flask db upgrade` to upgrade your database
-5) Use `./venv/bin/gunicorn "webapp.entry_point_gunicorn:app"` to start the application
-6) Use `./venv/bin/flask import all` to start downloads
+We use [uv](https://docs.astral.sh/uv/) for dependency management. All dependencies are defined in
+`pyproject.toml` and pinned in `uv.lock`.
+
+1) [Install uv](https://docs.astral.sh/uv/getting-started/installation/)
+2) Use `uv sync --no-dev` to create a virtual environment (in `.venv`) and install the production
+   dependencies from the lockfile
+3) Move `/config_dist_dev.yaml` to `/config.yaml` and fill in all necessary data
+4) Use `uv run flask db upgrade` to upgrade your database
+5) Use `uv run gunicorn "webapp.entry_point_gunicorn:app"` to start the application
+6) Use `uv run flask import all` to start downloads
+
+Omit the `--no-dev` flag (i.e. just `uv sync`) to additionally install the development and test
+dependencies.
 
 
 ### Development setup (via Docker)
