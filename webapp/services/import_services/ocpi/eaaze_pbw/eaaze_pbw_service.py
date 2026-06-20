@@ -19,6 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import logging
 from abc import ABC
 from datetime import datetime, timezone
+from uuid import uuid4
 
 from validataclass.exceptions import ValidationError
 from validataclass.validators import DataclassValidator
@@ -46,7 +47,7 @@ class EaazePbwImportService(BaseImportService, ABC):
         uid='eaaze_pbw',
         name='PBW',
         public_url='https://www.pbw.de/?menu=unternehmen-parkenundladen',
-        source_url='https://ocpi.eaaze.cloud/ocpi/cpo/2.2.1/locations',
+        source_url='https://ocpi.eaaze.cloud/cpo/2.2.1/locations',
         has_realtime_data=True,
     )
 
@@ -122,7 +123,12 @@ class EaazePbwImportService(BaseImportService, ABC):
     def _download(self, url: str | None = None) -> OcpiInput:
         input_dict = self.json_request(
             url=url,
-            headers={'Authorization': f'Token {self.config.get("token")}'},
+            headers={
+                'Authorization': f'Token {self.config.get("token")}',
+                # OCPI requires a unique request identifier per request; eaaze_pbw enforces it.
+                'X-Request-ID': str(uuid4()),
+                'X-Correlation-ID': str(uuid4()),
+            },
             params={'limit': 1000},
         )
         return self.ocpi_validator.validate(input_dict)
