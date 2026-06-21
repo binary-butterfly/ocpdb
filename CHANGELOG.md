@@ -1,5 +1,28 @@
 # Changelog
 
+# 2.14.0
+
+Released 2026-06-21
+
+## Features
+
+* [taubert consulting](https://github.com/binary-butterfly/ocpdb/pull/218)
+* [eaaze adaption](https://github.com/binary-butterfly/ocpdb/pull/221)
+* [bounding box limit](https://github.com/binary-butterfly/ocpdb/pull/219)
+
+
+## Fixes
+
+* [finalize mobilithek push](https://github.com/binary-butterfly/ocpdb/pull/226)
+* [more mobilithek improvements](https://github.com/binary-butterfly/ocpdb/pull/227)
+
+
+## Maintenance
+
+* [Move to uv](https://github.com/binary-butterfly/ocpdb/pull/222)
+* [smaller improvements and updates](https://github.com/binary-butterfly/ocpdb/pull/223)
+
+
 # 2.13.0
 
 Released 2026-06-01
