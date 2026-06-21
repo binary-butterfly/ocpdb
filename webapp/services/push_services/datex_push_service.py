@@ -103,11 +103,19 @@ class ChargeLocationService(BaseService):
             evse_status_last_updated_since=updated_since,
         )
 
-        locations = self.location_repository.fetch_locations(
-            search_query=search_query,
-            include_charging_stations=True,
-            include_evses=True,
+        locations = list(
+            self.location_repository.fetch_locations(
+                search_query=search_query,
+                include_charging_stations=True,
+                include_evses=True,
+            )
         )
+
+        # A diff (delta push) with no changed locations is empty: skip sending, but still advance the watermark so the
+        # next diff only covers the time after this run.
+        if updated_since is not None and not locations:
+            self.redis_helper.set('last_datex_realtime_push', datex_realtime_push.isoformat())
+            return
 
         version = self.config_helper.get('MOBILITHEK_VERSION', '3.5')
         if version == '3.7':

@@ -107,6 +107,65 @@ flask source delete example_source
 flask match run
 ```
 
+### DATEX II push to Mobilithek
+
+```bash
+flask push datex-static          # Full static DATEX II snapshot
+flask push datex-realtime-full   # Full realtime status snapshot
+flask push datex-realtime-diff   # Incremental realtime status diff
+```
+
+See [DATEX II push to Mobilithek](#datex-ii-push-to-mobilithek-1) for details.
+
+
+## DATEX II push to Mobilithek
+
+In addition to *importing* DATEX II data via Mobilithek (see the `datex2_*` data sources above), OCPDB can also
+*publish* its aggregated dataset back to the [Mobilithek](https://mobilithek.info) in DATEX II format. Three kinds of
+push are supported:
+
+- **Static snapshot** – the full set of locations, charging stations, EVSEs, connectors, tariffs and operators.
+- **Realtime full snapshot** – the current EVSE status of all locations (a `SNAPSHOT_PUSH`).
+- **Realtime diff** – an incremental `DELTA_PUSH` containing only EVSEs whose status changed since the last push.
+  The last successful push timestamp is stored in Redis (`last_datex_realtime_push`); if nothing changed, no message
+  is sent but the watermark is still advanced.
+
+Both DATEX II `3.5` and `3.7` are supported, selected via `MOBILITHEK_VERSION`.
+
+### Manual push
+
+The pushes can be triggered manually through the CLI:
+
+```bash
+flask push datex-static          # Full static DATEX II snapshot
+flask push datex-realtime-full   # Full realtime status snapshot (SNAPSHOT_PUSH)
+flask push datex-realtime-diff   # Incremental realtime status diff (DELTA_PUSH, skipped when empty)
+```
+
+### Scheduled push
+
+When `MOBILITHEK_ENABLED` is `true`, the pushes are scheduled automatically as Celery periodic tasks. The schedule is
+configurable in `config.yaml`:
+
+```yaml
+MOBILITHEK_ENABLED: true
+MOBILITHEK_VERSION: '3.5'              # DATEX II version, '3.5' or '3.7'
+MOBILITHEK_NAME: binary butterfly GmbH # supplier name sent in the exchange context
+MOBILITHEK_STATIC_PUBLICATION_ID: 980054862909370368
+MOBILITHEK_REALTIME_PUBLICATION_ID: 980084361378099200
+MOBILITHEK_CERTIFICATE_FILENAME: 'mobilithek-binary-butterfly.crt.pem'  # client certificate in KEY_DIR
+MOBILITHEK_KEY_FILENAME: 'mobilithek-binary-butterfly.key.pem'         # client key in KEY_DIR
+
+# Push schedule (only active when MOBILITHEK_ENABLED is true):
+DATEX_STATIC_PUSH_HOUR: 3              # static snapshot once a day at this hour ...
+DATEX_STATIC_PUSH_MINUTE: 0           # ... and minute
+DATEX_REALTIME_FULL_PUSH_FREQUENCY: 21600  # full realtime snapshot, in seconds (default every 6 hours)
+DATEX_REALTIME_DIFF_PUSH_FREQUENCY: 60     # incremental realtime diff, in seconds (default every minute)
+```
+
+Messages are sent via mutual-TLS `POST` to the Mobilithek publication endpoint, using the client certificate and key
+located in `KEY_DIR`.
+
 
 ## Official Regional Code support
 
