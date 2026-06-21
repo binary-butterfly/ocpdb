@@ -16,12 +16,12 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from datetime import datetime
-
 import click
 from flask.cli import AppGroup
 
+from webapp.common.error_handling import catch_exception
 from webapp.dependencies import dependencies
+from webapp.services.push_services.datex_push_service import ChargeLocationService
 
 location_cli = AppGroup('location')
 
@@ -33,21 +33,28 @@ def assign_regionalschluessel(source_id: str | None, re_assign: bool):
     dependencies.get_location_service().assign_official_region_codes(source_id=source_id, re_assign=re_assign)
 
 
-@location_cli.command('push-datex-static', help='pushes datex2 static data')
-def push_datex_static() -> None:
-    charge_location_service = dependencies.get_charge_location_service()
+@location_cli.command('push-mobilithek-static', help='Push the full static DATEX II snapshot to Mobilithek.')
+@catch_exception
+def push_mobilithek_static() -> None:
+    charge_location_service: ChargeLocationService = dependencies.get_charge_location_service()
     charge_location_service.push_datex_static()
 
 
-@location_cli.command('push-datex-realtime', help='pushes datex2 realtime data')
-@click.option('-s', '--since', 'updated_since', type=click.DateTime())
-@click.option('--incremental-update', 'incremental_update', default=False, is_flag=True)
-def push_datex_realtime(updated_since: datetime | None = None, incremental_update: bool | None = None) -> None:
-    if incremental_update is not None and updated_since is not None:
-        raise click.BadParameter('Cannot specify incremental update and updated since')
+@location_cli.command(
+    'push-mobilithek-realtime-full',
+    help='Push the full realtime DATEX II status snapshot to Mobilithek.',
+)
+@catch_exception
+def push_mobilithek_realtime_full() -> None:
+    charge_location_service: ChargeLocationService = dependencies.get_charge_location_service()
+    charge_location_service.push_datex_realtime(incremental_update=False)
 
-    charge_location_service = dependencies.get_charge_location_service()
-    charge_location_service.push_datex_realtime(
-        updated_since=updated_since,
-        incremental_update=incremental_update or False,
-    )
+
+@location_cli.command(
+    'push-mobilithek-realtime-diff',
+    help='Push an incremental realtime DATEX II status diff to Mobilithek (nothing is sent if the diff is empty).',
+)
+@catch_exception
+def push_mobilithek_realtime_diff() -> None:
+    charge_location_service: ChargeLocationService = dependencies.get_charge_location_service()
+    charge_location_service.push_datex_realtime(incremental_update=True)

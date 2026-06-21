@@ -110,9 +110,9 @@ flask match run
 ### DATEX II push to Mobilithek
 
 ```bash
-flask push datex-static          # Full static DATEX II snapshot
-flask push datex-realtime-full   # Full realtime status snapshot
-flask push datex-realtime-diff   # Incremental realtime status diff
+flask location push-mobilithek-static          # Full static DATEX II snapshot
+flask location push-mobilithek-realtime-full   # Full realtime status snapshot
+flask location push-mobilithek-realtime-diff   # Incremental realtime status diff
 ```
 
 See [DATEX II push to Mobilithek](#datex-ii-push-to-mobilithek-1) for details.
@@ -137,9 +137,9 @@ Both DATEX II `3.5` and `3.7` are supported, selected via `MOBILITHEK_VERSION`.
 The pushes can be triggered manually through the CLI:
 
 ```bash
-flask push datex-static          # Full static DATEX II snapshot
-flask push datex-realtime-full   # Full realtime status snapshot (SNAPSHOT_PUSH)
-flask push datex-realtime-diff   # Incremental realtime status diff (DELTA_PUSH, skipped when empty)
+flask location push-mobilithek-static          # Full static DATEX II snapshot
+flask location push-mobilithek-realtime-full   # Full realtime status snapshot (SNAPSHOT_PUSH)
+flask location push-mobilithek-realtime-diff   # Incremental realtime status diff (DELTA_PUSH, skipped when empty)
 ```
 
 ### Scheduled push
@@ -157,10 +157,10 @@ MOBILITHEK_CERTIFICATE_FILENAME: 'mobilithek-binary-butterfly.crt.pem'  # client
 MOBILITHEK_KEY_FILENAME: 'mobilithek-binary-butterfly.key.pem'         # client key in KEY_DIR
 
 # Push schedule (only active when MOBILITHEK_ENABLED is true):
-DATEX_STATIC_PUSH_HOUR: 3              # static snapshot once a day at this hour ...
-DATEX_STATIC_PUSH_MINUTE: 0           # ... and minute
-DATEX_REALTIME_FULL_PUSH_FREQUENCY: 21600  # full realtime snapshot, in seconds (default every 6 hours)
-DATEX_REALTIME_DIFF_PUSH_FREQUENCY: 60     # incremental realtime diff, in seconds (default every minute)
+MOBILITHEK_STATIC_PUSH_HOUR: 3              # static snapshot once a day at this hour ...
+MOBILITHEK_STATIC_PUSH_MINUTE: 0           # ... and minute
+MOBILITHEK_REALTIME_FULL_PUSH_FREQUENCY: 21600  # full realtime snapshot, in seconds (default every 6 hours)
+MOBILITHEK_REALTIME_DIFF_PUSH_FREQUENCY: 60     # incremental realtime diff, in seconds (default every minute)
 ```
 
 Messages are sent via mutual-TLS `POST` to the Mobilithek publication endpoint, using the client certificate and key
