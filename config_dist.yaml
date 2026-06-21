@@ -23,12 +23,12 @@ MOBILITHEK_KEY_FILENAME: 'mobilithek-binary-butterfly.key.pem'
 
 # DATEX II push schedule (only active when MOBILITHEK_ENABLED is true).
 # Static data is pushed once a day at the configured time of day:
-DATEX_STATIC_PUSH_HOUR: 3
-DATEX_STATIC_PUSH_MINUTE: 0
+MOBILITHEK_STATIC_PUSH_HOUR: 3
+MOBILITHEK_STATIC_PUSH_MINUTE: 0
 # Full realtime status snapshot, in seconds (default every 6 hours):
-DATEX_REALTIME_FULL_PUSH_FREQUENCY: 21600
+MOBILITHEK_REALTIME_FULL_PUSH_FREQUENCY: 21600
 # Incremental realtime status diff, in seconds (default every minute):
-DATEX_REALTIME_DIFF_PUSH_FREQUENCY: 60
+MOBILITHEK_REALTIME_DIFF_PUSH_FREQUENCY: 60
 
 SERVER_AUTH_USERS:
   # Test user for local development

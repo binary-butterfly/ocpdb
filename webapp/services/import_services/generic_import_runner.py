@@ -85,21 +85,21 @@ class GenericBeatRunner(BaseService):
         # Static data: push the full snapshot once a day.
         celery.add_periodic_task(
             crontab(
-                minute=str(self.config_helper.get('DATEX_STATIC_PUSH_MINUTE', 0)),
-                hour=str(self.config_helper.get('DATEX_STATIC_PUSH_HOUR', 3)),
+                minute=str(self.config_helper.get('MOBILITHEK_STATIC_PUSH_MINUTE', 0)),
+                hour=str(self.config_helper.get('MOBILITHEK_STATIC_PUSH_HOUR', 3)),
             ),
             push_datex_static_task,
         )
 
         # Realtime data: push the full status snapshot every 6 hours ...
         celery.add_periodic_task(
-            self.config_helper.get('DATEX_REALTIME_FULL_PUSH_FREQUENCY', 6 * 60 * 60),
+            self.config_helper.get('MOBILITHEK_REALTIME_FULL_PUSH_FREQUENCY', 6 * 60 * 60),
             push_datex_realtime_full_task,
         )
 
         # ... and an incremental diff every minute (skipped when nothing changed).
         celery.add_periodic_task(
-            self.config_helper.get('DATEX_REALTIME_DIFF_PUSH_FREQUENCY', 60),
+            self.config_helper.get('MOBILITHEK_REALTIME_DIFF_PUSH_FREQUENCY', 60),
             push_datex_realtime_diff_task,
         )
 
