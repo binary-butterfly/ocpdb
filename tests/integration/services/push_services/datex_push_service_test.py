@@ -231,7 +231,15 @@ class DatexPushServiceRealtimeTest:
 
     @staticmethod
     def test_push_realtime_with_updated_since(db: SQLAlchemy, requests_mock: Mocker) -> None:
-        db.session.add(get_full_location_1())
+        db.session.add(
+            get_location_1(
+                evses=[
+                    get_full_evse_1(status_last_updated=datetime.now(timezone.utc)),
+                    get_full_evse_2(status_last_updated=datetime.now(timezone.utc)),
+                ],
+                operator=get_business_1(),
+            ),
+        )
         db.session.commit()
 
         service = _build_service(
@@ -268,7 +276,15 @@ class DatexPushServiceRealtimeTest:
 
     @staticmethod
     def test_push_realtime_incremental_update_with_previous(db: SQLAlchemy, requests_mock: Mocker) -> None:
-        db.session.add(get_full_location_1())
+        db.session.add(
+            get_location_1(
+                evses=[
+                    get_full_evse_1(status_last_updated=datetime.now(timezone.utc)),
+                    get_full_evse_2(status_last_updated=datetime.now(timezone.utc)),
+                ],
+                operator=get_business_1(),
+            ),
+        )
         db.session.commit()
 
         service = _build_service(
