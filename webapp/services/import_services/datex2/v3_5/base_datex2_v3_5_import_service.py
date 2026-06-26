@@ -35,7 +35,7 @@ from webapp.models import SourceStatus
 from webapp.services.import_services.base_import_service import BaseImportService
 from webapp.services.import_services.exceptions import ImportException
 from webapp.services.import_services.models import EvseRealtimeUpdate, LocationUpdate
-from webapp.shared.datex2.models import MessageContainerWrapperInput
+from webapp.shared.datex2.models import MessageContainerWrapperInput, ProtocolTypeEnum
 from webapp.shared.datex2.v3_5_json_realtime.models.energy_infrastructure_station_status_input import (
     EnergyInfrastructureStationStatusInput,
 )
@@ -169,7 +169,8 @@ class BaseDatex2V35ImportService(BaseImportService, ABC):
                 return
 
             try:
-                message_container = self.add_realtime_data(data, result)
+                message_container = self.validate_realtime_data(data)
+                self.add_realtime_data(message_container, result)
             except ImportException as e:
                 logger.error(
                     e.message,
@@ -218,16 +219,14 @@ class BaseDatex2V35ImportService(BaseImportService, ABC):
 
     def import_realtime_data(self, data: dict) -> None:
         """
-        Apply a parsed DATEX II v3.5 realtime payload to this source: parse the
-        ``messageContainer`` envelope, upsert EVSE statuses, and update the source's
+        Apply a parsed DATEX II v3.5 realtime payload to this source: validate the
+        ``messageContainer`` envelope, then upsert EVSE statuses and update the source's
         ``realtime_data_updated_at`` / ``realtime_status`` accordingly.
         """
         source = self.get_source()
-        last_modified = datetime.now(tz=timezone.utc)
-        result = RealtimeResult()
 
         try:
-            message_container = self.add_realtime_data(data, result)
+            message_container = self.validate_realtime_data(data)
         except ImportException as e:
             logger.error(
                 e.message,
@@ -235,6 +234,22 @@ class BaseDatex2V35ImportService(BaseImportService, ABC):
             )
             self.update_source(source, realtime_status=SourceStatus.FAILED)
             return
+
+        self.store_realtime_data(message_container)
+
+    def store_realtime_data(self, message_container: MessageContainerWrapperInput) -> None:
+        """
+        Apply an already-validated DATEX II v3.5 realtime message container to this source: upsert
+        EVSE statuses and update the source's ``realtime_data_updated_at`` / ``realtime_status``.
+
+        Use this when the envelope has already been validated via :meth:`validate_realtime_data`
+        (e.g. a synchronous ``deltaPush`` from the REST API); otherwise use :meth:`import_realtime_data`.
+        """
+        source = self.get_source()
+        last_modified = datetime.now(tz=timezone.utc)
+        result = RealtimeResult()
+
+        self.add_realtime_data(message_container, result)
 
         self.save_evse_updates(list(result.evse_updates_by_evse.values()))
 
@@ -249,13 +264,22 @@ class BaseDatex2V35ImportService(BaseImportService, ABC):
             realtime_error_count=result.realtime_error_count,
             realtime_data_updated_at=last_modified,
         )
+        exchange_context = message_container.messageContainer.exchangeInformation.exchangeContext
+        protocol_type = exchange_context.codedExchangeProtocol.value
+        protocol_label = f'{protocol_type.value} ' if protocol_type else ''
         logger.info(
-            f'Imported DATEX2 realtime data for {self.source_info.uid} via async push with '
+            f'Imported DATEX2 realtime {protocol_label}data for {self.source_info.uid} via push with '
             f'{result.realtime_success_count} valid EVSEs and {result.realtime_error_count} failed EVSEs.',
             extra={'attributes': {'type': LogMessageType.IMPORT_LOCATION}},
         )
 
-    def add_realtime_data(self, data: dict, result: RealtimeResult) -> MessageContainerWrapperInput:
+    def validate_realtime_data(self, data: dict) -> MessageContainerWrapperInput:
+        """
+        Validate the raw DATEX II v3.5 realtime envelope and return the parsed message container.
+
+        Raises :class:`ImportException` if the payload cannot be parsed or is missing the
+        ``messageContainer`` payload / ``aegiEnergyInfrastructureStatusPublication``.
+        """
         try:
             datex_input: MessageContainerWrapperInput = self.message_container_validator.validate(data)
         except ValidationError as e:
@@ -281,6 +305,18 @@ class BaseDatex2V35ImportService(BaseImportService, ABC):
                 message=f'missing aegiEnergyInfrastructureStatusPublication in {self.source_info.uid} realtime data',
             )
 
+        return datex_input
+
+    @staticmethod
+    def is_delta_push(message_container: MessageContainerWrapperInput) -> bool:
+        """Return whether the realtime payload uses the DATEX II ``deltaPush`` exchange protocol."""
+        return (
+            message_container.messageContainer.exchangeInformation.exchangeContext.codedExchangeProtocol.value
+            is ProtocolTypeEnum.DELTA_PUSH
+        )
+
+    def add_realtime_data(self, message_container: MessageContainerWrapperInput, result: RealtimeResult) -> None:
+        payload = message_container.messageContainer.payload[0]
         for site_status in payload.aegiEnergyInfrastructureStatusPublication.energyInfrastructureSiteStatus:
             if site_status.energyInfrastructureStationStatus is UnsetValue:
                 continue
@@ -296,8 +332,6 @@ class BaseDatex2V35ImportService(BaseImportService, ABC):
                         continue
                     result.evse_updates_by_evse[evse_update.evse_id] = evse_update
                     result.realtime_success_count += 1
-
-        return datex_input
 
     def request_data(
         self,

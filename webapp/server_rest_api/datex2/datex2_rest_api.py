@@ -16,6 +16,7 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+import json
 from email.utils import format_datetime
 from http import HTTPStatus
 from pathlib import Path
@@ -41,6 +42,7 @@ from webapp.common.rest.exceptions import InputValidationException
 from webapp.common.server_auth import skip_basic_auth
 from webapp.dependencies import dependencies
 from webapp.server_rest_api.base_blueprint import ServerApiBaseBlueprint
+from webapp.services.import_services.exceptions import ImportException
 from webapp.services.import_services.import_celery import datex2_v3_5_realtime_import_by_file
 
 from .datex2_handler import Datex2Handler
@@ -101,10 +103,11 @@ class Datex2RealtimeMethodView(Datex2BaseMethodView):
         summary='Push DATEX II v3.5 realtime EVSE statuses',
         description=(
             'Accepts a Mobilithek-style DATEX II v3.5 JSON payload (`messageContainer.payload[0]` '
-            '`aegiEnergyInfrastructureStatusPublication`). The request body is persisted to '
-            '`DATEX2_IMPORT_DIR` and processed asynchronously by a Celery worker so very large '
-            'payloads do not block the request thread. The `key` query parameter must match the '
-            "source's configured `api_key`."
+            '`aegiEnergyInfrastructureStatusPublication`). The payload is validated synchronously; '
+            '`deltaPush` updates are small incremental changes and are applied directly, while any '
+            'other exchange protocol (e.g. snapshots) is persisted to `DATEX2_IMPORT_DIR` and '
+            'processed asynchronously by a Celery worker so very large payloads do not block the '
+            "request thread. The `key` query parameter must match the source's configured `api_key`."
         ),
         path=[Parameter('source_uid', schema=StringField())],
         query=[
@@ -122,8 +125,8 @@ class Datex2RealtimeMethodView(Datex2BaseMethodView):
     )
     def post(self, source_uid: str) -> tuple[Response, HTTPStatus]:
         # Validate the source + API key synchronously so unauthorized/unknown sources fail fast
-        # before we persist the payload to disk.
-        self.datex2_handler.validate_realtime_request(
+        # before we touch the payload.
+        service = self.datex2_handler.validate_realtime_request(
             source_uid=source_uid,
             key=self.request_helper.get_query_args().get('key'),
         )
@@ -131,6 +134,24 @@ class Datex2RealtimeMethodView(Datex2BaseMethodView):
         data = self.request_helper.get_request_body()
         if not data:
             raise InputValidationException(message='no realtime payload')
+
+        try:
+            parsed_data = json.loads(data)
+        except json.JSONDecodeError as e:
+            raise InputValidationException(message='invalid JSON realtime payload') from e
+
+        # Validate the envelope up-front via the import service so malformed pushes fail fast.
+        try:
+            message_container = service.validate_realtime_data(parsed_data)
+        except ImportException as e:
+            raise InputValidationException(message=e.message) from e
+
+        # deltaPush updates are small incremental changes - apply them directly. Everything else
+        # (snapshots etc.) can be large, so hand it off to a celery worker via the import file.
+        if service.is_delta_push(message_container):
+            service.store_realtime_data(message_container)
+            # Mobilithek expects HTTP 200 instead of HTTP 204
+            return empty_json_response(), HTTPStatus.OK
 
         base_path = Path(self.config_helper.get('DATEX2_IMPORT_DIR'))
         if not base_path.is_dir():

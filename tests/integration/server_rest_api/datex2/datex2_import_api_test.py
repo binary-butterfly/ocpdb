@@ -209,6 +209,65 @@ class Datex2RealtimeImportApiV35Test:
         assert evse_charging.status == EvseStatus.CHARGING
 
     @staticmethod
+    def test_push_realtime_v35_delta_push_applies_directly(
+        db: SQLAlchemy,
+        test_client: OpenApiFlaskClient,
+        requests_mock: Mocker,
+        isolated_datex2_dir: Path,
+        stubbed_celery_delay,
+    ) -> None:
+        """
+        deltaPush payloads are small incremental updates and must be applied synchronously on the
+        request thread, without persisting a file or queueing a celery task.
+        """
+        _import_static_data(requests_mock)
+
+        realtime_data = _load_test_data('datex2_enbw_realtime_reduced.json')
+        realtime_data['messageContainer']['exchangeInformation']['exchangeContext']['codedExchangeProtocol'] = {
+            'value': 'deltaPush',
+        }
+
+        response = test_client.post(
+            path=f'/api/server/v1/datex/v3.5/{SOURCE_UID}/realtime?key={API_KEY}',
+            json=realtime_data,
+        )
+        assert response.status_code == HTTPStatus.OK
+
+        # Stored directly: nothing persisted to disk and no celery task queued.
+        assert list(isolated_datex2_dir.iterdir()) == []
+        stubbed_celery_delay.assert_not_called()
+
+        # EVSE statuses are updated synchronously within the request.
+        db.session.expire_all()
+        evse_available = db.session.query(Evse).filter(Evse.uid == 'DE*EBW*E914082*2').first()
+        assert evse_available.status == EvseStatus.AVAILABLE
+        evse_charging = db.session.query(Evse).filter(Evse.uid == 'DE*EBW*E914082*1').first()
+        assert evse_charging.status == EvseStatus.CHARGING
+
+    @staticmethod
+    def test_push_realtime_v35_invalid_payload_returns_400(
+        db: SQLAlchemy,
+        test_client: OpenApiFlaskClient,
+        requests_mock: Mocker,
+        isolated_datex2_dir: Path,
+        stubbed_celery_delay,
+    ) -> None:
+        """
+        A structurally invalid payload must be rejected synchronously with HTTP 400 - before any
+        file is persisted or task queued - regardless of the (async) exchange protocol.
+        """
+        _import_static_data(requests_mock)
+
+        response = test_client.post(
+            path=f'/api/server/v1/datex/v3.5/{SOURCE_UID}/realtime?key={API_KEY}',
+            json={},
+        )
+
+        assert response.status_code == HTTPStatus.BAD_REQUEST
+        assert list(isolated_datex2_dir.iterdir()) == []
+        stubbed_celery_delay.assert_not_called()
+
+    @staticmethod
     def test_push_realtime_v35_empty_body_returns_400(
         db: SQLAlchemy,
         test_client: OpenApiFlaskClient,
