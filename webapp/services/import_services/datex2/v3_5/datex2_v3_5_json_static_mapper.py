@@ -354,6 +354,17 @@ class Datex2V35JSONStaticMapper:
 
         location.charging_pool.append(charge_station)
 
+        # Some sources (e.g. Taubert) provide the operator / owner only on station level. Use it as a
+        # fallback if the site did not provide one.
+        if location.operator is None:
+            operator = self._organization_to_business(energy_infrastructure_station.operator)
+            if operator:
+                location.operator = operator
+        if location.owner is None:
+            owner = self._organization_to_business(energy_infrastructure_station.owner)
+            if owner:
+                location.owner = owner
+
         for refill_point in energy_infrastructure_station.refillPoint:
             self._apply_refill_point(refill_point, charge_station, location, source)
 
