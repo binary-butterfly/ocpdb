@@ -109,7 +109,7 @@ def test_bnetza_excel_import(db: SQLAlchemy, requests_mock: Mocker) -> None:
         'presence': PresenceStatus.PRESENT,
         'physical_reference': None,
         'last_updated': ANY,
-        'status_last_updated': None,
+        'status_last_updated': ANY,
         'max_reservation': None,
         'parking_restrictions': [],
         'terms_and_conditions': None,
