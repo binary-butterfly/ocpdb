@@ -354,9 +354,13 @@ class BaseImportService(BaseService, RemoteMixin, ABC):
         evse.last_updated = evse_update.last_updated or datetime.now(tz=timezone.utc)
 
         for key, value in evse_update.to_dict().items():
-            if key == 'last_updated':
+            if key in ['last_updated', 'status', 'status_last_updated']:
                 continue
             setattr(evse, key, value)
+
+        if evse_update.status is not None and evse_update.status != evse.status:
+            evse.status_last_updated = evse_update.status_last_updated or datetime.now(tz=timezone.utc)
+            evse.status = evse_update.status
 
         old_connectors_by_uid = {connector.uid: connector for connector in evse.connectors}
         new_connectors: list[Connector] = []
