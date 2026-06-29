@@ -178,6 +178,55 @@ class Datex2RealtimeImportApiV35Test:
         assert list(isolated_datex2_dir.iterdir()) == []
 
     @staticmethod
+    def test_static_reimport_after_realtime_push_keeps_status(
+        db: SQLAlchemy,
+        test_client: OpenApiFlaskClient,
+        requests_mock: Mocker,
+        isolated_datex2_dir: Path,
+        eager_celery_helper,
+    ) -> None:
+        """
+        Regression test: a static import that happens *after* realtime updates must not reset
+        the EVSE status back to UNKNOWN.
+
+        Sequence:
+          1. Import static data (all EVSEs start as UNKNOWN).
+          2. Push realtime data via the push endpoint (statuses become AVAILABLE/CHARGING/...).
+          3. Import static data *again*.
+          4. The realtime statuses must still be there - not reset to UNKNOWN.
+        """
+        # 1. Static import - all EVSEs start as UNKNOWN.
+        _import_static_data(requests_mock)
+        assert db.session.query(Evse).filter(Evse.status == EvseStatus.UNKNOWN).count() == 57
+
+        # 2. Push realtime data; the eager celery fixture applies it inline.
+        realtime_data = _load_test_data('datex2_enbw_realtime_reduced.json')
+        response = test_client.post(
+            path=f'/api/server/v1/datex/v3.5/{SOURCE_UID}/realtime?key={API_KEY}',
+            json=realtime_data,
+        )
+        assert response.status_code == HTTPStatus.OK
+
+        db.session.expire_all()
+        assert db.session.query(Evse).filter(Evse.uid == 'DE*EBW*E914082*2').first().status == EvseStatus.AVAILABLE
+        assert db.session.query(Evse).filter(Evse.uid == 'DE*EBW*E914082*1').first().status == EvseStatus.CHARGING
+
+        # 3. Static import again - this is what used to wipe the realtime status.
+        _import_static_data(requests_mock)
+
+        # 4. The realtime statuses must survive the static re-import.
+        db.session.expire_all()
+        evse_available = db.session.query(Evse).filter(Evse.uid == 'DE*EBW*E914082*2').first()
+        assert evse_available.status == EvseStatus.AVAILABLE, 'static re-import reset an AVAILABLE EVSE to UNKNOWN'
+
+        evse_charging = db.session.query(Evse).filter(Evse.uid == 'DE*EBW*E914082*1').first()
+        assert evse_charging.status == EvseStatus.CHARGING, 'static re-import reset a CHARGING EVSE to UNKNOWN'
+
+        # EVSEs that never received a realtime update legitimately stay UNKNOWN.
+        evse_unchanged = db.session.query(Evse).filter(Evse.uid == 'DE*EBW*E916701*2').first()
+        assert evse_unchanged.status == EvseStatus.UNKNOWN
+
+    @staticmethod
     def test_push_realtime_v35_gzip_encoded(
         db: SQLAlchemy,
         test_client: OpenApiFlaskClient,

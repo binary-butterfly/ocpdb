@@ -239,7 +239,7 @@ class BaseImportService(BaseService, RemoteMixin, ABC):
         self.set_image_list(location, location_update.images, images_by_url)
 
         old_charging_stations_by_uid = {
-            charging_station.id: charging_station for charging_station in location.charging_pool
+            charging_station.uid: charging_station for charging_station in location.charging_pool
         }
         new_charging_stations: list[ChargingStation] = []
         for charging_station_update in location_update.charging_pool:
@@ -354,9 +354,14 @@ class BaseImportService(BaseService, RemoteMixin, ABC):
         evse.last_updated = evse_update.last_updated or datetime.now(tz=timezone.utc)
 
         for key, value in evse_update.to_dict().items():
-            if key in ['last_updated', 'status', 'status_last_updated']:
+            if key in ['last_updated', 'status', 'status_last_updated', 'presence']:
                 continue
             setattr(evse, key, value)
+
+        # presence is not-nullable; only overwrite it when the update actually carries a value,
+        # otherwise a static import (which never sets presence) would clear an existing presence.
+        if evse_update.presence is not None:
+            evse.presence = evse_update.presence
 
         if evse_update.status is not None and evse_update.status != evse.status:
             evse.status_last_updated = evse_update.status_last_updated or datetime.now(tz=timezone.utc)
