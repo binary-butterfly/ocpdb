@@ -1,5 +1,16 @@
 # Changelog
 
+# 2.14.1
+
+Released 2026-06-29
+
+## Fixes
+
+* [add station organization](https://github.com/binary-butterfly/ocpdb/pull/233)
+* [improved realtime update handling](https://github.com/binary-butterfly/ocpdb/pull/231)
+* [add swiss status EvseNotFound](https://github.com/binary-butterfly/ocpdb/pull/232)
+
+
 # 2.14.0
 
 Released 2026-06-21
