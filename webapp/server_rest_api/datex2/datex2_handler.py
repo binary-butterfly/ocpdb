@@ -38,13 +38,16 @@ class Datex2Handler(ServerApiBaseHandler):
         super().__init__(**kwargs)
         self.import_services = import_services
 
-    def validate_realtime_request(self, source_uid: str, key: str | None) -> None:
+    def validate_realtime_request(self, source_uid: str, key: str | None) -> BaseDatex2V35ImportService:
         """
         Synchronous pre-flight validation for an incoming realtime push: makes sure the source
         exists, is a DATEX II v3.5 source, and the supplied ``key`` query parameter matches the
         source's configured ``api_key``. Raises ``NotFoundException`` / ``UnauthorizedException``.
+
+        Returns the resolved import service so the caller can validate and apply the payload.
         """
-        self._authenticate(source_uid, key)
+        _, service = self._authenticate(source_uid, key)
+        return service
 
     def get_last_modified(self, source_uid: str, key: str | None) -> datetime | None:
         source, _ = self._authenticate(source_uid, key)
