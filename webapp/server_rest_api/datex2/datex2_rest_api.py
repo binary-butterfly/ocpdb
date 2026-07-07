@@ -104,8 +104,9 @@ class Datex2RealtimeMethodView(Datex2BaseMethodView):
         description=(
             'Accepts a Mobilithek-style DATEX II v3.5 JSON payload (`messageContainer.payload[0]` '
             '`aegiEnergyInfrastructureStatusPublication`). The payload is validated synchronously; '
-            '`deltaPush` updates are small incremental changes and are applied directly, while any '
-            'other exchange protocol (e.g. snapshots) is persisted to `DATEX2_IMPORT_DIR` and '
+            'small `deltaPush` updates are applied directly, while snapshots (any other exchange '
+            'protocol) and `deltaPush` payloads with more than `DATEX2_ASYNC_STATION_STATUS_THRESHOLD` '
+            '`energyInfrastructureStationStatus` entries are persisted to `DATEX2_IMPORT_DIR` and '
             'processed asynchronously by a Celery worker so very large payloads do not block the '
             "request thread. The `key` query parameter must match the source's configured `api_key`."
         ),
@@ -146,9 +147,11 @@ class Datex2RealtimeMethodView(Datex2BaseMethodView):
         except ImportException as e:
             raise InputValidationException(message=e.message) from e
 
-        # deltaPush updates are small incremental changes - apply them directly. Everything else
-        # (snapshots etc.) can be large, so hand it off to a celery worker via the import file.
-        if service.is_delta_push(message_container):
+        # Small deltaPush updates are small incremental changes - apply them directly. Everything
+        # else can be large, so hand it off to a celery worker via the import file: snapshots as well
+        # as deltaPush payloads with more than DATEX2_ASYNC_STATION_STATUS_THRESHOLD station statuses.
+        async_station_status_threshold = self.config_helper.get('DATEX2_ASYNC_STATION_STATUS_THRESHOLD', 25)
+        if not service.should_process_asynchronously(message_container, async_station_status_threshold):
             service.store_realtime_data(message_container)
             # Mobilithek expects HTTP 200 instead of HTTP 204
             return empty_json_response(), HTTPStatus.OK
