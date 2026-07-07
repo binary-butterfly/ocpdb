@@ -1,5 +1,15 @@
 # Changelog
 
+# 2.14.2
+
+Released 2026-07-07
+
+## Fixes
+
+* [EVSE: status_last_updated](https://github.com/binary-butterfly/ocpdb/pull/237)
+* [improve realtime push](https://github.com/binary-butterfly/ocpdb/pull/238)
+
+
 # 2.14.1
 
 Released 2026-06-29
