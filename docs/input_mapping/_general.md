@@ -57,3 +57,9 @@ As OCPI enforces a maximum of seven digits after the comma, the OCPDB caps all l
 and `EVSE` objects to seven digits after the comma. For further details about the OCPI regular expression for location
 data, please have a look at the
 [OCPI specification](https://github.com/ocpi/ocpi/blob/release-2.2.1-bugfixes/mod_locations.asciidoc#mod_locations_geolocation_class).
+
+
+## EVSE: last status update
+
+The extended OCPI output has a field `Evse.status_last_updated` which is used to update the status of an EVSE. It is
+updated as soon as a status change is detected.
