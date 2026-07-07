@@ -308,12 +308,43 @@ class BaseDatex2V35ImportService(BaseImportService, ABC):
         return datex_input
 
     @staticmethod
-    def is_delta_push(message_container: MessageContainerWrapperInput) -> bool:
-        """Return whether the realtime payload uses the DATEX II ``deltaPush`` exchange protocol."""
-        return (
+    def count_station_statuses(message_container: MessageContainerWrapperInput) -> int:
+        """Return the number of ``energyInfrastructureStationStatus`` entries carried by the payload."""
+        payload = message_container.messageContainer.payload[0]
+        publication = payload.aegiEnergyInfrastructureStatusPublication
+        if publication is UnsetValue or publication.energyInfrastructureSiteStatus is UnsetValue:
+            return 0
+
+        count = 0
+        for site_status in publication.energyInfrastructureSiteStatus:
+            if site_status.energyInfrastructureStationStatus is UnsetValue:
+                continue
+            count += len(site_status.energyInfrastructureStationStatus)
+        return count
+
+    @classmethod
+    def should_process_asynchronously(
+        cls,
+        message_container: MessageContainerWrapperInput,
+        station_status_threshold: int,
+    ) -> bool:
+        """
+        Decide whether the realtime payload should be handed off to a celery worker instead of being
+        applied inline on the request thread.
+
+        Only small ``deltaPush`` payloads are applied synchronously. Everything else is processed
+        asynchronously: snapshots (any non-``deltaPush`` exchange protocol) as well as ``deltaPush``
+        payloads carrying more than ``station_status_threshold`` ``energyInfrastructureStationStatus``
+        entries, so large payloads never block the request thread.
+        """
+        is_delta_push = (
             message_container.messageContainer.exchangeInformation.exchangeContext.codedExchangeProtocol.value
             is ProtocolTypeEnum.DELTA_PUSH
         )
+        if not is_delta_push:
+            return True
+
+        return cls.count_station_statuses(message_container) > station_status_threshold
 
     def add_realtime_data(self, message_container: MessageContainerWrapperInput, result: RealtimeResult) -> None:
         payload = message_container.messageContainer.payload[0]

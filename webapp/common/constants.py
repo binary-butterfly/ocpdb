@@ -38,6 +38,10 @@ class BaseConfig:
     BNETZA_IMPORT_DIR = os.path.abspath(os.path.join(PROJECT_ROOT, os.pardir, 'data', 'bnetza-import'))
     DATEX2_IMPORT_DIR = os.path.abspath(os.path.join(PROJECT_ROOT, os.pardir, 'data', 'datex2-import'))
 
+    # DATEX II realtime pushes with more than this many energyInfrastructureStationStatus entries are
+    # processed asynchronously via celery instead of inline on the request thread (snapshots are always async).
+    DATEX2_ASYNC_STATION_STATUS_THRESHOLD = 25
+
     PUBLIC_IMAGE_PATH = '/data/images'
 
     SQLALCHEMY_TRACK_MODIFICATIONS = False

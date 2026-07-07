@@ -294,6 +294,50 @@ class Datex2RealtimeImportApiV35Test:
         assert evse_charging.status == EvseStatus.CHARGING
 
     @staticmethod
+    def test_push_realtime_v35_large_delta_push_is_async(
+        db: SQLAlchemy,
+        test_client: OpenApiFlaskClient,
+        requests_mock: Mocker,
+        isolated_datex2_dir: Path,
+        stubbed_celery_delay,
+    ) -> None:
+        """
+        A deltaPush payload carrying more than DATEX2_ASYNC_STATION_STATUS_THRESHOLD station statuses
+        must be handed off to celery (persisted + queued) instead of applied inline, even though it
+        is a deltaPush.
+        """
+        _import_static_data(requests_mock)
+
+        realtime_data = _load_test_data('datex2_enbw_realtime_reduced.json')
+        realtime_data['messageContainer']['exchangeInformation']['exchangeContext']['codedExchangeProtocol'] = {
+            'value': 'deltaPush',
+        }
+
+        # The reduced payload has 5 station statuses - lower the threshold so it counts as "large".
+        config = dependencies.get_config_helper().get_config()
+        original = config.get('DATEX2_ASYNC_STATION_STATUS_THRESHOLD')
+        config['DATEX2_ASYNC_STATION_STATUS_THRESHOLD'] = 2
+        try:
+            response = test_client.post(
+                path=f'/api/server/v1/datex/v3.5/{SOURCE_UID}/realtime?key={API_KEY}',
+                json=realtime_data,
+            )
+        finally:
+            config['DATEX2_ASYNC_STATION_STATUS_THRESHOLD'] = original
+
+        assert response.status_code == HTTPStatus.OK
+
+        # Handed off to celery: payload persisted to disk and task queued.
+        written = list(isolated_datex2_dir.iterdir())
+        assert len(written) == 1
+        stubbed_celery_delay.assert_called_once()
+
+        # Because the celery task did not run, EVSE statuses stay untouched.
+        db.session.expire_all()
+        evse_charging = db.session.query(Evse).filter(Evse.uid == 'DE*EBW*E914082*1').first()
+        assert evse_charging.status == EvseStatus.UNKNOWN
+
+    @staticmethod
     def test_push_realtime_v35_invalid_payload_returns_400(
         db: SQLAlchemy,
         test_client: OpenApiFlaskClient,
