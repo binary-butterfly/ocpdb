@@ -1,5 +1,14 @@
 # Changelog
 
+# 2.14.3
+
+Released 2026-07-14
+
+## Fixes
+
+* [dump datex requests](https://github.com/binary-butterfly/ocpdb/pull/240)
+
+
 # 2.14.2
 
 Released 2026-07-07
