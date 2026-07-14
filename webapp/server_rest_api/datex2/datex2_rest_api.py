@@ -17,6 +17,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 import json
+from datetime import datetime, timezone
 from email.utils import format_datetime
 from http import HTTPStatus
 from pathlib import Path
@@ -133,6 +134,7 @@ class Datex2RealtimeMethodView(Datex2BaseMethodView):
         )
 
         data = self.request_helper.get_request_body()
+        self._dump_request(source_uid, data)
         if not data:
             raise InputValidationException(message='no realtime payload')
 
@@ -168,3 +170,33 @@ class Datex2RealtimeMethodView(Datex2BaseMethodView):
 
         # Mobilithek expects HTTP 200 instead of HTTP 204
         return empty_json_response(), HTTPStatus.OK
+
+    def _dump_request(self, source_uid: str, request_body: bytes) -> None:
+        source_config = self.config_helper.get('SOURCES', {}).get(source_uid) or {}
+        if source_config.get('debug', False) is False:
+            return
+
+        request = self.request_helper.request
+
+        debug_dump_dir = Path(self.config_helper.get('DEBUG_DUMP_DIR'), source_uid)
+        debug_dump_dir.mkdir(exist_ok=True, parents=True)
+
+        request_uid = str(uuid4())
+        now = datetime.now(timezone.utc).isoformat()
+        metadata_file_path = Path(debug_dump_dir, f'{now}-meta-{request_uid}')
+        request_body_file_path = Path(debug_dump_dir, f'{now}-request-{request_uid}')
+
+        metadata = [
+            f'URL: {request.url}',
+            f'Method: {request.method}',
+            '',
+            'Request Headers:',
+            *[f'{key}: {value}' for key, value in request.headers.items()],
+        ]
+
+        with metadata_file_path.open('w') as metadata_file:
+            metadata_file.writelines('\n'.join(metadata))
+
+        if request_body:
+            with request_body_file_path.open('wb') as request_file:
+                request_file.write(request_body)
