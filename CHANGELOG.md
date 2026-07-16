@@ -1,5 +1,14 @@
 # Changelog
 
+# 2.14.4
+
+Released 2026-07-16
+
+## Fixes
+
+* [improve async check](https://github.com/binary-butterfly/ocpdb/pull/243)
+
+
 # 2.14.3
 
 Released 2026-07-14

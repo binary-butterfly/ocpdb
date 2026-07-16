@@ -980,7 +980,7 @@ requires-dist = [
     { name = "sqlalchemy", specifier = "~=2.0.51" },
     { name = "sqlalchemy-utc", specifier = "~=0.14.0" },
     { name = "urllib3", specifier = "~=2.7.0" },
-    { name = "validataclass", specifier = "~=0.13.0" },
+    { name = "validataclass", specifier = "~=0.13.1" },
     { name = "validataclass-search-queries", specifier = "~=0.6.1" },
 ]
 
@@ -1784,14 +1784,14 @@ wheels = [
 
 [[package]]
 name = "validataclass"
-version = "0.13.0"
+version = "0.13.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "typing-extensions" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/fb/5d/fbfad3adfa6fcbf9d12bdff7ff18a41817bbb2f217eb310f43e9908af2af/validataclass-0.13.0.tar.gz", hash = "sha256:ebbdbf7c65e47aa744f7b456d2feb0292e36e8085639506b3670a5d3e485c143", size = 214260, upload-time = "2026-06-15T12:18:59.839Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/81/15/4e65cc75e170bf9ca784e4073d24a6023d66e65922b47b0836ea6f0707be/validataclass-0.13.1.tar.gz", hash = "sha256:6cdd9798f46bd02e443a167ef4283ef7205694fa7fb77fff42ea8d62b010c243", size = 215483, upload-time = "2026-07-16T09:33:14.947Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/fc/37/ea4a8bc88c381d0bbac4e55b5d4efec2fc66a51f233e5974014f1263e2f2/validataclass-0.13.0-py3-none-any.whl", hash = "sha256:d98543c7161023dd85d05af38e69ef45c72e4a6b85475fb6804bc09922370382", size = 116664, upload-time = "2026-06-15T12:18:58.612Z" },
+    { url = "https://files.pythonhosted.org/packages/2d/67/3dec5f52e496bbe9c41f64fd33f1d08abcdb2488ecec203487ea4017b542/validataclass-0.13.1-py3-none-any.whl", hash = "sha256:6ad22e7bed1f49b11d97b8774268e4f74f34370c2fce47e958e35a586643739c", size = 118374, upload-time = "2026-07-16T09:33:13.401Z" },
 ]
 
 [[package]]
