@@ -104,12 +104,14 @@ class Datex2RealtimeMethodView(Datex2BaseMethodView):
         summary='Push DATEX II v3.5 realtime EVSE statuses',
         description=(
             'Accepts a Mobilithek-style DATEX II v3.5 JSON payload (`messageContainer.payload[0]` '
-            '`aegiEnergyInfrastructureStatusPublication`). The payload is validated synchronously; '
-            'small `deltaPush` updates are applied directly, while snapshots (any other exchange '
-            'protocol) and `deltaPush` payloads with more than `DATEX2_ASYNC_STATION_STATUS_THRESHOLD` '
-            '`energyInfrastructureStationStatus` entries are persisted to `DATEX2_IMPORT_DIR` and '
-            'processed asynchronously by a Celery worker so very large payloads do not block the '
-            "request thread. The `key` query parameter must match the source's configured `api_key`."
+            '`aegiEnergyInfrastructureStatusPublication`). Payloads larger than '
+            '`DATEX2_SYNC_MAX_CONTENT_LENGTH` bytes are persisted to `DATEX2_IMPORT_DIR` and processed '
+            'asynchronously by a Celery worker without being parsed or validated on the request thread. '
+            'Smaller payloads are validated synchronously; small `deltaPush` updates are applied '
+            'directly, while snapshots (any other exchange protocol) and `deltaPush` payloads with more '
+            'than `DATEX2_ASYNC_STATION_STATUS_THRESHOLD` `energyInfrastructureStationStatus` entries are '
+            'persisted and processed asynchronously as well. The `key` query parameter must match the '
+            "source's configured `api_key`."
         ),
         path=[Parameter('source_uid', schema=StringField())],
         query=[
@@ -138,6 +140,15 @@ class Datex2RealtimeMethodView(Datex2BaseMethodView):
         if not data:
             raise InputValidationException(message='no realtime payload')
 
+        # Parsing and validating a large payload synchronously is expensive and would block the
+        # request thread, so anything above DATEX2_SYNC_MAX_CONTENT_LENGTH bytes is handed off to a
+        # celery worker unparsed and unvalidated - the worker parses, validates and applies it.
+        sync_max_content_length = self.config_helper.get('DATEX2_SYNC_MAX_CONTENT_LENGTH', 250 * 1024)
+        if len(data) > sync_max_content_length:
+            self._queue_for_async_processing(source_uid, data)
+            # Mobilithek expects HTTP 200 instead of HTTP 204
+            return empty_json_response(), HTTPStatus.OK
+
         try:
             parsed_data = json.loads(data)
         except json.JSONDecodeError as e:
@@ -158,6 +169,16 @@ class Datex2RealtimeMethodView(Datex2BaseMethodView):
             # Mobilithek expects HTTP 200 instead of HTTP 204
             return empty_json_response(), HTTPStatus.OK
 
+        self._queue_for_async_processing(source_uid, data)
+
+        # Mobilithek expects HTTP 200 instead of HTTP 204
+        return empty_json_response(), HTTPStatus.OK
+
+    def _queue_for_async_processing(self, source_uid: str, data: bytes) -> None:
+        """
+        Persist a raw realtime payload to ``DATEX2_IMPORT_DIR`` and hand it off to a celery worker
+        for asynchronous parsing, validation and application via ``datex2_v3_5_realtime_import_by_file``.
+        """
         base_path = Path(self.config_helper.get('DATEX2_IMPORT_DIR'))
         if not base_path.is_dir():
             base_path.mkdir(parents=True, exist_ok=True)
@@ -167,9 +188,6 @@ class Datex2RealtimeMethodView(Datex2BaseMethodView):
             data_file.write(data)
 
         self.celery_helper.delay(datex2_v3_5_realtime_import_by_file, source_uid, str(import_path))
-
-        # Mobilithek expects HTTP 200 instead of HTTP 204
-        return empty_json_response(), HTTPStatus.OK
 
     def _dump_request(self, source_uid: str, request_body: bytes) -> None:
         source_config = self.config_helper.get('SOURCES', {}).get(source_uid) or {}
