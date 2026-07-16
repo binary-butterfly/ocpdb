@@ -42,6 +42,10 @@ class BaseConfig:
     # processed asynchronously via celery instead of inline on the request thread (snapshots are always async).
     DATEX2_ASYNC_STATION_STATUS_THRESHOLD = 25
 
+    # DATEX II realtime pushes with a request body larger than this many bytes are handed off to celery
+    # without being parsed or validated on the request thread, so large payloads never block it.
+    DATEX2_SYNC_MAX_CONTENT_LENGTH = 250 * 1024
+
     PUBLIC_IMAGE_PATH = '/data/images'
 
     SQLALCHEMY_TRACK_MODIFICATIONS = False

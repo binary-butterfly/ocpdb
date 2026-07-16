@@ -338,6 +338,48 @@ class Datex2RealtimeImportApiV35Test:
         assert evse_charging.status == EvseStatus.UNKNOWN
 
     @staticmethod
+    def test_push_realtime_v35_oversized_payload_skips_validation_and_queues(
+        db: SQLAlchemy,
+        test_client: OpenApiFlaskClient,
+        requests_mock: Mocker,
+        isolated_datex2_dir: Path,
+        stubbed_celery_delay,
+    ) -> None:
+        """
+        Payloads larger than DATEX2_SYNC_MAX_CONTENT_LENGTH must be handed off to celery without
+        being parsed or validated on the request thread - so even a structurally invalid payload is
+        persisted + queued (HTTP 200) instead of being rejected with HTTP 400.
+        """
+        _import_static_data(requests_mock)
+
+        # A payload that would normally be rejected as invalid, but is pushed over the size limit.
+        invalid_payload = {'not': 'a valid messageContainer'}
+
+        config = dependencies.get_config_helper().get_config()
+        sentinel = object()
+        original = config.get('DATEX2_SYNC_MAX_CONTENT_LENGTH', sentinel)
+        config['DATEX2_SYNC_MAX_CONTENT_LENGTH'] = 5
+        try:
+            response = test_client.post(
+                path=f'/api/server/v1/datex/v3.5/{SOURCE_UID}/realtime?key={API_KEY}',
+                json=invalid_payload,
+            )
+        finally:
+            if original is sentinel:
+                config.pop('DATEX2_SYNC_MAX_CONTENT_LENGTH', None)
+            else:
+                config['DATEX2_SYNC_MAX_CONTENT_LENGTH'] = original
+
+        assert response.status_code == HTTPStatus.OK
+
+        # Handed off to celery unvalidated: payload persisted to disk and task queued.
+        written = list(isolated_datex2_dir.iterdir())
+        assert len(written) == 1
+        with written[0].open('rb') as f:
+            assert json.load(f) == invalid_payload
+        stubbed_celery_delay.assert_called_once()
+
+    @staticmethod
     def test_push_realtime_v35_invalid_payload_returns_400(
         db: SQLAlchemy,
         test_client: OpenApiFlaskClient,
