@@ -271,12 +271,22 @@ class LocationRepository(BaseRepository[Location]):
             and getattr(search_query, 'radius', None)
         ):
             if self.session.connection().dialect.name == 'postgresql':
+                # ST_DWithin on geography instead of ST_DistanceSphere(...) < radius: the latter is a plain function
+                # comparison the planner cannot index, so it seq-scanned every location. ST_DWithin adds the bounding
+                # box operator that hits the gist index on (geometry::geography), see geography_index.
+                # use_spheroid=False keeps this a sphere calculation, i.e. exactly the ST_DistanceSphere result.
                 query = query.filter(
-                    func.ST_DistanceSphere(
-                        Location.geometry,
-                        func.ST_GeomFromText(f'POINT({float(search_query.lon)} {float(search_query.lat)})'),
+                    func.ST_DWithin(
+                        func.geography(Location.geometry),
+                        func.geography(
+                            func.ST_SetSRID(
+                                func.ST_MakePoint(float(search_query.lon), float(search_query.lat)),
+                                4326,
+                            ),
+                        ),
+                        search_query.radius,
+                        False,
                     )
-                    < search_query.radius
                 )
             else:
                 query = query.filter(
