@@ -16,6 +16,7 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+from sqlalchemy.orm import joinedload
 from validataclass_search_queries.pagination import PaginatedResult
 from validataclass_search_queries.search_queries import BaseSearchQuery
 
@@ -28,10 +29,13 @@ class BusinessRepository(BaseRepository[Business]):
     model_cls = Business
 
     def fetch_by_id(self, business_id: int) -> Business:
-        return self.fetch_resource_by_id(business_id)
+        # _map_business_to_ocpi() reads business.logo, so eager-load it to avoid a lazy round-trip.
+        return self.fetch_resource_by_id(business_id, load_options=[joinedload(Business.logo)])
 
     def fetch_businesses(self, search_query: BaseSearchQuery | None = None) -> PaginatedResult[Business]:
-        query = self.session.query(Business)
+        # _map_business_to_ocpi() reads business.logo per row; without this eager load every business in the page
+        # triggers an N+1 logo lookup.
+        query = self.session.query(Business).options(joinedload(Business.logo))
         return self._search_and_paginate(query, search_query)
 
     def fetch_business_by_name(self, name: str) -> Business:

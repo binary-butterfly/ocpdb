@@ -18,7 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from dataclasses import dataclass
 
-from sqlalchemy.orm import selectinload
+from sqlalchemy.orm import joinedload, selectinload
 from validataclass_search_queries.pagination import PaginatedResult
 from validataclass_search_queries.search_queries import BaseSearchQuery
 
@@ -55,6 +55,9 @@ class EvseRepository(BaseRepository[Evse]):
 
         if include_children:
             query = query.options(
+                # _map_evse_to_ocpi() reads evse.charging_station (capabilities, floor_level, coordinates), so eager-load
+                # it to avoid a lazy round-trip.
+                joinedload(Evse.charging_station),
                 selectinload(Evse.connectors),
                 selectinload(Evse.images),
             )
@@ -68,6 +71,9 @@ class EvseRepository(BaseRepository[Evse]):
 
     def fetch_evses(self, search_query: BaseSearchQuery | None = None) -> PaginatedResult[Evse]:
         options = [
+            # _map_evse_to_ocpi() reads evse.charging_station (capabilities, floor_level, coordinates) per row;
+            # without this eager load every EVSE in the page triggers an N+1 charging_station lookup.
+            joinedload(Evse.charging_station),
             selectinload(Evse.connectors),
             selectinload(Evse.images),
         ]

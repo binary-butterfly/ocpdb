@@ -53,9 +53,17 @@ class LocationRepository(BaseRepository[Location]):
     def fetch_location_by_id(self, location_id: int, *, include_children: bool = False) -> Location:
         load_options: list[LoaderOption] = []
         if include_children:
+            # The OCPI location mappers render operator/suboperator/owner and walk the whole
+            # charging_pool -> evses -> connectors/images tree plus charging_station images. Eager-load all of it so a
+            # single location response does not fan out into N+1 queries across its stations, EVSEs and images.
+            cs_load = selectinload(Location.charging_pool)
             load_options += [
                 joinedload(Location.operator),
-                selectinload(Location.charging_pool).selectinload(ChargingStation.evses).selectinload(Evse.connectors),
+                joinedload(Location.suboperator),
+                joinedload(Location.owner),
+                cs_load.selectinload(ChargingStation.images),
+                cs_load.selectinload(ChargingStation.evses).selectinload(Evse.connectors),
+                cs_load.selectinload(ChargingStation.evses).selectinload(Evse.images),
             ]
 
         return self.fetch_resource_by_id(location_id, load_options=load_options)
