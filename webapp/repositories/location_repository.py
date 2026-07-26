@@ -27,6 +27,7 @@ from validataclass_search_queries.search_queries import BaseSearchQuery
 from webapp.common.sqlalchemy import Query
 from webapp.models import Business, Evse, Location, TariffAssociation
 from webapp.models.charging_station import ChargingStation
+from webapp.models.evse import PARKING_RESTRICTION_BIT_BY_MEMBER, ParkingRestriction
 
 from .base_repository import BaseRepository
 
@@ -107,7 +108,8 @@ class LocationRepository(BaseRepository[Location]):
             "  SUM(CASE WHEN evse.status = 'AVAILABLE' THEN 1 ELSE 0 END) as chargepoint_available_count, "
             "  SUM(CASE WHEN evse.status = 'UNKNOWN' THEN 1 ELSE 0 END) as chargepoint_unknown_count, "
             "  SUM(CASE WHEN evse.status = 'STATIC' THEN 1 ELSE 0 END) as chargepoint_static_count, "
-            '  SUM(CASE WHEN evse.parking_restrictions & 64 = 64 THEN 1 ELSE 0 END) as chargepoint_bike_count '
+            '  SUM(CASE WHEN evse.parking_restrictions & :bicycle_only_bit = :bicycle_only_bit THEN 1 ELSE 0 END) '
+            '    as chargepoint_bike_count '
             'FROM location '
             'LEFT JOIN charging_station ON charging_station.location_id = location.id '
             'LEFT JOIN evse ON evse.charging_station_id = charging_station.id '
@@ -122,7 +124,12 @@ class LocationRepository(BaseRepository[Location]):
 
         query += f'{additional_where} GROUP BY location.id'
 
-        return list(self.session.execute(text(query)))
+        return list(
+            self.session.execute(
+                text(query),
+                {'bicycle_only_bit': PARKING_RESTRICTION_BIT_BY_MEMBER[ParkingRestriction.BICYCLE_ONLY]},
+            )
+        )
 
     def fetch_locations_by_bounds(self, bbox: LngLatBbox) -> list[Location]:
         locations = self.session.query(Location)

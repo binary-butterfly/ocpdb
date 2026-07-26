@@ -69,6 +69,23 @@ class ParkingRestriction(Enum):
     BICYCLE_ONLY = 'BICYCLE_ONLY'
 
 
+# Bit value per parking restriction, as stored in evse.parking_restrictions.
+#
+# These values are persisted in the database, so they MUST NOT change: reordering, inserting or renumbering an entry
+# silently reinterprets every stored bitmask. Add new restrictions at the end with the next free bit, and never reuse
+# the bit of a removed one. parking_restriction_bits_test.py guards this.
+PARKING_RESTRICTION_BITS: list[tuple[int, ParkingRestriction]] = [
+    (1 << 0, ParkingRestriction.EV_ONLY),
+    (1 << 1, ParkingRestriction.PLUGGED),
+    (1 << 2, ParkingRestriction.DISABLED),
+    (1 << 3, ParkingRestriction.CUSTOMERS),
+    (1 << 4, ParkingRestriction.MOTORCYCLES),
+    (1 << 5, ParkingRestriction.CARSHARING),
+    (1 << 6, ParkingRestriction.BICYCLE_ONLY),
+]
+PARKING_RESTRICTION_BIT_BY_MEMBER: dict[ParkingRestriction, int] = {item: bit for bit, item in PARKING_RESTRICTION_BITS}
+
+
 class Evse(BaseModel):
     __tablename__ = 'evse'
 
@@ -126,14 +143,7 @@ class Evse(BaseModel):
     def parking_restrictions(self) -> list[ParkingRestriction]:
         if self._parking_restrictions is None:
             return []
-        return sorted(
-            [
-                item
-                for item in list(ParkingRestriction)
-                if (1 << list(ParkingRestriction).index(item)) & self._parking_restrictions
-            ],
-            key=lambda item: 1 << list(ParkingRestriction).index(item),
-        )
+        return [item for bit, item in PARKING_RESTRICTION_BITS if bit & self._parking_restrictions]
 
     @parking_restrictions.setter
     def parking_restrictions(self, parking_restrictions: list[ParkingRestriction] | None) -> None:
@@ -141,8 +151,8 @@ class Evse(BaseModel):
         if parking_restrictions is None:
             return
         for parking_restriction in parking_restrictions:
-            self._parking_restrictions = self._parking_restrictions | (
-                1 << list(ParkingRestriction).index(parking_restriction)
+            self._parking_restrictions = (
+                self._parking_restrictions | PARKING_RESTRICTION_BIT_BY_MEMBER[parking_restriction]
             )
 
     @hybrid_property
