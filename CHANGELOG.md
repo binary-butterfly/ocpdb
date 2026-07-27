@@ -1,5 +1,14 @@
 # Changelog
 
+# 2.14.5
+
+Released 2026-07-27
+
+## Maintenance
+
+* [performance improvements](https://github.com/binary-butterfly/ocpdb/pull/245)
+
+
 # 2.14.4
 
 Released 2026-07-16
