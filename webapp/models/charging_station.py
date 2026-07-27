@@ -69,6 +69,33 @@ class Capability(Enum):
     DIRECT_REMOTE = 'DIRECT_REMOTE'
 
 
+# Bit value per capability, as stored in charging_station.capabilities.
+#
+# These values are persisted in the database, so they MUST NOT change: reordering, inserting or renumbering an entry
+# silently reinterprets every stored bitmask. Add new capabilities at the end with the next free bit, and never reuse
+# the bit of a removed one. capability_bits_test.py guards this.
+CAPABILITY_BITS: list[tuple[int, Capability]] = [
+    (1 << 0, Capability.CHARGING_PROFILE_CAPABLE),
+    (1 << 1, Capability.CHARGING_PREFERENCES_CAPABLE),
+    (1 << 2, Capability.CHIP_CARD_SUPPORT),
+    (1 << 3, Capability.CONTACTLESS_CARD_SUPPORT),
+    (1 << 4, Capability.CREDIT_CARD_PAYABLE),
+    (1 << 5, Capability.DEBIT_CARD_PAYABLE),
+    (1 << 6, Capability.PED_TERMINAL),
+    (1 << 7, Capability.REMOTE_START_STOP_CAPABLE),
+    (1 << 8, Capability.RESERVABLE),
+    (1 << 9, Capability.RFID_READER),
+    (1 << 10, Capability.TOKEN_GROUP_CAPABLE),
+    (1 << 11, Capability.UNLOCK_CAPABLE),
+    (1 << 12, Capability.PUBLIC),
+    (1 << 13, Capability.LOCAL_KEY),
+    (1 << 14, Capability.CASH),
+    (1 << 15, Capability.IEC15118),
+    (1 << 16, Capability.DIRECT_REMOTE),
+]
+CAPABILITY_BIT_BY_MEMBER: dict[Capability, int] = {item: bit for bit, item in CAPABILITY_BITS}
+
+
 class ChargingStation(BaseModel):
     __tablename__ = 'charging_station'
     parking_spaces_list_validator: list[ParkingSpace] = ListValidator(DataclassValidator(ParkingSpace))
@@ -130,10 +157,7 @@ class ChargingStation(BaseModel):
     def capabilities(self) -> list[Capability]:
         if self._capabilities is None:
             return []
-        return sorted(
-            [item for item in list(Capability) if (1 << list(Capability).index(item)) & self._capabilities],
-            key=lambda item: 1 << list(Capability).index(item),
-        )
+        return [item for bit, item in CAPABILITY_BITS if bit & self._capabilities]
 
     @capabilities.setter
     def capabilities(self, capabilities: list[Capability] | None) -> None:
@@ -141,7 +165,7 @@ class ChargingStation(BaseModel):
         if capabilities is None:
             return
         for capability in capabilities:
-            self._capabilities = self._capabilities | (1 << list(Capability).index(capability))
+            self._capabilities = self._capabilities | CAPABILITY_BIT_BY_MEMBER[capability]
 
     @hybrid_property
     def directions(self) -> list[dict[str, str]] | None:

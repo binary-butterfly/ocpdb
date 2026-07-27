@@ -34,15 +34,19 @@ class LocationHandler(PublicApiBaseHandler):
     def get_locations(self, search_query: LocationApiSearchQuery, strict: bool = False) -> PaginatedResult[dict]:
         locations = self.location_repository.fetch_locations(
             search_query=search_query,
-            include_operators=False,
+            # Eager-load everything _map_location_to_ocpi() renders, otherwise each operator, connector and EVSE image
+            # is lazy-loaded per row, causing hundreds of N+1 queries per page.
+            include_operators=True,
             include_logos=False,
             include_location_images=False,
             include_charging_stations=False,
             include_charging_station_images=False,
             include_evses=False,
-            include_evse_images=False,
-            include_connectors=False,
-            include_tariffs=True,
+            include_evse_images=True,
+            include_connectors=True,
+            # No tariffs: _map_location_to_ocpi() never renders them, and eager-loading them cost a third of the
+            # fetch time.
+            include_tariffs=False,
         )
         return locations.map(lambda location: self._map_location_to_ocpi(location, strict=strict))
 

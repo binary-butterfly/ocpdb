@@ -27,6 +27,7 @@ from validataclass_search_queries.search_queries import BaseSearchQuery
 from webapp.common.sqlalchemy import Query
 from webapp.models import Business, Evse, Location, TariffAssociation
 from webapp.models.charging_station import ChargingStation
+from webapp.models.evse import PARKING_RESTRICTION_BIT_BY_MEMBER, ParkingRestriction
 
 from .base_repository import BaseRepository
 
@@ -53,9 +54,17 @@ class LocationRepository(BaseRepository[Location]):
     def fetch_location_by_id(self, location_id: int, *, include_children: bool = False) -> Location:
         load_options: list[LoaderOption] = []
         if include_children:
+            # The OCPI location mappers render operator/suboperator/owner and walk the whole
+            # charging_pool -> evses -> connectors/images tree plus charging_station images. Eager-load all of it so a
+            # single location response does not fan out into N+1 queries across its stations, EVSEs and images.
+            cs_load = selectinload(Location.charging_pool)
             load_options += [
                 joinedload(Location.operator),
-                selectinload(Location.charging_pool).selectinload(ChargingStation.evses).selectinload(Evse.connectors),
+                joinedload(Location.suboperator),
+                joinedload(Location.owner),
+                cs_load.selectinload(ChargingStation.images),
+                cs_load.selectinload(ChargingStation.evses).selectinload(Evse.connectors),
+                cs_load.selectinload(ChargingStation.evses).selectinload(Evse.images),
             ]
 
         return self.fetch_resource_by_id(location_id, load_options=load_options)
@@ -99,7 +108,8 @@ class LocationRepository(BaseRepository[Location]):
             "  SUM(CASE WHEN evse.status = 'AVAILABLE' THEN 1 ELSE 0 END) as chargepoint_available_count, "
             "  SUM(CASE WHEN evse.status = 'UNKNOWN' THEN 1 ELSE 0 END) as chargepoint_unknown_count, "
             "  SUM(CASE WHEN evse.status = 'STATIC' THEN 1 ELSE 0 END) as chargepoint_static_count, "
-            '  SUM(CASE WHEN evse.parking_restrictions & 64 = 64 THEN 1 ELSE 0 END) as chargepoint_bike_count '
+            '  SUM(CASE WHEN evse.parking_restrictions & :bicycle_only_bit = :bicycle_only_bit THEN 1 ELSE 0 END) '
+            '    as chargepoint_bike_count '
             'FROM location '
             'LEFT JOIN charging_station ON charging_station.location_id = location.id '
             'LEFT JOIN evse ON evse.charging_station_id = charging_station.id '
@@ -114,7 +124,12 @@ class LocationRepository(BaseRepository[Location]):
 
         query += f'{additional_where} GROUP BY location.id'
 
-        return list(self.session.execute(text(query)))
+        return list(
+            self.session.execute(
+                text(query),
+                {'bicycle_only_bit': PARKING_RESTRICTION_BIT_BY_MEMBER[ParkingRestriction.BICYCLE_ONLY]},
+            )
+        )
 
     def fetch_locations_by_bounds(self, bbox: LngLatBbox) -> list[Location]:
         locations = self.session.query(Location)
@@ -256,12 +271,22 @@ class LocationRepository(BaseRepository[Location]):
             and getattr(search_query, 'radius', None)
         ):
             if self.session.connection().dialect.name == 'postgresql':
+                # ST_DWithin on geography instead of ST_DistanceSphere(...) < radius: the latter is a plain function
+                # comparison the planner cannot index, so it seq-scanned every location. ST_DWithin adds the bounding
+                # box operator that hits the gist index on (geometry::geography), see geography_index.
+                # use_spheroid=False keeps this a sphere calculation, i.e. exactly the ST_DistanceSphere result.
                 query = query.filter(
-                    func.ST_DistanceSphere(
-                        Location.geometry,
-                        func.ST_GeomFromText(f'POINT({float(search_query.lon)} {float(search_query.lat)})'),
+                    func.ST_DWithin(
+                        func.geography(Location.geometry),
+                        func.geography(
+                            func.ST_SetSRID(
+                                func.ST_MakePoint(float(search_query.lon), float(search_query.lat)),
+                                4326,
+                            ),
+                        ),
+                        search_query.radius,
+                        False,
                     )
-                    < search_query.radius
                 )
             else:
                 query = query.filter(
