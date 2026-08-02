@@ -19,13 +19,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from dataclasses import dataclass
 
 from sqlalchemy.orm import joinedload, selectinload
+from sqlalchemy.orm.interfaces import LoaderOption
 from validataclass_search_queries.pagination import PaginatedResult
 from validataclass_search_queries.search_queries import BaseSearchQuery
 
 from webapp.common.sqlalchemy import Query
-from webapp.models import Evse, Location
+from webapp.models import Connector, Evse, Location
 from webapp.models.charging_station import ChargingStation
 from webapp.models.evse import EvseStatus
+from webapp.models.tariff_association import TariffAssociation
 
 from .base_repository import BaseRepository
 from .exceptions import InconsistentDataException, ObjectNotFoundException
@@ -37,6 +39,17 @@ class EvseStatusSummary:
     location: str
     status: EvseStatus
     source: str
+
+
+def _tariff_options() -> list[LoaderOption]:
+    """
+    The connectors of an EVSE render their tariff uids, reading their own tariffs and falling back to
+    the ones of the EVSE, so both chains are eager-loaded instead of being fetched per connector.
+    """
+    return [
+        selectinload(Evse.tariff_associations).joinedload(TariffAssociation.tariff),
+        selectinload(Evse.connectors).selectinload(Connector.tariff_associations).joinedload(TariffAssociation.tariff),
+    ]
 
 
 class EvseRepository(BaseRepository[Evse]):
@@ -60,6 +73,7 @@ class EvseRepository(BaseRepository[Evse]):
                 joinedload(Evse.charging_station),
                 selectinload(Evse.connectors),
                 selectinload(Evse.images),
+                *_tariff_options(),
             )
 
         result = query.filter(Evse.id == evse_id).first()
@@ -76,6 +90,7 @@ class EvseRepository(BaseRepository[Evse]):
             joinedload(Evse.charging_station),
             selectinload(Evse.connectors),
             selectinload(Evse.images),
+            *_tariff_options(),
         ]
 
         query = self.session.query(Evse).options(*options)

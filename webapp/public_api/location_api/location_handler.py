@@ -44,9 +44,9 @@ class LocationHandler(PublicApiBaseHandler):
             include_evses=False,
             include_evse_images=True,
             include_connectors=True,
-            # No tariffs: _map_location_to_ocpi() never renders them, and eager-loading them cost a third of the
-            # fetch time.
-            include_tariffs=False,
+            # Connectors render the uids of their tariffs, so the tariffs have to come along. This is the most
+            # expensive of these eager loads by far, but the alternative is a lazy load per connector.
+            include_tariffs=True,
         )
         return locations.map(lambda location: self._map_location_to_ocpi(location, strict=strict))
 

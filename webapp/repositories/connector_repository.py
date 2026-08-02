@@ -16,12 +16,15 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+from sqlalchemy.orm import selectinload
+from sqlalchemy.orm.interfaces import LoaderOption
 from validataclass_search_queries.pagination import PaginatedResult
 from validataclass_search_queries.search_queries import BaseSearchQuery
 
 from webapp.common.sqlalchemy import Query
 from webapp.models import Connector, Evse, Location
 from webapp.models.charging_station import ChargingStation
+from webapp.models.tariff_association import TariffAssociation
 
 from .base_repository import BaseRepository
 from .exceptions import ObjectNotFoundException
@@ -30,11 +33,24 @@ from .exceptions import ObjectNotFoundException
 class ConnectorRepository(BaseRepository[Connector]):
     model_cls = Connector
 
+    @staticmethod
+    def _tariff_options() -> list[LoaderOption]:
+        """
+        Connector.tariff_uids reads the tariffs of the connector and falls back to the ones of its
+        EVSE, so both chains are eager-loaded to keep them out of the per-connector N+1 territory.
+        """
+        return [
+            selectinload(Connector.tariff_associations).joinedload(TariffAssociation.tariff),
+            selectinload(Connector.evse).selectinload(Evse.tariff_associations).joinedload(TariffAssociation.tariff),
+        ]
+
     def fetch_by_id(self, connector_id: int) -> Connector:
         return self.fetch_resource_by_id(connector_id)
 
     def fetch_connector_by_id(self, connector_id: int) -> Connector:
-        result = self.session.query(Connector).filter(Connector.id == connector_id).first()
+        result = (
+            self.session.query(Connector).options(*self._tariff_options()).filter(Connector.id == connector_id).first()
+        )
 
         if result is None:
             raise ObjectNotFoundException(message=f'connector with id {connector_id} not found')
@@ -42,7 +58,7 @@ class ConnectorRepository(BaseRepository[Connector]):
         return result
 
     def fetch_connectors(self, search_query: BaseSearchQuery | None = None) -> PaginatedResult[Connector]:
-        query = self.session.query(Connector)
+        query = self.session.query(Connector).options(*self._tariff_options())
         return self._search_and_paginate(query, search_query)
 
     def _filter_by_search_query(self, query: Query, search_query: BaseSearchQuery | None) -> Query:

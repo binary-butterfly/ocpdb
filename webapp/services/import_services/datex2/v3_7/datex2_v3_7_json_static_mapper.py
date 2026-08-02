@@ -451,26 +451,36 @@ class Datex2V37JSONStaticMapper:
     ):
         if charging_point.energyProduct is UnsetValue:
             return
+
+        # A charging point can be offered under several energy rates (eg. ad-hoc and contract), so all
+        # of them are collected. Rate ids are unique per charging point, but a source repeating one
+        # would build two associations sharing a uid, which an EVSE cannot hold twice - so it is
+        # skipped and the first rate wins.
+        tariff_association_updates: dict[str, TariffAssociationUpdate] = {}
+
         for energy_product in charging_point.energyProduct:
             electric_energy = energy_product.aegiElectricEnergy
             if electric_energy is UnsetValue or electric_energy.energyRate is UnsetValue:
                 continue
             for energy_rate in electric_energy.energyRate:
                 tariff_uid = sha256(f'{evse.uid}:{energy_rate.idG}'.encode()).hexdigest()[:32]
+                if tariff_uid in tariff_association_updates:
+                    continue
+
                 tariff_update = self._map_energy_rate(energy_rate, tariff_uid, source)
 
                 audience = self._rate_policy_audience_map.get(energy_rate.ratePolicy.value)
 
-                evse.tariff_association = [
-                    TariffAssociationUpdate(
-                        uid=tariff_uid,
-                        source=source,
-                        audience=audience,
-                        start_date_time=energy_rate.lastUpdated,
-                        last_updated=energy_rate.lastUpdated,
-                        tariff=tariff_update,
-                    )
-                ]
+                tariff_association_updates[tariff_uid] = TariffAssociationUpdate(
+                    uid=tariff_uid,
+                    source=source,
+                    audience=audience,
+                    start_date_time=energy_rate.lastUpdated,
+                    last_updated=energy_rate.lastUpdated,
+                    tariff=tariff_update,
+                )
+
+        evse.tariff_association = list(tariff_association_updates.values())
 
     def _map_energy_rate(self, energy_rate: EnergyRateInput, tariff_uid: str, source: str) -> TariffUpdate:
         tariff_type = self._rate_policy_map.get(energy_rate.ratePolicy.value)

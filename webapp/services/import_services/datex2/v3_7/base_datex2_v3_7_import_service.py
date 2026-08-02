@@ -31,6 +31,7 @@ from webapp.common.logging.models import LogMessageType
 from webapp.common.rest.exceptions import IncompleteConfigException
 from webapp.models import SourceStatus
 from webapp.services.import_services.base_import_service import BaseImportService
+from webapp.services.import_services.datex2.tariff_grouping_mixin import TariffGroupingMixin
 from webapp.services.import_services.exceptions import ImportException
 from webapp.services.import_services.models import EvseRealtimeUpdate, LocationUpdate
 from webapp.shared.datex2.v3_7.realtime.d_a_t_e_x_i_i3_d2_payload_input import (
@@ -52,7 +53,7 @@ class RealtimeResult:
     evse_updates_by_evse: dict[str, EvseRealtimeUpdate] = field(default_factory=dict)
 
 
-class BaseDatex2V37ImportService(BaseImportService, ABC):
+class BaseDatex2V37ImportService(BaseImportService, TariffGroupingMixin, ABC):
     v3_7_json_static_datex_validator = DataclassValidator(DATEXII3D2StaticPayloadInput)
     v3_7_json_realtime_datex_validator = DataclassValidator(DATEXII3D2RealtimePayloadInput)
     v3_7_json_static_datex_mapper = Datex2V37JSONStaticMapper()
@@ -106,6 +107,8 @@ class BaseDatex2V37ImportService(BaseImportService, ABC):
                 continue
             location_updates.append(location_update)
             success_count += 1
+
+        self.group_identical_tariffs(location_updates)
 
         self.save_location_updates(location_updates)
 

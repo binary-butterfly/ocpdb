@@ -25,7 +25,7 @@ from validataclass_search_queries.pagination import PaginatedResult
 from validataclass_search_queries.search_queries import BaseSearchQuery
 
 from webapp.common.sqlalchemy import Query
-from webapp.models import Business, Evse, Location, TariffAssociation
+from webapp.models import Business, Connector, Evse, Location, TariffAssociation
 from webapp.models.charging_station import ChargingStation
 from webapp.models.evse import PARKING_RESTRICTION_BIT_BY_MEMBER, ParkingRestriction
 
@@ -58,13 +58,20 @@ class LocationRepository(BaseRepository[Location]):
             # charging_pool -> evses -> connectors/images tree plus charging_station images. Eager-load all of it so a
             # single location response does not fan out into N+1 queries across its stations, EVSEs and images.
             cs_load = selectinload(Location.charging_pool)
+            evse_load = cs_load.selectinload(ChargingStation.evses)
             load_options += [
                 joinedload(Location.operator),
                 joinedload(Location.suboperator),
                 joinedload(Location.owner),
                 cs_load.selectinload(ChargingStation.images),
-                cs_load.selectinload(ChargingStation.evses).selectinload(Evse.connectors),
-                cs_load.selectinload(ChargingStation.evses).selectinload(Evse.images),
+                evse_load.selectinload(Evse.connectors),
+                evse_load.selectinload(Evse.images),
+                # Connectors render the uids of their tariffs, falling back to the ones of their EVSE.
+                evse_load.selectinload(Evse.tariff_associations).joinedload(TariffAssociation.tariff),
+                evse_load
+                .selectinload(Evse.connectors)
+                .selectinload(Connector.tariff_associations)
+                .joinedload(TariffAssociation.tariff),
             ]
 
         return self.fetch_resource_by_id(location_id, load_options=load_options)
@@ -196,10 +203,13 @@ class LocationRepository(BaseRepository[Location]):
                 selectinload(Location.charging_pool).selectinload(ChargingStation.evses).selectinload(Evse.connectors)
             )
         if include_tariffs:
+            evse_load = selectinload(Location.charging_pool).selectinload(ChargingStation.evses)
+            options.append(evse_load.selectinload(Evse.tariff_associations).selectinload(TariffAssociation.tariff))
+            # Connectors render the uids of their own tariffs before falling back to the ones of their EVSE.
             options.append(
-                selectinload(Location.charging_pool)
-                .selectinload(ChargingStation.evses)
-                .selectinload(Evse.tariff_associations)
+                evse_load
+                .selectinload(Evse.connectors)
+                .selectinload(Connector.tariff_associations)
                 .selectinload(TariffAssociation.tariff)
             )
 
