@@ -1,5 +1,20 @@
 # Changelog
 
+# 2.15.0
+
+Released 2026-08-02
+
+## Features
+
+* [tariff grouping](https://github.com/binary-butterfly/ocpdb/pull/250)
+* [chained last updated](https://github.com/binary-butterfly/ocpdb/pull/247)
+* [prometheus: modified](https://github.com/binary-butterfly/ocpdb/pull/246)
+
+## Maintenance
+
+* [update dependencies](https://github.com/binary-butterfly/ocpdb/pull/249)
+
+
 # 2.14.5
 
 Released 2026-07-27
