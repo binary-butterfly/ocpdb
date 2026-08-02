@@ -43,6 +43,11 @@ class PrometheusHandler:
     def get_metrics(self) -> str:
         sources = self.source_repository.fetch_sources()
 
+        last_modified_metrics = Metrics(
+            help='Last modification in seconds from now',
+            type=MetricType.gauge,
+            identifier='app_ocpdb_source_last_modified',
+        )
         last_static_update_metrics = Metrics(
             help='Last static update in seconds from now',
             type=MetricType.gauge,
@@ -76,6 +81,13 @@ class PrometheusHandler:
         for source in sources:
             if source.static_status in [SourceStatus.DISABLED, SourceStatus.PROVISIONED]:
                 continue
+
+            last_modified_metrics.metrics.append(
+                SourceMetric(
+                    source=source.uid,
+                    value=int((datetime.now(tz=timezone.utc) - source.modified).total_seconds()),
+                )
+            )
 
             if source.static_data_updated_at:
                 last_static_update_metrics.metrics.append(
@@ -121,7 +133,8 @@ class PrometheusHandler:
             )
 
         metrics = (
-            failed_static_sources.to_metrics()
+            last_modified_metrics.to_metrics()
+            + failed_static_sources.to_metrics()
             + last_static_update_metrics.to_metrics()
             + source_static_errors.to_metrics()
             + failed_realtime_sources.to_metrics()

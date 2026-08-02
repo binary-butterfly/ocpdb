@@ -79,4 +79,4 @@ class Source(BaseModel):
             return self.realtime_data_updated_at
         if self.static_data_updated_at:
             return self.static_data_updated_at
-        return self.modified_at
+        return self.modified
