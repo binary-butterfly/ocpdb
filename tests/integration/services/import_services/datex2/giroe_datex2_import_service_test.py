@@ -24,8 +24,9 @@ from requests_mock import Mocker
 
 from webapp.common.sqlalchemy import SQLAlchemy
 from webapp.dependencies import dependencies
-from webapp.models import Business, ChargingStation, Connector, Evse, Location, Tariff
+from webapp.models import Business, ChargingStation, Connector, Evse, Location, Tariff, TariffAssociation
 from webapp.models.connector import ConnectorFormat, ConnectorType, PowerType
+from webapp.models.enums import TariffAudience
 from webapp.models.evse import EvseStatus
 from webapp.models.source import SourceStatus
 from webapp.services.import_services.datex2 import GiroEDatex2ImportService
@@ -36,6 +37,10 @@ SOURCE_UID = 'datex2_giroe'
 EXPECTED_LOCATION_COUNT = 8
 EXPECTED_STATION_COUNT = 43
 EXPECTED_EVSE_COUNT = 72
+# 36 EVSEs are offered under two energy rates and 36 under one. The 108 rates hold one duplicated
+# rate id, which is skipped, and describe 13 distinct sets of fees in total.
+EXPECTED_TARIFF_COUNT = 13
+EXPECTED_TARIFF_ASSOCIATION_COUNT = 107
 
 
 def _load_test_data(filename: str) -> str:
@@ -71,8 +76,10 @@ def test_giroe_datex2_static_import(
     business = db.session.query(Business).first()
     assert business.name == 'GLS Mobility GmbH'
 
-    # Each EVSE keeps the tariff association of its last energy rate, so #tariffs == #EVSEs
-    assert db.session.query(Tariff).count() == EXPECTED_EVSE_COUNT
+    # Each EVSE keeps one tariff association per energy rate, but tariffs charging the same fees are
+    # grouped into one tariff, so there are far fewer tariffs than associations.
+    assert db.session.query(Tariff).count() == EXPECTED_TARIFF_COUNT
+    assert db.session.query(TariffAssociation).count() == EXPECTED_TARIFF_ASSOCIATION_COUNT
 
     source = giroe_datex2_import_service.get_source()
     assert source.static_status == SourceStatus.ACTIVE
@@ -132,9 +139,27 @@ def test_giroe_datex2_static_import_maps_evse_and_connector(
     assert cable_evse.connectors[0].format == ConnectorFormat.SOCKET
     assert cable_evse.connectors[0].max_electric_power == 11000
 
-    # Each EVSE collapses to a single TariffAssociation (last energy rate wins).
-    assert len(evse.tariff_associations) == 1
+    # This EVSE is offered under two ad-hoc energy rates which charge different fees, so it keeps a
+    # TariffAssociation per rate, and the two point at two distinct tariffs.
+    assert len(evse.tariff_associations) == 2
+    assert {association.audience for association in evse.tariff_associations} == {TariffAudience.AD_HOC_PAYMENT}
+    assert len({association.tariff_id for association in evse.tariff_associations}) == 2
     assert len(evse.connectors) == 1
+
+
+def test_giroe_datex2_static_import_skips_duplicated_energy_rate_id(
+    db: SQLAlchemy,
+    giroe_datex2_import_service: GiroEDatex2ImportService,
+) -> None:
+    """
+    EVSE 4244 publishes the energy rate id 2180 twice. Both would map to the same tariff association
+    uid, and an EVSE cannot hold the same association twice, so the duplicate must be skipped.
+    """
+    giroe_datex2_import_service.fetch_static_data()
+
+    evse = db.session.query(Evse).filter(Evse.uid == '4244').first()
+    assert evse is not None
+    assert len(evse.tariff_associations) == 1
 
 
 def test_giroe_datex2_static_import_handles_empty_energy_price_list(

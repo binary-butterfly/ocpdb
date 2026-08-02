@@ -25,7 +25,7 @@ from requests_mock import Mocker
 
 from webapp.common.sqlalchemy import SQLAlchemy
 from webapp.dependencies import dependencies
-from webapp.models import Business, ChargingStation, Connector, Evse, Location, Tariff
+from webapp.models import Business, ChargingStation, Connector, Evse, Location, Tariff, TariffAssociation
 from webapp.models.enums import VehicleCategoryEnum
 from webapp.models.evse import EvseStatus
 from webapp.models.source import SourceStatus
@@ -66,7 +66,10 @@ def test_enbw_datex2_static_import(
     assert db.session.query(Evse).count() == 57
     assert db.session.query(Connector).count() == 57
     assert db.session.query(Business).count() == 1
-    assert db.session.query(Tariff).count() == 57
+    # The 57 EVSE tariffs describe only two distinct sets of fees and are grouped accordingly, while
+    # every EVSE keeps its own tariff association.
+    assert db.session.query(Tariff).count() == 2
+    assert db.session.query(TariffAssociation).count() == 57
 
     # Check that site-level parking spaces are mapped to locations
     location = db.session.query(Location).filter(Location.uid == '800030182').first()

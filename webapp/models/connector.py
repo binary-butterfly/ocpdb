@@ -164,6 +164,20 @@ class Connector(BaseModel):
                 self.max_voltage = 400
             self.max_amperage = int(round(self.max_electric_power / self.max_voltage / sqrt(3)))
 
+    @property
+    def tariff_uids(self) -> list[str]:
+        """
+        The uids of the tariffs which apply to this connector.
+
+        OCPI places tariffs on the connector, while the sources publish them per EVSE, so a connector
+        without tariff associations of its own inherits the ones of its EVSE.
+        """
+        tariff_associations = self.tariff_associations or self.evse.tariff_associations
+
+        # Several associations can point at the same tariff, as identical tariffs of a source are
+        # grouped. dict.fromkeys drops those duplicates while keeping the order stable.
+        return list(dict.fromkeys(tariff_association.tariff.uid for tariff_association in tariff_associations))
+
     def to_dict(self, *args, strict: bool = False, ignore: list[str] | None = None, **kwargs) -> dict:
         ignore = ignore or []
         ignore += ['uid', 'created', 'modified', 'evse_id']
@@ -172,6 +186,12 @@ class Connector(BaseModel):
 
         # OCPI id has to be a string
         result['id'] = str(self.id)
+
+        # tariff_ids is optional in OCPI, so connectors without a tariff omit it instead of carrying
+        # an empty list.
+        tariff_uids = self.tariff_uids
+        if tariff_uids:
+            result['tariff_ids'] = tariff_uids
 
         if not strict:
             result['original_id'] = self.uid
