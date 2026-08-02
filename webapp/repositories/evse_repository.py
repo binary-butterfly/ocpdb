@@ -160,9 +160,9 @@ class EvseRepository(BaseRepository[Evse]):
             self.session
             .query(Evse)
             .options(
-                selectinload(Evse.connectors),
                 # save_evse_updates() lifts the EVSE last_updated to its location, so eager-load the whole chain:
                 # with a lot of realtime updates per second, a lazy load per EVSE would be an N+1 on every heartbeat.
+                # Connectors are deliberately not loaded: the only caller ignores them.
                 joinedload(Evse.charging_station).joinedload(ChargingStation.location),
             )
             .filter(Evse.uid.in_(uids))
