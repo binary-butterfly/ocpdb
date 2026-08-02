@@ -4,7 +4,7 @@
 FROM python:3.12-alpine3.21 AS builder
 
 # Bring in the uv binary from the official, pinned image (kept up to date by dependabot).
-COPY --from=ghcr.io/astral-sh/uv:0.11.18 /uv /uvx /bin/
+COPY --from=ghcr.io/astral-sh/uv:0.12.1 /uv /uvx /bin/
 
 # Install geos-dev and alpine-sdk (which contains the compilers needed for building wheels)
 RUN apk update && \
