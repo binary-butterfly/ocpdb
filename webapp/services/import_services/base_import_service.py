@@ -128,6 +128,14 @@ class BaseImportService(BaseService, RemoteMixin, ABC):
                     continue
                 setattr(evse, key, value)
 
+            # Charging station and location are only as fresh as their freshest EVSE, so lift the new timestamp up
+            # the chain if it is newer.
+            charging_station = evse.charging_station
+            if evse.last_updated > charging_station.last_updated:
+                charging_station.last_updated = evse.last_updated
+            if charging_station.last_updated > charging_station.location.last_updated:
+                charging_station.location.last_updated = charging_station.last_updated
+
             self.evse_repository.save_evse(evse, commit=False)
 
         self.evse_repository.session.commit()
@@ -255,6 +263,12 @@ class BaseImportService(BaseService, RemoteMixin, ABC):
             )
         location.charging_pool = new_charging_stations
 
+        # get_charging_station() already lifted every charging station to its freshest EVSE, so taking the maximum
+        # over the charging stations propagates the newest EVSE timestamp up to the location.
+        for charging_station in new_charging_stations:
+            if charging_station.last_updated > location.last_updated:
+                location.last_updated = charging_station.last_updated
+
         # Fetch official regional code if not set, if all required fields are available and if country is supported
         if (
             not location.official_region_code
@@ -339,6 +353,12 @@ class BaseImportService(BaseService, RemoteMixin, ABC):
             )
 
         charging_station.evses = new_evses
+
+        # Same rule as in save_evse_updates(): a charging station is only as fresh as its freshest EVSE. Sources
+        # regularly send EVSE timestamps which are newer than the charging station timestamp.
+        for evse in new_evses:
+            if evse.last_updated > charging_station.last_updated:
+                charging_station.last_updated = evse.last_updated
 
         return charging_station
 
