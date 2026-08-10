@@ -508,3 +508,114 @@ def test_save_location_updates_evse_without_tariff_association(db, testing_impor
 
     evse = db.session.query(Evse).first()
     assert len(evse.tariff_associations) == 0
+
+
+def _create_location_update_with_tariff(
+    *,
+    location_uid: str = 'loc1',
+    tariff_association_uid: str = 'ta1',
+    tariff_uid: str = 'tariff1',
+) -> LocationUpdate:
+    return LocationUpdate(
+        uid=location_uid,
+        source='test_source_uid',
+        lat=Decimal('48.7758'),
+        lon=Decimal('9.1829'),
+        time_zone='Europe/Berlin',
+        charging_pool=[
+            ChargingStationUpdate(
+                uid=f'cs-{location_uid}',
+                evses=[
+                    EvseUpdate(
+                        uid=f'evse-{location_uid}',
+                        evse_id='DE*TST*E001',
+                        status=EvseStatus.AVAILABLE,
+                        connectors=[
+                            ConnectorUpdate(
+                                uid=f'conn-{location_uid}',
+                                standard=ConnectorType.IEC_62196_T2,
+                                format=ConnectorFormat.SOCKET,
+                                max_electric_power=22000,
+                            ),
+                        ],
+                        tariff_association=[
+                            TariffAssociationUpdate(
+                                uid=tariff_association_uid,
+                                source='test_source_uid',
+                                start_date_time=datetime(2024, 1, 1, tzinfo=timezone.utc),
+                                tariff=TariffUpdate(
+                                    uid=tariff_uid,
+                                    source='test_source_uid',
+                                    currency='EUR',
+                                    elements=[],
+                                ),
+                            ),
+                        ],
+                    ),
+                ],
+            ),
+        ],
+    )
+
+
+def test_save_location_updates_deletes_tariffs_with_new_uid(db, testing_import_service: BaseImportService):
+    """A tariff which the source does not send anymore is deleted instead of staying behind unreferenced."""
+    testing_import_service.save_location_updates([_create_location_update_with_tariff(tariff_uid='tariff1')])
+    testing_import_service.save_location_updates([_create_location_update_with_tariff(tariff_uid='tariff2')])
+
+    assert [tariff.uid for tariff in db.session.query(Tariff).all()] == ['tariff2']
+    assert db.session.query(TariffAssociation).count() == 1
+
+    evse = db.session.query(Evse).first()
+    assert len(evse.tariff_associations) == 1
+    assert evse.tariff_associations[0].tariff.uid == 'tariff2'
+
+
+def test_save_location_updates_deletes_tariff_associations_of_kept_tariff(
+    db,
+    testing_import_service: BaseImportService,
+):
+    """The tariff survives its renamed association, but the old association does not."""
+    testing_import_service.save_location_updates([_create_location_update_with_tariff(tariff_association_uid='ta1')])
+    testing_import_service.save_location_updates([_create_location_update_with_tariff(tariff_association_uid='ta2')])
+
+    assert [tariff.uid for tariff in db.session.query(Tariff).all()] == ['tariff1']
+    assert [association.uid for association in db.session.query(TariffAssociation).all()] == ['ta2']
+
+
+def test_save_location_updates_deletes_tariffs_of_deleted_locations(db, testing_import_service: BaseImportService):
+    """Tariffs do not belong to a location, so a vanished location has to take its tariffs with it."""
+    testing_import_service.save_location_updates([
+        _create_location_update_with_tariff(location_uid='loc1', tariff_association_uid='ta1', tariff_uid='tariff1'),
+        _create_location_update_with_tariff(location_uid='loc2', tariff_association_uid='ta2', tariff_uid='tariff2'),
+    ])
+
+    assert db.session.query(Tariff).count() == 2
+
+    testing_import_service.save_location_updates([
+        _create_location_update_with_tariff(location_uid='loc1', tariff_association_uid='ta1', tariff_uid='tariff1'),
+    ])
+
+    assert db.session.query(Location).count() == 1
+    assert [tariff.uid for tariff in db.session.query(Tariff).all()] == ['tariff1']
+    assert [association.uid for association in db.session.query(TariffAssociation).all()] == ['ta1']
+
+
+def test_save_location_updates_keeps_tariffs_of_other_sources(db, testing_import_service: BaseImportService):
+    """The cleanup is limited to the source which is imported."""
+    other_source_tariff = Tariff(
+        uid='tariff1',
+        source='other_source_uid',
+        currency='EUR',
+        last_updated=datetime(2024, 1, 1, tzinfo=timezone.utc),
+    )
+    other_source_tariff.elements = []
+    db.session.add(other_source_tariff)
+    db.session.commit()
+
+    testing_import_service.save_location_updates([_create_location_update_with_tariff(tariff_uid='tariff2')])
+
+    assert sorted(tariff.source for tariff in db.session.query(Tariff).all()) == [
+        'other_source_uid',
+        'test_source_uid',
+    ]

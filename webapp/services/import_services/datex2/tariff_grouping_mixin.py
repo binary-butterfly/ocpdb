@@ -26,7 +26,7 @@ from hashlib import sha256
 
 from webapp.common.json import DefaultJSONEncoder
 from webapp.common.logging.models import LogMessageType
-from webapp.services.import_services.models import LocationUpdate, SourceInfo, TariffUpdate
+from webapp.services.import_services.models import LocationUpdate, SourceInfo, TariffAssociationUpdate, TariffUpdate
 
 logger = logging.getLogger(__name__)
 
@@ -44,44 +44,53 @@ class TariffGroupingMixin(ABC):
         Collapse tariffs with identical fees into one tariff and return the number of remaining tariffs.
 
         DATEX2 publishes the tariff of every EVSE separately, so an operator running a single price list
-        across its whole network produces one tariff per EVSE. This rewrites every tariff uid to a
-        fingerprint of the tariff's financial content, which makes identical tariffs collapse onto a
-        single tariff - and therefore a single database row - while every EVSE keeps its own tariff
-        association.
+        across its whole network produces one tariff per EVSE. This keeps one tariff per group of
+        identical tariffs, gives it a uid which is a fingerprint of the tariff's financial content and
+        points every tariff association of the group at it. The duplicates are dropped right here, so
+        they never reach the database, while every EVSE keeps its own tariff association.
 
         Two tariffs are identical if all their fee-defining values match: the tariff elements (including
         price components, taxes and restrictions), the currency and the tariff type. Neither the uid nor
-        last_updated take part in the comparison; each group is stamped with the newest last_updated of
-        its members.
+        last_updated take part in the comparison; the remaining tariff is stamped with the newest
+        last_updated of its group.
         """
-        tariff_updates_by_fingerprint: dict[str, list[TariffUpdate]] = {}
+        tariff_association_updates_by_fingerprint: dict[str, list[TariffAssociationUpdate]] = {}
 
-        for tariff_update in self._iterate_tariff_updates(location_updates):
-            tariff_updates_by_fingerprint.setdefault(self._build_fingerprint(tariff_update), []).append(tariff_update)
+        for tariff_association_update in self._iterate_tariff_association_updates(location_updates):
+            fingerprint = self._build_fingerprint(tariff_association_update.tariff)
+            tariff_association_updates_by_fingerprint.setdefault(fingerprint, []).append(tariff_association_update)
 
         tariff_update_count = 0
-        for fingerprint, tariff_updates in tariff_updates_by_fingerprint.items():
-            last_updated = self._newest_last_updated(tariff_updates)
-            for tariff_update in tariff_updates:
-                tariff_update.uid = fingerprint
-                tariff_update.last_updated = last_updated
+        for fingerprint, tariff_association_updates in tariff_association_updates_by_fingerprint.items():
+            tariff_updates = [
+                tariff_association_update.tariff for tariff_association_update in tariff_association_updates
+            ]
+
+            grouped_tariff_update = tariff_updates[0]
+            grouped_tariff_update.uid = fingerprint
+            grouped_tariff_update.last_updated = self._newest_last_updated(tariff_updates)
+
+            for tariff_association_update in tariff_association_updates:
+                tariff_association_update.tariff = grouped_tariff_update
+
             tariff_update_count += len(tariff_updates)
 
         logger.info(
             f'Grouped {tariff_update_count} {self.source_info.uid} tariffs into '
-            f'{len(tariff_updates_by_fingerprint)} distinct tariffs.',
+            f'{len(tariff_association_updates_by_fingerprint)} distinct tariffs.',
             extra={'attributes': {'type': LogMessageType.IMPORT_SOURCE}},
         )
 
-        return len(tariff_updates_by_fingerprint)
+        return len(tariff_association_updates_by_fingerprint)
 
     @staticmethod
-    def _iterate_tariff_updates(location_updates: list[LocationUpdate]) -> Iterator[TariffUpdate]:
+    def _iterate_tariff_association_updates(
+        location_updates: list[LocationUpdate],
+    ) -> Iterator[TariffAssociationUpdate]:
         for location_update in location_updates:
             for charging_station_update in location_update.charging_pool:
                 for evse_update in charging_station_update.evses:
-                    for tariff_association_update in evse_update.tariff_association or []:
-                        yield tariff_association_update.tariff
+                    yield from evse_update.tariff_association or []
 
     @staticmethod
     def _build_fingerprint(tariff_update: TariffUpdate) -> str:
