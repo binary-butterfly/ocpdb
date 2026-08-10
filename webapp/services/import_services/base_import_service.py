@@ -179,6 +179,43 @@ class BaseImportService(BaseService, RemoteMixin, ABC):
                 self.location_repository.fetch_location_by_id(old_location_id),
             )
 
+        self.delete_obsolete_tariffs(location_updates, tariffs)
+
+    def delete_obsolete_tariffs(self, location_updates: list[LocationUpdate], old_tariffs: list[Tariff]):
+        """
+        Delete the tariffs and tariff associations of the source which the dataset does not contain anymore.
+
+        Tariffs do not belong to a location, so deleting the locations which vanished from a source leaves their
+        tariffs behind. The same happens whenever a source changes the uid of a tariff, which is exactly what
+        the tariff grouping does when the fees of a tariff change.
+        """
+        tariff_uids: set[str] = set()
+        tariff_association_uids: set[str] = set()
+        for location_update in location_updates:
+            for charging_station_update in location_update.charging_pool:
+                for evse_update in charging_station_update.evses:
+                    for tariff_association_update in evse_update.tariff_association or []:
+                        tariff_uids.add(tariff_association_update.tariff.uid)
+                        tariff_association_uids.add(tariff_association_update.uid)
+
+        for tariff in old_tariffs:
+            if tariff.uid not in tariff_uids:
+                self.tariff_repository.delete_tariff(tariff, commit=False)
+                continue
+
+            # Tariff associations are children of their tariff, so dropping an association from the tariff
+            # deletes it - together with its links to EVSEs and connectors.
+            remaining_tariff_associations = [
+                tariff_association
+                for tariff_association in tariff.tariff_associations
+                if tariff_association.uid in tariff_association_uids
+            ]
+            if len(remaining_tariff_associations) != len(tariff.tariff_associations):
+                tariff.tariff_associations = remaining_tariff_associations
+                self.tariff_repository.save_tariff(tariff, commit=False)
+
+        self.tariff_repository.session.commit()
+
     def save_location_update(
         self,
         location_update: LocationUpdate,
@@ -447,6 +484,9 @@ class BaseImportService(BaseService, RemoteMixin, ABC):
             tariff_association = tariff_associations_by_uid[tariff_association_update.uid]
         else:
             tariff_association = TariffAssociation()
+            # A new association is linked to its tariff right away, so it has to be in the session before the next
+            # flush - otherwise SQLAlchemy skips the tariff of an association it does not know yet.
+            self.tariff_repository.session.add(tariff_association)
             tariff_associations_by_uid[tariff_association_update.uid] = tariff_association
 
         tariff_association.last_updated = tariff_association_update.last_updated or datetime.now(tz=timezone.utc)
@@ -465,6 +505,7 @@ class BaseImportService(BaseService, RemoteMixin, ABC):
             tariff = tariffs_by_uid[tariff_update.uid]
         else:
             tariff = Tariff(uid=tariff_update.uid)
+            self.tariff_repository.session.add(tariff)
             tariffs_by_uid[tariff_update.uid] = tariff
 
         tariff.last_updated = tariff_update.last_updated or datetime.now(tz=timezone.utc)

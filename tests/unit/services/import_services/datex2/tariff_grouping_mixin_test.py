@@ -123,17 +123,32 @@ def _build_location_update(*tariff_updates: TariffUpdate) -> LocationUpdate:
     )
 
 
+def _grouped_tariff_updates(*location_updates: LocationUpdate) -> list[TariffUpdate]:
+    """The tariffs which survived the grouping, in the order their associations appear."""
+    return [
+        tariff_association_update.tariff
+        for location_update in location_updates
+        for charging_station_update in location_update.charging_pool
+        for evse_update in charging_station_update.evses
+        for tariff_association_update in evse_update.tariff_association or []
+    ]
+
+
 def test_group_identical_tariffs_collapses_identical_fees() -> None:
-    """Tariffs with identical fees share one uid, no matter which uid they started with."""
+    """Tariffs with identical fees collapse into one tariff, no matter which uid they started with."""
     tariff_updates = [_build_tariff_update(uid='first'), _build_tariff_update(uid='second')]
     location_update = _build_location_update(*tariff_updates)
 
     assert group_identical_tariffs([location_update]) == 1
 
-    assert tariff_updates[0].uid == tariff_updates[1].uid
+    # Both EVSEs keep their own association, but the duplicated tariff is gone.
+    grouped_tariff_updates = _grouped_tariff_updates(location_update)
+    assert len(grouped_tariff_updates) == 2
+    assert grouped_tariff_updates[0] is grouped_tariff_updates[1]
+
     # The grouped uid is a fingerprint of the fees, not one of the original uids.
-    assert tariff_updates[0].uid not in ['first', 'second']
-    assert len(tariff_updates[0].uid) == 32
+    assert grouped_tariff_updates[0].uid not in ['first', 'second']
+    assert len(grouped_tariff_updates[0].uid) == 32
 
 
 def test_group_identical_tariffs_uses_newest_last_updated() -> None:
@@ -145,18 +160,26 @@ def test_group_identical_tariffs_uses_newest_last_updated() -> None:
         _build_tariff_update(uid='second', last_updated=newest),
         _build_tariff_update(uid='third', last_updated=datetime(2026, 3, 2, 12, 0, tzinfo=timezone.utc)),
     ]
+    location_update = _build_location_update(*tariff_updates)
 
-    assert group_identical_tariffs([_build_location_update(*tariff_updates)]) == 1
+    assert group_identical_tariffs([location_update]) == 1
 
-    assert [tariff_update.last_updated for tariff_update in tariff_updates] == [newest, newest, newest]
+    assert [tariff_update.last_updated for tariff_update in _grouped_tariff_updates(location_update)] == [
+        newest,
+        newest,
+        newest,
+    ]
 
 
 def test_group_identical_tariffs_keeps_last_updated_none_without_timestamps() -> None:
-    tariff_updates = [_build_tariff_update(uid='first'), _build_tariff_update(uid='second')]
+    location_update = _build_location_update(
+        _build_tariff_update(uid='first'),
+        _build_tariff_update(uid='second'),
+    )
 
-    assert group_identical_tariffs([_build_location_update(*tariff_updates)]) == 1
+    assert group_identical_tariffs([location_update]) == 1
 
-    assert [tariff_update.last_updated for tariff_update in tariff_updates] == [None, None]
+    assert [tariff_update.last_updated for tariff_update in _grouped_tariff_updates(location_update)] == [None, None]
 
 
 def test_group_identical_tariffs_keeps_differing_fees_apart() -> None:
@@ -179,12 +202,13 @@ def test_group_identical_tariffs_keeps_differing_fees_apart() -> None:
 
 def test_group_identical_tariffs_groups_across_locations() -> None:
     """Grouping spans the whole import, not just a single location."""
-    first = _build_tariff_update(uid='first')
-    second = _build_tariff_update(uid='second')
+    first_location_update = _build_location_update(_build_tariff_update(uid='first'))
+    second_location_update = _build_location_update(_build_tariff_update(uid='second'))
 
-    assert group_identical_tariffs([_build_location_update(first), _build_location_update(second)]) == 1
+    assert group_identical_tariffs([first_location_update, second_location_update]) == 1
 
-    assert first.uid == second.uid
+    grouped_tariff_updates = _grouped_tariff_updates(first_location_update, second_location_update)
+    assert grouped_tariff_updates[0] is grouped_tariff_updates[1]
 
 
 def test_group_identical_tariffs_is_deterministic_across_imports() -> None:
