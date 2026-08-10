@@ -1,5 +1,14 @@
 # Changelog
 
+# 2.15.1
+
+Released 2026-08-10
+
+## Fixes
+
+* [tariff cleanup](https://github.com/binary-butterfly/ocpdb/pull/252)
+
+
 # 2.15.0
 
 Released 2026-08-02
