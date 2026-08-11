@@ -472,6 +472,78 @@ def test_save_location_updates_two_evses_share_same_tariff(
     assert evse1.tariff_associations[0].id == evse2.tariff_associations[0].id
 
 
+def test_save_location_updates_replaces_per_evse_associations_with_a_shared_one(
+    db,
+    testing_import_service: BaseImportService,
+):
+    """
+    A source which used to publish one association per EVSE and now publishes a single shared one
+    ends up with that one association, not with the old ones next to it.
+    """
+    testing_import_service.save_location_updates([
+        _create_location_update_with_two_evses(tariff_association_uids=['ta_evse1', 'ta_evse2']),
+    ])
+
+    assert db.session.query(TariffAssociation).count() == 2
+
+    testing_import_service.save_location_updates([
+        _create_location_update_with_two_evses(tariff_association_uids=['ta_shared', 'ta_shared']),
+    ])
+
+    assert [association.uid for association in db.session.query(TariffAssociation).all()] == ['ta_shared']
+    assert db.session.query(Tariff).count() == 1
+
+    association = db.session.query(TariffAssociation).first()
+    assert {evse.uid for evse in association.evses} == {'evse1', 'evse2'}
+
+
+def _create_location_update_with_two_evses(*, tariff_association_uids: list[str]) -> LocationUpdate:
+    """One location with two EVSEs, each pointing at the tariff association of the given uid."""
+    tariff_update = TariffUpdate(
+        uid='tariff1',
+        source='test_source_uid',
+        currency='EUR',
+        elements=[],
+    )
+
+    return LocationUpdate(
+        uid='loc1',
+        source='test_source_uid',
+        lat=Decimal('48.7758'),
+        lon=Decimal('9.1829'),
+        time_zone='Europe/Berlin',
+        charging_pool=[
+            ChargingStationUpdate(
+                uid='cs1',
+                evses=[
+                    EvseUpdate(
+                        uid=f'evse{index}',
+                        evse_id=f'DE*TST*E00{index}',
+                        status=EvseStatus.AVAILABLE,
+                        connectors=[
+                            ConnectorUpdate(
+                                uid=f'conn{index}',
+                                standard=ConnectorType.IEC_62196_T2,
+                                format=ConnectorFormat.SOCKET,
+                                max_electric_power=22000,
+                            ),
+                        ],
+                        tariff_association=[
+                            TariffAssociationUpdate(
+                                uid=tariff_association_uid,
+                                source='test_source_uid',
+                                start_date_time=datetime(2024, 1, 1, tzinfo=timezone.utc),
+                                tariff=tariff_update,
+                            ),
+                        ],
+                    )
+                    for index, tariff_association_uid in enumerate(tariff_association_uids, start=1)
+                ],
+            ),
+        ],
+    )
+
+
 def test_save_location_updates_evse_without_tariff_association(db, testing_import_service: BaseImportService):
     testing_import_service.save_location_updates([
         LocationUpdate(

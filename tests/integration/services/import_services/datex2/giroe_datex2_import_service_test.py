@@ -38,9 +38,10 @@ EXPECTED_LOCATION_COUNT = 8
 EXPECTED_STATION_COUNT = 43
 EXPECTED_EVSE_COUNT = 72
 # 36 EVSEs are offered under two energy rates and 36 under one. The 108 rates hold one duplicated
-# rate id, which is skipped, and describe 13 distinct sets of fees in total.
+# rate id, which is skipped, and describe 13 distinct sets of fees in total. All of them are offered
+# ad-hoc, so the 13 tariffs come with one association each.
 EXPECTED_TARIFF_COUNT = 13
-EXPECTED_TARIFF_ASSOCIATION_COUNT = 107
+EXPECTED_TARIFF_ASSOCIATION_COUNT = 13
 
 
 def _load_test_data(filename: str) -> str:
@@ -76,8 +77,8 @@ def test_giroe_datex2_static_import(
     business = db.session.query(Business).first()
     assert business.name == 'GLS Mobility GmbH'
 
-    # Each EVSE keeps one tariff association per energy rate, but tariffs charging the same fees are
-    # grouped into one tariff, so there are far fewer tariffs than associations.
+    # Every EVSE stays linked to the tariffs of its energy rates, but rates charging the same fees are
+    # grouped into one tariff and one association the EVSEs share, so both are far fewer than the rates.
     assert db.session.query(Tariff).count() == EXPECTED_TARIFF_COUNT
     assert db.session.query(TariffAssociation).count() == EXPECTED_TARIFF_ASSOCIATION_COUNT
 
