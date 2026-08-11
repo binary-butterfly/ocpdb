@@ -1,6 +1,6 @@
 [project]
 name = "ocpdb"
-version = "2.15.1"
+version = "2.15.2"
 description = "Open ChargePoint DataBase - aggregates EV charging station data from multiple sources."
 requires-python = ">= 3.12"
 dependencies = [

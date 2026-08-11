@@ -1,5 +1,14 @@
 # Changelog
 
+# 2.15.2
+
+Released 2026-08-11
+
+## Fixes
+
+* [deduplicate tariff associations](https://github.com/binary-butterfly/ocpdb/pull/253)
+
+
 # 2.15.1
 
 Released 2026-08-10
