@@ -19,14 +19,21 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import json
 import logging
 from abc import ABC
-from collections.abc import Iterator
-from dataclasses import asdict
+from collections.abc import Iterable, Iterator
+from dataclasses import asdict, fields
 from datetime import datetime
 from hashlib import sha256
+from typing import NamedTuple
 
 from webapp.common.json import DefaultJSONEncoder
 from webapp.common.logging.models import LogMessageType
-from webapp.services.import_services.models import LocationUpdate, SourceInfo, TariffAssociationUpdate, TariffUpdate
+from webapp.services.import_services.models import (
+    EvseUpdate,
+    LocationUpdate,
+    SourceInfo,
+    TariffAssociationUpdate,
+    TariffUpdate,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -35,79 +42,190 @@ logger = logging.getLogger(__name__)
 # group instead of separating tariffs which charge the same fees.
 _IDENTITY_ONLY_TARIFF_FIELDS = frozenset({'uid', 'last_updated'})
 
+# The tariff of an association takes part in the comparison as its fingerprint instead of its raw
+# content, so it is dropped here as well. start_date_time is merged to the oldest value of a group,
+# just like last_updated is merged to the newest one.
+_IDENTITY_ONLY_TARIFF_ASSOCIATION_FIELDS = frozenset({'uid', 'tariff', 'start_date_time', 'last_updated'})
+
+
+class TariffGroupingResult(NamedTuple):
+    tariff_count: int
+    tariff_association_count: int
+
+
+class _TariffAssociationGroup(NamedTuple):
+    tariff_fingerprint: str
+    tariff_association_updates: list[TariffAssociationUpdate]
+
 
 class TariffGroupingMixin(ABC):
     source_info: SourceInfo
 
-    def group_identical_tariffs(self, location_updates: list[LocationUpdate]) -> int:
+    def group_identical_tariffs(self, location_updates: list[LocationUpdate]) -> TariffGroupingResult:
         """
-        Collapse tariffs with identical fees into one tariff and return the number of remaining tariffs.
+        Collapse tariffs and tariff associations with identical content and return how many remain.
 
         DATEX2 publishes the tariff of every EVSE separately, so an operator running a single price list
-        across its whole network produces one tariff per EVSE. This keeps one tariff per group of
-        identical tariffs, gives it a uid which is a fingerprint of the tariff's financial content and
-        points every tariff association of the group at it. The duplicates are dropped right here, so
-        they never reach the database, while every EVSE keeps its own tariff association.
+        across its whole network produces one tariff and one tariff association per EVSE. This keeps one
+        tariff per group of identical tariffs and one association per group of identical associations,
+        gives both a uid which is a fingerprint of their content and hands the survivors back to every
+        EVSE of the group. The duplicates are dropped right here, so they never reach the database, while
+        every EVSE keeps its link to the tariffs which apply to it.
 
         Two tariffs are identical if all their fee-defining values match: the tariff elements (including
-        price components, taxes and restrictions), the currency and the tariff type. Neither the uid nor
-        last_updated take part in the comparison; the remaining tariff is stamped with the newest
-        last_updated of its group.
+        price components, taxes and restrictions), the currency and the tariff type. Two associations are
+        identical if they point at the same grouped tariff and address the same audience. Neither the uids
+        nor the timestamps take part in the comparison; the survivors are stamped with the newest
+        last_updated of their group, associations additionally with the oldest start_date_time, which is
+        when the first EVSE of the group started to charge these fees.
         """
-        tariff_association_updates_by_fingerprint: dict[str, list[TariffAssociationUpdate]] = {}
+        tariff_updates_by_fingerprint: dict[str, list[TariffUpdate]] = {}
+        tariff_association_groups: dict[str, _TariffAssociationGroup] = {}
+        # The association fingerprints of every EVSE which has tariffs, in import order, so the grouped
+        # associations can be handed back to their EVSEs without fingerprinting everything twice.
+        association_fingerprints_by_evse_update: list[tuple[EvseUpdate, list[str]]] = []
 
-        for tariff_association_update in self._iterate_tariff_association_updates(location_updates):
-            fingerprint = self._build_fingerprint(tariff_association_update.tariff)
-            tariff_association_updates_by_fingerprint.setdefault(fingerprint, []).append(tariff_association_update)
+        for evse_update in self._iterate_evse_updates(location_updates):
+            association_fingerprints: list[str] = []
 
-        tariff_update_count = 0
-        for fingerprint, tariff_association_updates in tariff_association_updates_by_fingerprint.items():
-            tariff_updates = [
-                tariff_association_update.tariff for tariff_association_update in tariff_association_updates
+            for tariff_association_update in evse_update.tariff_association or []:
+                tariff_fingerprint = self._build_tariff_fingerprint(tariff_association_update.tariff)
+                tariff_updates_by_fingerprint.setdefault(tariff_fingerprint, []).append(
+                    tariff_association_update.tariff,
+                )
+
+                association_fingerprint = self._build_tariff_association_fingerprint(
+                    tariff_association_update,
+                    tariff_fingerprint,
+                )
+                tariff_association_groups.setdefault(
+                    association_fingerprint,
+                    _TariffAssociationGroup(tariff_fingerprint=tariff_fingerprint, tariff_association_updates=[]),
+                ).tariff_association_updates.append(tariff_association_update)
+
+                association_fingerprints.append(association_fingerprint)
+
+            if association_fingerprints:
+                association_fingerprints_by_evse_update.append((evse_update, association_fingerprints))
+
+        grouped_tariff_updates = self._group_tariff_updates(tariff_updates_by_fingerprint)
+        grouped_tariff_association_updates = self._group_tariff_association_updates(
+            tariff_association_groups,
+            grouped_tariff_updates,
+        )
+
+        for evse_update, association_fingerprints in association_fingerprints_by_evse_update:
+            # Two rates of the same EVSE can share a fingerprint, and an EVSE cannot hold the same
+            # association twice, so dict.fromkeys drops those duplicates while keeping the order stable.
+            evse_update.tariff_association = [
+                grouped_tariff_association_updates[association_fingerprint]
+                for association_fingerprint in dict.fromkeys(association_fingerprints)
             ]
 
-            grouped_tariff_update = tariff_updates[0]
-            grouped_tariff_update.uid = fingerprint
-            grouped_tariff_update.last_updated = self._newest_last_updated(tariff_updates)
-
-            for tariff_association_update in tariff_association_updates:
-                tariff_association_update.tariff = grouped_tariff_update
-
-            tariff_update_count += len(tariff_updates)
-
+        tariff_update_count = sum(len(tariff_updates) for tariff_updates in tariff_updates_by_fingerprint.values())
         logger.info(
             f'Grouped {tariff_update_count} {self.source_info.uid} tariffs into '
-            f'{len(tariff_association_updates_by_fingerprint)} distinct tariffs.',
+            f'{len(grouped_tariff_updates)} distinct tariffs and '
+            f'{len(grouped_tariff_association_updates)} distinct tariff associations.',
             extra={'attributes': {'type': LogMessageType.IMPORT_SOURCE}},
         )
 
-        return len(tariff_association_updates_by_fingerprint)
+        return TariffGroupingResult(
+            tariff_count=len(grouped_tariff_updates),
+            tariff_association_count=len(grouped_tariff_association_updates),
+        )
+
+    @classmethod
+    def _group_tariff_updates(
+        cls,
+        tariff_updates_by_fingerprint: dict[str, list[TariffUpdate]],
+    ) -> dict[str, TariffUpdate]:
+        grouped_tariff_updates: dict[str, TariffUpdate] = {}
+
+        for fingerprint, tariff_updates in tariff_updates_by_fingerprint.items():
+            grouped_tariff_update = tariff_updates[0]
+            grouped_tariff_update.uid = fingerprint
+            grouped_tariff_update.last_updated = cls._newest(
+                tariff_update.last_updated for tariff_update in tariff_updates
+            )
+            grouped_tariff_updates[fingerprint] = grouped_tariff_update
+
+        return grouped_tariff_updates
+
+    @classmethod
+    def _group_tariff_association_updates(
+        cls,
+        tariff_association_groups: dict[str, _TariffAssociationGroup],
+        grouped_tariff_updates: dict[str, TariffUpdate],
+    ) -> dict[str, TariffAssociationUpdate]:
+        grouped_tariff_association_updates: dict[str, TariffAssociationUpdate] = {}
+
+        for fingerprint, tariff_association_group in tariff_association_groups.items():
+            tariff_association_updates = tariff_association_group.tariff_association_updates
+
+            grouped_tariff_association_update = tariff_association_updates[0]
+            grouped_tariff_association_update.uid = fingerprint
+            # The tariff of the group survived the tariff grouping only if it happened to be the first of
+            # its group, so the association is pointed at the survivor instead of at its own tariff.
+            grouped_tariff_association_update.tariff = grouped_tariff_updates[
+                tariff_association_group.tariff_fingerprint
+            ]
+            grouped_tariff_association_update.last_updated = cls._newest(
+                tariff_association_update.last_updated for tariff_association_update in tariff_association_updates
+            )
+            grouped_tariff_association_update.start_date_time = cls._oldest(
+                tariff_association_update.start_date_time for tariff_association_update in tariff_association_updates
+            )
+            grouped_tariff_association_updates[fingerprint] = grouped_tariff_association_update
+
+        return grouped_tariff_association_updates
 
     @staticmethod
-    def _iterate_tariff_association_updates(
-        location_updates: list[LocationUpdate],
-    ) -> Iterator[TariffAssociationUpdate]:
+    def _iterate_evse_updates(location_updates: list[LocationUpdate]) -> Iterator[EvseUpdate]:
         for location_update in location_updates:
             for charging_station_update in location_update.charging_pool:
-                for evse_update in charging_station_update.evses:
-                    yield from evse_update.tariff_association or []
+                yield from charging_station_update.evses
 
-    @staticmethod
-    def _build_fingerprint(tariff_update: TariffUpdate) -> str:
+    @classmethod
+    def _build_tariff_fingerprint(cls, tariff_update: TariffUpdate) -> str:
         financials = {
             key: value for key, value in asdict(tariff_update).items() if key not in _IDENTITY_ONLY_TARIFF_FIELDS
         }
-        # sort_keys makes the fingerprint independent of the field order, while list order stays
-        # significant because the order of the tariff elements decides which one applies first.
-        serialized_financials = json.dumps(financials, sort_keys=True, cls=DefaultJSONEncoder)
 
-        # Truncated like the per-EVSE uids the mappers generate, which keeps it within Tariff.uid's 64 chars.
-        return sha256(serialized_financials.encode()).hexdigest()[:32]
+        return cls._fingerprint(financials)
+
+    @classmethod
+    def _build_tariff_association_fingerprint(
+        cls,
+        tariff_association_update: TariffAssociationUpdate,
+        tariff_fingerprint: str,
+    ) -> str:
+        content = {
+            field.name: getattr(tariff_association_update, field.name)
+            for field in fields(tariff_association_update)
+            if field.name not in _IDENTITY_ONLY_TARIFF_ASSOCIATION_FIELDS
+        }
+        content['tariff'] = tariff_fingerprint
+
+        return cls._fingerprint(content)
 
     @staticmethod
-    def _newest_last_updated(tariff_updates: list[TariffUpdate]) -> datetime | None:
-        last_updateds = [
-            tariff_update.last_updated for tariff_update in tariff_updates if tariff_update.last_updated is not None
-        ]
+    def _fingerprint(content: dict) -> str:
+        # sort_keys makes the fingerprint independent of the field order, while list order stays
+        # significant because the order of the tariff elements decides which one applies first.
+        serialized_content = json.dumps(content, sort_keys=True, cls=DefaultJSONEncoder)
 
-        return max(last_updateds) if last_updateds else None
+        # Truncated like the per-EVSE uids the mappers generate, which keeps it within Tariff.uid's 64 chars.
+        return sha256(serialized_content.encode()).hexdigest()[:32]
+
+    @staticmethod
+    def _newest(timestamps: Iterable[datetime | None]) -> datetime | None:
+        set_timestamps = [timestamp for timestamp in timestamps if timestamp is not None]
+
+        return max(set_timestamps) if set_timestamps else None
+
+    @staticmethod
+    def _oldest(timestamps: Iterable[datetime | None]) -> datetime | None:
+        set_timestamps = [timestamp for timestamp in timestamps if timestamp is not None]
+
+        return min(set_timestamps) if set_timestamps else None

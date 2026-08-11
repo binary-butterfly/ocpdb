@@ -66,10 +66,10 @@ def test_enbw_datex2_static_import(
     assert db.session.query(Evse).count() == 57
     assert db.session.query(Connector).count() == 57
     assert db.session.query(Business).count() == 1
-    # The 57 EVSE tariffs describe only two distinct sets of fees and are grouped accordingly, while
-    # every EVSE keeps its own tariff association.
+    # The 57 EVSE tariffs describe only two distinct sets of fees, offered to a single audience, so
+    # both the tariffs and the tariff associations are grouped into two rows the EVSEs share.
     assert db.session.query(Tariff).count() == 2
-    assert db.session.query(TariffAssociation).count() == 57
+    assert db.session.query(TariffAssociation).count() == 2
 
     # Check that site-level parking spaces are mapped to locations
     location = db.session.query(Location).filter(Location.uid == '800030182').first()
@@ -82,7 +82,8 @@ def test_enbw_datex2_static_import(
     assert parking_space.is_illuminated is False
     assert parking_space.is_accessible is False
 
-    # Each EVSE and its connector should be linked to a tariff association
+    # Each EVSE and its connector should be linked to a tariff association, which it shares with the
+    # other EVSEs charging the same fees
     evse = db.session.query(Evse).filter(Evse.uid == 'DE*EBW*E914082*1').first()
     assert len(evse.tariff_associations) == 1
     assert len(evse.connectors) == 1
