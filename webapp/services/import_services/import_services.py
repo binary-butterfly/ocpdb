@@ -37,6 +37,7 @@ from webapp.services.import_services.bnetza import BnetzaApiImportService, Bnetz
 from webapp.services.import_services.datex2 import (
     AmpecoDatex2ImportService,
     ChargecloudDatex2ImportService,
+    EClearingNetDatex2ImportService,
     EcoMovementDatex2ImportService,
     EluMobilityDatex2ImportService,
     EnBWDatex2ImportService,
@@ -87,6 +88,7 @@ class ImportServices(BaseService):
         BnetzaExcelImportService,
         ChargecloudDatex2ImportService,
         EaazePbwImportService,
+        EClearingNetDatex2ImportService,
         EcoMovementDatex2ImportService,
         EluMobilityDatex2ImportService,
         EnBWDatex2ImportService,
