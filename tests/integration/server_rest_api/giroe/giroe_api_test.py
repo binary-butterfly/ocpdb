@@ -89,7 +89,7 @@ def _valid_location_payload(location_id: int, *, public: bool = True) -> dict:
                         'modified': now,
                         'uid': f'giroe-evse-{location_id}',
                         'ocpp_connector_id': 1,
-                        'status': 'available',
+                        'status': 'AVAILABLE',
                         'power': 22000,
                         'power_type': 'AC_3_PHASE',
                         'standard': 'IEC_62196_T2',
