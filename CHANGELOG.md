@@ -1,5 +1,22 @@
 # Changelog
 
+# 2.16.0
+
+Released 2026-09-07
+
+## Features
+
+* [Datex2: eClearing](https://github.com/binary-butterfly/ocpdb/pull/261)
+
+## Fixes
+
+* [add missing last modified update](https://github.com/binary-butterfly/ocpdb/pull/251)
+
+## Maintenance
+
+* [dependency updates](https://github.com/binary-butterfly/ocpdb/pull/264)
+
+
 # 2.15.2
 
 Released 2026-08-11
