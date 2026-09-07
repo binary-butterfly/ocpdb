@@ -18,6 +18,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
 from base64 import b64encode
+from http import HTTPStatus
+from io import BytesIO
 from typing import Any
 
 from flask.testing import FlaskClient
@@ -26,6 +28,7 @@ from openapi_core import OpenAPI
 from openapi_core.contrib.werkzeug import WerkzeugOpenAPIRequest, WerkzeugOpenAPIResponse
 from sqlalchemy import text
 from werkzeug.test import TestResponse
+from werkzeug.wrappers import Request
 
 from webapp.common.flask_app import App
 from webapp.common.sqlalchemy import SQLAlchemy
@@ -73,16 +76,58 @@ class OpenApiFlaskClient(FlaskClient):
         if self.openapi_realm not in OPENAPI_BY_REALM:
             openapi_dict = generate_openapi(self.openapi_realm)
             openapi_dict = self.no_additional_properties(openapi_dict)
+            openapi_dict = self.drop_empty_request_bodies(openapi_dict)
             self.drop_empty_response_content(openapi_dict)
 
             OPENAPI_BY_REALM[self.openapi_realm] = OpenAPI.from_dict(openapi_dict)
 
+        openapi_request = WerkzeugOpenAPIRequest(self._rewound_request(response))
+
+        # Requests are validated next to responses, so that a documented request body no validator would accept
+        # fails here rather than only in a client generated from the schema.
+        #
+        # Only the ones the application accepted, though: a test that posts a malformed body to assert the 400 is
+        # sending something the schema is supposed to reject, and validating it here would fail the wrong side.
+        if response.status_code < HTTPStatus.BAD_REQUEST:
+            OPENAPI_BY_REALM[self.openapi_realm].validate_request(openapi_request)
+
         OPENAPI_BY_REALM[self.openapi_realm].validate_response(
-            WerkzeugOpenAPIRequest(response.request),
+            openapi_request,
             WerkzeugOpenAPIResponse(response),
         )
 
         return response
+
+    @staticmethod
+    def _rewound_request(response: TestResponse) -> Request:
+        """
+        The request of a finished response, with its body readable again.
+
+        The application has read the WSGI input stream to its end by now, and the request object the response carries
+        never cached what it held, so reading the body off it as-is yields nothing. The test client always builds that
+        stream as a BytesIO, which can simply be rewound to give the validators the body the client actually sent.
+        """
+        body_stream = response.request.environ.get('wsgi.input')
+        if isinstance(body_stream, BytesIO):
+            body_stream.seek(0)
+
+        return response.request
+
+    @staticmethod
+    def drop_empty_request_bodies(openapi_dict: dict) -> dict:
+        """
+        Removes the `requestBody` of every operation that documents no content type.
+
+        flask-openapi writes `{'required': True, 'content': {}}` for every POST, PUT and PATCH, including the ones
+        that take no body at all - a required body with no media type, which nothing can satisfy. It describes
+        nothing, so it is dropped rather than validated against.
+        """
+        for path_item in openapi_dict.get('paths', {}).values():
+            for operation in path_item.values():
+                if isinstance(operation, dict) and not operation.get('requestBody', {}).get('content', True):
+                    del operation['requestBody']
+
+        return openapi_dict
 
     def no_additional_properties(self, data: Any):
         if isinstance(data, dict):
