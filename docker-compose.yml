@@ -65,7 +65,7 @@ services:
       retries: 3
 
   regionalschluessel-importer:
-    image: ghcr.io/osgeo/gdal:alpine-small-3.12.1
+    image: ghcr.io/osgeo/gdal:alpine-small-3.13.3
     user: *local-user
     volumes:
       - ./scripts:/scripts
@@ -83,7 +83,7 @@ services:
     command: ["/scripts/import-regionalschluessel.sh"]
 
   rabbitmq:
-    image: rabbitmq:latest
+    image: rabbitmq:4.2
     user: rabbitmq
     environment:
       # Disable spammy logging
@@ -95,7 +95,7 @@ services:
       retries: 20
 
   redis:
-    image: redis:7.2
+    image: redis:8.10
     healthcheck:
       test: redis-cli ping
       interval: 1s

@@ -4,7 +4,7 @@
 
 This application is a flask application with following requirements:
 * Docker (for docker / dev deployment)
-* Python 3.12+ (for virtual environment deployment)
+* Python 3.13+ (for virtual environment deployment)
 * SQLAlchemy-compatible SQL-server (e.g. MariaDB or Postgre)
 * An AMQP-Queue (eg RabbitMQ)
 
