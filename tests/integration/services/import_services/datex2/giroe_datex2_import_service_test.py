@@ -93,13 +93,14 @@ def test_giroe_datex2_static_import_maps_location_fields(
     giroe_datex2_import_service.fetch_static_data()
 
     # Site 2629 in Bochum: address line composed from street + houseNumber, country mapped to alpha-3.
+    # The source ships the postcode as '44789 ', which the validator trims.
     location = db.session.query(Location).filter(Location.uid == '2629').first()
     assert location is not None
     assert location.lat == Decimal('51.4708953')
     assert location.lon == Decimal('7.2195074')
     assert location.address == 'Christstr. 9-11'
     assert location.city == 'Bochum'
-    assert location.postal_code == '44789 '
+    assert location.postal_code == '44789'
     assert location.country == 'DEU'
     assert location.time_zone == '+01:00'
     assert location.twentyfourseven is True
