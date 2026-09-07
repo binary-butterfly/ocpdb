@@ -240,6 +240,37 @@ class BaseDatex2V35ImportService(BaseImportService, TariffGroupingMixin, ABC):
 
         self.store_realtime_data(message_container)
 
+    def mark_realtime_push_received(
+        self,
+        message_container: MessageContainerWrapperInput | None = None,
+    ) -> None:
+        """
+        Record that a realtime push arrived for this source, without applying its payload yet.
+
+        Pushes that are handed off to a celery worker would otherwise only bump
+        ``realtime_data_updated_at`` once the worker actually processed the payload, which makes the
+        source look stale in the HEAD ``Last-Modified`` response and in monitoring until then. Every
+        accepted push therefore updates the timestamp right away, using the payload's
+        ``publicationTime`` if the envelope has already been validated and the receive time otherwise.
+        """
+        source = self.get_source()
+        publication_time = None if message_container is None else self.get_publication_time(message_container)
+
+        source.realtime_data_updated_at = publication_time or datetime.now(tz=timezone.utc)
+        self.source_repository.save_source(source)
+
+    @staticmethod
+    def get_publication_time(message_container: MessageContainerWrapperInput) -> datetime | None:
+        """Return the payload's ``publicationTime``, or ``None`` if the payload does not carry one."""
+        if not message_container.messageContainer.payload:
+            return None
+
+        publication = message_container.messageContainer.payload[0].aegiEnergyInfrastructureStatusPublication
+        if publication is UnsetValue or not publication.publicationTime:
+            return None
+
+        return publication.publicationTime
+
     def store_realtime_data(self, message_container: MessageContainerWrapperInput) -> None:
         """
         Apply an already-validated DATEX II v3.5 realtime message container to this source: upsert
@@ -249,17 +280,13 @@ class BaseDatex2V35ImportService(BaseImportService, TariffGroupingMixin, ABC):
         (e.g. a synchronous ``deltaPush`` from the REST API); otherwise use :meth:`import_realtime_data`.
         """
         source = self.get_source()
-        last_modified = datetime.now(tz=timezone.utc)
         result = RealtimeResult()
 
         self.add_realtime_data(message_container, result)
 
         self.save_evse_updates(list(result.evse_updates_by_evse.values()))
 
-        if message_container.messageContainer.payload:
-            payload = message_container.messageContainer.payload[0]
-            if payload.aegiEnergyInfrastructureStatusPublication.publicationTime:
-                last_modified = payload.aegiEnergyInfrastructureStatusPublication.publicationTime
+        last_modified = self.get_publication_time(message_container) or datetime.now(tz=timezone.utc)
 
         self.update_source(
             source=source,

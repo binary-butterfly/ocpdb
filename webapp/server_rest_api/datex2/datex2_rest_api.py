@@ -146,6 +146,8 @@ class Datex2RealtimeMethodView(Datex2BaseMethodView):
         sync_max_content_length = self.config_helper.get('DATEX2_SYNC_MAX_CONTENT_LENGTH', 250 * 1024)
         if len(data) > sync_max_content_length:
             self._queue_for_async_processing(source_uid, data)
+            # The payload is not parsed here, so the receive time is the best timestamp we have.
+            service.mark_realtime_push_received()
             # Mobilithek expects HTTP 200 instead of HTTP 204
             return empty_json_response(), HTTPStatus.OK
 
@@ -170,6 +172,9 @@ class Datex2RealtimeMethodView(Datex2BaseMethodView):
             return empty_json_response(), HTTPStatus.OK
 
         self._queue_for_async_processing(source_uid, data)
+        # The celery worker updates the source again once it applied the payload, but the source has
+        # this data now, so realtime_data_updated_at must not wait for the worker.
+        service.mark_realtime_push_received(message_container)
 
         # Mobilithek expects HTTP 200 instead of HTTP 204
         return empty_json_response(), HTTPStatus.OK

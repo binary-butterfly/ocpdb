@@ -18,6 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import gzip
 import json
+from datetime import datetime, timedelta, timezone
 from http import HTTPStatus
 from pathlib import Path
 from unittest.mock import patch
@@ -28,12 +29,14 @@ from requests_mock import Mocker
 from tests.integration.helpers import OpenApiFlaskClient
 from webapp.common.sqlalchemy import SQLAlchemy
 from webapp.dependencies import dependencies
-from webapp.models import Evse
+from webapp.models import Evse, Source
 from webapp.models.evse import EvseStatus
 
 SOURCE_UID = 'datex2_enbw'
 API_KEY = 'test-datex2-api-key'
 STATIC_SUBSCRIPTION_URL = 'https://mobilithek.info:8443/mobilithek/api/v1.0/subscription?subscriptionID=12345'
+# publicationTime of the aegiEnergyInfrastructureStatusPublication in datex2_enbw_realtime_reduced.json
+REALTIME_PUBLICATION_TIME = datetime(2026, 3, 12, 0, 0, 0, 8000, tzinfo=timezone.utc)
 
 
 def _load_test_data_text(filename: str) -> str:
@@ -54,6 +57,19 @@ def _import_static_data(requests_mock: Mocker) -> None:
         headers={'Content-Type': 'application/json'},
     )
     dependencies.get_import_services().importer_by_uid[SOURCE_UID].fetch_static_data()
+
+
+def _fetch_realtime_data_updated_at(db: SQLAlchemy) -> datetime | None:
+    """Return the source's ``realtime_data_updated_at`` as an aware UTC datetime."""
+    db.session.expire_all()
+    source = db.session.query(Source).filter(Source.uid == SOURCE_UID).first()
+    if source is None or source.realtime_data_updated_at is None:
+        return None
+
+    if source.realtime_data_updated_at.tzinfo is None:
+        return source.realtime_data_updated_at.replace(tzinfo=timezone.utc)
+
+    return source.realtime_data_updated_at.astimezone(timezone.utc)
 
 
 @pytest.fixture
@@ -378,6 +394,122 @@ class Datex2RealtimeImportApiV35Test:
         with written[0].open('rb') as f:
             assert json.load(f) == invalid_payload
         stubbed_celery_delay.assert_called_once()
+
+    @staticmethod
+    def test_push_realtime_v35_async_updates_realtime_data_updated_at(
+        db: SQLAlchemy,
+        test_client: OpenApiFlaskClient,
+        requests_mock: Mocker,
+        isolated_datex2_dir: Path,
+        stubbed_celery_delay,
+    ) -> None:
+        """
+        A push that is handed off to celery must update ``realtime_data_updated_at`` right away -
+        without waiting for the worker - so HEAD / monitoring do not report the source as stale.
+        """
+        _import_static_data(requests_mock)
+        assert _fetch_realtime_data_updated_at(db) is None
+
+        realtime_data = _load_test_data('datex2_enbw_realtime_reduced.json')
+        response = test_client.post(
+            path=f'/api/server/v1/datex/v3.5/{SOURCE_UID}/realtime?key={API_KEY}',
+            json=realtime_data,
+        )
+
+        assert response.status_code == HTTPStatus.OK
+        # The celery task did not run, so this timestamp comes from the push itself. As the envelope
+        # was validated on the request thread, it is the payload's publicationTime.
+        stubbed_celery_delay.assert_called_once()
+        assert _fetch_realtime_data_updated_at(db) == REALTIME_PUBLICATION_TIME
+
+    @staticmethod
+    def test_push_realtime_v35_delta_push_updates_realtime_data_updated_at(
+        db: SQLAlchemy,
+        test_client: OpenApiFlaskClient,
+        requests_mock: Mocker,
+        isolated_datex2_dir: Path,
+        stubbed_celery_delay,
+    ) -> None:
+        """A synchronously applied deltaPush must update ``realtime_data_updated_at`` as well."""
+        _import_static_data(requests_mock)
+
+        realtime_data = _load_test_data('datex2_enbw_realtime_reduced.json')
+        realtime_data['messageContainer']['exchangeInformation']['exchangeContext']['codedExchangeProtocol'] = {
+            'value': 'deltaPush',
+        }
+
+        response = test_client.post(
+            path=f'/api/server/v1/datex/v3.5/{SOURCE_UID}/realtime?key={API_KEY}',
+            json=realtime_data,
+        )
+
+        assert response.status_code == HTTPStatus.OK
+        stubbed_celery_delay.assert_not_called()
+        assert _fetch_realtime_data_updated_at(db) == REALTIME_PUBLICATION_TIME
+
+    @staticmethod
+    def test_push_realtime_v35_oversized_payload_updates_realtime_data_updated_at(
+        db: SQLAlchemy,
+        test_client: OpenApiFlaskClient,
+        requests_mock: Mocker,
+        isolated_datex2_dir: Path,
+        stubbed_celery_delay,
+    ) -> None:
+        """
+        Payloads queued without being parsed have no known publicationTime, so the push receive time
+        must be stored instead - the source still received data.
+        """
+        _import_static_data(requests_mock)
+        realtime_data = _load_test_data('datex2_enbw_realtime_reduced.json')
+
+        config = dependencies.get_config_helper().get_config()
+        sentinel = object()
+        original = config.get('DATEX2_SYNC_MAX_CONTENT_LENGTH', sentinel)
+        config['DATEX2_SYNC_MAX_CONTENT_LENGTH'] = 5
+        before = datetime.now(tz=timezone.utc) - timedelta(seconds=1)
+        try:
+            response = test_client.post(
+                path=f'/api/server/v1/datex/v3.5/{SOURCE_UID}/realtime?key={API_KEY}',
+                json=realtime_data,
+            )
+        finally:
+            if original is sentinel:
+                config.pop('DATEX2_SYNC_MAX_CONTENT_LENGTH', None)
+            else:
+                config['DATEX2_SYNC_MAX_CONTENT_LENGTH'] = original
+
+        assert response.status_code == HTTPStatus.OK
+        stubbed_celery_delay.assert_called_once()
+
+        realtime_data_updated_at = _fetch_realtime_data_updated_at(db)
+        assert realtime_data_updated_at is not None
+        assert before <= realtime_data_updated_at <= datetime.now(tz=timezone.utc) + timedelta(seconds=1)
+
+    @staticmethod
+    def test_head_realtime_v35_returns_last_modified_before_worker_ran(
+        db: SQLAlchemy,
+        test_client: OpenApiFlaskClient,
+        requests_mock: Mocker,
+        isolated_datex2_dir: Path,
+        stubbed_celery_delay,
+    ) -> None:
+        """
+        Mobilithek asks for HEAD Last-Modified to decide what to push next: it must reflect the last
+        push even while the payload is still queued for the celery worker.
+        """
+        _import_static_data(requests_mock)
+        realtime_data = _load_test_data('datex2_enbw_realtime_reduced.json')
+
+        test_client.post(
+            path=f'/api/server/v1/datex/v3.5/{SOURCE_UID}/realtime?key={API_KEY}',
+            json=realtime_data,
+        )
+        response = test_client.head(
+            path=f'/api/server/v1/datex/v3.5/{SOURCE_UID}/realtime?key={API_KEY}',
+        )
+
+        assert response.status_code == HTTPStatus.OK
+        assert 'Last-Modified' in response.headers
 
     @staticmethod
     def test_push_realtime_v35_invalid_payload_returns_400(
