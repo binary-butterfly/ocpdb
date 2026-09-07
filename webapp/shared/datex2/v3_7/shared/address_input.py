@@ -7,6 +7,8 @@ from validataclass.dataclasses import Default, ValidataclassMixin, validataclass
 from validataclass.helpers import UnsetValue, UnsetValueType
 from validataclass.validators import DataclassValidator, ListValidator, StringValidator
 
+from webapp.common.validation.replacing_string_validator import ReplacingStringValidator
+
 from .address_line_input import AddressLineInput
 from .extension_type_g_input import ExtensionTypeGInput
 from .multilingual_string_input import MultilingualStringInput
@@ -14,7 +16,13 @@ from .multilingual_string_input import MultilingualStringInput
 
 @validataclass
 class AddressInput(ValidataclassMixin):
-    postcode: str | UnsetValueType = StringValidator(), Default(UnsetValue)
+    postcode: str | UnsetValueType = (
+        ReplacingStringValidator(
+            mapping={'\r': '', '\n': ' ', '\t': ' ', '\xa0': ' '},
+            normalize_spaces=True,
+        ),
+        Default(UnsetValue),
+    )
     city: MultilingualStringInput | UnsetValueType = DataclassValidator(MultilingualStringInput), Default(UnsetValue)
     countryCode: str | UnsetValueType = StringValidator(max_length=2), Default(UnsetValue)
     addressLine: list[AddressLineInput] | UnsetValueType = (

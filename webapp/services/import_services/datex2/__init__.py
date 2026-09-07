@@ -19,6 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from .v3_5 import (
     AmpecoDatex2ImportService,
     ChargecloudDatex2ImportService,
+    EClearingNetDatex2ImportService,
     EcoMovementDatex2ImportService,
     EluMobilityDatex2ImportService,
     EnBWDatex2ImportService,
