@@ -1,10 +1,10 @@
 # syntax=docker/dockerfile:1
 
 # Builder stage: resolve and install the production dependencies into a self-contained venv
-FROM python:3.12-alpine3.21 AS builder
+FROM python:3.13-alpine3.24 AS builder
 
 # Bring in the uv binary from the official, pinned image (kept up to date by dependabot).
-COPY --from=ghcr.io/astral-sh/uv:0.12.1 /uv /uvx /bin/
+COPY --from=ghcr.io/astral-sh/uv:0.12.10 /uv /uvx /bin/
 
 # Install geos-dev and alpine-sdk (which contains the compilers needed for building wheels)
 RUN apk update && \
@@ -28,7 +28,7 @@ RUN uv sync --frozen --no-dev
 
 
 # Actual application runtime stage (without build dependencies)
-FROM python:3.12-alpine3.21 AS runtime
+FROM python:3.13-alpine3.24 AS runtime
 
 # Install geos at system level (needed as a sub-dependency of mapbox-vector-tile)
 RUN apk update && \
