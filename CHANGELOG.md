@@ -14,6 +14,7 @@ Released 2026-09-07
 
 ## Maintenance
 
+* [add openapi request testing](https://github.com/binary-butterfly/ocpdb/pull/265)
 * [dependency updates](https://github.com/binary-butterfly/ocpdb/pull/264)
 
 
