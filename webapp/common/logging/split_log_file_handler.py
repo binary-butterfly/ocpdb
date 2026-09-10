@@ -24,9 +24,11 @@ from webapp.common.logging.models import LogMessageType
 
 
 class SplitLogFileHandler(Handler):
-    _file_handlers: dict[LogMessageType, WatchedFileHandler] = {}
+    _file_handlers: dict[LogMessageType, WatchedFileHandler]
 
     def __init__(self, log_path: str, **kwargs):
+        # Has to be set before Handler.__init__(), as that calls createLock(), which iterates over the file handlers.
+        self._file_handlers = {}
         super().__init__()
         for log_type in LogMessageType:
             log_name = log_type.value.lower().replace('_', '-')
@@ -37,33 +39,34 @@ class SplitLogFileHandler(Handler):
 
     def emit(self, record: LogRecord):
         log_type: LogMessageType = getattr(record, 'attributes', {}).get('type', LogMessageType.MAIN)
-        self._file_handlers[log_type].emit(record)
+        self._file_handlers.get(log_type, self._file_handlers[LogMessageType.MAIN]).emit(record)
 
     def close(self):
         for handler in self._file_handlers.values():
             handler.close()
+        super().close()
 
     def setFormatter(self, formatter: Formatter):
         for handler in self._file_handlers.values():
             handler.setFormatter(formatter)
 
     def createLock(self):
+        super().createLock()
         for handler in self._file_handlers.values():
             handler.createLock()
 
-    def set_name(self, name: str):
-        for handler in self._file_handlers.values():
-            handler.set_name(name)
-
     def acquire(self):
+        super().acquire()
         for handler in self._file_handlers.values():
             handler.acquire()
 
     def release(self):
         for handler in self._file_handlers.values():
             handler.release()
+        super().release()
 
     def setLevel(self, level: int):
+        super().setLevel(level)
         for handler in self._file_handlers.values():
             handler.setLevel(level)
 
