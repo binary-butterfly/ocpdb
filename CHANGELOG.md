@@ -1,5 +1,14 @@
 # Changelog
 
+# 2.16.1
+
+Released 2026-09-10
+
+## Fixes
+
+* [Hotfix: Split Handler](https://github.com/binary-butterfly/ocpdb/pull/267)
+
+
 # 2.16.0
 
 Released 2026-09-07
