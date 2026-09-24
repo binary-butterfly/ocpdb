@@ -152,3 +152,23 @@ def test_get_ocpi_30_connector_non_strict(
     assert 'standard' in data
     assert 'format' in data
     assert 'original_id' in data
+
+
+def test_get_ocpi_30_connectors_with_combined_location_filters(
+    db: SQLAlchemy,
+    test_client: OpenApiFlaskClient,
+) -> None:
+    db.session.add_all([
+        get_location_1(evses=[get_full_evse_1(), get_full_evse_2()], operator=get_business_1()),
+        get_location_2(evses=[get_full_evse_3()], operator=get_business_1()),
+        get_location_3(source=SOURCE_UID_2, evses=[get_full_evse_5()], operator=get_business_2()),
+    ])
+    db.session.commit()
+
+    response = test_client.get(
+        path=f'/api/public/ocpi/3.0/connectors?source_uid={SOURCE_UID_1}&exclude_source_uids={SOURCE_UID_2}'
+        '&location_id=1',
+    )
+
+    assert response.status_code == HTTPStatus.OK
+    assert response.json['total_count'] == 2

@@ -19,7 +19,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from http import HTTPStatus
 from unittest.mock import ANY
 
-from tests.integration.helpers import OpenApiFlaskClient
+from tests.integration.helpers import OpenApiFlaskClient, capture_statements
+from tests.integration.model_generators.evse import get_full_evse_1
+from tests.integration.model_generators.location import get_location_1
 from tests.integration.model_generators.source import SOURCE_UID_1, SOURCE_UID_2
 from tests.integration.model_generators.tariff import get_tariff_1, get_tariff_2, get_tariff_association
 from webapp.common.sqlalchemy import SQLAlchemy
@@ -170,3 +172,26 @@ def test_get_ocpi_22_tariff_merges_tariff_data(
     # Both share the same tariff elements
     assert items_by_type['AD_HOC_PAYMENT']['elements'] == items_by_type['REGULAR']['elements']
     assert items_by_type['AD_HOC_PAYMENT']['currency'] == 'EUR'
+
+
+def test_get_ocpi_22_tariffs_does_not_load_evses_and_connectors(
+    db: SQLAlchemy,
+    public_test_client: OpenApiFlaskClient,
+) -> None:
+    """OCPI 2.2 tariffs do not render the EVSEs and connectors of a tariff association, so they are not loaded."""
+    tariff = get_tariff_1()
+    db.session.add(tariff)
+    db.session.flush()
+
+    evse = get_full_evse_1()
+    evse.tariff_associations = [get_tariff_association(uid='TA-1', tariff=tariff)]
+    db.session.add(get_location_1(evses=[evse]))
+    db.session.commit()
+
+    with capture_statements(db) as statements:
+        response = public_test_client.get(path='/api/public/ocpi/2.2/tariffs')
+
+    assert response.status_code == HTTPStatus.OK
+    assert len(response.json['items']) == 1
+    assert not any('evse_tariff_association' in statement for statement in statements)
+    assert not any('connector_tariff_association' in statement for statement in statements)

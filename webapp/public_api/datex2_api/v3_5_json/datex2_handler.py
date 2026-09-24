@@ -63,7 +63,8 @@ class Datex2V35JSONHandler(PublicApiBaseHandler):
             include_charging_stations=True,
             include_evses=True,
             include_connectors=True,
-            include_tariffs=True,
+            # The static mapper renders the tariffs of the EVSEs, but never the ones of the connectors.
+            include_evse_tariffs=True,
             include_operators=True,
         )
 
@@ -71,21 +72,13 @@ class Datex2V35JSONHandler(PublicApiBaseHandler):
 
     def get_datex2_realtime_payload(self, search_query: LocationApiSearchQuery) -> DATEXII3D2RealtimePayloadInput:
         search_query.exclude_evse_status = [EvseStatus.STATIC]
-        locations = self.location_repository.fetch_locations(
-            search_query=search_query,
-            include_charging_stations=True,
-            include_evses=True,
-        )
+        locations = self.location_repository.fetch_realtime_locations(search_query=search_query)
 
-        return self.datex_realtime_export_mapper.map_locations_to_realtime_payload(list(locations))
+        return self.datex_realtime_export_mapper.map_locations_to_realtime_payload(locations)
 
     def get_datex2_mobilithek_realtime(self, search_query: LocationApiSearchQuery) -> MessageContainerWrapperInput:
         search_query.exclude_evse_status = [EvseStatus.STATIC]
-        locations = self.location_repository.fetch_locations(
-            search_query=search_query,
-            include_charging_stations=True,
-            include_evses=True,
-        )
+        locations = self.location_repository.fetch_realtime_locations(search_query=search_query)
         payload_result = self.datex_realtime_export_mapper.map_locations_to_realtime_payload(locations)
 
         if search_query.evse_status_last_updated_since is None:

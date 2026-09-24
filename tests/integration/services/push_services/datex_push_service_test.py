@@ -428,6 +428,34 @@ class DatexPushServiceRealtimeTest:
         assert site_statuses == []
 
     @staticmethod
+    def test_push_realtime_delta_skips_only_static_evse_changes(db: SQLAlchemy, requests_mock: Mocker) -> None:
+        db.session.add(
+            get_location_1(
+                evses=[
+                    get_full_evse_1(
+                        status=EvseStatus.AVAILABLE, status_last_updated=datetime(2020, 1, 1, tzinfo=timezone.utc)
+                    ),
+                    get_full_evse_2(status=EvseStatus.STATIC, status_last_updated=datetime.now(timezone.utc)),
+                ],
+                operator=get_business_1(),
+            ),
+        )
+        db.session.commit()
+
+        service = _build_service(
+            dependencies.get_config_helper(),
+            dependencies.get_context_helper(),
+        )
+        mock = requests_mock.post(f'{MOBILITHEK_BASE_URL}/{REALTIME_PUBLICATION_ID}', status_code=200)
+
+        service.push_datex_realtime(updated_since=datetime(2025, 1, 1, tzinfo=timezone.utc))
+
+        # Only the STATIC EVSE changed, which is not part of realtime data: nothing to push, but the watermark advances
+        assert not mock.called
+        service.redis_helper.set.assert_called_once()
+        assert service.redis_helper.set.call_args[0][0] == 'last_datex_realtime_push'
+
+    @staticmethod
     def test_push_realtime_stores_timestamp_in_redis(db: SQLAlchemy, requests_mock: Mocker) -> None:
         db.session.add(get_full_location_1())
         db.session.commit()

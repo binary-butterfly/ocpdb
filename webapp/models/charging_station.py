@@ -22,7 +22,7 @@ from decimal import Decimal
 from enum import Enum
 from typing import TYPE_CHECKING
 
-from sqlalchemy import BigInteger, Date, Float, ForeignKey, Integer, Numeric, String, Text
+from sqlalchemy import BigInteger, Date, Float, ForeignKey, Index, Integer, Numeric, String, Text
 from sqlalchemy import Enum as SqlalchemyEnum
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -100,11 +100,15 @@ class ChargingStation(BaseModel):
     __tablename__ = 'charging_station'
     parking_spaces_list_validator: list[ParkingSpace] = ListValidator(DataclassValidator(ParkingSpace))
 
+    __table_args__ = (
+        # Includes the id, so that the tiles can join location -> charging_station -> evse with an index-only scan.
+        Index('ix_charging_station_location_id', 'location_id', postgresql_include=['id']),
+    )
+
     location_id: Mapped[int] = mapped_column(
         BigInteger,
         ForeignKey('location.id', use_alter=True),
         nullable=False,
-        index=True,
     )
     location: Mapped['Location'] = relationship('Location', back_populates='charging_pool')
 

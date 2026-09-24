@@ -48,6 +48,8 @@ def flask_app() -> Generator[App, None, None]:
             # Drop all model tables with CASCADE to handle stale FK constraints from schema changes
             for table in reversed(flask_sqlalchemy.metadata.sorted_tables):
                 connection.execute(flask_sqlalchemy.text(f'DROP TABLE IF EXISTS {table.name} CASCADE'))
+            # create_all() does not run migrations, so the extensions they create have to be set up here
+            connection.execute(flask_sqlalchemy.text('CREATE EXTENSION IF NOT EXISTS pg_trgm'))
             connection.commit()
 
         flask_sqlalchemy.create_all()

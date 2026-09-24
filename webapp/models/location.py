@@ -130,6 +130,26 @@ class Location(BaseModel):
         # do not drop it again; it is created by migration a3f1c8d92b47.
         Index('geography_index', text('(geometry::geography)'), postgresql_using='gist'),
         Index('ix_country_official_region_code', 'country', 'official_region_code'),
+        Index('ix_location_official_region_code', 'official_region_code'),
+        Index('ix_location_postal_code', 'postal_code'),
+        # Used by the tiles, which filter matched duplicates by default. PostgreSQL only, created by migration
+        # 5e2b9c4d7a13.
+        Index(
+            'ix_location_geometry_non_duplicate',
+            'geometry',
+            postgresql_using='gist',
+            postgresql_where=text('dynamic_location_id IS NULL'),
+        ),
+        # Trigram indices for the substring (LIKE '%...%') search filters. PostgreSQL only, created by migration
+        # 5e2b9c4d7a13.
+        Index('ix_location_name_trgm', 'name', postgresql_using='gin', postgresql_ops={'name': 'gin_trgm_ops'}),
+        Index(
+            'ix_location_address_trgm',
+            'address',
+            postgresql_using='gin',
+            postgresql_ops={'address': 'gin_trgm_ops'},
+        ),
+        Index('ix_location_city_trgm', 'city', postgresql_using='gin', postgresql_ops={'city': 'gin_trgm_ops'}),
     )
 
     charging_pool: Mapped[list['ChargingStation']] = relationship(

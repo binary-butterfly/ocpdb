@@ -21,7 +21,7 @@ from datetime import datetime
 from enum import Enum
 from typing import TYPE_CHECKING
 
-from sqlalchemy import BigInteger, Float, ForeignKey, Integer, String, Text
+from sqlalchemy import BigInteger, Float, ForeignKey, Index, Integer, String, Text, text
 from sqlalchemy import Enum as SqlalchemyEnum
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -89,6 +89,23 @@ PARKING_RESTRICTION_BIT_BY_MEMBER: dict[ParkingRestriction, int] = {item: bit fo
 class Evse(BaseModel):
     __tablename__ = 'evse'
 
+    __table_args__ = (
+        # Used by the EVSE status filters in LocationRepository, which always exclude STATIC EVSEs for realtime data.
+        # PostgreSQL only, created by migration 5e2b9c4d7a13.
+        Index(
+            'ix_evse_charging_station_id_non_static',
+            'charging_station_id',
+            postgresql_where=text("status <> 'STATIC'"),
+        ),
+        Index('ix_evse_status_last_updated', 'status_last_updated'),
+        # Includes the columns the tiles aggregate, so they can be read with an index-only scan.
+        Index(
+            'ix_evse_charging_station_id',
+            'charging_station_id',
+            postgresql_include=['status', 'parking_restrictions'],
+        ),
+    )
+
     connectors: Mapped[list['Connector']] = relationship(
         'Connector',
         back_populates='evse',
@@ -110,7 +127,6 @@ class Evse(BaseModel):
         BigInteger,
         ForeignKey('charging_station.id', use_alter=True),
         nullable=False,
-        index=True,
     )
 
     uid: Mapped[str] = mapped_column(String(64), nullable=False, index=True)

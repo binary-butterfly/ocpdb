@@ -22,7 +22,7 @@ from validataclass_search_queries.pagination import PaginatedResult
 from validataclass_search_queries.search_queries import BaseSearchQuery
 
 from webapp.common.sqlalchemy import Query
-from webapp.models import Connector, Evse, Location
+from webapp.models import Connector, Evse, Location, Tariff
 from webapp.models.charging_station import ChargingStation
 from webapp.models.tariff_association import TariffAssociation
 
@@ -37,11 +37,15 @@ class ConnectorRepository(BaseRepository[Connector]):
     def _tariff_options() -> list[LoaderOption]:
         """
         Connector.tariff_uids reads the tariffs of the connector and falls back to the ones of its
-        EVSE, so both chains are eager-loaded to keep them out of the per-connector N+1 territory.
+        EVSE, so both chains are eager-loaded to keep them out of the per-connector N+1 territory. Just the uid is
+        needed, so the large JSON columns of the tariffs are not loaded.
         """
         return [
-            selectinload(Connector.tariff_associations).joinedload(TariffAssociation.tariff),
-            selectinload(Connector.evse).selectinload(Evse.tariff_associations).joinedload(TariffAssociation.tariff),
+            selectinload(Connector.tariff_associations).joinedload(TariffAssociation.tariff).load_only(Tariff.uid),
+            selectinload(Connector.evse)
+            .selectinload(Evse.tariff_associations)
+            .joinedload(TariffAssociation.tariff)
+            .load_only(Tariff.uid),
         ]
 
     def fetch_by_id(self, connector_id: int) -> Connector:
@@ -78,52 +82,30 @@ class ConnectorRepository(BaseRepository[Connector]):
 
             query = self._apply_bound_search_filter(query, bound_filter)
 
+        location_filters = []
         if source_uid := getattr(search_query, 'source_uid', None):
-            query = (
-                query
-                .join(Evse, Evse.id == Connector.evse_id)
-                .join(ChargingStation, ChargingStation.id == Evse.charging_station_id)
-                .join(Location, Location.id == ChargingStation.location_id)
-                .filter(Location.source == source_uid)
-            )
-
+            location_filters.append(Location.source == source_uid)
         if source_uids := getattr(search_query, 'source_uids', None):
-            query = (
-                query
-                .join(Evse, Evse.id == Connector.evse_id)
-                .join(ChargingStation, ChargingStation.id == Evse.charging_station_id)
-                .join(Location, Location.id == ChargingStation.location_id)
-                .filter(Location.source.in_(source_uids))
-            )
-
+            location_filters.append(Location.source.in_(source_uids))
         if exclude_source_uid := getattr(search_query, 'exclude_source_uid', None):
-            query = (
-                query
-                .join(Evse, Evse.id == Connector.evse_id)
-                .join(ChargingStation, ChargingStation.id == Evse.charging_station_id)
-                .join(Location, Location.id == ChargingStation.location_id)
-                .filter(Location.source != exclude_source_uid)
-            )
-
+            location_filters.append(Location.source != exclude_source_uid)
         if exclude_source_uids := getattr(search_query, 'exclude_source_uids', None):
-            query = (
-                query
-                .join(Evse, Evse.id == Connector.evse_id)
-                .join(ChargingStation, ChargingStation.id == Evse.charging_station_id)
-                .join(Location, Location.id == ChargingStation.location_id)
-                .filter(Location.source.notin_(exclude_source_uids))
-            )
+            location_filters.append(Location.source.notin_(exclude_source_uids))
+        location_id = getattr(search_query, 'location_id', None)
 
         if evse_id := getattr(search_query, 'evse_id', None):
             query = query.filter(Connector.evse_id == evse_id)
 
-        if location_id := getattr(search_query, 'location_id', None):
-            query = (
-                query
-                .join(Evse, Evse.id == Connector.evse_id)
-                .join(ChargingStation, ChargingStation.id == Evse.charging_station_id)
-                .filter(ChargingStation.location_id == location_id)
+        # Join each parent just once, however many filters need it: joining the same table twice fails. As these are
+        # many-to-one joins, they don't multiply the connector rows.
+        if location_filters or location_id:
+            query = query.join(Evse, Evse.id == Connector.evse_id).join(
+                ChargingStation, ChargingStation.id == Evse.charging_station_id
             )
+        if location_filters:
+            query = query.join(Location, Location.id == ChargingStation.location_id).filter(*location_filters)
+        if location_id:
+            query = query.filter(ChargingStation.location_id == location_id)
 
         return query
 

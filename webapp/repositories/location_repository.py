@@ -17,17 +17,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 from mercantile import LngLatBbox
-from sqlalchemy import func, or_, text
-from sqlalchemy.orm import joinedload, selectinload
+from sqlalchemy import func, select, text, union
+from sqlalchemy.orm import aliased, joinedload, selectinload
 from sqlalchemy.orm.interfaces import LoaderOption
 from validataclass_search_queries.filters import BoundSearchFilter
-from validataclass_search_queries.pagination import PaginatedResult
+from validataclass_search_queries.pagination import AbstractPaginationMixin, PaginatedResult
 from validataclass_search_queries.search_queries import BaseSearchQuery
 
 from webapp.common.sqlalchemy import Query
-from webapp.models import Business, Connector, Evse, Location, TariffAssociation
+from webapp.models import Business, Connector, Evse, Location, Tariff, TariffAssociation
 from webapp.models.charging_station import ChargingStation
-from webapp.models.evse import PARKING_RESTRICTION_BIT_BY_MEMBER, ParkingRestriction
+from webapp.models.evse import PARKING_RESTRICTION_BIT_BY_MEMBER, EvseStatus, ParkingRestriction
 
 from .base_repository import BaseRepository
 
@@ -66,12 +66,17 @@ class LocationRepository(BaseRepository[Location]):
                 cs_load.selectinload(ChargingStation.images),
                 evse_load.selectinload(Evse.connectors),
                 evse_load.selectinload(Evse.images),
-                # Connectors render the uids of their tariffs, falling back to the ones of their EVSE.
-                evse_load.selectinload(Evse.tariff_associations).joinedload(TariffAssociation.tariff),
+                # Connectors render the uids of their tariffs, falling back to the ones of their EVSE. Just the uid is
+                # needed, so the large JSON columns of the tariffs are not loaded.
+                evse_load
+                .selectinload(Evse.tariff_associations)
+                .joinedload(TariffAssociation.tariff)
+                .load_only(Tariff.uid),
                 evse_load
                 .selectinload(Evse.connectors)
                 .selectinload(Connector.tariff_associations)
-                .joinedload(TariffAssociation.tariff),
+                .joinedload(TariffAssociation.tariff)
+                .load_only(Tariff.uid),
             ]
 
         return self.fetch_resource_by_id(location_id, load_options=load_options)
@@ -90,7 +95,7 @@ class LocationRepository(BaseRepository[Location]):
                 cs_load.selectinload(ChargingStation.evses).selectinload(Evse.images),
             )
 
-        location = query.filter(Location.uid == location_uid).first()
+        location = query.filter(Location.source == source, Location.uid == location_uid).first()
 
         return self._or_raise(location, f'location with uid {location_uid} and source {source} not found')
 
@@ -105,9 +110,10 @@ class LocationRepository(BaseRepository[Location]):
     ) -> list:
         additional_where = ''
         if static is not None:
-            additional_where += f'AND evse.status {"=" if static is True else "!="} "STATIC"'
+            # Bound parameter instead of a literal: in PostgreSQL, "STATIC" in double quotes is a column reference.
+            additional_where += f' AND evse.status {"=" if static is True else "!="} :static_status'
         if filter_duplicates:
-            additional_where += 'AND location.dynamic_location_id IS NULL'
+            additional_where += ' AND location.dynamic_location_id IS NULL'
 
         query = (
             'SELECT location.id, location.lat, location.lon, location.name, location.address, '
@@ -134,7 +140,10 @@ class LocationRepository(BaseRepository[Location]):
         return list(
             self.session.execute(
                 text(query),
-                {'bicycle_only_bit': PARKING_RESTRICTION_BIT_BY_MEMBER[ParkingRestriction.BICYCLE_ONLY]},
+                {
+                    'bicycle_only_bit': PARKING_RESTRICTION_BIT_BY_MEMBER[ParkingRestriction.BICYCLE_ONLY],
+                    'static_status': EvseStatus.STATIC.name,
+                },
             )
         )
 
@@ -185,8 +194,13 @@ class LocationRepository(BaseRepository[Location]):
         include_evses: bool = False,
         include_evse_images: bool = False,
         include_connectors: bool = False,
+        include_evse_tariffs: bool = False,
         include_tariffs: bool = False,
     ) -> PaginatedResult[Location]:
+        """
+        include_evse_tariffs just loads the tariffs of the EVSEs, include_tariffs additionally loads the ones of the
+        connectors, which are needed for Connector.tariff_uids.
+        """
 
         options: list[LoaderOption] = []
         if include_logos:
@@ -202,16 +216,25 @@ class LocationRepository(BaseRepository[Location]):
             options.append(
                 selectinload(Location.charging_pool).selectinload(ChargingStation.evses).selectinload(Evse.connectors)
             )
+        evse_load = selectinload(Location.charging_pool).selectinload(ChargingStation.evses)
         if include_tariffs:
-            evse_load = selectinload(Location.charging_pool).selectinload(ChargingStation.evses)
-            options.append(evse_load.selectinload(Evse.tariff_associations).selectinload(TariffAssociation.tariff))
-            # Connectors render the uids of their own tariffs before falling back to the ones of their EVSE.
+            # Connectors render the uids of their own tariffs before falling back to the ones of their EVSE. Just the
+            # uid is needed, so the large JSON columns of the tariffs are not loaded.
+            options.append(
+                evse_load
+                .selectinload(Evse.tariff_associations)
+                .selectinload(TariffAssociation.tariff)
+                .load_only(Tariff.uid)
+            )
             options.append(
                 evse_load
                 .selectinload(Evse.connectors)
                 .selectinload(Connector.tariff_associations)
                 .selectinload(TariffAssociation.tariff)
+                .load_only(Tariff.uid)
             )
+        elif include_evse_tariffs:
+            options.append(evse_load.selectinload(Evse.tariff_associations).selectinload(TariffAssociation.tariff))
 
         if include_evses:
             options.append(selectinload(Location.charging_pool).selectinload(ChargingStation.evses))
@@ -230,6 +253,30 @@ class LocationRepository(BaseRepository[Location]):
 
         query = self.session.query(Location).options(*options)
         return self._search_and_paginate(query, search_query)
+
+    def fetch_realtime_locations(self, *, search_query: BaseSearchQuery | None = None) -> list[Location]:
+        """
+        Lean variant of fetch_locations() for realtime exports, which just need charging stations and EVSEs:
+        - EVSEs excluded by search_query.exclude_evse_status are not loaded at all, so the charging_station.evses
+          collections are filtered. Only use this for read-only exports, never for modifying the result.
+        - The result is paginated, but without the total count query, which would repeat the whole filter query.
+        """
+        exclude_evse_status: list[EvseStatus] | None = getattr(search_query, 'exclude_evse_status', None)
+        evses_relationship = (
+            ChargingStation.evses.and_(Evse.status.notin_(exclude_evse_status))
+            if exclude_evse_status
+            else ChargingStation.evses
+        )
+        query = self.session.query(Location).options(
+            selectinload(Location.charging_pool).selectinload(evses_relationship),
+        )
+
+        query = self._filter_by_search_query(query, search_query)
+        query = self._order_by_search_query(query, search_query)
+        if isinstance(search_query, AbstractPaginationMixin):
+            query = search_query.apply_pagination_to_query(query, self.model_cls)
+
+        return query.all()
 
     def _filter_by_search_query(self, query: Query, search_query: BaseSearchQuery | None) -> Query:
         if search_query is None:
@@ -258,22 +305,40 @@ class LocationRepository(BaseRepository[Location]):
         evse_status = getattr(search_query, 'evse_status', None)
         exclude_evse_status = getattr(search_query, 'exclude_evse_status', None)
 
-        if any((last_updated_since, evse_status_last_updated, evse_status, exclude_evse_status)):
-            query = query.join(Location.charging_pool).join(ChargingStation.evses).distinct()
-            if last_updated_since:
-                query = query.filter(
-                    or_(
-                        Location.last_updated >= last_updated_since,
-                        # ChargingStation.last_updated >= last_updated_since,  # TODO: reactivate
-                        Evse.last_updated >= last_updated_since,
-                    ),
-                )
-            if evse_status_last_updated:
-                query = query.filter(Evse.status_last_updated >= evse_status_last_updated)
-            if evse_status:
-                query = query.filter(Evse.status.in_(evse_status))
-            if exclude_evse_status:
-                query = query.filter(Evse.status.notin_(exclude_evse_status))
+        evse_filters = []
+        if evse_status_last_updated:
+            evse_filters.append(Evse.status_last_updated >= evse_status_last_updated)
+        if evse_status:
+            evse_filters.append(Evse.status.in_(evse_status))
+        if exclude_evse_status:
+            evse_filters.append(Evse.status.notin_(exclude_evse_status))
+
+        if evse_filters or last_updated_since:
+            # EXISTS instead of JOIN + DISTINCT: DISTINCT had to sort the full join over all location columns (including
+            # geometry and large text columns) before LIMIT could apply. As a semi-join, the planner can walk the
+            # location primary key in order and stop at the limit.
+            matching_evses = (
+                select(Evse.id)
+                .join(Evse.charging_station)
+                .where(ChargingStation.location_id == Location.id, *evse_filters)
+            )
+            query = query.filter(matching_evses.exists())
+
+        if last_updated_since:
+            # Either the location or one of its matching EVSEs has been updated. As a UNION of two ID lists, both
+            # parts can use their last_updated index, which is impossible for an OR across both tables.
+            updated_location = aliased(Location)
+            updated_location_ids = union(
+                select(updated_location.id).where(updated_location.last_updated >= last_updated_since),
+                select(ChargingStation.location_id)
+                .join(ChargingStation.evses)
+                .where(
+                    # ChargingStation.last_updated >= last_updated_since,  # TODO: reactivate
+                    Evse.last_updated >= last_updated_since,
+                    *evse_filters,
+                ),
+            )
+            query = query.filter(Location.id.in_(updated_location_ids))
 
         if (
             getattr(search_query, 'lat', None)

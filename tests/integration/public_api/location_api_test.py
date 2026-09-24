@@ -45,6 +45,7 @@ from tests.integration.public_api.location_api_responses import (
     LOCATIONS_RESPONSE,
 )
 from webapp.common.sqlalchemy import SQLAlchemy
+from webapp.models.evse import EvseStatus
 
 
 def test_get_locations_strict(
@@ -467,3 +468,46 @@ def test_get_locations_by_last_updated_since_boundary(
     assert response.status_code == HTTPStatus.OK
     assert response.json['total_count'] == 1
     assert len(response.json['items']) == 1
+
+
+def test_get_locations_by_last_updated_since_and_evse_status(
+    db: SQLAlchemy,
+    test_client: OpenApiFlaskClient,
+) -> None:
+    """
+    Combined with EVSE filters, a location is just returned if it has a matching EVSE, and either the location or one
+    of its matching EVSEs has been updated.
+    """
+    now = datetime.now(tz=timezone.utc)
+    old_timestamp = now - timedelta(days=7)
+    recent_timestamp = now - timedelta(hours=1)
+
+    db.session.add_all([
+        # Location 1: old, the recently updated EVSE does not match the status filter
+        get_location_1(
+            last_updated=old_timestamp,
+            evses=[
+                get_full_evse_1(last_updated=recent_timestamp, status=EvseStatus.CHARGING),
+                get_full_evse_2(last_updated=old_timestamp, status=EvseStatus.AVAILABLE),
+            ],
+        ),
+        # Location 2: recently updated, but no EVSE matches the status filter
+        get_location_2(
+            last_updated=recent_timestamp,
+            evses=[get_full_evse_3(last_updated=old_timestamp, status=EvseStatus.CHARGING)],
+        ),
+        # Location 3: old, the recently updated EVSE matches the status filter
+        get_location_3(
+            last_updated=old_timestamp,
+            evses=[get_full_evse_5(last_updated=recent_timestamp, status=EvseStatus.AVAILABLE)],
+        ),
+    ])
+    db.session.commit()
+
+    filter_timestamp = (now - timedelta(days=1)).strftime('%Y-%m-%dT%H:%M:%SZ')
+    response = test_client.get(
+        path=f'/api/public/v1/locations?last_updated_since={filter_timestamp}&evse_status=AVAILABLE',
+    )
+
+    assert response.status_code == HTTPStatus.OK
+    assert [item['id'] for item in response.json['items']] == ['3']
