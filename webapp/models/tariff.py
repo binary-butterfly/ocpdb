@@ -306,7 +306,7 @@ class Tariff(BaseModel):
     _max_price: Mapped[str | None] = mapped_column('max_price', Text, nullable=True)
     _energy_mix: Mapped[str | None] = mapped_column('energy_mix', Text, nullable=True)
 
-    last_updated: Mapped[datetime] = mapped_column(UtcDateTime(), nullable=False)
+    last_updated: Mapped[datetime] = mapped_column(UtcDateTime(), nullable=False, index=True)
 
     @hybrid_property
     def tariff_alt_text(self) -> list[DisplayText] | None:

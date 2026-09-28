@@ -18,6 +18,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
 from base64 import b64encode
+from collections.abc import Generator
+from contextlib import contextmanager
 from http import HTTPStatus
 from io import BytesIO
 from typing import Any
@@ -26,7 +28,7 @@ from flask.testing import FlaskClient
 from flask_openapi.generator import generate_openapi
 from openapi_core import OpenAPI
 from openapi_core.contrib.werkzeug import WerkzeugOpenAPIRequest, WerkzeugOpenAPIResponse
-from sqlalchemy import text
+from sqlalchemy import event, text
 from werkzeug.test import TestResponse
 from werkzeug.wrappers import Request
 
@@ -178,3 +180,20 @@ def empty_all_tables(db: SQLAlchemy) -> None:
     with db.engine.connect() as connection:
         connection.execute(text(f'TRUNCATE {", ".join(db.metadata.tables.keys())} RESTART IDENTITY;'))
         connection.commit()
+
+
+@contextmanager
+def capture_statements(db: SQLAlchemy) -> Generator[list[str], None, None]:
+    """
+    Collects all SQL statements executed within the context, to test how data is queried.
+    """
+    statements: list[str] = []
+
+    def capture_statement(conn, cursor, statement, parameters, context, executemany) -> None:
+        statements.append(statement)
+
+    event.listen(db.engine, 'before_cursor_execute', capture_statement)
+    try:
+        yield statements
+    finally:
+        event.remove(db.engine, 'before_cursor_execute', capture_statement)

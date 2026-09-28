@@ -21,6 +21,8 @@ from decimal import Decimal
 from http import HTTPStatus
 from unittest.mock import ANY
 
+from sqlalchemy import event
+
 from tests.integration.helpers import OpenApiFlaskClient
 from tests.integration.model_generators.business import BUSINESS_1_NAME, get_business_1
 from tests.integration.model_generators.evse import get_full_evse_1, get_full_evse_2
@@ -562,3 +564,38 @@ class Datex2RealtimeApiTest:
         ]
         assert len(site_statuses) == 1
         assert site_statuses[0]['reference']['idG'] == 'LOCATION-1'
+
+    @staticmethod
+    def test_get_realtime_query_count(
+        db: SQLAlchemy,
+        test_client: OpenApiFlaskClient,
+    ) -> None:
+        db.session.add_all([
+            get_location_1(
+                evses=[
+                    get_full_evse_1(status=EvseStatus.AVAILABLE),
+                    get_full_evse_2(status=EvseStatus.STATIC),
+                ],
+            ),
+            get_full_location_2(),
+        ])
+        db.session.commit()
+
+        statements: list[str] = []
+
+        def capture_statement(conn, cursor, statement, parameters, context, executemany) -> None:
+            statements.append(statement)
+
+        event.listen(db.engine, 'before_cursor_execute', capture_statement)
+        try:
+            response = test_client.get(path='/api/public/datex/v3.5/json/realtime')
+        finally:
+            event.remove(db.engine, 'before_cursor_execute', capture_statement)
+
+        assert response.status_code == HTTPStatus.OK
+        # Locations, charging stations, EVSEs. No total count query, as the export does not use it.
+        assert len(statements) == 3
+        assert not any('count(' in statement for statement in statements)
+        assert 'DISTINCT' not in statements[0]
+        # STATIC EVSEs are filtered out in the database already
+        assert 'evse.status NOT IN' in statements[2]

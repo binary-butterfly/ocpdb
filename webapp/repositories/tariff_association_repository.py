@@ -17,10 +17,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 from sqlalchemy.orm import selectinload
+from sqlalchemy.orm.interfaces import LoaderOption
 from validataclass_search_queries.pagination import PaginatedResult
 from validataclass_search_queries.search_queries import BaseSearchQuery
 
 from webapp.common.sqlalchemy import Query
+from webapp.models import Connector, Evse
 from webapp.models.tariff_association import TariffAssociation
 
 from .base_repository import BaseRepository
@@ -30,15 +32,30 @@ from .exceptions import ObjectNotFoundException
 class TariffAssociationRepository(BaseRepository[TariffAssociation]):
     model_cls = TariffAssociation
 
-    def fetch_tariff_association_by_id(self, tariff_association_id: int) -> TariffAssociation:
+    @staticmethod
+    def _load_options(include_evse_and_connector_ids: bool) -> list[LoaderOption]:
+        """
+        A tariff association can apply to thousands of EVSEs and connectors, but the mappers render at most their IDs,
+        so the EVSEs and connectors are just loaded with their IDs, and only if requested.
+        """
+        options: list[LoaderOption] = [selectinload(TariffAssociation.tariff)]
+        if include_evse_and_connector_ids:
+            options += [
+                selectinload(TariffAssociation.evses).load_only(Evse.id),
+                selectinload(TariffAssociation.connectors).load_only(Connector.id),
+            ]
+        return options
+
+    def fetch_tariff_association_by_id(
+        self,
+        tariff_association_id: int,
+        *,
+        include_evse_and_connector_ids: bool = False,
+    ) -> TariffAssociation:
         result = (
             self.session
             .query(TariffAssociation)
-            .options(
-                selectinload(TariffAssociation.tariff),
-                selectinload(TariffAssociation.evses),
-                selectinload(TariffAssociation.connectors),
-            )
+            .options(*self._load_options(include_evse_and_connector_ids))
             .filter(TariffAssociation.id == tariff_association_id)
             .first()
         )
@@ -49,12 +66,10 @@ class TariffAssociationRepository(BaseRepository[TariffAssociation]):
     def fetch_tariff_associations(
         self,
         search_query: BaseSearchQuery | None = None,
+        *,
+        include_evse_and_connector_ids: bool = False,
     ) -> PaginatedResult[TariffAssociation]:
-        query = self.session.query(TariffAssociation).options(
-            selectinload(TariffAssociation.tariff),
-            selectinload(TariffAssociation.evses),
-            selectinload(TariffAssociation.connectors),
-        )
+        query = self.session.query(TariffAssociation).options(*self._load_options(include_evse_and_connector_ids))
         return self._search_and_paginate(query, search_query)
 
     def _filter_by_search_query(self, query: Query, search_query: BaseSearchQuery | None) -> Query:

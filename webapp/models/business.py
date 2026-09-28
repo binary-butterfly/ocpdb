@@ -18,7 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from typing import TYPE_CHECKING, Optional
 
-from sqlalchemy import BigInteger, ForeignKey, String
+from sqlalchemy import BigInteger, ForeignKey, Index, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from .base import BaseModel
@@ -29,6 +29,11 @@ if TYPE_CHECKING:
 
 class Business(BaseModel):
     __tablename__ = 'business'
+    __table_args__ = (
+        # Trigram index for the substring (LIKE '%...%') name and operator_name filters. PostgreSQL only, created by
+        # migration 5e2b9c4d7a13.
+        Index('ix_business_name_trgm', 'name', postgresql_using='gin', postgresql_ops={'name': 'gin_trgm_ops'}),
+    )
 
     logo: Mapped[Optional['Image']] = relationship('Image', uselist=False)
 

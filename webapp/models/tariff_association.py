@@ -64,7 +64,7 @@ class TariffAssociation(BaseModel):
     audience: Mapped[TariffAudience | None] = mapped_column(SqlalchemyEnum(TariffAudience), nullable=True)
 
     start_date_time: Mapped[datetime] = mapped_column(UtcDateTime(), nullable=False)
-    last_updated: Mapped[datetime] = mapped_column(UtcDateTime(), nullable=False)
+    last_updated: Mapped[datetime] = mapped_column(UtcDateTime(), nullable=False, index=True)
 
     def to_dict(self, *args, ignore: list[str] | None = None, **kwargs) -> dict:
         ignore = ignore or []

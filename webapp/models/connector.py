@@ -138,7 +138,7 @@ class Connector(BaseModel):
     max_voltage: Mapped[int | None] = mapped_column(Integer, nullable=True)
     max_amperage: Mapped[int | None] = mapped_column(Integer, nullable=True)
     max_electric_power: Mapped[int | None] = mapped_column(Integer, nullable=True)
-    last_updated: Mapped[datetime] = mapped_column(UtcDateTime(), nullable=False)
+    last_updated: Mapped[datetime] = mapped_column(UtcDateTime(), nullable=False, index=True)
     terms_and_conditions: Mapped[str | None] = mapped_column(String(255), nullable=True)
 
     def guess_power_type(self):

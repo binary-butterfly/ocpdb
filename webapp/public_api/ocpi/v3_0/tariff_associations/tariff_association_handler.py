@@ -33,9 +33,15 @@ class TariffAssociationHandler(PublicApiBaseHandler):
         self.tariff_association_repository = tariff_association_repository
 
     def get_tariff_associations(self, query: TariffAssociationSearchQuery) -> PaginatedResult[dict]:
-        tariff_associations = self.tariff_association_repository.fetch_tariff_associations(query)
+        tariff_associations = self.tariff_association_repository.fetch_tariff_associations(
+            query,
+            include_evse_and_connector_ids=True,
+        )
         return tariff_associations.map(TariffAssociationMapper.map_tariff_association_to_ocpi)
 
     def get_tariff_association(self, tariff_association_id: int) -> dict:
-        tariff_association = self.tariff_association_repository.fetch_tariff_association_by_id(tariff_association_id)
+        tariff_association = self.tariff_association_repository.fetch_tariff_association_by_id(
+            tariff_association_id,
+            include_evse_and_connector_ids=True,
+        )
         return TariffAssociationMapper.map_tariff_association_to_ocpi(tariff_association)

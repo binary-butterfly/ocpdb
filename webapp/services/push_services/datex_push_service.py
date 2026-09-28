@@ -64,16 +64,17 @@ class ChargeLocationService(BaseService):
         search_query = LocationSearchQuery(
             exclude_evse_status=[EvseStatus.STATIC],
         )
+        version = self.config_helper.get('MOBILITHEK_VERSION', '3.5')
         locations = self.location_repository.fetch_locations(
             search_query=search_query,
             include_charging_stations=True,
             include_evses=True,
             include_connectors=True,
-            include_tariffs=True,
+            # Just the DATEX 3.5 static mapper renders tariffs, and only the ones of the EVSEs.
+            include_evse_tariffs=version != '3.7',
             include_operators=True,
         )
 
-        version = self.config_helper.get('MOBILITHEK_VERSION', '3.5')
         if version == '3.7':
             mapper = DatexV37JSONStaticExportMapper()
             payload_result = mapper.map_locations_to_static_payload(locations)
@@ -101,15 +102,10 @@ class ChargeLocationService(BaseService):
 
         search_query = LocationSearchQuery(
             evse_status_last_updated_since=updated_since,
+            exclude_evse_status=[EvseStatus.STATIC],
         )
 
-        locations = list(
-            self.location_repository.fetch_locations(
-                search_query=search_query,
-                include_charging_stations=True,
-                include_evses=True,
-            )
-        )
+        locations = self.location_repository.fetch_realtime_locations(search_query=search_query)
 
         # A diff (delta push) with no changed locations is empty: skip sending, but still advance the watermark so the
         # next diff only covers the time after this run.

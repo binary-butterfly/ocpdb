@@ -19,7 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from http import HTTPStatus
 from unittest.mock import ANY
 
-from tests.integration.helpers import OpenApiFlaskClient
+from tests.integration.helpers import OpenApiFlaskClient, capture_statements
 from tests.integration.model_generators.evse import get_full_evse_1
 from tests.integration.model_generators.location import get_location_1
 from tests.integration.model_generators.source import SOURCE_UID_1
@@ -124,3 +124,27 @@ def test_get_ocpi_30_tariff_association_not_found(
 ) -> None:
     response = test_client.get(path='/api/public/ocpi/3.0/tariff-associations/999')
     assert response.status_code == HTTPStatus.NOT_FOUND
+
+
+def test_get_ocpi_30_tariff_associations_loads_just_evse_ids(
+    db: SQLAlchemy,
+    public_test_client: OpenApiFlaskClient,
+) -> None:
+    """Tariff associations render just the ids of their EVSEs, so the EVSEs are not loaded completely."""
+    tariff = get_tariff_1()
+    db.session.add(tariff)
+    db.session.flush()
+
+    evse = get_full_evse_1()
+    evse.tariff_associations = [get_tariff_association(uid='TA-1', tariff=tariff)]
+    db.session.add(get_location_1(evses=[evse]))
+    db.session.commit()
+
+    with capture_statements(db) as statements:
+        response = public_test_client.get(path='/api/public/ocpi/3.0/tariff-associations')
+
+    assert response.status_code == HTTPStatus.OK
+    assert response.json['items'][0]['evses'] == [{'evse_uid': str(evse.id)}]
+    evse_statements = [statement for statement in statements if 'evse_tariff_association' in statement]
+    assert len(evse_statements) == 1
+    assert 'evse.status' not in evse_statements[0]

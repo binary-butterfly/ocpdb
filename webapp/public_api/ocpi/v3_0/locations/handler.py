@@ -35,8 +35,9 @@ class Ocpi30LocationHandler(PublicApiBaseHandler):
         locations = self.location_repository.fetch_locations(
             search_query=search_query,
             include_operators=True,
-            include_logos=True,
-            include_location_images=True,
+            # Neither business logos nor location images are part of the OCPI 3.0 location output.
+            include_logos=False,
+            include_location_images=False,
             include_charging_stations=True,
             include_charging_station_images=True,
             include_evses=True,
