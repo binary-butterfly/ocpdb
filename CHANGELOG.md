@@ -1,5 +1,14 @@
 # Changelog
 
+# 2.16.2
+
+Released 2026-09-28
+
+## Fixes
+
+* [More indices and better sql strategies](https://github.com/binary-butterfly/ocpdb/pull/277)
+
+
 # 2.16.1
 
 Released 2026-09-10
