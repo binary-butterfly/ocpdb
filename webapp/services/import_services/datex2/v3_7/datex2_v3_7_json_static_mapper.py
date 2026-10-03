@@ -493,6 +493,8 @@ class Datex2V37JSONStaticMapper:
                     type=self._price_type_map.get(energy_price.priceType.value),
                     price=Decimal(round(energy_price.value, 8)),
                 )
+                if energy_price.taxIncluded is not UnsetValue:
+                    price_component.tax_included = energy_price.taxIncluded
                 if energy_price.taxRate is not UnsetValue:
                     price_component.taxes = [
                         TaxPercentageUpdate(

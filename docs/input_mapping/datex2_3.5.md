@@ -392,7 +392,7 @@ An `EnergyPrice` maps to a `TariffElementUpdate` containing a `PriceComponentUpd
 | priceType                | [PriceTypeEnum](#PriceTypeEnum)                       | 1           | tariff_element.price_component.type | See [PriceTypeEnum](#PriceTypeEnum) mapping table    |
 | value                    | float                                                 | 1           | tariff_element.price_component.price | Stored as Decimal                                   |
 | priceCap                 | float                                                 | ?           |                                     | Not mapped                                           |
-| taxIncluded              | boolean                                               | ?           |                                     | Not mapped                                           |
+| taxIncluded              | boolean                                               | ?           | tariff_element.price_component.tax_included | Unset stays unknown (`null`), prices are not converted |
 | taxRate                  | float                                                 | ?           | tariff_element.price_component.taxes | Stored as TaxPercentage with name `VAT`             |
 | additionalInformation    | [MultilingualString](#MultilingualString)             | ?           |                                     | Not mapped                                           |
 | overallPeriod            | OverallPeriod                                         | ?           |                                     | Not mapped                                           |

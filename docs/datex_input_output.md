@@ -128,8 +128,8 @@ preserved through the import/export cycle:
 | `energyRate[].applicableCurrency`            | Preserved as tariff `currency`                                                   |
 | `energyRate[].energyPrice[].priceType`       | Mapped: `pricePerKWh` ↔ `ENERGY`, `pricePerMinute` ↔ `TIME`, `flatRate` ↔ `FLAT`|
 | `energyRate[].energyPrice[].value`           | Preserved as price component `price`                                             |
-| `energyRate[].energyPrice[].taxIncluded`     | Preserved as price component `tax_included`                                      |
-| `energyRate[].energyPrice[].taxRate`         | Preserved as price component `vat`                                               |
+| `energyRate[].energyPrice[].taxIncluded`     | Preserved as price component `tax_included` (unset stays unset)                  |
+| `energyRate[].energyPrice[].taxRate`         | Preserved as price component tax `VAT` (`taxes[0].percentage`)                   |
 | `energyRate[].energyPrice[].timeBasedApplicability` | Preserved (fromMinute, toMinute)                                          |
 
 ### Dropped fields (energy rate)
@@ -151,7 +151,7 @@ preserved through the import/export cycle:
 Tariff data is stored using OCPI 3.0-aligned tables:
 
 - **`tariff`** — One tariff per EVSE per rate (uid = `{evse_uid}:{rate_idG}`). Stores currency, type, timestamps.
-- **`tariff_element`** — Price components stored as JSON (list of `{type, price, vat, tax_included, time_based_applicability}`).
+- **`tariff_element`** — Price components stored as JSON (list of `{price_components: [{type, price, taxes, tax_included}], restrictions}`).
 - **`tariff_association`** — Links each tariff to an EVSE and connector via foreign key relationships (`evse_id`, `connector_id`).
 
 

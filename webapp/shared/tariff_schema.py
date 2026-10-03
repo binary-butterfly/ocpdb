@@ -19,6 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from flask_openapi.decorator import Schema as Component
 from flask_openapi.schema import (
     ArrayField,
+    BooleanField,
     DateField,
     DateTimeField,
     EnumField,
@@ -30,7 +31,7 @@ from flask_openapi.schema import (
     UriField,
 )
 
-from webapp.models.enums import TariffType
+from webapp.models.enums import TariffType, TaxIncluded
 
 from .location_schema import (
     display_text_component,
@@ -38,6 +39,22 @@ from .location_schema import (
     energy_source_component,
     environmental_impact_component,
 )
+
+tax_percentage_schema = JsonSchema(
+    title='TaxPercentage',
+    description='A tax which applies to a price component.',
+    properties={
+        'name': StringField(description='Name of the tax, eg. VAT.'),
+        'percentage': NumericField(required=False, description='Tax percentage.'),
+    },
+)
+
+
+tax_percentage_example = {'name': 'VAT', 'percentage': 19}
+
+
+tax_percentage_component = Component('TaxPercentage', tax_percentage_schema, tax_percentage_example)
+
 
 price_component_schema = JsonSchema(
     title='PriceComponent',
@@ -47,11 +64,20 @@ price_component_schema = JsonSchema(
             description='Type of tariff dimension: ENERGY, FLAT, PARKING_TIME, or TIME.',
         ),
         'price': NumericField(
-            description='Price per unit (excl. VAT) for this tariff dimension.',
+            description='Price per unit for this tariff dimension. Whether the taxes are already included is stated by '
+            'tax_included.',
         ),
-        'vat': NumericField(
+        'taxes': ArrayField(
+            items=Reference(obj='TaxPercentage'),
             required=False,
-            description='Applicable VAT percentage for this tariff dimension. If omitted, no VAT is applicable.',
+            description='Taxes which apply to this tariff dimension. If omitted, the source did not provide tax '
+            'information, which does not mean that no tax applies.',
+        ),
+        'tax_included': BooleanField(
+            required=False,
+            description='true if price already includes the taxes, false if the taxes have to be added to price. If '
+            'omitted, the source did not state it and the tax basis of price is unknown. Prices are never converted '
+            'between tax bases by OCPDB.',
         ),
         'step_size': IntegerField(
             required=False,
@@ -178,6 +204,14 @@ tariff_schema = JsonSchema(
         'energy_mix': Reference(
             obj='EnergyMix', required=False, description='Details of the energy supplied with this tariff.'
         ),
+        'tax_included': EnumField(
+            enum=TaxIncluded,
+            required=False,
+            description='Only OCPI 3.0: YES if all price components explicitly include taxes, NO if all price '
+            'components explicitly exclude taxes. Omitted if this is unknown for at least one price component or '
+            'differs between price components: in this case, use tax_included at the price components. N/A is not '
+            'used, because a missing tax rate does not prove that no tax applies.',
+        ),
         'last_updated': DateTimeField(description='Timestamp when this Tariff was last updated (or created).'),
     },
 )
@@ -199,4 +233,5 @@ all_tariff_components = [
     tariff_component,
     tariff_element_component,
     tariff_restrictions_component,
+    tax_percentage_component,
 ]

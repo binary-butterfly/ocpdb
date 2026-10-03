@@ -48,6 +48,12 @@ class TariffDimensionType(Enum):
     PARKING_TIME = 'PARKING_TIME'
 
 
+class TaxIncluded(Enum):
+    YES = 'YES'
+    NO = 'NO'
+    N_A = 'N/A'
+
+
 class DayOfWeek(Enum):
     MONDAY = 'MONDAY'
     TUESDAY = 'TUESDAY'

@@ -70,6 +70,11 @@ def test_enbw_datex2_static_import(
     # both the tariffs and the tariff associations are grouped into two rows the EVSEs share.
     assert db.session.query(Tariff).count() == 2
     assert db.session.query(TariffAssociation).count() == 2
+    # EnBW states explicitly that its prices exclude VAT, which has to survive the import
+    for tariff in db.session.query(Tariff).all():
+        for element in tariff.elements:
+            for price_component in element.price_components:
+                assert price_component.tax_included is False
 
     # Check that site-level parking spaces are mapped to locations
     location = db.session.query(Location).filter(Location.uid == '800030182').first()

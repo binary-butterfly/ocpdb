@@ -208,6 +208,8 @@ class TariffPriceComponent(DataclassMixin):
     type: str | None = None
     price: float | int | None = None
     taxes: list[TariffTax] | None = None
+    # None means the source did not state whether price already includes taxes
+    tax_included: bool | None = None
 
     @classmethod
     def from_dict(cls, data: dict) -> 'TariffPriceComponent':
@@ -218,6 +220,7 @@ class TariffPriceComponent(DataclassMixin):
             type=data.get('type'),
             price=round(float(data.get('price')), 8),
             taxes=taxes,
+            tax_included=data.get('tax_included'),
         )
 
     def to_dict(self) -> dict:
@@ -228,6 +231,8 @@ class TariffPriceComponent(DataclassMixin):
             result['price'] = self.price
         if self.taxes is not None:
             result['taxes'] = [t.to_dict() for t in self.taxes]
+        if self.tax_included is not None:
+            result['tax_included'] = self.tax_included
         return result
 
 
