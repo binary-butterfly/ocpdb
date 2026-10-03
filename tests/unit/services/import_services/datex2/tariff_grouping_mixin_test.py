@@ -61,12 +61,14 @@ def _build_tariff_update(
     currency: str | None = 'EUR',
     tariff_type: TariffType | None = TariffType.AD_HOC_PAYMENT,
     tax_percentage: str | None = '19',
+    tax_included: bool | None = None,
     max_duration: int | None = None,
     last_updated: datetime | None = None,
 ) -> TariffUpdate:
     price_component = PriceComponentUpdate(
         type=TariffDimensionType.ENERGY,
         price=Decimal(price),
+        tax_included=tax_included,
     )
     if tax_percentage is not None:
         price_component.taxes = [TaxPercentageUpdate(name='VAT', percentage=Decimal(tax_percentage))]
@@ -286,6 +288,8 @@ def test_group_identical_tariffs_keeps_differing_fees_apart() -> None:
         _build_tariff_update(uid='other-type', tariff_type=TariffType.REGULAR),
         _build_tariff_update(uid='other-tax', tax_percentage='7'),
         _build_tariff_update(uid='without-tax', tax_percentage=None),
+        _build_tariff_update(uid='tax-included', tax_included=True),
+        _build_tariff_update(uid='tax-excluded', tax_included=False),
         _build_tariff_update(uid='other-restriction', max_duration=3600),
     ]
 

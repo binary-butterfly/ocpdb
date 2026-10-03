@@ -104,6 +104,8 @@ class PriceComponentUpdate(BaseUpdate):
     type: TariffDimensionType
     price: Decimal
     taxes: list[TaxPercentageUpdate] | None = None
+    # None means the source did not state whether price already includes taxes
+    tax_included: bool | None = None
 
 
 @dataclass

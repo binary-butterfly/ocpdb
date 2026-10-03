@@ -298,6 +298,7 @@ Each tariff element's price component maps to an `EnergyPrice`.
 |--------------------------|-------------------------------------------------------|--------------------------------------------|----------------------------------------------------------------------|
 | priceType                | [PriceTypeEnumG](#pricetypeenum)                      | price_component.type                       | See [PriceTypeEnum](#pricetypeenum) mapping                          |
 | value                    | float                                                 | price_component.price                      | Defaults to 0 if not set                                             |
+| taxIncluded              | boolean                                               | price_component.tax_included               | Only set if known                                                    |
 | taxRate                  | float                                                 | price_component.taxes[0].percentage        | Only set if tax with percentage exists                               |
 | timeBasedApplicability   | [TimeBasedApplicability](#timebasedapplicability)     | tariff_element.restrictions                | Only set if min_duration or max_duration is present                  |
 | overallPeriod            | [OverallPeriod](#overallperiod)                       | tariff_element.restrictions                | Only set if start_time or end_time is present                        |

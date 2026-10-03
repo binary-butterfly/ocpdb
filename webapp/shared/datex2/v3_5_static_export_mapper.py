@@ -473,6 +473,9 @@ class DatexV35JSONStaticExportMapper:
                         value=float(component.price or 0),
                     )
 
+                    if component.tax_included is not None:
+                        energy_price.taxIncluded = component.tax_included
+
                     if component.taxes:
                         for tax in component.taxes:
                             if tax.percentage is not None:
