@@ -16,8 +16,10 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+from datetime import datetime
+
 from mercantile import LngLatBbox
-from sqlalchemy import func, select, text, union
+from sqlalchemy import Row, func, select, text, union
 from sqlalchemy.orm import aliased, joinedload, selectinload
 from sqlalchemy.orm.interfaces import LoaderOption
 from validataclass_search_queries.filters import BoundSearchFilter
@@ -30,6 +32,10 @@ from webapp.models.charging_station import ChargingStation
 from webapp.models.evse import PARKING_RESTRICTION_BIT_BY_MEMBER, EvseStatus, ParkingRestriction
 
 from .base_repository import BaseRepository
+
+# location id, location uid, location last_updated, charging station id, charging station uid,
+# charging station last_updated, EVSE uid, EVSE status, EVSE last_updated, EVSE status_last_updated
+RealtimeEvseRow = Row[tuple[int, str, datetime, int, str, datetime, str, EvseStatus, datetime, datetime | None]]
 
 
 class LocationRepository(BaseRepository[Location]):
@@ -254,27 +260,51 @@ class LocationRepository(BaseRepository[Location]):
         query = self.session.query(Location).options(*options)
         return self._search_and_paginate(query, search_query)
 
-    def fetch_realtime_locations(self, *, search_query: BaseSearchQuery | None = None) -> list[Location]:
+    def fetch_realtime_evse_rows(self, *, search_query: BaseSearchQuery | None = None) -> list[RealtimeEvseRow]:
         """
-        Lean variant of fetch_locations() for realtime exports, which just need charging stations and EVSEs:
-        - EVSEs excluded by search_query.exclude_evse_status are not loaded at all, so the charging_station.evses
-          collections are filtered. Only use this for read-only exports, never for modifying the result.
-        - The result is paginated, but without the total count query, which would repeat the whole filter query.
+        Fetches the data of realtime exports as plain rows instead of ORM objects. Building ORM objects for a full export
+        of >100k EVSEs takes several seconds, while realtime exports just need a few columns:
+        - Search filters, sorting and pagination apply to the locations, just like in fetch_locations(), but without the
+          total count query, which would repeat the whole filter query.
+        - EVSEs excluded by search_query.exclude_evse_status are not part of the result.
+        - Locations without EVSEs in the result are not part of the result either.
+        - The rows are ordered by location (in search query order), charging station and EVSE, so all rows of a location
+          and of a charging station are consecutive.
         """
-        exclude_evse_status: list[EvseStatus] | None = getattr(search_query, 'exclude_evse_status', None)
-        evses_relationship = (
-            ChargingStation.evses.and_(Evse.status.notin_(exclude_evse_status))
-            if exclude_evse_status
-            else ChargingStation.evses
-        )
-        query = self.session.query(Location).options(
-            selectinload(Location.charging_pool).selectinload(evses_relationship),
+        location_id_query = self.session.query(Location.id)
+        location_id_query = self._filter_by_search_query(location_id_query, search_query)
+        # The id as tie-breaker, so pages are stable if the sorting column has duplicates
+        location_id_query = self._order_by_search_query(location_id_query, search_query).order_by(Location.id)
+        if isinstance(search_query, AbstractPaginationMixin):
+            location_id_query = search_query.apply_pagination_to_query(location_id_query, self.model_cls)
+        location_ids = location_id_query.subquery()
+
+        query = (
+            self.session
+            .query(
+                Location.id,
+                Location.uid,
+                Location.last_updated,
+                ChargingStation.id,
+                ChargingStation.uid,
+                ChargingStation.last_updated,
+                Evse.uid,
+                Evse.status,
+                Evse.last_updated,
+                Evse.status_last_updated,
+            )
+            .join(location_ids, location_ids.c.id == Location.id)
+            .join(ChargingStation, ChargingStation.location_id == Location.id)
+            .join(Evse, Evse.charging_station_id == ChargingStation.id)
         )
 
-        query = self._filter_by_search_query(query, search_query)
+        exclude_evse_status: list[EvseStatus] | None = getattr(search_query, 'exclude_evse_status', None)
+        if exclude_evse_status:
+            query = query.filter(Evse.status.notin_(exclude_evse_status))
+
+        # Same location order as the paginated location ids, the ids keep the rows of a location together.
         query = self._order_by_search_query(query, search_query)
-        if isinstance(search_query, AbstractPaginationMixin):
-            query = search_query.apply_pagination_to_query(query, self.model_cls)
+        query = query.order_by(Location.id, ChargingStation.id, Evse.id)
 
         return query.all()
 

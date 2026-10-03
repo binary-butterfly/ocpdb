@@ -16,6 +16,15 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+import json
+from typing import Any
+
 from .default_json_encoder import DefaultJSONEncoder
-from .json_compatible import to_json_compatible
-from .json_provider import JSONProvider
+
+
+def to_json_compatible(data: Any) -> Any:
+    """
+    Converts data to plain JSON types, rendering datetimes, enums and decimals exactly like the app's JSON provider. Use
+    it for small parts of a response that is serialized with orjson, which renders datetimes differently.
+    """
+    return json.loads(json.dumps(data, cls=DefaultJSONEncoder))

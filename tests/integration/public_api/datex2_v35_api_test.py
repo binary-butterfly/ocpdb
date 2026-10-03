@@ -25,8 +25,13 @@ from sqlalchemy import event
 
 from tests.integration.helpers import OpenApiFlaskClient
 from tests.integration.model_generators.business import BUSINESS_1_NAME, get_business_1
-from tests.integration.model_generators.evse import get_full_evse_1, get_full_evse_2
-from tests.integration.model_generators.location import get_full_location_1, get_full_location_2, get_location_1
+from tests.integration.model_generators.evse import get_full_evse_1, get_full_evse_2, get_full_evse_5
+from tests.integration.model_generators.location import (
+    get_full_location_1,
+    get_full_location_2,
+    get_location_1,
+    get_location_3,
+)
 from tests.integration.model_generators.source import SOURCE_UID_1
 from webapp.common.sqlalchemy import SQLAlchemy
 from webapp.models.evse import EvseStatus
@@ -593,9 +598,153 @@ class Datex2RealtimeApiTest:
             event.remove(db.engine, 'before_cursor_execute', capture_statement)
 
         assert response.status_code == HTTPStatus.OK
-        # Locations, charging stations, EVSEs. No total count query, as the export does not use it.
-        assert len(statements) == 3
-        assert not any('count(' in statement for statement in statements)
+        # One query for the rows of locations, charging stations and EVSEs. No total count query, as the export does not
+        # use it.
+        assert len(statements) == 1
+        assert 'count(' not in statements[0]
         assert 'DISTINCT' not in statements[0]
         # STATIC EVSEs are filtered out in the database already
-        assert 'evse.status NOT IN' in statements[2]
+        assert 'evse.status NOT IN' in statements[0]
+
+    @staticmethod
+    def test_get_realtime_pagination_counts_locations(
+        db: SQLAlchemy,
+        test_client: OpenApiFlaskClient,
+    ) -> None:
+        db.session.add_all([
+            # Without realtime EVSEs, so not part of the export and not counted for pagination
+            get_location_3(evses=[get_full_evse_5(status=EvseStatus.STATIC)]),
+            get_full_location_1(),
+            get_full_location_2(),
+        ])
+        db.session.commit()
+
+        site_ids: list[str] = []
+        for offset in range(3):
+            response = test_client.get(path=f'/api/public/datex/v3.5/json/realtime?limit=1&offset={offset}')
+
+            assert response.status_code == HTTPStatus.OK
+            site_statuses = response.json['payload']['aegiEnergyInfrastructureStatusPublication'][
+                'energyInfrastructureSiteStatus'
+            ]
+            site_ids += [site_status['reference']['idG'] for site_status in site_statuses]
+
+            # A page of one location contains all of its EVSEs
+            for site_status in site_statuses:
+                assert len(site_status['energyInfrastructureStationStatus'][0]['refillPointStatus']) == 2
+
+        assert site_ids == ['LOCATION-1', 'LOCATION-2']
+
+    @staticmethod
+    def test_get_realtime_sorting(
+        db: SQLAlchemy,
+        test_client: OpenApiFlaskClient,
+    ) -> None:
+        db.session.add_all([get_full_location_1(name='A Location'), get_full_location_2(name='B Location')])
+        db.session.commit()
+
+        response = test_client.get(path='/api/public/datex/v3.5/json/realtime?sorted_by=name&sorting_direction=DESC')
+
+        assert response.status_code == HTTPStatus.OK
+        site_statuses = response.json['payload']['aegiEnergyInfrastructureStatusPublication'][
+            'energyInfrastructureSiteStatus'
+        ]
+        assert [site_status['reference']['idG'] for site_status in site_statuses] == ['LOCATION-2', 'LOCATION-1']
+        # The EVSEs stay with their location
+        assert [
+            refill_point_status['aegiRefillPointStatus']['reference']['idG']
+            for refill_point_status in site_statuses[0]['energyInfrastructureStationStatus'][0]['refillPointStatus']
+        ] == ['EVSE-3', 'EVSE-4']
+
+    @staticmethod
+    def test_get_realtime_pagination_with_equal_sorting_values(
+        db: SQLAlchemy,
+        test_client: OpenApiFlaskClient,
+    ) -> None:
+        db.session.add_all([get_full_location_1(name='Same Name'), get_full_location_2(name='Same Name')])
+        db.session.commit()
+
+        site_ids: list[str] = []
+        for offset in range(2):
+            response = test_client.get(
+                path=f'/api/public/datex/v3.5/json/realtime?sorted_by=name&limit=1&offset={offset}',
+            )
+
+            assert response.status_code == HTTPStatus.OK
+            site_ids += [
+                site_status['reference']['idG']
+                for site_status in response.json['payload']['aegiEnergyInfrastructureStatusPublication'][
+                    'energyInfrastructureSiteStatus'
+                ]
+            ]
+
+        # The location id decides between equal names, so each location is on exactly one page
+        assert site_ids == ['LOCATION-1', 'LOCATION-2']
+
+    @staticmethod
+    def test_get_realtime_full_output(
+        db: SQLAlchemy,
+        test_client: OpenApiFlaskClient,
+    ) -> None:
+        location_last_updated = datetime(2026, 3, 10, 8, 30, 15, 123456, tzinfo=timezone.utc)
+        station_last_updated = datetime(2026, 3, 9, 7, 0, 0, tzinfo=timezone.utc)
+        evse_last_updated = datetime(2026, 3, 8, 6, 15, 30, 500000, tzinfo=timezone.utc)
+        status_last_updated = datetime(2026, 3, 11, 9, 45, 0, 1, tzinfo=timezone.utc)
+
+        location = get_location_1(
+            evses=[get_full_evse_1(last_updated=evse_last_updated, status_last_updated=status_last_updated)],
+            last_updated=location_last_updated,
+        )
+        location.charging_pool[0].uid = 'CS-1'
+        location.charging_pool[0].last_updated = station_last_updated
+        db.session.add(location)
+        db.session.commit()
+
+        response = test_client.get(path='/api/public/datex/v3.5/json/realtime')
+
+        assert response.status_code == HTTPStatus.OK
+        payload = response.json['payload']
+        publication = payload.pop('aegiEnergyInfrastructureStatusPublication')
+        assert payload == {
+            'versionG': '3.5',
+            'modelBaseVersionG': '3',
+            'profileNameG': 'AFIR Energy Infrastructure',
+            'profileVersionG': '01-00-00',
+        }
+        assert datetime.fromisoformat(publication.pop('publicationTime')).tzinfo is not None
+        assert publication == {
+            'lang': 'de',
+            'publicationCreator': {'country': 'DE', 'nationalIdentifier': 'OCPDB'},
+            'energyInfrastructureSiteStatus': [
+                {
+                    'reference': {
+                        'targetClass': 'FacilityObject',
+                        'idG': 'LOCATION-1',
+                        'versionG': '2026-03-10T08:30:15.123456+00:00',
+                    },
+                    'lastUpdated': '2026-03-10T08:30:15.123456+00:00',
+                    'energyInfrastructureStationStatus': [
+                        {
+                            'reference': {
+                                'targetClass': 'FacilityObject',
+                                'idG': 'CS-1',
+                                'versionG': '2026-03-09T07:00:00+00:00',
+                            },
+                            'refillPointStatus': [
+                                {
+                                    'aegiRefillPointStatus': {
+                                        'reference': {
+                                            'targetClass': 'FacilityObject',
+                                            'idG': 'EVSE-1',
+                                            'versionG': '2026-03-08T06:15:30.500000+00:00',
+                                        },
+                                        'lastUpdated': '2026-03-11T09:45:00.000001+00:00',
+                                        'status': {'value': 'available'},
+                                    },
+                                },
+                            ],
+                        },
+                    ],
+                },
+            ],
+        }

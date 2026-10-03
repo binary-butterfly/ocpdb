@@ -16,6 +16,7 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+import re
 from datetime import datetime, timezone
 from decimal import Decimal
 from http import HTTPStatus
@@ -535,3 +536,72 @@ class Datex2V37RealtimeApiTest:
         ]
         assert len(site_statuses) == 1
         assert site_statuses[0]['reference']['idG'] == 'LOCATION-1'
+
+    @staticmethod
+    def test_get_realtime_full_output(
+        db: SQLAlchemy,
+        test_client: OpenApiFlaskClient,
+    ) -> None:
+        location_last_updated = datetime(2026, 3, 10, 8, 30, 15, 123456, tzinfo=timezone.utc)
+        station_last_updated = datetime(2026, 3, 9, 7, 0, 0, tzinfo=timezone.utc)
+        evse_last_updated = datetime(2026, 3, 8, 6, 15, 30, 500000, tzinfo=timezone.utc)
+        status_last_updated = datetime(2026, 3, 11, 9, 45, 0, 1, tzinfo=timezone.utc)
+
+        location = get_location_1(
+            evses=[get_full_evse_1(last_updated=evse_last_updated, status_last_updated=status_last_updated)],
+            last_updated=location_last_updated,
+        )
+        location.charging_pool[0].uid = 'CS-1'
+        location.charging_pool[0].last_updated = station_last_updated
+        db.session.add(location)
+        db.session.commit()
+
+        response = test_client.get(path='/api/public/datex/v3.7/json/realtime')
+
+        assert response.status_code == HTTPStatus.OK
+        payload = response.json['payload']
+        publication = payload.pop('aegiEnergyInfrastructureStatusPublication')
+        assert payload == {
+            'versionG': '3.7',
+            'modelBaseVersionG': '3',
+            'profileNameG': 'Afir Energy Infrastructure',
+            'profileVersionG': '01-00-00',
+        }
+        # lastUpdated and publicationTime are UTC without microseconds, versionG is ISO 8601 with microseconds.
+        assert re.fullmatch(r'\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z', publication.pop('publicationTime'))
+        assert publication == {
+            'lang': 'de',
+            'publicationCreator': {'country': 'DE', 'nationalIdentifier': 'OCPDB'},
+            'energyInfrastructureSiteStatus': [
+                {
+                    'reference': {
+                        'targetClass': 'FacilityObject',
+                        'idG': 'LOCATION-1',
+                        'versionG': '2026-03-10T08:30:15.123456+00:00',
+                    },
+                    'lastUpdated': '2026-03-10T08:30:15Z',
+                    'energyInfrastructureStationStatus': [
+                        {
+                            'reference': {
+                                'targetClass': 'FacilityObject',
+                                'idG': 'CS-1',
+                                'versionG': '2026-03-09T07:00:00+00:00',
+                            },
+                            'refillPointStatus': [
+                                {
+                                    'aegiRefillPointStatus': {
+                                        'reference': {
+                                            'targetClass': 'FacilityObject',
+                                            'idG': 'EVSE-1',
+                                            'versionG': '2026-03-08T06:15:30.500000+00:00',
+                                        },
+                                        'lastUpdated': '2026-03-11T09:45:00Z',
+                                        'status': {'value': 'available'},
+                                    },
+                                },
+                            ],
+                        },
+                    ],
+                },
+            ],
+        }
