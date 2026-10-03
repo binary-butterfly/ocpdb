@@ -83,7 +83,7 @@ services:
     command: ["/scripts/import-regionalschluessel.sh"]
 
   rabbitmq:
-    image: rabbitmq:4.2
+    image: rabbitmq:4.3
     user: rabbitmq
     environment:
       # Disable spammy logging
