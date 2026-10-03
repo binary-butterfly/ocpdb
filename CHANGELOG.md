@@ -1,5 +1,19 @@
 # Changelog
 
+# 2.16.3
+
+Released 2026-10-03
+
+## Fixes
+
+* [Optimize realtime outputs](https://github.com/binary-butterfly/ocpdb/pull/279)
+* [Fix tax included](https://github.com/binary-butterfly/ocpdb/pull/280)
+
+## Maintenance
+
+* [Dependency updates](https://github.com/binary-butterfly/ocpdb/pull/281)
+
+
 # 2.16.2
 
 Released 2026-09-28
