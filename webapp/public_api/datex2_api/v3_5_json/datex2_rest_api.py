@@ -27,7 +27,8 @@ from flask_openapi.decorator import (
 )
 from validataclass.validators import DataclassValidator
 
-from webapp.common.dataclass import filter_none_recursive, filter_unset_value, recursive_to_dict
+from webapp.common.dataclass import filter_unset_value
+from webapp.common.response import orjson_response
 from webapp.common.rest import BaseMethodView
 from webapp.dependencies import dependencies
 from webapp.public_api.base_blueprint import BaseBlueprint
@@ -135,7 +136,7 @@ class Datex2V35JSONRealtimeMethodView(BaseMethodView):
         search_query: LocationApiSearchQuery = self.validate_query_args(self.search_query_validator)
         result = self.datex2_handler.get_datex2_realtime_payload(search_query)
 
-        return jsonify(filter_unset_value(result.to_dict()))
+        return orjson_response(result)
 
 
 class Datex2V35JSONMobilithekRealtimeMethodView(BaseMethodView):
@@ -154,4 +155,4 @@ class Datex2V35JSONMobilithekRealtimeMethodView(BaseMethodView):
             search_query=search_query,
         )
 
-        return jsonify(filter_none_recursive(filter_unset_value(recursive_to_dict(result))))
+        return orjson_response(result)

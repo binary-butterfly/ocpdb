@@ -16,6 +16,7 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+import re
 from datetime import datetime, timezone
 from http import HTTPStatus
 
@@ -190,7 +191,8 @@ class Datex2V37MobilithekRealtimeApiTest:
 
         assert response.status_code == HTTPStatus.OK
         dynamic_info = response.json['messageContainer']['exchangeInformation']['dynamicInformation']
-        assert 'messageGenerationTimestamp' in dynamic_info
+        # UTC without microseconds
+        assert re.fullmatch(r'\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z', dynamic_info['messageGenerationTimestamp'])
 
 
 class Datex2V35MobilithekRealtimeApiTest:
@@ -348,4 +350,5 @@ class Datex2V35MobilithekRealtimeApiTest:
 
         assert response.status_code == HTTPStatus.OK
         dynamic_info = response.json['messageContainer']['exchangeInformation']['dynamicInformation']
-        assert 'messageGenerationTimestamp' in dynamic_info
+        # UTC without microseconds
+        assert re.fullmatch(r'\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z', dynamic_info['messageGenerationTimestamp'])

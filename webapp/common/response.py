@@ -16,6 +16,9 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+from typing import Any
+
+import orjson
 from flask import Response, make_response
 from lxml import etree
 from lxml.etree import ElementTree
@@ -35,5 +38,15 @@ def protobuf_response(data: bytes) -> Response:
 
 def empty_json_response() -> Response:
     response = make_response('')
+    response.mimetype = 'application/json'
+    return response
+
+
+def orjson_response(data: Any) -> Response:
+    """
+    JSON response for large payloads of plain dicts and lists, which orjson serializes much faster than the app's JSON
+    provider. orjson renders datetimes in ISO 8601 with offset and enums by their value.
+    """
+    response = make_response(orjson.dumps(data))
     response.mimetype = 'application/json'
     return response

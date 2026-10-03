@@ -16,33 +16,18 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from datetime import datetime, timezone
+from datetime import datetime
 
-from webapp.models.evse import Evse, EvseStatus
-from webapp.models.location import Location
-from webapp.shared.datex2.v3_7.realtime.d_a_t_e_x_i_i3_d2_payload_input import DATEXII3D2PayloadInput
-from webapp.shared.datex2.v3_7.realtime.energy_infrastructure_site_status_input import (
-    EnergyInfrastructureSiteStatusInput,
-)
-from webapp.shared.datex2.v3_7.realtime.energy_infrastructure_station_status_input import (
-    EnergyInfrastructureStationStatusInput,
-)
-from webapp.shared.datex2.v3_7.realtime.energy_infrastructure_status_publication_input import (
-    EnergyInfrastructureStatusPublicationInput,
-)
-from webapp.shared.datex2.v3_7.realtime.payload_publication_g_input import PayloadPublicationGInput
-from webapp.shared.datex2.v3_7.realtime.refill_point_status_g_input import RefillPointStatusGInput
-from webapp.shared.datex2.v3_7.realtime.refill_point_status_input import RefillPointStatusInput
-from webapp.shared.datex2.v3_7.shared.facility_object_versioned_reference_g_input import (
-    FacilityObjectVersionedReferenceGInput,
-)
-from webapp.shared.datex2.v3_7.shared.international_identifier_input import InternationalIdentifierInput
+from webapp.models.evse import EvseStatus
 from webapp.shared.datex2.v3_7.shared.refill_point_status_enum import RefillPointStatusEnum
-from webapp.shared.datex2.v3_7.shared.refill_point_status_enum_g_input import RefillPointStatusEnumGInput
+
+from .realtime_export_mapper import DatexJSONRealtimeExportMapper
 
 
-class DatexV37JSONRealtimeExportMapper:
-    _evse_status_to_refill_point_status_map: dict[EvseStatus, RefillPointStatusEnum] = {
+class DatexV37JSONRealtimeExportMapper(DatexJSONRealtimeExportMapper):
+    version = '3.7'
+    profile_name = 'Afir Energy Infrastructure'
+    evse_status_to_refill_point_status_map = {
         EvseStatus.AVAILABLE: RefillPointStatusEnum.AVAILABLE,
         EvseStatus.BLOCKED: RefillPointStatusEnum.BLOCKED,
         EvseStatus.CHARGING: RefillPointStatusEnum.CHARGING,
@@ -54,87 +39,8 @@ class DatexV37JSONRealtimeExportMapper:
         EvseStatus.UNKNOWN: RefillPointStatusEnum.UNKNOWN,
     }
 
-    def map_locations_to_realtime_payload(self, locations: list[Location]) -> DATEXII3D2PayloadInput:
-        now = datetime.now(tz=timezone.utc)
-
-        site_statuses = []
-        for location in locations:
-            site_status = self._map_location_to_site_status(location)
-            if site_status is not None:
-                site_statuses.append(site_status)
-
-        payload = PayloadPublicationGInput(
-            modelBaseVersionG='3',
-            versionG='3.7',
-            profileNameG='Afir Energy Infrastructure',
-            profileVersionG='01-00-00',
-            aegiEnergyInfrastructureStatusPublication=EnergyInfrastructureStatusPublicationInput(
-                lang='de',
-                publicationTime=now,
-                publicationCreator=InternationalIdentifierInput(
-                    country='DE',
-                    nationalIdentifier='OCPDB',
-                ),
-                energyInfrastructureSiteStatus=site_statuses,
-            ),
-        )
-
-        return DATEXII3D2PayloadInput(payload=payload)
-
-    def _map_location_to_site_status(self, location: Location) -> EnergyInfrastructureSiteStatusInput | None:
-        station_statuses = []
-        for charging_station in location.charging_pool:
-            station_status = self._map_charging_station_to_station_status(charging_station)
-            if station_status is not None:
-                station_statuses.append(station_status)
-
-        if not station_statuses:
-            return None
-
-        return EnergyInfrastructureSiteStatusInput(
-            reference=FacilityObjectVersionedReferenceGInput(
-                targetClass='FacilityObject',
-                idG=location.uid,
-                versionG=location.last_updated.isoformat(),
-            ),
-            lastUpdated=location.last_updated,
-            energyInfrastructureStationStatus=station_statuses,
-        )
-
-    def _map_charging_station_to_station_status(self, charging_station):
-        refill_point_statuses = []
-        for evse in charging_station.evses:
-            refill_point_status = self._map_evse_to_refill_point_status(evse)
-            if refill_point_status is not None:
-                refill_point_statuses.append(refill_point_status)
-
-        if not refill_point_statuses:
-            return None
-
-        return EnergyInfrastructureStationStatusInput(
-            reference=FacilityObjectVersionedReferenceGInput(
-                targetClass='FacilityObject',
-                idG=charging_station.uid,
-                versionG=charging_station.last_updated.isoformat(),
-            ),
-            refillPointStatus=refill_point_statuses,
-        )
-
-    def _map_evse_to_refill_point_status(self, evse: Evse) -> RefillPointStatusGInput | None:
-        status_enum = self._evse_status_to_refill_point_status_map.get(evse.status)
-        if status_enum is None:
-            return None
-
-        last_updated = evse.status_last_updated or evse.last_updated
-
-        return RefillPointStatusGInput(
-            aegiRefillPointStatus=RefillPointStatusInput(
-                reference=FacilityObjectVersionedReferenceGInput(
-                    targetClass='FacilityObject',
-                    idG=evse.uid,
-                    versionG=evse.last_updated.isoformat(),
-                ),
-                lastUpdated=last_updated,
-                status=RefillPointStatusEnumGInput(value=status_enum),
-            ),
-        )
+    @staticmethod
+    def format_last_updated(value: datetime) -> datetime | str:
+        # UTC without microseconds, like all datetimes rendered by the DefaultJSONEncoder. Same result as
+        # strftime('%Y-%m-%dT%H:%M:%SZ'), but twice as fast, which matters for >100k EVSEs.
+        return value.isoformat(timespec='seconds')[:19] + 'Z'

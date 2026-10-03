@@ -17,7 +17,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 from datetime import datetime, timezone
+from typing import Any
 
+from webapp.common.dataclass import filter_none_recursive, filter_unset_value, recursive_to_dict
+from webapp.common.json import to_json_compatible
 from webapp.models.evse import EvseStatus
 from webapp.public_api.base_handler import PublicApiBaseHandler
 from webapp.repositories import LocationRepository
@@ -33,9 +36,7 @@ from webapp.shared.datex2.models import (
     ProtocolTypeEnum,
     ProtocolTypeEnumGInput,
 )
-from webapp.shared.datex2.v3_7.realtime.d_a_t_e_x_i_i3_d2_payload_input import (
-    DATEXII3D2PayloadInput as DATEXII3D2RealtimePayloadInput,
-)
+from webapp.shared.datex2.realtime_export_models import RealtimePayload
 from webapp.shared.datex2.v3_7.static.d_a_t_e_x_i_i3_d2_payload_input import (
     DATEXII3D2PayloadInput as DATEXII3D2StaticPayloadInput,
 )
@@ -67,16 +68,14 @@ class Datex2V37JSONHandler(PublicApiBaseHandler):
 
         return self.datex_static_export_mapper.map_locations_to_static_payload(list(locations))
 
-    def get_datex2_realtime_payload(self, search_query: LocationApiSearchQuery) -> DATEXII3D2RealtimePayloadInput:
+    def get_datex2_realtime_payload(self, search_query: LocationApiSearchQuery) -> RealtimePayload:
         search_query.exclude_evse_status = [EvseStatus.STATIC]
-        locations = self.location_repository.fetch_realtime_locations(search_query=search_query)
+        rows = self.location_repository.fetch_realtime_evse_rows(search_query=search_query)
 
-        return self.datex_realtime_export_mapper.map_locations_to_realtime_payload(locations)
+        return self.datex_realtime_export_mapper.map_rows_to_realtime_payload(rows)
 
-    def get_datex2_mobilithek_realtime(self, search_query: LocationApiSearchQuery) -> MessageContainerWrapperInput:
-        search_query.exclude_evse_status = [EvseStatus.STATIC]
-        locations = self.location_repository.fetch_realtime_locations(search_query=search_query)
-        payload_result = self.datex_realtime_export_mapper.map_locations_to_realtime_payload(locations)
+    def get_datex2_mobilithek_realtime(self, search_query: LocationApiSearchQuery) -> dict[str, Any]:
+        realtime_payload = self.get_datex2_realtime_payload(search_query)
 
         if search_query.evse_status_last_updated_since is None:
             protocol_type = ProtocolTypeEnum.SNAPSHOT_PUSH
@@ -84,7 +83,8 @@ class Datex2V37JSONHandler(PublicApiBaseHandler):
             protocol_type = ProtocolTypeEnum.DELTA_PUSH
 
         message_container = MessageContainerInput(
-            payload=[payload_result.payload],
+            # Placeholder for the payload of plain dicts, which is added after rendering this small header.
+            payload=[],
             exchangeInformation=ExchangeInformationInput(
                 exchangeContext=ExchangeContextInput(
                     codedExchangeProtocol=ProtocolTypeEnumGInput(
@@ -104,6 +104,11 @@ class Datex2V37JSONHandler(PublicApiBaseHandler):
             ),
         )
 
-        return MessageContainerWrapperInput(
-            messageContainer=message_container,
+        result = to_json_compatible(
+            filter_none_recursive(
+                filter_unset_value(recursive_to_dict(MessageContainerWrapperInput(messageContainer=message_container)))
+            )
         )
+        result['messageContainer']['payload'] = [realtime_payload['payload']]
+
+        return result

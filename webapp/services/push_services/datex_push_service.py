@@ -19,10 +19,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import json
 from datetime import datetime, timezone
 
+import orjson
 import requests
 
 from webapp.common.dataclass import filter_none_recursive, filter_unset_value, recursive_to_dict
-from webapp.common.json import DefaultJSONEncoder
+from webapp.common.json import DefaultJSONEncoder, to_json_compatible
 from webapp.common.redis import RedisHelper, RedisKeyNotFoundException
 from webapp.models.evse import EvseStatus
 from webapp.repositories import LocationRepository
@@ -87,7 +88,7 @@ class ChargeLocationService(BaseService):
             protocol_type=ProtocolTypeEnum.SNAPSHOT_PUSH,
         )
         self.push_to_mobilithek(
-            data=data,
+            data=json.dumps(filter_none_recursive(filter_unset_value(recursive_to_dict(data))), cls=DefaultJSONEncoder),
             subscription_id=self.config_helper.get('MOBILITHEK_STATIC_PUBLICATION_ID'),
         )
 
@@ -105,11 +106,11 @@ class ChargeLocationService(BaseService):
             exclude_evse_status=[EvseStatus.STATIC],
         )
 
-        locations = self.location_repository.fetch_realtime_locations(search_query=search_query)
+        rows = self.location_repository.fetch_realtime_evse_rows(search_query=search_query)
 
         # A diff (delta push) with no changed locations is empty: skip sending, but still advance the watermark so the
         # next diff only covers the time after this run.
-        if updated_since is not None and not locations:
+        if updated_since is not None and not rows:
             self.redis_helper.set('last_datex_realtime_push', datex_realtime_push.isoformat())
             return
 
@@ -118,19 +119,23 @@ class ChargeLocationService(BaseService):
             mapper = DatexV37JSONRealtimeExportMapper()
         else:
             mapper = DatexV35JSONRealtimeExportMapper()
-        payload_result = mapper.map_locations_to_realtime_payload(locations)
+        realtime_payload = mapper.map_rows_to_realtime_payload(rows)
 
-        data = self._build_message_container(
-            payload=payload_result.payload,
+        message_container = self._build_message_container(
+            # Placeholder for the payload of plain dicts, which is added after rendering this small header.
+            payload=[],
             protocol_type=ProtocolTypeEnum.DELTA_PUSH if updated_since else ProtocolTypeEnum.SNAPSHOT_PUSH,
         )
+        data = to_json_compatible(filter_none_recursive(filter_unset_value(recursive_to_dict(message_container))))
+        data['payload'] = realtime_payload['payload']
+
         self.push_to_mobilithek(
-            data=data,
+            data=orjson.dumps(data),
             subscription_id=self.config_helper.get('MOBILITHEK_REALTIME_PUBLICATION_ID'),
         )
         self.redis_helper.set('last_datex_realtime_push', datex_realtime_push.isoformat())
 
-    def push_to_mobilithek(self, data: MessageContainerInput, subscription_id: int) -> None:
+    def push_to_mobilithek(self, data: str | bytes, subscription_id: int) -> None:
         key_dir: str = self.config_helper.get('KEY_DIR')
         url = f'https://mobilithek.info:8443/mobilithek/api/v1.0/publication/{subscription_id}'
         response = requests.post(
@@ -140,7 +145,7 @@ class ChargeLocationService(BaseService):
                 f'{key_dir}/{self.config_helper.get("MOBILITHEK_CERTIFICATE_FILENAME")}',
                 f'{key_dir}/{self.config_helper.get("MOBILITHEK_KEY_FILENAME")}',
             ),
-            data=json.dumps(filter_none_recursive(filter_unset_value(recursive_to_dict(data))), cls=DefaultJSONEncoder),
+            data=data,
             timeout=60,
         )
         response.raise_for_status()
