@@ -1,5 +1,14 @@
 # Changelog
 
+# 2.16.4
+
+Released 2026-10-06
+
+## Fixes
+
+* [Filter more characters](https://github.com/binary-butterfly/ocpdb/pull/282)
+
+
 # 2.16.3
 
 Released 2026-10-03
