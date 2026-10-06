@@ -13,6 +13,6 @@ from webapp.common.validation.replacing_string_validator import ReplacingStringV
 class MultiLingualStringValueInput(ValidataclassMixin):
     lang: str = RegexValidator(pattern=r'^[a-z]{2}$')
     value: str = ReplacingStringValidator(
-        mapping={'\r': '', '\n': '; ', '\t': ' ', '\xa0': ' '},
+        mapping={'\r': '', '\n': '; ', '\t': ' ', '\xa0': ' ', '\u200b': '', '\ufeff': ''},
         normalize_spaces=True,
     )
