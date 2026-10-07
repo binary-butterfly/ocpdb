@@ -24,7 +24,6 @@ from .v3_5 import (
     EluMobilityDatex2ImportService,
     EnBWDatex2ImportService,
     EnioDatex2ImportService,
-    ErftDatex2ImportService,
     ERoundDatex2ImportService,
     GridAndCoDatex2ImportService,
     LadebusinessDatex2ImportService,
