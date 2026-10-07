@@ -12,7 +12,7 @@ from .multilingual_string_input import MultilingualStringInput
 from .tpeg_loc03_other_point_descriptor_subtype_enum_g_input import TpegLoc03OtherPointDescriptorSubtypeEnumGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class TpegOtherPointDescriptorInput(ValidataclassMixin):
     descriptor: MultilingualStringInput = DataclassValidator(MultilingualStringInput)
     tpegOtherPointDescriptorType: TpegLoc03OtherPointDescriptorSubtypeEnumGInput = DataclassValidator(

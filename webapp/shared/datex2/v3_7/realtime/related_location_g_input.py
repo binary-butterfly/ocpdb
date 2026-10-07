@@ -11,7 +11,7 @@ from .point_of_interest_input import PointOfInterestInput
 from .public_transport_stop_input import PublicTransportStopInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class RelatedLocationGInput(ValidataclassMixin):
     """
     Only one of the properties shall be used in an instance.

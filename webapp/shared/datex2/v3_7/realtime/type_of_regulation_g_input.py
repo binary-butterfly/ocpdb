@@ -31,7 +31,7 @@ from .priority_rule_input import PriorityRuleInput
 from .prohibition_of_overtaking_input import ProhibitionOfOvertakingInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class TypeOfRegulationGInput(ValidataclassMixin):
     """
     Only one of the properties shall be used in an instance.

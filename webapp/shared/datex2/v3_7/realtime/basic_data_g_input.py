@@ -28,7 +28,7 @@ from .traffic_headway_input import TrafficHeadwayInput
 from .traffic_speed_input import TrafficSpeedInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class BasicDataGInput(ValidataclassMixin):
     """
     Only one of the properties shall be used in an instance.

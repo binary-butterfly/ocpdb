@@ -10,7 +10,7 @@ from validataclass.validators import EnumValidator, StringValidator
 from .smart_recharging_services_enum import SmartRechargingServicesEnum
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class SmartRechargingServicesEnumGInput(ValidataclassMixin):
     value: SmartRechargingServicesEnum = EnumValidator(SmartRechargingServicesEnum)
     extendedValueG: str | UnsetValueType = StringValidator(), Default(UnsetValue)

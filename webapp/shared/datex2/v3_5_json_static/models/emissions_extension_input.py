@@ -9,7 +9,7 @@ from validataclass.validators import DataclassValidator
 from .comparison_operator_enum_g_input import ComparisonOperatorEnumGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class EmissionsExtensionInput(ValidataclassMixin):
     """
     An extension for the Emissions class to provide a comparison operator.

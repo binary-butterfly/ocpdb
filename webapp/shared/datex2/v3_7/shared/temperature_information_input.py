@@ -12,7 +12,7 @@ from .measurement_or_calculation_time_input import MeasurementOrCalculationTimeI
 from .temperature_input import TemperatureInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class TemperatureInformationInput(ValidataclassMixin):
     measurementOrCalculationTime: MeasurementOrCalculationTimeInput | UnsetValueType = (
         DataclassValidator(MeasurementOrCalculationTimeInput),

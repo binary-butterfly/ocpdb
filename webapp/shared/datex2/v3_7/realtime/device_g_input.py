@@ -11,7 +11,7 @@ from .component_input import ComponentInput
 from .device_input import DeviceInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class DeviceGInput(ValidataclassMixin):
     """
     Only one of the properties shall be used in an instance.

@@ -10,7 +10,7 @@ from validataclass.validators import EnumValidator, StringValidator
 from .surcharge_type_enum import SurchargeTypeEnum
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class SurchargeTypeEnumGInput(ValidataclassMixin):
     value: SurchargeTypeEnum = EnumValidator(SurchargeTypeEnum)
     extendedValueG: str | UnsetValueType = StringValidator(), Default(UnsetValue)

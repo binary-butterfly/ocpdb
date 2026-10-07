@@ -15,7 +15,7 @@ from webapp.shared.datex2.v3_7.shared.vehicle_count_value_input import VehicleCo
 from .vehicle_characteristics_input import VehicleCharacteristicsInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class VehicleCountWithinIntervalInput(ValidataclassMixin):
     measurementInterval: float | UnsetValueType = FloatValidator(allow_integers=True), Default(UnsetValue)
     numberOfIncomingVehicles: VehicleCountValueInput | UnsetValueType = (

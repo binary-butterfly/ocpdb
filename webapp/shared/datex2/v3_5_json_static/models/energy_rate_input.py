@@ -24,7 +24,7 @@ from .payment_input import PaymentInput
 from .rate_policy_enum_g_input import RatePolicyEnumGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class EnergyRateInput(ValidataclassMixin):
     """
     A rate dedicated for Energy.

@@ -26,7 +26,7 @@ from .component_input import ComponentInput
 from .point_location_g_input import PointLocationGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class DeviceInput(ValidataclassMixin):
     idG: str = StringValidator()
     versionG: str = StringValidator()

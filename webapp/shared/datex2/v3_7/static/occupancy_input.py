@@ -23,7 +23,7 @@ from webapp.shared.datex2.v3_7.shared.threshold_configuration_input import Thres
 from .vehicle_count_and_rate_input import VehicleCountAndRateInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class OccupancyInput(ValidataclassMixin):
     numberOfSpacesOverride: int | UnsetValueType = IntegerValidator(min_value=0), Default(UnsetValue)
     numberOfVacantSpaces: int | UnsetValueType = IntegerValidator(min_value=0), Default(UnsetValue)

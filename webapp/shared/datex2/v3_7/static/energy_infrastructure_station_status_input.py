@@ -26,7 +26,7 @@ from .refill_point_status_g_input import RefillPointStatusGInput
 from .supplemental_facility_status_input import SupplementalFacilityStatusInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class EnergyInfrastructureStationStatusInput(ValidataclassMixin):
     reference: FacilityObjectVersionedReferenceGInput = DataclassValidator(FacilityObjectVersionedReferenceGInput)
     lastUpdated: datetime | UnsetValueType = DateTimeValidator(), Default(UnsetValue)

@@ -10,7 +10,7 @@ from validataclass.validators import EnumValidator, StringValidator
 from .physical_support_enum import PhysicalSupportEnum
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class PhysicalSupportEnumGInput(ValidataclassMixin):
     value: PhysicalSupportEnum = EnumValidator(PhysicalSupportEnum)
     extendedValueG: str | UnsetValueType = StringValidator(), Default(UnsetValue)

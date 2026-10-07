@@ -12,7 +12,7 @@ from webapp.shared.datex2.v3_7.shared.extension_type_g_input import ExtensionTyp
 from .gdd_service_category_enum_g_input import GddServiceCategoryEnumGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class GddPictogramIdentificationInput(ValidataclassMixin):
     country: str = StringValidator(max_length=2)
     serviceCategory: GddServiceCategoryEnumGInput = DataclassValidator(GddServiceCategoryEnumGInput)

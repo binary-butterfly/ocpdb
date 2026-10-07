@@ -9,6 +9,6 @@ from validataclass.validators import DataclassValidator
 from .sign_setting_definition_input import SignSettingDefinitionInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class SignSettingInput(ValidataclassMixin):
     signSettingDefinition: SignSettingDefinitionInput = DataclassValidator(SignSettingDefinitionInput)

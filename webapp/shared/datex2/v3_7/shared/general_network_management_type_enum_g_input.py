@@ -11,7 +11,7 @@ from .general_network_management_type_enum import GeneralNetworkManagementTypeEn
 from .general_network_management_type_enum_extension_type_g import GeneralNetworkManagementTypeEnumExtensionTypeG
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class GeneralNetworkManagementTypeEnumGInput(ValidataclassMixin):
     value: GeneralNetworkManagementTypeEnum = EnumValidator(GeneralNetworkManagementTypeEnum)
     extendedValueG: GeneralNetworkManagementTypeEnumExtensionTypeG | UnsetValueType = (

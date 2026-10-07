@@ -10,7 +10,7 @@ from validataclass.validators import DataclassValidator
 from .dynamic_traffic_management_input import DynamicTrafficManagementInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class DynamicTrafficRegulationGInput(ValidataclassMixin):
     """
     Only one of the properties shall be used in an instance.

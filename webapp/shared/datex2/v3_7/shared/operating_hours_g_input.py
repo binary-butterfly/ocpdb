@@ -14,7 +14,7 @@ from .undefined_operating_hours_input import UndefinedOperatingHoursInput
 from .unknown_operating_hours_input import UnknownOperatingHoursInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class OperatingHoursGInput(ValidataclassMixin):
     """
     Only one of the properties shall be used in an instance.

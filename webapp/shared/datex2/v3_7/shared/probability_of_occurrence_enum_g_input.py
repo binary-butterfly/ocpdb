@@ -10,7 +10,7 @@ from validataclass.validators import EnumValidator, StringValidator
 from .probability_of_occurrence_enum import ProbabilityOfOccurrenceEnum
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class ProbabilityOfOccurrenceEnumGInput(ValidataclassMixin):
     value: ProbabilityOfOccurrenceEnum = EnumValidator(ProbabilityOfOccurrenceEnum)
     extendedValueG: str | UnsetValueType = StringValidator(), Default(UnsetValue)

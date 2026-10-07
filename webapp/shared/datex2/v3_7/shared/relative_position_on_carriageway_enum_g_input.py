@@ -10,7 +10,7 @@ from validataclass.validators import EnumValidator, StringValidator
 from .relative_position_on_carriageway_enum import RelativePositionOnCarriagewayEnum
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class RelativePositionOnCarriagewayEnumGInput(ValidataclassMixin):
     value: RelativePositionOnCarriagewayEnum = EnumValidator(RelativePositionOnCarriagewayEnum)
     extendedValueG: str | UnsetValueType = StringValidator(), Default(UnsetValue)

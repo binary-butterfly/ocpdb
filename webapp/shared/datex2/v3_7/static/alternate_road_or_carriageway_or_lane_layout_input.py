@@ -19,7 +19,7 @@ from webapp.shared.datex2.v3_7.shared.speed_limit_g_input import SpeedLimitGInpu
 from .network_location_g_input import NetworkLocationGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class AlternateRoadOrCarriagewayOrLaneLayoutInput(ValidataclassMixin):
     roadOrCarriagewayOrLaneLayoutType: RoadOrCarriagewayOrLaneLayoutTypeGInput | UnsetValueType = (
         DataclassValidator(RoadOrCarriagewayOrLaneLayoutTypeGInput),

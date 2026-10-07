@@ -13,7 +13,7 @@ from .rgb_colour_input import RgbColourInput
 from .thresholds_g_input import ThresholdsGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class StatusConfigurationInput(ValidataclassMixin):
     parkingStatus: ParkingPlaceStatusEnumGInput = DataclassValidator(ParkingPlaceStatusEnumGInput)
     thresholds: ThresholdsGInput = DataclassValidator(ThresholdsGInput)

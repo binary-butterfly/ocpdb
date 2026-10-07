@@ -10,7 +10,7 @@ from validataclass.validators import DataclassValidator, IntegerValidator, Strin
 from .extension_type_g_input import ExtensionTypeGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class GmlLineStringInput(ValidataclassMixin):
     srsDimension: int | UnsetValueType = IntegerValidator(min_value=0), Default(UnsetValue)
     srsName: str | UnsetValueType = StringValidator(), Default(UnsetValue)

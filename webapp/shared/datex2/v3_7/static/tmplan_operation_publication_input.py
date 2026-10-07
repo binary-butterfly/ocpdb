@@ -22,7 +22,7 @@ from webapp.shared.datex2.v3_7.shared.multilingual_string_input import Multiling
 from .tmplan_operation_g_input import TmplanOperationGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class TmplanOperationPublicationInput(ValidataclassMixin):
     lang: str = RegexValidator(pattern=r'^[a-z]{2}$')
     feedDescription: MultilingualStringInput | UnsetValueType = (

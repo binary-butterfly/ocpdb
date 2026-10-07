@@ -12,7 +12,7 @@ from webapp.shared.datex2.v3_7.shared.multilingual_string_input import Multiling
 from .capacity_management_measure_input import CapacityManagementMeasureInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class CapacityManagementInput(ValidataclassMixin):
     name: MultilingualStringInput | UnsetValueType = DataclassValidator(MultilingualStringInput), Default(UnsetValue)
     capacityManagementMeasure: list[CapacityManagementMeasureInput] = ListValidator(

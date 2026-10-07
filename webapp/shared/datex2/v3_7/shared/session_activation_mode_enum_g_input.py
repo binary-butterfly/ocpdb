@@ -10,7 +10,7 @@ from validataclass.validators import EnumValidator, StringValidator
 from .session_activation_mode_enum import SessionActivationModeEnum
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class SessionActivationModeEnumGInput(ValidataclassMixin):
     value: SessionActivationModeEnum = EnumValidator(SessionActivationModeEnum)
     extendedValueG: str | UnsetValueType = StringValidator(), Default(UnsetValue)

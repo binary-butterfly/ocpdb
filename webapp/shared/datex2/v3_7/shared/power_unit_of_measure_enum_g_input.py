@@ -10,7 +10,7 @@ from validataclass.validators import EnumValidator, StringValidator
 from .power_unit_of_measure_enum import PowerUnitOfMeasureEnum
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class PowerUnitOfMeasureEnumGInput(ValidataclassMixin):
     value: PowerUnitOfMeasureEnum = EnumValidator(PowerUnitOfMeasureEnum)
     extendedValueG: str | UnsetValueType = StringValidator(), Default(UnsetValue)

@@ -10,7 +10,7 @@ from validataclass.validators import DataclassValidator, IntegerValidator
 from .extension_type_g_input import ExtensionTypeGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class EnergyBasedApplicabilityInput(ValidataclassMixin):
     fromKWh: int | UnsetValueType = IntegerValidator(min_value=0), Default(UnsetValue)
     toKWh: int | UnsetValueType = IntegerValidator(min_value=0), Default(UnsetValue)

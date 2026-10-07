@@ -31,7 +31,7 @@ from .traffic_regulations_without_traffic_regulation_order_input import (
 )
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class TrafficRegulationPublicationInput(ValidataclassMixin):
     idG: str = StringValidator()
     lang: str = RegexValidator(pattern=r'^[a-z]{2}$')

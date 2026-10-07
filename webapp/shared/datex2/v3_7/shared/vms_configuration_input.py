@@ -11,7 +11,7 @@ from .extension_type_g_input import ExtensionTypeGInput
 from .vms_configuration_display_area_index_display_area_g_input import vmsConfigurationDisplayAreaIndexDisplayAreaGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class VmsConfigurationInput(ValidataclassMixin):
     numberOfDisplayAreas: int | UnsetValueType = IntegerValidator(min_value=0), Default(UnsetValue)
     displayArea: list[vmsConfigurationDisplayAreaIndexDisplayAreaGInput] | UnsetValueType = (

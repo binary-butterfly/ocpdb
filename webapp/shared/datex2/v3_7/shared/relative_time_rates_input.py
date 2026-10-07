@@ -22,7 +22,7 @@ from .extension_type_g_input import ExtensionTypeGInput
 from .rate_line_input import RateLineInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class RelativeTimeRatesInput(ValidataclassMixin):
     collectionSequence: int = IntegerValidator()
     applicableCurrency: str | UnsetValueType = StringValidator(), Default(UnsetValue)

@@ -10,7 +10,7 @@ from validataclass.validators import EnumValidator, StringValidator
 from .time_precision_enum import TimePrecisionEnum
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class TimePrecisionEnumGInput(ValidataclassMixin):
     value: TimePrecisionEnum = EnumValidator(TimePrecisionEnum)
     extendedValueG: str | UnsetValueType = StringValidator(), Default(UnsetValue)

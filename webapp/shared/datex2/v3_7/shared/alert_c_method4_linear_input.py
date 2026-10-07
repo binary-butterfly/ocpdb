@@ -13,7 +13,7 @@ from .alert_c_method4_secondary_point_location_input import AlertCMethod4Seconda
 from .extension_type_g_input import ExtensionTypeGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class AlertCMethod4LinearInput(ValidataclassMixin):
     alertCLocationCountryCode: str = StringValidator()
     alertCLocationTableNumber: str = StringValidator()

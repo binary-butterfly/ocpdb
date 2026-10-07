@@ -13,7 +13,7 @@ from .extension_type_g_input import ExtensionTypeGInput
 from .measure_definition_versioned_reference_g_input import MeasureDefinitionVersionedReferenceGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class MeasureByReferenceInput(ValidataclassMixin):
     versionTime: datetime = DateTimeValidator()
     measureReference: MeasureDefinitionVersionedReferenceGInput = DataclassValidator(

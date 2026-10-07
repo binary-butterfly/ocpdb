@@ -10,7 +10,7 @@ from validataclass.validators import EnumValidator, StringValidator
 from .non_vehicular_road_user_type_enum import NonVehicularRoadUserTypeEnum
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class NonVehicularRoadUserTypeEnumGInput(ValidataclassMixin):
     value: NonVehicularRoadUserTypeEnum = EnumValidator(NonVehicularRoadUserTypeEnum)
     extendedValueG: str | UnsetValueType = StringValidator(), Default(UnsetValue)

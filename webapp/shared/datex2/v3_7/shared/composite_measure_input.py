@@ -12,7 +12,7 @@ from validataclass.validators import DataclassValidator, DateTimeValidator, Stri
 from .extension_type_g_input import ExtensionTypeGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class CompositeMeasureInput(ValidataclassMixin):
     idG: str = StringValidator()
     versionG: str = StringValidator()

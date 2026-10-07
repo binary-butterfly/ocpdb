@@ -10,7 +10,7 @@ from validataclass.validators import EnumValidator, StringValidator
 from .fault_severity_enum import FaultSeverityEnum
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class FaultSeverityEnumGInput(ValidataclassMixin):
     value: FaultSeverityEnum = EnumValidator(FaultSeverityEnum)
     extendedValueG: str | UnsetValueType = StringValidator(), Default(UnsetValue)

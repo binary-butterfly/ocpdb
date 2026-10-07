@@ -10,7 +10,7 @@ from validataclass.validators import EnumValidator, StringValidator
 from .nuts_code_type_enum import NutsCodeTypeEnum
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class NutsCodeTypeEnumGInput(ValidataclassMixin):
     value: NutsCodeTypeEnum = EnumValidator(NutsCodeTypeEnum)
     extendedValueG: str | UnsetValueType = StringValidator(), Default(UnsetValue)

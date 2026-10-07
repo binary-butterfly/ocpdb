@@ -11,7 +11,7 @@ from .relative_offsets_input import RelativeOffsetsInput
 from .times_of_day_input import TimesOfDayInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class AssignedRightTimeRelativeGInput(ValidataclassMixin):
     """
     Only one of the properties shall be used in an instance.

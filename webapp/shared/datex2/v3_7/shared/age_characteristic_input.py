@@ -12,7 +12,7 @@ from .extension_type_g_input import ExtensionTypeGInput
 from .non_negative_integer_comparison_input import NonNegativeIntegerComparisonInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class AgeCharacteristicInput(ValidataclassMixin):
     comparisonOperator: ComparisonOperatorEnumGInput = DataclassValidator(ComparisonOperatorEnumGInput)
     yearOfFirstRegistration: int | UnsetValueType = IntegerValidator(min_value=0), Default(UnsetValue)

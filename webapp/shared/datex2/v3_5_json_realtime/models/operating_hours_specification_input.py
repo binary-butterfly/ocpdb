@@ -14,7 +14,7 @@ from .extension_type_g_input import ExtensionTypeGInput
 from .overall_period_input import OverallPeriodInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class OperatingHoursSpecificationInput(ValidataclassMixin):
     """
     A specification of operating hours (e.g. for a parking site, a service facility, an access or the availability for equipment).

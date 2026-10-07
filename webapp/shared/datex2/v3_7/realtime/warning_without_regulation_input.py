@@ -14,7 +14,7 @@ from webapp.shared.datex2.v3_7.shared.warning_g_input import WarningGInput
 from .road_sign_g_input import RoadSignGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class WarningWithoutRegulationInput(ValidataclassMixin):
     typeOfWarningWithoutRegulation: list[WarningGInput] = ListValidator(DataclassValidator(WarningGInput))
     condition: ConditionGInput | UnsetValueType = DataclassValidator(ConditionGInput), Default(UnsetValue)

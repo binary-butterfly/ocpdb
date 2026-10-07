@@ -19,7 +19,7 @@ from webapp.shared.datex2.v3_7.shared.measured_or_derived_data_type_enum_g_input
 from .vehicle_characteristics_input import VehicleCharacteristicsInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class MeasurementSpecificCharacteristicsInput(ValidataclassMixin):
     accuracy: float | UnsetValueType = FloatValidator(allow_integers=True), Default(UnsetValue)
     computationMethod: ComputationMethodEnumGInput | UnsetValueType = (

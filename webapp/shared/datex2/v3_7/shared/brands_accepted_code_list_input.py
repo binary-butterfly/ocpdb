@@ -11,7 +11,7 @@ from .extension_type_g_input import ExtensionTypeGInput
 from .payment_brands_enum_g_input import PaymentBrandsEnumGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class BrandsAcceptedCodeListInput(ValidataclassMixin):
     brandsAcceptedList: PaymentBrandsEnumGInput = DataclassValidator(PaymentBrandsEnumGInput)
     facBrandsAcceptedCodeListExtensionG: ExtensionTypeGInput | UnsetValueType = (

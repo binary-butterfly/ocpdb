@@ -11,7 +11,7 @@ from .extension_type_g_input import ExtensionTypeGInput
 from .openlr_rectangle_input import OpenlrRectangleInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class OpenlrRectangleLocationReferenceInput(ValidataclassMixin):
     openlrRectangle: OpenlrRectangleInput = DataclassValidator(OpenlrRectangleInput)
     locOpenlrAreaLocationReferenceExtensionG: ExtensionTypeGInput | UnsetValueType = (

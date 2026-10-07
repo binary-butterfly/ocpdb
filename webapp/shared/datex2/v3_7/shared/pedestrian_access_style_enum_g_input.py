@@ -10,7 +10,7 @@ from validataclass.validators import EnumValidator, StringValidator
 from .pedestrian_access_style_enum import PedestrianAccessStyleEnum
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class PedestrianAccessStyleEnumGInput(ValidataclassMixin):
     value: PedestrianAccessStyleEnum = EnumValidator(PedestrianAccessStyleEnum)
     extendedValueG: str | UnsetValueType = StringValidator(), Default(UnsetValue)

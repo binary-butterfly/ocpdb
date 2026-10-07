@@ -20,7 +20,7 @@ from .supplementary_positional_description_extension_type_g_input import (
 )
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class SupplementaryPositionalDescriptionInput(ValidataclassMixin):
     directionPurpose: DirectionPurposeEnumGInput | UnsetValueType = (
         DataclassValidator(DirectionPurposeEnumGInput),

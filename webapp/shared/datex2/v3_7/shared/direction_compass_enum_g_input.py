@@ -10,7 +10,7 @@ from validataclass.validators import EnumValidator, StringValidator
 from .direction_compass_enum import DirectionCompassEnum
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class DirectionCompassEnumGInput(ValidataclassMixin):
     value: DirectionCompassEnum = EnumValidator(DirectionCompassEnum)
     extendedValueG: str | UnsetValueType = StringValidator(), Default(UnsetValue)

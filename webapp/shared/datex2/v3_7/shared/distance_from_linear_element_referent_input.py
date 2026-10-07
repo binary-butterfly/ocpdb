@@ -11,7 +11,7 @@ from .extension_type_g_input import ExtensionTypeGInput
 from .referent_input import ReferentInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class DistanceFromLinearElementReferentInput(ValidataclassMixin):
     distanceAlong: float = FloatValidator(allow_integers=True)
     fromReferent: ReferentInput = DataclassValidator(ReferentInput)

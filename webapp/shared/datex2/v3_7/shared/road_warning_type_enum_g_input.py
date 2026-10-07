@@ -10,7 +10,7 @@ from validataclass.validators import EnumValidator, StringValidator
 from .road_warning_type_enum import RoadWarningTypeEnum
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class RoadWarningTypeEnumGInput(ValidataclassMixin):
     value: RoadWarningTypeEnum = EnumValidator(RoadWarningTypeEnum)
     extendedValueG: str | UnsetValueType = StringValidator(), Default(UnsetValue)

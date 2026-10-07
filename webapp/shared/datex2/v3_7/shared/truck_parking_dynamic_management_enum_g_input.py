@@ -10,7 +10,7 @@ from validataclass.validators import EnumValidator, StringValidator
 from .truck_parking_dynamic_management_enum import TruckParkingDynamicManagementEnum
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class TruckParkingDynamicManagementEnumGInput(ValidataclassMixin):
     value: TruckParkingDynamicManagementEnum = EnumValidator(TruckParkingDynamicManagementEnum)
     extendedValueG: str | UnsetValueType = StringValidator(), Default(UnsetValue)

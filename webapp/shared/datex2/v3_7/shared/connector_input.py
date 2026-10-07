@@ -13,7 +13,7 @@ from .extension_type_g_input import ExtensionTypeGInput
 from .external_identifier_input import ExternalIdentifierInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class ConnectorInput(ValidataclassMixin):
     connectorType: ConnectorTypeEnumGInput = DataclassValidator(ConnectorTypeEnumGInput)
     otherConnector: str | UnsetValueType = StringValidator(), Default(UnsetValue)

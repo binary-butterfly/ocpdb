@@ -10,7 +10,7 @@ from validataclass.validators import EnumValidator, StringValidator
 from .geographic_characteristic_enum import GeographicCharacteristicEnum
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class GeographicCharacteristicEnumGInput(ValidataclassMixin):
     value: GeographicCharacteristicEnum = EnumValidator(GeographicCharacteristicEnum)
     extendedValueG: str | UnsetValueType = StringValidator(), Default(UnsetValue)

@@ -10,7 +10,7 @@ from validataclass.validators import DataclassValidator
 from .extension_type_g_input import ExtensionTypeGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class ReroutingInput(ValidataclassMixin):
     troTypeOfRegulationExtensionG: ExtensionTypeGInput | UnsetValueType = (
         DataclassValidator(ExtensionTypeGInput),

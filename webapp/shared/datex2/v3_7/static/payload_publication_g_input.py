@@ -37,7 +37,7 @@ from .vms_table_publication_input import VmsTablePublicationInput
 from .warning_publication_input import WarningPublicationInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class PayloadPublicationGInput(ValidataclassMixin):
     """
     Only one of the properties shall be used in an instance.

@@ -23,7 +23,7 @@ from webapp.shared.datex2.v3_7.shared.tmplan_table_versioned_reference_g_input i
 from .location_reference_g_input import LocationReferenceGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class PredefinedTmplanOperationInput(ValidataclassMixin):
     idG: str = StringValidator()
     versionG: str = StringValidator()

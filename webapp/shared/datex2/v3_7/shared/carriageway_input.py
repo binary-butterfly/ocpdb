@@ -12,7 +12,7 @@ from .extension_type_g_input import ExtensionTypeGInput
 from .lane_input import LaneInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class CarriagewayInput(ValidataclassMixin):
     carriageway: CarriagewayEnumGInput = DataclassValidator(CarriagewayEnumGInput)
     originalNumberOfLanes: int | UnsetValueType = IntegerValidator(), Default(UnsetValue)

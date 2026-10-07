@@ -12,7 +12,7 @@ from .point_coordinates_input import PointCoordinatesInput
 from .tpeg_other_point_descriptor_input import TpegOtherPointDescriptorInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class TpegNonJunctionPointInput(ValidataclassMixin):
     pointCoordinates: PointCoordinatesInput = DataclassValidator(PointCoordinatesInput)
     name: list[TpegOtherPointDescriptorInput] = ListValidator(DataclassValidator(TpegOtherPointDescriptorInput))

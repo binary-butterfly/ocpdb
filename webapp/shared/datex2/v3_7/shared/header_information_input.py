@@ -13,7 +13,7 @@ from .information_delivery_services_enum_g_input import InformationDeliveryServi
 from .information_status_enum_g_input import InformationStatusEnumGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class HeaderInformationInput(ValidataclassMixin):
     confidentiality: ConfidentialityValueEnumGInput | UnsetValueType = (
         DataclassValidator(ConfidentialityValueEnumGInput),

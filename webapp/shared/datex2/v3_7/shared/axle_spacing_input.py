@@ -10,7 +10,7 @@ from validataclass.validators import DataclassValidator, FloatValidator, Integer
 from .extension_type_g_input import ExtensionTypeGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class AxleSpacingInput(ValidataclassMixin):
     axleSpacing: float = FloatValidator(allow_integers=True)
     axleSpacingSequenceIdentifier: int = IntegerValidator(min_value=0)

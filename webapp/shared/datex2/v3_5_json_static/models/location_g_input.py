@@ -12,7 +12,7 @@ from .location_by_reference_input import LocationByReferenceInput
 from .point_location_input import PointLocationInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class LocationGInput(ValidataclassMixin):
     """
     Only one of the properties shall be used in an instance.

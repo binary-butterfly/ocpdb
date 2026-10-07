@@ -11,7 +11,7 @@ from .extension_type_g_input import ExtensionTypeGInput
 from .maintenance_vehicle_actions_enum_g_input import MaintenanceVehicleActionsEnumGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class MaintenanceVehiclesInput(ValidataclassMixin):
     numberOfMaintenanceVehicles: int | UnsetValueType = IntegerValidator(min_value=0), Default(UnsetValue)
     maintenanceVehicleActions: list[MaintenanceVehicleActionsEnumGInput] | UnsetValueType = (

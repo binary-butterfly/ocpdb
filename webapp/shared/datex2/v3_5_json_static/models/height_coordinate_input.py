@@ -13,7 +13,7 @@ from .height_type_enum_g_input import HeightTypeEnumGInput
 from .position_accuracy_input import PositionAccuracyInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class HeightCoordinateInput(ValidataclassMixin):
     """
     Third coordinate for points defined geodetically

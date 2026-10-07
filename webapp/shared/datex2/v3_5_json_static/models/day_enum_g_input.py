@@ -10,7 +10,7 @@ from validataclass.validators import EnumValidator, StringValidator
 from .day_enum import DayEnum
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class DayEnumGInput(ValidataclassMixin):
     value: DayEnum = EnumValidator(DayEnum)
     extendedValueG: str | UnsetValueType = StringValidator(), Default(UnsetValue)

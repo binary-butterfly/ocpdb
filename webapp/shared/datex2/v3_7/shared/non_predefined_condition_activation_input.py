@@ -15,7 +15,7 @@ from .extension_type_g_input import ExtensionTypeGInput
 from .validity_input import ValidityInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class NonPredefinedConditionActivationInput(ValidataclassMixin):
     idG: str = StringValidator()
     versionG: str = StringValidator()

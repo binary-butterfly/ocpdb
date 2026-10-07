@@ -10,7 +10,7 @@ from validataclass.validators import EnumValidator, StringValidator
 from .speed_management_type_enum import SpeedManagementTypeEnum
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class SpeedManagementTypeEnumGInput(ValidataclassMixin):
     value: SpeedManagementTypeEnum = EnumValidator(SpeedManagementTypeEnum)
     extendedValueG: str | UnsetValueType = StringValidator(), Default(UnsetValue)

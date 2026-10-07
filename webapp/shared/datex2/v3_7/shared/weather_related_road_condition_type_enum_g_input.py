@@ -10,7 +10,7 @@ from validataclass.validators import EnumValidator, StringValidator
 from .weather_related_road_condition_type_enum import WeatherRelatedRoadConditionTypeEnum
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class WeatherRelatedRoadConditionTypeEnumGInput(ValidataclassMixin):
     value: WeatherRelatedRoadConditionTypeEnum = EnumValidator(WeatherRelatedRoadConditionTypeEnum)
     extendedValueG: str | UnsetValueType = StringValidator(), Default(UnsetValue)

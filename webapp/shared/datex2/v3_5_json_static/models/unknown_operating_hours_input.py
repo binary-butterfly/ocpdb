@@ -11,7 +11,7 @@ from .closure_information_input import ClosureInformationInput
 from .extension_type_g_input import ExtensionTypeGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class UnknownOperatingHoursInput(ValidataclassMixin):
     """
     The operating hours are not known.

@@ -12,7 +12,7 @@ from .legal_basis_input import LegalBasisInput
 from .user_type_enum_g_input import UserTypeEnumGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class UserConditionInput(ValidataclassMixin):
     negate: bool | UnsetValueType = BooleanValidator(), Default(UnsetValue)
     users: list[UserTypeEnumGInput] | UnsetValueType = (

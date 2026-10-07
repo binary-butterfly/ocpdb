@@ -10,7 +10,7 @@ from validataclass.validators import EnumValidator, StringValidator
 from .esporg_standard_level_enum import EsporgStandardLevelEnum
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class EsporgStandardLevelEnumGInput(ValidataclassMixin):
     value: EsporgStandardLevelEnum = EnumValidator(EsporgStandardLevelEnum)
     extendedValueG: str | UnsetValueType = StringValidator(), Default(UnsetValue)

@@ -16,7 +16,7 @@ from webapp.shared.datex2.v3_7.shared.permit_type_enum_g_input import PermitType
 from .point_location_g_input import PointLocationGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class PermitInformationInput(ValidataclassMixin):
     idG: str = StringValidator()
     versionG: str = StringValidator()

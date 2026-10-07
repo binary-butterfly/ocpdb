@@ -17,7 +17,7 @@ from .supplemental_facility_input import SupplementalFacilityInput
 from .vehicular_access_input import VehicularAccessInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class HierarchyElementGeneralGInput(ValidataclassMixin):
     """
     Only one of the properties shall be used in an instance.

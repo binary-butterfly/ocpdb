@@ -15,7 +15,7 @@ from webapp.shared.datex2.v3_7.shared.special_location_enum_g_input import Speci
 from .location_reference_g_input import LocationReferenceGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class PointOfInterestInput(ValidataclassMixin):
     name: MultilingualStringInput = DataclassValidator(MultilingualStringInput)
     description: MultilingualStringInput | UnsetValueType = (

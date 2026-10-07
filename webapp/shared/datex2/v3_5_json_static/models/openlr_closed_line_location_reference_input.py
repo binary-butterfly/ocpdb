@@ -12,7 +12,7 @@ from .openlr_last_location_reference_point_input import OpenlrLastLocationRefere
 from .openlr_location_reference_point_input import OpenlrLocationReferencePointInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class OpenlrClosedLineLocationReferenceInput(ValidataclassMixin):
     """
     The OpenLR method of area definition by providing a closed path (i.e. a circuit) in the road network.  The boundary always consists of road segments

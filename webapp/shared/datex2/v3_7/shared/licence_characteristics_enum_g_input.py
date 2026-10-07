@@ -10,7 +10,7 @@ from validataclass.validators import EnumValidator, StringValidator
 from .licence_characteristics_enum import LicenceCharacteristicsEnum
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class LicenceCharacteristicsEnumGInput(ValidataclassMixin):
     value: LicenceCharacteristicsEnum = EnumValidator(LicenceCharacteristicsEnum)
     extendedValueG: str | UnsetValueType = StringValidator(), Default(UnsetValue)

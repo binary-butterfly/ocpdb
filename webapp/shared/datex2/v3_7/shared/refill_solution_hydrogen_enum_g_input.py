@@ -10,7 +10,7 @@ from validataclass.validators import EnumValidator, StringValidator
 from .refill_solution_hydrogen_enum import RefillSolutionHydrogenEnum
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class RefillSolutionHydrogenEnumGInput(ValidataclassMixin):
     value: RefillSolutionHydrogenEnum = EnumValidator(RefillSolutionHydrogenEnum)
     extendedValueG: str | UnsetValueType = StringValidator(), Default(UnsetValue)

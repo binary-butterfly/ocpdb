@@ -11,7 +11,7 @@ from .compliance_option_enum import ComplianceOptionEnum
 from .compliance_option_enum_extension_type_g import ComplianceOptionEnumExtensionTypeG
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class ComplianceOptionEnumGInput(ValidataclassMixin):
     value: ComplianceOptionEnum = EnumValidator(ComplianceOptionEnum)
     extendedValueG: ComplianceOptionEnumExtensionTypeG | UnsetValueType = (

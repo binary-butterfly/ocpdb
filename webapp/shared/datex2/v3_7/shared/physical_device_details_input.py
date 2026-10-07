@@ -10,7 +10,7 @@ from validataclass.validators import DataclassValidator, StringValidator
 from .extension_type_g_input import ExtensionTypeGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class PhysicalDeviceDetailsInput(ValidataclassMixin):
     barcode: str | UnsetValueType = StringValidator(), Default(UnsetValue)
     installationDate: str | UnsetValueType = StringValidator(), Default(UnsetValue)

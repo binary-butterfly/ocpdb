@@ -18,7 +18,7 @@ from .location_reference_g_input import LocationReferenceGInput
 from .parking_vms_input import ParkingVmsInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class ParkingRouteDetailsInput(ValidataclassMixin):
     idG: str = StringValidator()
     versionG: str = StringValidator()

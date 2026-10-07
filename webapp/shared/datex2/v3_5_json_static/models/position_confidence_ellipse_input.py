@@ -11,7 +11,7 @@ from .extension_type_g_input import ExtensionTypeGInput
 from .position_confidence_coded_error_enum_g_input import PositionConfidenceCodedErrorEnumGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class PositionConfidenceEllipseInput(ValidataclassMixin):
     """
     Confidence ellipse position defined in a shape of ellipse with a predefined confidence level (e.g. 95 %). The centre of the ellipse shape corresponds to the reference position point for which the position accuracy is evaluated.

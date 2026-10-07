@@ -12,7 +12,7 @@ from .multilingual_string_input import MultilingualStringInput
 from .url_link_type_enum_g_input import UrlLinkTypeEnumGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class UrlLinkInput(ValidataclassMixin):
     urlLinkAddress: str = StringValidator()
     urlLinkDescription: MultilingualStringInput | UnsetValueType = (

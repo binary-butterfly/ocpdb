@@ -16,7 +16,7 @@ from .position_y_absolute_enum_g_input import PositionYAbsoluteEnumGInput
 from .position_y_relative_enum_g_input import PositionYRelativeEnumGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class DisplayAreaInput(ValidataclassMixin):
     sequencingCapable: bool | UnsetValueType = BooleanValidator(), Default(UnsetValue)
     maxNumberOfSequentialPages: int | UnsetValueType = IntegerValidator(min_value=0), Default(UnsetValue)

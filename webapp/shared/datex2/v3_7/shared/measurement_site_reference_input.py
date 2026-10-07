@@ -12,7 +12,7 @@ from .international_identifier_input import InternationalIdentifierInput
 from .measurement_site_versioned_reference_g_input import MeasurementSiteVersionedReferenceGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class MeasurementSiteReferenceInput(ValidataclassMixin):
     externalPublicationIdentifier: str | UnsetValueType = StringValidator(), Default(UnsetValue)
     measurementSiteReference: MeasurementSiteVersionedReferenceGInput = DataclassValidator(

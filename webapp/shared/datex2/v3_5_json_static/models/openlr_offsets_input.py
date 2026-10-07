@@ -10,7 +10,7 @@ from validataclass.validators import DataclassValidator, IntegerValidator
 from .extension_type_g_input import ExtensionTypeGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class OpenlrOffsetsInput(ValidataclassMixin):
     """
     Offsets are used to locate the start and end of a location more precisely than bounding to the nodes in a network.

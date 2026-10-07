@@ -10,7 +10,7 @@ from validataclass.validators import EnumValidator, StringValidator
 from .measured_or_derived_data_type_enum import MeasuredOrDerivedDataTypeEnum
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class MeasuredOrDerivedDataTypeEnumGInput(ValidataclassMixin):
     value: MeasuredOrDerivedDataTypeEnum = EnumValidator(MeasuredOrDerivedDataTypeEnum)
     extendedValueG: str | UnsetValueType = StringValidator(), Default(UnsetValue)

@@ -11,7 +11,7 @@ from .extension_type_g_input import ExtensionTypeGInput
 from .openlr_rectangle_input import OpenlrRectangleInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class OpenlrGridLocationReferenceInput(ValidataclassMixin):
     openlrNumColumns: int = IntegerValidator(min_value=0)
     openlrNumRows: int = IntegerValidator(min_value=0)

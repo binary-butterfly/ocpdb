@@ -12,7 +12,7 @@ from webapp.shared.datex2.v3_7.shared.strategy_by_reference_input import Strateg
 from .strategy_definition_input import StrategyDefinitionInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class StrategyGInput(ValidataclassMixin):
     """
     Only one of the properties shall be used in an instance.

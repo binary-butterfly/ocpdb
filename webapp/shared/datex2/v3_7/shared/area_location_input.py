@@ -20,7 +20,7 @@ from .point_coordinates_input import PointCoordinatesInput
 from .tpeg_area_location_g_input import TpegAreaLocationGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class AreaLocationInput(ValidataclassMixin):
     areasAtWhichApplicable: AreaPlacesEnumGInput | UnsetValueType = (
         DataclassValidator(AreaPlacesEnumGInput),

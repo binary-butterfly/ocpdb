@@ -13,7 +13,7 @@ from .overall_period_input import OverallPeriodInput
 from .referenceable_organisation_versioned_reference_g_input import ReferenceableOrganisationVersionedReferenceGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class OrganisationByReferenceInput(ValidataclassMixin):
     organisationReference: ReferenceableOrganisationVersionedReferenceGInput = DataclassValidator(
         ReferenceableOrganisationVersionedReferenceGInput

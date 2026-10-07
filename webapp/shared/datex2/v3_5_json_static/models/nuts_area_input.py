@@ -11,7 +11,7 @@ from .extension_type_g_input import ExtensionTypeGInput
 from .nuts_code_type_enum_g_input import NutsCodeTypeEnumGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class NutsAreaInput(ValidataclassMixin):
     """
     The NUTS-Code representation for the area (Nomenclature of territorial units for statistics) or its LAU code representation (Local Administrative Unit).

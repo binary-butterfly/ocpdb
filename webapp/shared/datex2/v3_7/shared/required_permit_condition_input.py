@@ -14,7 +14,7 @@ from .permit_information_versioned_reference_g_input import PermitInformationVer
 from .permit_type_enum_g_input import PermitTypeEnumGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class RequiredPermitConditionInput(ValidataclassMixin):
     negate: bool | UnsetValueType = BooleanValidator(), Default(UnsetValue)
     active: bool | UnsetValueType = BooleanValidator(), Default(UnsetValue)

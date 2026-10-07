@@ -11,7 +11,7 @@ from .extension_type_g_input import ExtensionTypeGInput
 from .image_album_input import ImageAlbumInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class MarketingInput(ValidataclassMixin):
     webUrl: list[str] | UnsetValueType = ListValidator(StringValidator()), Default(UnsetValue)
     imageAlbum: list[ImageAlbumInput] | UnsetValueType = (

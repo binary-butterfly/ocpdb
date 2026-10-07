@@ -11,7 +11,7 @@ from .electric_charging_point_status_input import ElectricChargingPointStatusInp
 from .refill_point_status_input import RefillPointStatusInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class RefillPointStatusGInput(ValidataclassMixin):
     """
     Only one of the properties shall be used in an instance.

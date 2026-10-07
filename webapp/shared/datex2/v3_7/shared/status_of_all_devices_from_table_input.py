@@ -12,7 +12,7 @@ from .extension_type_g_input import ExtensionTypeGInput
 from .status_input import StatusInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class StatusOfAllDevicesFromTableInput(ValidataclassMixin):
     deviceTableReference: DeviceTableReferenceGInput = DataclassValidator(DeviceTableReferenceGInput)
     status: list[StatusInput] = ListValidator(DataclassValidator(StatusInput))

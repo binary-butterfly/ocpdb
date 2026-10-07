@@ -22,7 +22,7 @@ from webapp.shared.datex2.v3_7.shared.vms_controller_versioned_reference_g_input
 from .vms_controller_status_vms_index_vms_status_g_input import vmsControllerStatusVmsIndexVmsStatusGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class VmsControllerStatusInput(ValidataclassMixin):
     vmsControllerTableReference: VmsControllerTableVersionedReferenceGInput = DataclassValidator(
         VmsControllerTableVersionedReferenceGInput

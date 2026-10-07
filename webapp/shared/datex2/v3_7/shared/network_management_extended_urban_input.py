@@ -10,7 +10,7 @@ from validataclass.validators import DataclassValidator
 from .non_vehicular_road_users_input import NonVehicularRoadUsersInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class NetworkManagementExtendedUrbanInput(ValidataclassMixin):
     forNonMotorisedRoadUsers: NonVehicularRoadUsersInput | UnsetValueType = (
         DataclassValidator(NonVehicularRoadUsersInput),

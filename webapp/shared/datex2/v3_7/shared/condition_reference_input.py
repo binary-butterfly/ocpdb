@@ -12,7 +12,7 @@ from .legal_basis_input import LegalBasisInput
 from .predefined_condition_versioned_reference_g_input import PredefinedConditionVersionedReferenceGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class ConditionReferenceInput(ValidataclassMixin):
     negate: bool | UnsetValueType = BooleanValidator(), Default(UnsetValue)
     active: bool | UnsetValueType = BooleanValidator(), Default(UnsetValue)

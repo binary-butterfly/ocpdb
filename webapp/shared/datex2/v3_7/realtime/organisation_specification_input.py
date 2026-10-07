@@ -24,7 +24,7 @@ from .organisation_g_input import OrganisationGInput
 from .organisation_unit_input import OrganisationUnitInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class OrganisationSpecificationInput(ValidataclassMixin):
     idG: str = StringValidator()
     versionG: str = StringValidator()

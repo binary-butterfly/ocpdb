@@ -11,7 +11,7 @@ from .tpeg_framed_point_input import TpegFramedPointInput
 from .tpeg_simple_point_input import TpegSimplePointInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class TpegPointLocationGInput(ValidataclassMixin):
     """
     Only one of the properties shall be used in an instance.

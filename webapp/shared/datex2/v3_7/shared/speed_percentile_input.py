@@ -12,7 +12,7 @@ from .percentage_value_input import PercentageValueInput
 from .speed_value_input import SpeedValueInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class SpeedPercentileInput(ValidataclassMixin):
     vehiclePercentage: PercentageValueInput = DataclassValidator(PercentageValueInput)
     speedPercentile: SpeedValueInput = DataclassValidator(SpeedValueInput)

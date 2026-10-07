@@ -16,7 +16,7 @@ from .special_day_g_input import SpecialDayGInput
 from .time_period_of_day_input import TimePeriodOfDayInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class PeriodInput(ValidataclassMixin):
     startOfPeriod: datetime | UnsetValueType = DateTimeValidator(), Default(UnsetValue)
     endOfPeriod: datetime | UnsetValueType = DateTimeValidator(), Default(UnsetValue)

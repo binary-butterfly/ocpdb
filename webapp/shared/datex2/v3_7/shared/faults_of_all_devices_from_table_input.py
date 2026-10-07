@@ -12,7 +12,7 @@ from .device_table_reference_g_input import DeviceTableReferenceGInput
 from .extension_type_g_input import ExtensionTypeGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class FaultsOfAllDevicesFromTableInput(ValidataclassMixin):
     deviceTableReference: DeviceTableReferenceGInput = DataclassValidator(DeviceTableReferenceGInput)
     allFaultsOfSingleDevice: list[AllFaultsOfSingleDeviceInput] = ListValidator(

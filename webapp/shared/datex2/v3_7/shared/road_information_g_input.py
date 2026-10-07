@@ -11,7 +11,7 @@ from .road_information_enhanced_input import RoadInformationEnhancedInput
 from .road_information_input import RoadInformationInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class RoadInformationGInput(ValidataclassMixin):
     """
     Only one of the properties shall be used in an instance.

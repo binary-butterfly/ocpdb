@@ -22,7 +22,7 @@ from webapp.shared.datex2.v3_7.shared.multilingual_string_input import Multiling
 from .warning_without_regulation_input import WarningWithoutRegulationInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class WarningPublicationInput(ValidataclassMixin):
     idG: str = StringValidator()
     lang: str = RegexValidator(pattern=r'^[a-z]{2}$')

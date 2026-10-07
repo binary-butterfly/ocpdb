@@ -11,7 +11,7 @@ from .operating_restriction_input import OperatingRestrictionInput
 from .usage_scenario_input import UsageScenarioInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class OperatingPatternGInput(ValidataclassMixin):
     """
     Only one of the properties shall be used in an instance.

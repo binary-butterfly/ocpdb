@@ -10,7 +10,7 @@ from validataclass.validators import EnumValidator, StringValidator
 from .bioethanol_type_enum import BioethanolTypeEnum
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class BioethanolTypeEnumGInput(ValidataclassMixin):
     value: BioethanolTypeEnum = EnumValidator(BioethanolTypeEnum)
     extendedValueG: str | UnsetValueType = StringValidator(), Default(UnsetValue)

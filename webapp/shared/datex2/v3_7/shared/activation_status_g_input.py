@@ -13,7 +13,7 @@ from .predefined_condition_activation_input import PredefinedConditionActivation
 from .traffic_regulation_activation_input import TrafficRegulationActivationInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class ActivationStatusGInput(ValidataclassMixin):
     """
     Only one of the properties shall be used in an instance.

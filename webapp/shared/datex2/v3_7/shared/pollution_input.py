@@ -12,7 +12,7 @@ from .micrograms_concentration_value_input import MicrogramsConcentrationValueIn
 from .pollutant_type_enum_g_input import PollutantTypeEnumGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class PollutionInput(ValidataclassMixin):
     pollutantType: PollutantTypeEnumGInput = DataclassValidator(PollutantTypeEnumGInput)
     pollutantConcentration: MicrogramsConcentrationValueInput | UnsetValueType = (

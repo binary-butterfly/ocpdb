@@ -35,7 +35,7 @@ from .impact_input import ImpactInput
 from .location_reference_g_input import LocationReferenceGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class NonWeatherRelatedRoadConditionsInput(ValidataclassMixin):
     idG: str = StringValidator()
     versionG: str = StringValidator()

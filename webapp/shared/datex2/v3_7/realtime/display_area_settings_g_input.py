@@ -15,7 +15,7 @@ from webapp.shared.datex2.v3_7.shared.text_display_input import TextDisplayInput
 from .pictogram_display_input import PictogramDisplayInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class DisplayAreaSettingsGInput(ValidataclassMixin):
     """
     Only one of the properties shall be used in an instance.

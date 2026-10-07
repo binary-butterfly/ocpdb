@@ -11,7 +11,7 @@ from .extension_type_g_input import ExtensionTypeGInput
 from .road_information_g_input import RoadInformationGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class AccessRoadInput(ValidataclassMixin):
     distance: int | UnsetValueType = IntegerValidator(min_value=0), Default(UnsetValue)
     roadInformation: RoadInformationGInput = DataclassValidator(RoadInformationGInput)

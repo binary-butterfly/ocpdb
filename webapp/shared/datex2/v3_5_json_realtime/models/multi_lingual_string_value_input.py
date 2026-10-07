@@ -9,7 +9,7 @@ from validataclass.validators import RegexValidator
 from webapp.common.validation.replacing_string_validator import ReplacingStringValidator
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class MultiLingualStringValueInput(ValidataclassMixin):
     lang: str = RegexValidator(pattern=r'^[a-z]{2}$')
     value: str = ReplacingStringValidator(

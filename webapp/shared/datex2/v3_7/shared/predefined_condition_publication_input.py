@@ -21,7 +21,7 @@ from .multilingual_string_input import MultilingualStringInput
 from .predefined_condition_input import PredefinedConditionInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class PredefinedConditionPublicationInput(ValidataclassMixin):
     idG: str = StringValidator()
     lang: str = RegexValidator(pattern=r'^[a-z]{2}$')

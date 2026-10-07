@@ -10,7 +10,7 @@ from validataclass.validators import EnumValidator, StringValidator
 from .operating_restrictions_enum import OperatingRestrictionsEnum
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class OperatingRestrictionsEnumGInput(ValidataclassMixin):
     value: OperatingRestrictionsEnum = EnumValidator(OperatingRestrictionsEnum)
     extendedValueG: str | UnsetValueType = StringValidator(), Default(UnsetValue)

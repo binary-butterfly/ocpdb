@@ -13,7 +13,7 @@ from webapp.shared.datex2.v3_7.shared.gdd_pictogram_attributes_input import GddP
 from .gdd_pictogram_identification_input import GddPictogramIdentificationInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class GddStructureInput(ValidataclassMixin):
     gddPictogramIdentification: GddPictogramIdentificationInput = DataclassValidator(GddPictogramIdentificationInput)
     gddPictogramAttributes: GddPictogramAttributesInput | UnsetValueType = (

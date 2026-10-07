@@ -11,7 +11,7 @@ from .extension_type_g_input import ExtensionTypeGInput
 from .multilingual_string_input import MultilingualStringInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class RateLineTaxInput(ValidataclassMixin):
     taxValue: float | UnsetValueType = FloatValidator(allow_integers=True), Default(UnsetValue)
     taxRate: float | UnsetValueType = FloatValidator(allow_integers=True), Default(UnsetValue)

@@ -12,7 +12,7 @@ from .humidity_input import HumidityInput
 from .measurement_or_calculation_time_input import MeasurementOrCalculationTimeInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class HumidityInformationInput(ValidataclassMixin):
     measurementOrCalculationTime: MeasurementOrCalculationTimeInput | UnsetValueType = (
         DataclassValidator(MeasurementOrCalculationTimeInput),

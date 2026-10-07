@@ -13,7 +13,7 @@ from .payment_input import PaymentInput
 from .rate_matrix_versioned_reference_g_input import RateMatrixVersionedReferenceGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class RateMatrixByReferenceInput(ValidataclassMixin):
     applicableCurrency: list[str] | UnsetValueType = ListValidator(StringValidator()), Default(UnsetValue)
     rateTableReference: RateMatrixVersionedReferenceGInput = DataclassValidator(RateMatrixVersionedReferenceGInput)

@@ -11,7 +11,7 @@ from .controlled_zone_regulation_input import ControlledZoneRegulationInput
 from .traffic_regulation_input import TrafficRegulationInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class TrafficRegulationGInput(ValidataclassMixin):
     """
     Only one of the properties shall be used in an instance.

@@ -23,7 +23,7 @@ from webapp.shared.datex2.v3_7.shared.response_type_input import ResponseTypeInp
 from .strategy_measure_input import StrategyMeasureInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class StrategyDefinitionInput(ValidataclassMixin):
     idG: str = StringValidator()
     versionG: str = StringValidator()

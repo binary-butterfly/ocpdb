@@ -26,7 +26,7 @@ from webapp.shared.datex2.v3_7.shared.predefined_condition_publication_versioned
 from .controlled_zone_table_input import ControlledZoneTableInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class ControlledZoneTablePublicationInput(ValidataclassMixin):
     idG: str = StringValidator()
     lang: str = RegexValidator(pattern=r'^[a-z]{2}$')

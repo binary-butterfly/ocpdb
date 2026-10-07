@@ -13,7 +13,7 @@ from .extension_type_g_input import ExtensionTypeGInput
 from .external_identifier_input import ExternalIdentifierInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class ConnectorInput(ValidataclassMixin):
     """
     Parameters and description of an interface that is available at the given electric charging point to connect vehicles

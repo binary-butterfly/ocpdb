@@ -10,7 +10,7 @@ from validataclass.validators import EnumValidator, StringValidator
 from .confidentiality_value_enum import ConfidentialityValueEnum
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class ConfidentialityValueEnumGInput(ValidataclassMixin):
     value: ConfidentialityValueEnum = EnumValidator(ConfidentialityValueEnum)
     extendedValueG: str | UnsetValueType = StringValidator(), Default(UnsetValue)

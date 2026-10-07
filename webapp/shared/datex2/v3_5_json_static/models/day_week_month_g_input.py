@@ -12,7 +12,7 @@ from .day_week_month_input import DayWeekMonthInput
 from .instance_of_day_within_month_input import InstanceOfDayWithinMonthInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class DayWeekMonthGInput(ValidataclassMixin):
     """
     Only one of the properties shall be used in an instance.

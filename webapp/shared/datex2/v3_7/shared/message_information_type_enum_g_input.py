@@ -10,7 +10,7 @@ from validataclass.validators import EnumValidator, StringValidator
 from .message_information_type_enum import MessageInformationTypeEnum
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class MessageInformationTypeEnumGInput(ValidataclassMixin):
     value: MessageInformationTypeEnum = EnumValidator(MessageInformationTypeEnum)
     extendedValueG: str | UnsetValueType = StringValidator(), Default(UnsetValue)

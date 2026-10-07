@@ -14,7 +14,7 @@ from .device_reference_g_input import DeviceReferenceGInput
 from .extension_type_g_input import ExtensionTypeGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class AllFaultsOfSingleDeviceInput(ValidataclassMixin):
     operatingProperlySince: datetime | UnsetValueType = DateTimeValidator(), Default(UnsetValue)
     deviceReference: DeviceReferenceGInput = DataclassValidator(DeviceReferenceGInput)

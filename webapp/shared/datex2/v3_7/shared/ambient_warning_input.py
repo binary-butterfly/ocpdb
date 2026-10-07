@@ -11,7 +11,7 @@ from .ambient_warning_type_enum_g_input import AmbientWarningTypeEnumGInput
 from .extension_type_g_input import ExtensionTypeGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class AmbientWarningInput(ValidataclassMixin):
     ambientWarningType: AmbientWarningTypeEnumGInput = DataclassValidator(AmbientWarningTypeEnumGInput)
     troTypeOfRegulationExtensionG: ExtensionTypeGInput | UnsetValueType = (

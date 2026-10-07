@@ -11,7 +11,7 @@ from .rate_line_collection_input import RateLineCollectionInput
 from .relative_time_rates_input import RelativeTimeRatesInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class RateLineCollectionGInput(ValidataclassMixin):
     """
     Only one of the properties shall be used in an instance.

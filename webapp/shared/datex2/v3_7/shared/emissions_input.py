@@ -12,7 +12,7 @@ from .emissions_extension_type_g_input import EmissionsExtensionTypeGInput
 from .low_emission_level_enum_g_input import LowEmissionLevelEnumGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class EmissionsInput(ValidataclassMixin):
     emissionClassificationEuro: EmissionClassificationEuroEnumGInput | UnsetValueType = (
         DataclassValidator(EmissionClassificationEuroEnumGInput),

@@ -10,7 +10,7 @@ from validataclass.validators import DataclassValidator, FloatValidator
 from .extension_type_g_input import ExtensionTypeGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class DurationValueInput(ValidataclassMixin):
     """
     A measured or calculated value of a period of time.

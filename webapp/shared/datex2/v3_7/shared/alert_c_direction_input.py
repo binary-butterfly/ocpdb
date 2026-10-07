@@ -13,7 +13,7 @@ from .linear_direction_enum_g_input import LinearDirectionEnumGInput
 from .multilingual_string_input import MultilingualStringInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class AlertCDirectionInput(ValidataclassMixin):
     alertCDirectionCoded: AlertCDirectionEnumGInput = DataclassValidator(AlertCDirectionEnumGInput)
     alertCDirectionNamed: MultilingualStringInput | UnsetValueType = (

@@ -28,7 +28,7 @@ from .vehicle_count_within_interval_input import VehicleCountWithinIntervalInput
 from .vehicle_rate_input import VehicleRateInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class VehicleCountAndRateInput(ValidataclassMixin):
     measurementSiteReference: MeasurementSiteVersionedReferenceGInput | UnsetValueType = (
         DataclassValidator(MeasurementSiteVersionedReferenceGInput),

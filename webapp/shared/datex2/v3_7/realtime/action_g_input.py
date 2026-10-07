@@ -12,7 +12,7 @@ from webapp.shared.datex2.v3_7.shared.action_by_reference_input import ActionByR
 from .action_definition_input import ActionDefinitionInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class ActionGInput(ValidataclassMixin):
     """
     Only one of the properties shall be used in an instance.

@@ -16,7 +16,7 @@ from webapp.shared.datex2.v3_7.shared.multilingual_string_input import Multiling
 from .controlled_zone_input import ControlledZoneInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class ControlledZoneTableInput(ValidataclassMixin):
     controlledZoneTableName: MultilingualStringInput | UnsetValueType = (
         DataclassValidator(MultilingualStringInput),

@@ -10,7 +10,7 @@ from validataclass.validators import DataclassValidator
 from .payload_publication_g_input import PayloadPublicationGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class DATEXII3D2PayloadInput(ValidataclassMixin):
     payload: PayloadPublicationGInput | UnsetValueType = (
         DataclassValidator(PayloadPublicationGInput),

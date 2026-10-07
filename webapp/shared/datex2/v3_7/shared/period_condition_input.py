@@ -12,7 +12,7 @@ from .legal_basis_input import LegalBasisInput
 from .period_input import PeriodInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class PeriodConditionInput(ValidataclassMixin):
     negate: bool | UnsetValueType = BooleanValidator(), Default(UnsetValue)
     active: bool | UnsetValueType = BooleanValidator(), Default(UnsetValue)

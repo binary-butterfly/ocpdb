@@ -9,7 +9,7 @@ from validataclass.validators import DataclassValidator, ListValidator
 from .eu_vehicle_category_enum_g_input import EuVehicleCategoryEnumGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class VehicleCharacteristicsExtendedInput(ValidataclassMixin):
     """
     An extension class to provide EU Vehicle categories

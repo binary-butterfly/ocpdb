@@ -10,7 +10,7 @@ from validataclass.validators import DataclassValidator, ListValidator
 from .group_of_non_vehicular_road_users_involved_input import GroupOfNonVehicularRoadUsersInvolvedInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class AccidentExtendedUrbanInput(ValidataclassMixin):
     groupOfNonVehicularRoadUsersInvolved: list[GroupOfNonVehicularRoadUsersInvolvedInput] | UnsetValueType = (
         ListValidator(DataclassValidator(GroupOfNonVehicularRoadUsersInvolvedInput)),

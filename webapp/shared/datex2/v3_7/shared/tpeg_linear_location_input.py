@@ -13,7 +13,7 @@ from .tpeg_loc01_linear_location_subtype_enum_g_input import TpegLoc01LinearLoca
 from .tpeg_point_g_input import TpegPointGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class TpegLinearLocationInput(ValidataclassMixin):
     tpegDirection: DirectionEnumGInput = DataclassValidator(DirectionEnumGInput)
     tpegLinearLocationType: TpegLoc01LinearLocationSubtypeEnumGInput = DataclassValidator(

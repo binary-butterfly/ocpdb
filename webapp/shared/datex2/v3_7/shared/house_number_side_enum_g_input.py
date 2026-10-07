@@ -10,7 +10,7 @@ from validataclass.validators import EnumValidator, StringValidator
 from .house_number_side_enum import HouseNumberSideEnum
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class HouseNumberSideEnumGInput(ValidataclassMixin):
     value: HouseNumberSideEnum = EnumValidator(HouseNumberSideEnum)
     extendedValueG: str | UnsetValueType = StringValidator(), Default(UnsetValue)

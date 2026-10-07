@@ -10,7 +10,7 @@ from validataclass.validators import EnumValidator, StringValidator
 from .fuzzy_time_enum import FuzzyTimeEnum
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class FuzzyTimeEnumGInput(ValidataclassMixin):
     value: FuzzyTimeEnum = EnumValidator(FuzzyTimeEnum)
     extendedValueG: str | UnsetValueType = StringValidator(), Default(UnsetValue)

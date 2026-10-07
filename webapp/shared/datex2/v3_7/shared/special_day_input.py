@@ -13,7 +13,7 @@ from .public_event_type_enum_g_input import PublicEventTypeEnumGInput
 from .special_day_type_enum_g_input import SpecialDayTypeEnumGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class SpecialDayInput(ValidataclassMixin):
     intersectWithApplicableDays: bool = BooleanValidator()
     specialDayType: SpecialDayTypeEnumGInput = DataclassValidator(SpecialDayTypeEnumGInput)

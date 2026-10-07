@@ -11,7 +11,7 @@ from .extension_type_g_input import ExtensionTypeGInput
 from .tpeg_loc04_height_type_enum_g_input import TpegLoc04HeightTypeEnumGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class TpegHeightInput(ValidataclassMixin):
     height: float | UnsetValueType = FloatValidator(allow_integers=True), Default(UnsetValue)
     heightType: TpegLoc04HeightTypeEnumGInput = DataclassValidator(TpegLoc04HeightTypeEnumGInput)

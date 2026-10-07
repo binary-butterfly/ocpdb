@@ -13,7 +13,7 @@ from webapp.shared.datex2.v3_7.shared.international_identifier_input import Inte
 from .measurement_site_input import MeasurementSiteInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class MeasurementSiteTableInput(ValidataclassMixin):
     idG: str = StringValidator()
     versionG: str = StringValidator()

@@ -11,7 +11,7 @@ from .weight_type_enum import WeightTypeEnum
 from .weight_type_enum_extension_type_g import WeightTypeEnumExtensionTypeG
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class WeightTypeEnumGInput(ValidataclassMixin):
     value: WeightTypeEnum = EnumValidator(WeightTypeEnum)
     extendedValueG: WeightTypeEnumExtensionTypeG | UnsetValueType = (

@@ -12,7 +12,7 @@ from .international_identifier_input import InternationalIdentifierInput
 from .vms_controller_versioned_reference_g_input import VmsControllerVersionedReferenceGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class VmsUnitReferenceInput(ValidataclassMixin):
     externalPublicationIdentifier: str | UnsetValueType = StringValidator(), Default(UnsetValue)
     vmsUnitReference: VmsControllerVersionedReferenceGInput = DataclassValidator(VmsControllerVersionedReferenceGInput)

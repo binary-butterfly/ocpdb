@@ -10,7 +10,7 @@ from validataclass.validators import DataclassValidator, ListValidator
 from .fuzzy_period_input import FuzzyPeriodInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class PeriodExtendedInput(ValidataclassMixin):
     fuzzyPeriod: list[FuzzyPeriodInput] | UnsetValueType = (
         ListValidator(DataclassValidator(FuzzyPeriodInput)),

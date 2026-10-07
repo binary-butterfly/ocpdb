@@ -10,7 +10,7 @@ from validataclass.validators import EnumValidator, StringValidator
 from .payment_mode_enum import PaymentModeEnum
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class PaymentModeEnumGInput(ValidataclassMixin):
     value: PaymentModeEnum = EnumValidator(PaymentModeEnum)
     extendedValueG: str | UnsetValueType = StringValidator(), Default(UnsetValue)

@@ -13,7 +13,7 @@ from .action_definition_versioned_reference_g_input import ActionDefinitionVersi
 from .extension_type_g_input import ExtensionTypeGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class ActionByReferenceInput(ValidataclassMixin):
     versionTime: datetime = DateTimeValidator()
     actionReference: ActionDefinitionVersionedReferenceGInput = DataclassValidator(

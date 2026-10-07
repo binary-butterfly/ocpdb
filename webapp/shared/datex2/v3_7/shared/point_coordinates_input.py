@@ -13,7 +13,7 @@ from .position_accuracy_input import PositionAccuracyInput
 from .position_confidence_ellipse_input import PositionConfidenceEllipseInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class PointCoordinatesInput(ValidataclassMixin):
     latitude: float = FloatValidator(allow_integers=True)
     longitude: float = FloatValidator(allow_integers=True)

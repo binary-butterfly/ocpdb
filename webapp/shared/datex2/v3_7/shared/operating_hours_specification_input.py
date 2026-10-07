@@ -14,7 +14,7 @@ from .extension_type_g_input import ExtensionTypeGInput
 from .overall_period_input import OverallPeriodInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class OperatingHoursSpecificationInput(ValidataclassMixin):
     idG: str = StringValidator()
     versionG: str = StringValidator()

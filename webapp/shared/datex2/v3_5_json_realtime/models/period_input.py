@@ -16,7 +16,7 @@ from .special_day_g_input import SpecialDayGInput
 from .time_period_of_day_input import TimePeriodOfDayInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class PeriodInput(ValidataclassMixin):
     """
     A continuous time period or a set of discontinuous time periods defined by the intersection of a set of criteria all within an overall delimiting interval.

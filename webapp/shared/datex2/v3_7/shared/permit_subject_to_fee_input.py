@@ -10,7 +10,7 @@ from validataclass.validators import DataclassValidator, FloatValidator, StringV
 from .extension_type_g_input import ExtensionTypeGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class PermitSubjectToFeeInput(ValidataclassMixin):
     amountDue: float | UnsetValueType = FloatValidator(allow_integers=True), Default(UnsetValue)
     maximumAccessDuration: str | UnsetValueType = StringValidator(), Default(UnsetValue)

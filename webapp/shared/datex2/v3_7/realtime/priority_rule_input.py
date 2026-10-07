@@ -13,7 +13,7 @@ from webapp.shared.datex2.v3_7.shared.priority_rule_type_enum_g_input import Pri
 from .vehicle_characteristics_input import VehicleCharacteristicsInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class PriorityRuleInput(ValidataclassMixin):
     priorityRuleType: list[PriorityRuleTypeEnumGInput] = ListValidator(DataclassValidator(PriorityRuleTypeEnumGInput))
     respectBicycle: bool | UnsetValueType = BooleanValidator(), Default(UnsetValue)

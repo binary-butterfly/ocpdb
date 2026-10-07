@@ -13,7 +13,7 @@ from .road_surface_condition_measurements_input import RoadSurfaceConditionMeasu
 from .weather_related_road_condition_type_enum_g_input import WeatherRelatedRoadConditionTypeEnumGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class RoadSurfaceConditionInformationInput(ValidataclassMixin):
     weatherRelatedRoadConditionType: list[WeatherRelatedRoadConditionTypeEnumGInput] | UnsetValueType = (
         ListValidator(DataclassValidator(WeatherRelatedRoadConditionTypeEnumGInput)),

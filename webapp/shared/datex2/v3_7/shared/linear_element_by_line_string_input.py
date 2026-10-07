@@ -13,7 +13,7 @@ from .linear_element_nature_enum_g_input import LinearElementNatureEnumGInput
 from .multilingual_string_input import MultilingualStringInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class LinearElementByLineStringInput(ValidataclassMixin):
     roadName: MultilingualStringInput | UnsetValueType = (
         DataclassValidator(MultilingualStringInput),

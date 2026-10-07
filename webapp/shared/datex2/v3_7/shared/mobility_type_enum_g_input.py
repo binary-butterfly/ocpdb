@@ -10,7 +10,7 @@ from validataclass.validators import EnumValidator, StringValidator
 from .mobility_type_enum import MobilityTypeEnum
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class MobilityTypeEnumGInput(ValidataclassMixin):
     value: MobilityTypeEnum = EnumValidator(MobilityTypeEnum)
     extendedValueG: str | UnsetValueType = StringValidator(), Default(UnsetValue)

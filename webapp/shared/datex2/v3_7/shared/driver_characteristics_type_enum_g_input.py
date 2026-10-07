@@ -10,7 +10,7 @@ from validataclass.validators import EnumValidator, StringValidator
 from .driver_characteristics_type_enum import DriverCharacteristicsTypeEnum
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class DriverCharacteristicsTypeEnumGInput(ValidataclassMixin):
     value: DriverCharacteristicsTypeEnum = EnumValidator(DriverCharacteristicsTypeEnum)
     extendedValueG: str | UnsetValueType = StringValidator(), Default(UnsetValue)

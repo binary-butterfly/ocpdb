@@ -10,7 +10,7 @@ from validataclass.validators import EnumValidator, StringValidator
 from .access_condition_type_enum import AccessConditionTypeEnum
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class AccessConditionTypeEnumGInput(ValidataclassMixin):
     value: AccessConditionTypeEnum = EnumValidator(AccessConditionTypeEnum)
     extendedValueG: str | UnsetValueType = StringValidator(), Default(UnsetValue)

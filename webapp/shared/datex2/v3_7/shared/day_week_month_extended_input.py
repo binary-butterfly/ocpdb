@@ -9,7 +9,7 @@ from validataclass.validators import DataclassValidator
 from .applicable_days_within_month_enum_g_input import ApplicableDaysWithinMonthEnumGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class DayWeekMonthExtendedInput(ValidataclassMixin):
     applicableDaysWithinMonth: ApplicableDaysWithinMonthEnumGInput = DataclassValidator(
         ApplicableDaysWithinMonthEnumGInput

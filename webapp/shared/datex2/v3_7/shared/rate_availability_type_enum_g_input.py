@@ -10,7 +10,7 @@ from validataclass.validators import EnumValidator, StringValidator
 from .rate_availability_type_enum import RateAvailabilityTypeEnum
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class RateAvailabilityTypeEnumGInput(ValidataclassMixin):
     value: RateAvailabilityTypeEnum = EnumValidator(RateAvailabilityTypeEnum)
     extendedValueG: str | UnsetValueType = StringValidator(), Default(UnsetValue)

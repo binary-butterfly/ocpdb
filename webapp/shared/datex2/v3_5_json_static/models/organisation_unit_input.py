@@ -14,7 +14,7 @@ from .multilingual_string_input import MultilingualStringInput
 from .operating_hours_g_input import OperatingHoursGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class OrganisationUnitInput(ValidataclassMixin):
     """
     A unit within the organisation, which has got seperate location, operating hours, address and/or contacts.

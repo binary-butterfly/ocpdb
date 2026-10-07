@@ -10,7 +10,7 @@ from validataclass.validators import EnumValidator, StringValidator
 from .environmental_obstruction_type_enum import EnvironmentalObstructionTypeEnum
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class EnvironmentalObstructionTypeEnumGInput(ValidataclassMixin):
     value: EnvironmentalObstructionTypeEnum = EnumValidator(EnvironmentalObstructionTypeEnum)
     extendedValueG: str | UnsetValueType = StringValidator(), Default(UnsetValue)

@@ -11,7 +11,7 @@ from .extension_type_g_input import ExtensionTypeGInput
 from .operating_hours_g_input import OperatingHoursGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class AccessAndEgressInput(ValidataclassMixin):
     exitPossibleAtAnyTime: bool | UnsetValueType = BooleanValidator(), Default(UnsetValue)
     openTime: OperatingHoursGInput | UnsetValueType = DataclassValidator(OperatingHoursGInput), Default(UnsetValue)

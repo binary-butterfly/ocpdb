@@ -13,7 +13,7 @@ from .tpeg_loc01_simple_point_location_subtype_enum_g_input import TpegLoc01Simp
 from .tpeg_point_g_input import TpegPointGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class TpegSimplePointInput(ValidataclassMixin):
     tpegDirection: DirectionEnumGInput = DataclassValidator(DirectionEnumGInput)
     tpegSimplePointLocationType: TpegLoc01SimplePointLocationSubtypeEnumGInput = DataclassValidator(

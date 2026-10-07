@@ -11,7 +11,7 @@ from .extension_type_g_input import ExtensionTypeGInput
 from .point_coordinates_input import PointCoordinatesInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class OpenlrGeoCoordinateInput(ValidataclassMixin):
     openlrCoordinates: PointCoordinatesInput = DataclassValidator(PointCoordinatesInput)
     locOpenlrPointLocationReferenceExtensionG: ExtensionTypeGInput | UnsetValueType = (

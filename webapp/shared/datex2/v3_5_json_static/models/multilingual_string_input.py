@@ -10,7 +10,7 @@ from validataclass.validators import DataclassValidator, ListValidator
 from .multi_lingual_string_value_input import MultiLingualStringValueInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class MultilingualStringInput(ValidataclassMixin):
     """
     A multilingual string, whereby the same text may be expressed in more than one language.

@@ -12,7 +12,7 @@ from .measurement_site_reference_input import MeasurementSiteReferenceInput
 from .vms_unit_reference_input import VmsUnitReferenceInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class DeviceReferenceGInput(ValidataclassMixin):
     """
     Only one of the properties shall be used in an instance.

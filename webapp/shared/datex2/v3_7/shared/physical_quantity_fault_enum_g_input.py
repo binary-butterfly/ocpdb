@@ -10,7 +10,7 @@ from validataclass.validators import EnumValidator, StringValidator
 from .physical_quantity_fault_enum import PhysicalQuantityFaultEnum
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class PhysicalQuantityFaultEnumGInput(ValidataclassMixin):
     value: PhysicalQuantityFaultEnum = EnumValidator(PhysicalQuantityFaultEnum)
     extendedValueG: str | UnsetValueType = StringValidator(), Default(UnsetValue)

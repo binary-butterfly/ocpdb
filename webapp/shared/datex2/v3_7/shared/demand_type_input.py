@@ -19,7 +19,7 @@ from .calculation_type_enum_g_input import CalculationTypeEnumGInput
 from .extension_type_g_input import ExtensionTypeGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class DemandTypeInput(ValidataclassMixin):
     creationTime: datetime = DateTimeValidator()
     occupancyCalculation: list[CalculationTypeEnumGInput] = ListValidator(DataclassValidator(CalculationTypeEnumGInput))

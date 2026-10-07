@@ -11,7 +11,7 @@ from .extension_type_g_input import ExtensionTypeGInput
 from .openlr_polygon_corners_input import OpenlrPolygonCornersInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class OpenlrPolygonLocationReferenceInput(ValidataclassMixin):
     openlrPolygonCorners: OpenlrPolygonCornersInput = DataclassValidator(OpenlrPolygonCornersInput)
     locOpenlrAreaLocationReferenceExtensionG: ExtensionTypeGInput | UnsetValueType = (

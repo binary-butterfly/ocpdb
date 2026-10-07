@@ -15,7 +15,7 @@ from .right_type_enum_g_input import RightTypeEnumGInput
 from .validity_input import ValidityInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class RightSpecificationInput(ValidataclassMixin):
     idG: str = StringValidator()
     versionG: str = StringValidator()

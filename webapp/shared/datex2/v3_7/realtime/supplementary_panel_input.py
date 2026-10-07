@@ -14,7 +14,7 @@ from .gdd_pictogram_identification_input import GddPictogramIdentificationInput
 from .point_location_g_input import PointLocationGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class SupplementaryPanelInput(ValidataclassMixin):
     pictureOfRoadSign: str | UnsetValueType = RegexValidator(pattern=r'^[A-Za-z0-9+/]+={0,2}$'), Default(UnsetValue)
     urlToRoadSign: str | UnsetValueType = StringValidator(), Default(UnsetValue)

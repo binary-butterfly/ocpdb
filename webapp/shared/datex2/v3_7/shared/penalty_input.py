@@ -11,7 +11,7 @@ from .extension_type_g_input import ExtensionTypeGInput
 from .multilingual_string_input import MultilingualStringInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class PenaltyInput(ValidataclassMixin):
     amountDue: float = FloatValidator(allow_integers=True)
     penaltyDescription: MultilingualStringInput | UnsetValueType = (

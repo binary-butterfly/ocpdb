@@ -15,7 +15,7 @@ from webapp.shared.datex2.v3_7.shared.multilingual_string_input import Multiling
 from .organisation_g_input import OrganisationGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class EnergyProductInput(ValidataclassMixin):
     energyProductName: MultilingualStringInput | UnsetValueType = (
         DataclassValidator(MultilingualStringInput),

@@ -10,7 +10,7 @@ from validataclass.validators import EnumValidator, StringValidator
 from .openlr_form_of_way_enum import OpenlrFormOfWayEnum
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class OpenlrFormOfWayEnumGInput(ValidataclassMixin):
     value: OpenlrFormOfWayEnum = EnumValidator(OpenlrFormOfWayEnum)
     extendedValueG: str | UnsetValueType = StringValidator(), Default(UnsetValue)

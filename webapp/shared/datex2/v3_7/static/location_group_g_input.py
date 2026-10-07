@@ -12,7 +12,7 @@ from webapp.shared.datex2.v3_7.shared.location_group_by_reference_input import L
 from .location_group_by_list_input import LocationGroupByListInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class LocationGroupGInput(ValidataclassMixin):
     """
     Only one of the properties shall be used in an instance.

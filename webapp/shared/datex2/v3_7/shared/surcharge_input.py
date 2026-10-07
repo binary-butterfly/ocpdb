@@ -13,7 +13,7 @@ from .refund_type_enum_g_input import RefundTypeEnumGInput
 from .surcharge_type_enum_g_input import SurchargeTypeEnumGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class SurchargeInput(ValidataclassMixin):
     surchargeType: SurchargeTypeEnumGInput = DataclassValidator(SurchargeTypeEnumGInput)
     value: float | UnsetValueType = FloatValidator(allow_integers=True), Default(UnsetValue)

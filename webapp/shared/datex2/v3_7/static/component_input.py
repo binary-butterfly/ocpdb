@@ -26,7 +26,7 @@ from webapp.shared.datex2.v3_7.shared.physical_device_details_input import Physi
 from .point_location_g_input import PointLocationGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class ComponentInput(ValidataclassMixin):
     idG: str = StringValidator()
     versionG: str = StringValidator()

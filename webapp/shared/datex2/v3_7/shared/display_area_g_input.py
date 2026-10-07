@@ -13,7 +13,7 @@ from .supplementary_panel_area_input import SupplementaryPanelAreaInput
 from .text_display_area_input import TextDisplayAreaInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class DisplayAreaGInput(ValidataclassMixin):
     """
     Only one of the properties shall be used in an instance.

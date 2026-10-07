@@ -12,7 +12,7 @@ from .predefined_location_group_versioned_reference_g_input import PredefinedLoc
 from .traffic_status_enum_g_input import TrafficStatusEnumGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class ReferenceSettingsInput(ValidataclassMixin):
     predefinedLocationGroupReference: PredefinedLocationGroupVersionedReferenceGInput = DataclassValidator(
         PredefinedLocationGroupVersionedReferenceGInput

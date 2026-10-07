@@ -10,7 +10,7 @@ from validataclass.validators import EnumValidator, StringValidator
 from .vms_controller_fault_enum import VmsControllerFaultEnum
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class VmsControllerFaultEnumGInput(ValidataclassMixin):
     value: VmsControllerFaultEnum = EnumValidator(VmsControllerFaultEnum)
     extendedValueG: str | UnsetValueType = StringValidator(), Default(UnsetValue)

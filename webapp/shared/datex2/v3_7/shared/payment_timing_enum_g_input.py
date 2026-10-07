@@ -10,7 +10,7 @@ from validataclass.validators import EnumValidator, StringValidator
 from .payment_timing_enum import PaymentTimingEnum
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class PaymentTimingEnumGInput(ValidataclassMixin):
     value: PaymentTimingEnum = EnumValidator(PaymentTimingEnum)
     extendedValueG: str | UnsetValueType = StringValidator(), Default(UnsetValue)

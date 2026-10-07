@@ -14,7 +14,7 @@ from webapp.shared.datex2.v3_7.shared.reservation_type_enum_g_input import Reser
 from .eligibility_input import EligibilityInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class AssignmentInput(ValidataclassMixin):
     maximumParkingDuration: float | UnsetValueType = FloatValidator(allow_integers=True), Default(UnsetValue)
     minimumParkingDuration: float | UnsetValueType = FloatValidator(allow_integers=True), Default(UnsetValue)

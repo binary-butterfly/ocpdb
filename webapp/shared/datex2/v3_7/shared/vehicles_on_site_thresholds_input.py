@@ -10,7 +10,7 @@ from validataclass.validators import BooleanValidator, DataclassValidator, Float
 from .extension_type_g_input import ExtensionTypeGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class VehiclesOnSiteThresholdsInput(ValidataclassMixin):
     lowerThreshold: int | UnsetValueType = IntegerValidator(min_value=0), Default(UnsetValue)
     upperThreshold: int | UnsetValueType = IntegerValidator(min_value=0), Default(UnsetValue)

@@ -20,7 +20,7 @@ from .traffic_signal_setting_definition_input import TrafficSignalSettingDefinit
 from .winter_driving_management_definition_input import WinterDrivingManagementDefinitionInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class OperatorActionDefinitionGInput(ValidataclassMixin):
     """
     Only one of the properties shall be used in an instance.

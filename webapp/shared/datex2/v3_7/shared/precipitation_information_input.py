@@ -12,7 +12,7 @@ from .measurement_or_calculation_time_input import MeasurementOrCalculationTimeI
 from .precipitation_detail_input import PrecipitationDetailInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class PrecipitationInformationInput(ValidataclassMixin):
     noPrecipitation: bool | UnsetValueType = BooleanValidator(), Default(UnsetValue)
     measurementOrCalculationTime: MeasurementOrCalculationTimeInput | UnsetValueType = (

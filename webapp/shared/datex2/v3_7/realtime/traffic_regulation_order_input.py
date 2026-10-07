@@ -20,7 +20,7 @@ from .location_reference_g_input import LocationReferenceGInput
 from .traffic_regulation_g_input import TrafficRegulationGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class TrafficRegulationOrderInput(ValidataclassMixin):
     idG: str = StringValidator()
     versionG: str = StringValidator()

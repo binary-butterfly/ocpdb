@@ -11,7 +11,7 @@ from .area_location_input import AreaLocationInput
 from .extension_type_g_input import ExtensionTypeGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class AreaDestinationInput(ValidataclassMixin):
     areaLocation: AreaLocationInput = DataclassValidator(AreaLocationInput)
     locDestinationExtensionG: ExtensionTypeGInput | UnsetValueType = (

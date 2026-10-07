@@ -11,7 +11,7 @@ from webapp.shared.datex2.v3_7.shared.extension_type_g_input import ExtensionTyp
 from webapp.shared.datex2.v3_7.shared.legal_basis_input import LegalBasisInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class OccupantConditionInput(ValidataclassMixin):
     negate: bool | UnsetValueType = BooleanValidator(), Default(UnsetValue)
     disabledWithPermit: bool | UnsetValueType = BooleanValidator(), Default(UnsetValue)

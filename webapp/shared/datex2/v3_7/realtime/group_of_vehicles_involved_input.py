@@ -13,7 +13,7 @@ from webapp.shared.datex2.v3_7.shared.vehicle_status_enum_g_input import Vehicle
 from .vehicle_characteristics_input import VehicleCharacteristicsInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class GroupOfVehiclesInvolvedInput(ValidataclassMixin):
     numberOfVehicles: int | UnsetValueType = IntegerValidator(min_value=0), Default(UnsetValue)
     vehicleStatus: VehicleStatusEnumGInput | UnsetValueType = (

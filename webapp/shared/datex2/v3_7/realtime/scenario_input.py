@@ -21,7 +21,7 @@ from .location_reference_g_input import LocationReferenceGInput
 from .strategy_g_input import StrategyGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class ScenarioInput(ValidataclassMixin):
     idG: str = StringValidator()
     versionG: str = StringValidator()

@@ -11,7 +11,7 @@ from .non_predefined_tmplan_operation_input import NonPredefinedTmplanOperationI
 from .predefined_tmplan_operation_input import PredefinedTmplanOperationInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class TmplanOperationGInput(ValidataclassMixin):
     """
     Only one of the properties shall be used in an instance.

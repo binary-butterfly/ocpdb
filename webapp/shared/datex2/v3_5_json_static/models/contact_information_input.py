@@ -10,7 +10,7 @@ from validataclass.validators import DataclassValidator, ListValidator, RegexVal
 from .extension_type_g_input import ExtensionTypeGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class ContactInformationInput(ValidataclassMixin):
     """
     Contact information

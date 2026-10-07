@@ -13,7 +13,7 @@ from .steep_hill_input import SteepHillInput
 from .traffic_ahead_input import TrafficAheadInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class WarningGInput(ValidataclassMixin):
     """
     Only one of the properties shall be used in an instance.

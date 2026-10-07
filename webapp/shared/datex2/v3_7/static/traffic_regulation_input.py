@@ -16,7 +16,7 @@ from .road_sign_g_input import RoadSignGInput
 from .type_of_regulation_g_input import TypeOfRegulationGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class TrafficRegulationInput(ValidataclassMixin):
     idG: str = StringValidator()
     versionG: str = StringValidator()

@@ -23,7 +23,7 @@ from .status_input import StatusInput
 from .status_of_all_devices_from_table_input import StatusOfAllDevicesFromTableInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class StatusPublicationInput(ValidataclassMixin):
     lang: str = RegexValidator(pattern=r'^[a-z]{2}$')
     feedDescription: MultilingualStringInput | UnsetValueType = (

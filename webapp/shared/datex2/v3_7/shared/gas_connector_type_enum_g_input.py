@@ -10,7 +10,7 @@ from validataclass.validators import EnumValidator, StringValidator
 from .gas_connector_type_enum import GasConnectorTypeEnum
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class GasConnectorTypeEnumGInput(ValidataclassMixin):
     value: GasConnectorTypeEnum = EnumValidator(GasConnectorTypeEnum)
     extendedValueG: str | UnsetValueType = StringValidator(), Default(UnsetValue)

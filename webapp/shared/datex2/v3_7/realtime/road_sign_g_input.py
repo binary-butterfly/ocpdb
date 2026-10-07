@@ -11,7 +11,7 @@ from .main_sign_input import MainSignInput
 from .supplementary_panel_input import SupplementaryPanelInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class RoadSignGInput(ValidataclassMixin):
     """
     Only one of the properties shall be used in an instance.

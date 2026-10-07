@@ -10,7 +10,7 @@ from validataclass.validators import EnumValidator, StringValidator
 from .tpeg_loc04_height_type_enum import TpegLoc04HeightTypeEnum
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class TpegLoc04HeightTypeEnumGInput(ValidataclassMixin):
     value: TpegLoc04HeightTypeEnum = EnumValidator(TpegLoc04HeightTypeEnum)
     extendedValueG: str | UnsetValueType = StringValidator(), Default(UnsetValue)

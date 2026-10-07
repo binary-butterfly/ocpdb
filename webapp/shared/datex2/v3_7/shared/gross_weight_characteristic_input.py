@@ -12,7 +12,7 @@ from .extension_type_g_input import ExtensionTypeGInput
 from .weight_type_enum_g_input import WeightTypeEnumGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class GrossWeightCharacteristicInput(ValidataclassMixin):
     comparisonOperator: ComparisonOperatorEnumGInput = DataclassValidator(ComparisonOperatorEnumGInput)
     grossVehicleWeight: float = FloatValidator(allow_integers=True)

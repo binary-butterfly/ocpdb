@@ -10,7 +10,7 @@ from validataclass.validators import EnumValidator, StringValidator
 from .transit_service_information_enum import TransitServiceInformationEnum
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class TransitServiceInformationEnumGInput(ValidataclassMixin):
     value: TransitServiceInformationEnum = EnumValidator(TransitServiceInformationEnum)
     extendedValueG: str | UnsetValueType = StringValidator(), Default(UnsetValue)

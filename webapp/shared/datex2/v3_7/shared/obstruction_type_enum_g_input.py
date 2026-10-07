@@ -11,7 +11,7 @@ from .obstruction_type_enum import ObstructionTypeEnum
 from .obstruction_type_enum_extension_type_g import ObstructionTypeEnumExtensionTypeG
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class ObstructionTypeEnumGInput(ValidataclassMixin):
     value: ObstructionTypeEnum = EnumValidator(ObstructionTypeEnum)
     extendedValueG: ObstructionTypeEnumExtensionTypeG | UnsetValueType = (

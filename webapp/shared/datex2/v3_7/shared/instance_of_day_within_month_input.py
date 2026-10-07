@@ -14,7 +14,7 @@ from .instance_of_day_enum_g_input import InstanceOfDayEnumGInput
 from .month_of_year_enum_g_input import MonthOfYearEnumGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class InstanceOfDayWithinMonthInput(ValidataclassMixin):
     applicableDay: list[DayEnumGInput] | UnsetValueType = (
         ListValidator(DataclassValidator(DayEnumGInput)),

@@ -13,7 +13,7 @@ from .involvement_roles_enum_g_input import InvolvementRolesEnumGInput
 from .person_category_enum_g_input import PersonCategoryEnumGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class GroupOfPeopleInvolvedInput(ValidataclassMixin):
     numberOfPeople: int | UnsetValueType = IntegerValidator(min_value=0), Default(UnsetValue)
     injuryStatusType: InjuryStatusTypeEnumGInput | UnsetValueType = (

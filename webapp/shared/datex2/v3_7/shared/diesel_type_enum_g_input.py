@@ -10,7 +10,7 @@ from validataclass.validators import EnumValidator, StringValidator
 from .diesel_type_enum import DieselTypeEnum
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class DieselTypeEnumGInput(ValidataclassMixin):
     value: DieselTypeEnum = EnumValidator(DieselTypeEnum)
     extendedValueG: str | UnsetValueType = StringValidator(), Default(UnsetValue)

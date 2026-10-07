@@ -12,7 +12,7 @@ from .validity_by_period_input import ValidityByPeriodInput
 from .validity_by_time_input import ValidityByTimeInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class StatusValidityGInput(ValidataclassMixin):
     """
     Only one of the properties shall be used in an instance.

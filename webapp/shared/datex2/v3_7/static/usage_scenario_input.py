@@ -19,7 +19,7 @@ from webapp.shared.datex2.v3_7.shared.truck_parking_dynamic_management_enum_g_in
 from .related_location_g_input import RelatedLocationGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class UsageScenarioInput(ValidataclassMixin):
     operatingPatternIndex: int = IntegerValidator()
     type: list[ParkingUsageScenarioEnumGInput] = ListValidator(DataclassValidator(ParkingUsageScenarioEnumGInput))

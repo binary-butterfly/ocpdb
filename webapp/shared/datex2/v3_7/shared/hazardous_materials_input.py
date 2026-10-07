@@ -12,7 +12,7 @@ from .extension_type_g_input import ExtensionTypeGInput
 from .multilingual_string_input import MultilingualStringInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class HazardousMaterialsInput(ValidataclassMixin):
     chemicalName: MultilingualStringInput = DataclassValidator(MultilingualStringInput)
     dangerousGoodsFlashPoint: float | UnsetValueType = FloatValidator(allow_integers=True), Default(UnsetValue)

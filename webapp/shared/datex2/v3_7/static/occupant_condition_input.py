@@ -12,7 +12,7 @@ from webapp.shared.datex2.v3_7.shared.legal_basis_input import LegalBasisInput
 from webapp.shared.datex2.v3_7.shared.non_negative_integer_comparison_input import NonNegativeIntegerComparisonInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class OccupantConditionInput(ValidataclassMixin):
     negate: bool | UnsetValueType = BooleanValidator(), Default(UnsetValue)
     active: bool | UnsetValueType = BooleanValidator(), Default(UnsetValue)

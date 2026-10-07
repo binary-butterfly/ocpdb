@@ -13,7 +13,7 @@ from .point_location_input import PointLocationInput
 from .single_road_linear_location_input import SingleRoadLinearLocationInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class NetworkLocationGInput(ValidataclassMixin):
     """
     Only one of the properties shall be used in an instance.

@@ -10,7 +10,7 @@ from validataclass.validators import EnumValidator, StringValidator
 from .service_facility_type_enum import ServiceFacilityTypeEnum
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class ServiceFacilityTypeEnumGInput(ValidataclassMixin):
     value: ServiceFacilityTypeEnum = EnumValidator(ServiceFacilityTypeEnum)
     extendedValueG: str | UnsetValueType = StringValidator(), Default(UnsetValue)

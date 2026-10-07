@@ -11,7 +11,7 @@ from .extension_type_g_input import ExtensionTypeGInput
 from .facility_object_versioned_reference_g_input import FacilityObjectVersionedReferenceGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class DedicatedAccessInput(ValidataclassMixin):
     dedicatedAccess: FacilityObjectVersionedReferenceGInput = DataclassValidator(FacilityObjectVersionedReferenceGInput)
     distanceFromParkingSpace: int | UnsetValueType = IntegerValidator(min_value=0), Default(UnsetValue)

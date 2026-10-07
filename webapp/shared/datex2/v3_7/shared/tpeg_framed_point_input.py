@@ -14,7 +14,7 @@ from .tpeg_non_junction_point_input import TpegNonJunctionPointInput
 from .tpeg_point_g_input import TpegPointGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class TpegFramedPointInput(ValidataclassMixin):
     tpegDirection: DirectionEnumGInput = DataclassValidator(DirectionEnumGInput)
     tpegFramedPointLocationType: TpegLoc01FramedPointLocationSubtypeEnumGInput = DataclassValidator(

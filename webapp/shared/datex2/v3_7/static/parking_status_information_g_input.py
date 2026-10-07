@@ -14,7 +14,7 @@ from .place_status_input import PlaceStatusInput
 from .space_status_input import SpaceStatusInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class ParkingStatusInformationGInput(ValidataclassMixin):
     """
     Only one of the properties shall be used in an instance.

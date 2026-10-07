@@ -11,7 +11,7 @@ from .credential_type_enum_g_input import CredentialTypeEnumGInput
 from .extension_type_g_input import ExtensionTypeGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class CredentialInput(ValidataclassMixin):
     type: CredentialTypeEnumGInput = DataclassValidator(CredentialTypeEnumGInput)
     otherType: str | UnsetValueType = StringValidator(), Default(UnsetValue)

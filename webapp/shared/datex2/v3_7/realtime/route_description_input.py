@@ -34,7 +34,7 @@ from .itinerary_g_input import ItineraryGInput
 from .specific_destination_facility_input import SpecificDestinationFacilityInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class RouteDescriptionInput(ValidataclassMixin):
     nameOfRoute: MultilingualStringInput | UnsetValueType = (
         DataclassValidator(MultilingualStringInput),

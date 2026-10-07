@@ -11,7 +11,7 @@ from .extension_type_g_input import ExtensionTypeGInput
 from .openlr_line_location_reference_input import OpenlrLineLocationReferenceInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class OpenlrLinearInput(ValidataclassMixin):
     firstDirection: OpenlrLineLocationReferenceInput = DataclassValidator(OpenlrLineLocationReferenceInput)
     oppositeDirection: OpenlrLineLocationReferenceInput | UnsetValueType = (

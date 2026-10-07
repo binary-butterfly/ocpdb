@@ -16,7 +16,7 @@ from .multilingual_string_input import MultilingualStringInput
 from .physical_quantity_fault_enum_g_input import PhysicalQuantityFaultEnumGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class PhysicalQuantityFaultInput(ValidataclassMixin):
     faultIdentifier: str | UnsetValueType = StringValidator(), Default(UnsetValue)
     faultDescription: MultilingualStringInput | UnsetValueType = (

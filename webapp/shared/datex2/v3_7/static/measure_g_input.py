@@ -13,7 +13,7 @@ from webapp.shared.datex2.v3_7.shared.measure_by_reference_input import MeasureB
 from .measure_definition_input import MeasureDefinitionInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class MeasureGInput(ValidataclassMixin):
     """
     Only one of the properties shall be used in an instance.

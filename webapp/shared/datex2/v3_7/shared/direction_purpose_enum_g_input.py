@@ -10,7 +10,7 @@ from validataclass.validators import EnumValidator, StringValidator
 from .direction_purpose_enum import DirectionPurposeEnum
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class DirectionPurposeEnumGInput(ValidataclassMixin):
     value: DirectionPurposeEnum = EnumValidator(DirectionPurposeEnum)
     extendedValueG: str | UnsetValueType = StringValidator(), Default(UnsetValue)

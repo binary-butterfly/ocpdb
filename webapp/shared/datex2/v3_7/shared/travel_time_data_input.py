@@ -16,7 +16,7 @@ from .travel_time_type_enum_g_input import TravelTimeTypeEnumGInput
 from .vehicle_type_enum_g_input import VehicleTypeEnumGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class TravelTimeDataInput(ValidataclassMixin):
     travelTimeTrendType: TravelTimeTrendTypeEnumGInput | UnsetValueType = (
         DataclassValidator(TravelTimeTrendTypeEnumGInput),

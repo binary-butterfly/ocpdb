@@ -11,7 +11,7 @@ from .credential_assigned_input import CredentialAssignedInput
 from .credential_input import CredentialInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class CredentialGInput(ValidataclassMixin):
     """
     Only one of the properties shall be used in an instance.

@@ -9,6 +9,6 @@ from validataclass.validators import DataclassValidator
 from .comparison_operator_enum_g_input import ComparisonOperatorEnumGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class EmissionsExtensionInput(ValidataclassMixin):
     comparisonOperator: ComparisonOperatorEnumGInput = DataclassValidator(ComparisonOperatorEnumGInput)

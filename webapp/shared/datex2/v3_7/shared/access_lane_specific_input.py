@@ -13,7 +13,7 @@ from .extension_type_g_input import ExtensionTypeGInput
 from .operating_hours_g_input import OperatingHoursGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class AccessLaneSpecificInput(ValidataclassMixin):
     sequenceNumber: int = IntegerValidator(min_value=0)
     laneType: AccessLaneTypeEnumGInput = DataclassValidator(AccessLaneTypeEnumGInput)

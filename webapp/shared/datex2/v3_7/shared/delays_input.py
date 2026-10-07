@@ -12,7 +12,7 @@ from .delays_type_enum_g_input import DelaysTypeEnumGInput
 from .extension_type_g_input import ExtensionTypeGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class DelaysInput(ValidataclassMixin):
     delayBand: DelayBandEnumGInput | UnsetValueType = DataclassValidator(DelayBandEnumGInput), Default(UnsetValue)
     delaysType: DelaysTypeEnumGInput | UnsetValueType = DataclassValidator(DelaysTypeEnumGInput), Default(UnsetValue)

@@ -16,7 +16,7 @@ from webapp.shared.datex2.v3_7.shared.multilingual_string_input import Multiling
 from .an_organisation_g_input import AnOrganisationGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class OrganisationTableInput(ValidataclassMixin):
     idG: str = StringValidator()
     versionG: str = StringValidator()

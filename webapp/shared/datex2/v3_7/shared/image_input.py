@@ -11,7 +11,7 @@ from .extension_type_g_input import ExtensionTypeGInput
 from .image_format_enum_g_input import ImageFormatEnumGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class ImageInput(ValidataclassMixin):
     imageData: str = RegexValidator(pattern=r'^[A-Za-z0-9+/]+={0,2}$')
     imageFormat: ImageFormatEnumGInput = DataclassValidator(ImageFormatEnumGInput)

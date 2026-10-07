@@ -10,7 +10,7 @@ from validataclass.validators import BooleanValidator, DataclassValidator
 from .extension_type_g_input import ExtensionTypeGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class VehicleRegistrationCharacteristicsInput(ValidataclassMixin):
     registeredHistoricVehicle: bool | UnsetValueType = BooleanValidator(), Default(UnsetValue)
     comxVehicleRegistrationCharacteristicsExtensionG: ExtensionTypeGInput | UnsetValueType = (

@@ -10,7 +10,7 @@ from validataclass.validators import EnumValidator, StringValidator
 from .charging_point_usage_type_enum import ChargingPointUsageTypeEnum
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class ChargingPointUsageTypeEnumGInput(ValidataclassMixin):
     value: ChargingPointUsageTypeEnum = EnumValidator(ChargingPointUsageTypeEnum)
     extendedValueG: str | UnsetValueType = StringValidator(), Default(UnsetValue)

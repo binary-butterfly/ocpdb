@@ -10,7 +10,7 @@ from validataclass.validators import EnumValidator, StringValidator
 from .animal_presence_type_enum import AnimalPresenceTypeEnum
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class AnimalPresenceTypeEnumGInput(ValidataclassMixin):
     value: AnimalPresenceTypeEnum = EnumValidator(AnimalPresenceTypeEnum)
     extendedValueG: str | UnsetValueType = StringValidator(), Default(UnsetValue)

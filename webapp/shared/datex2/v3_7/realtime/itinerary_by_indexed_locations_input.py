@@ -16,7 +16,7 @@ from .destination_g_input import DestinationGInput
 from .location_contained_in_itinerary_g_input import locationContainedInItineraryGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class ItineraryByIndexedLocationsInput(ValidataclassMixin):
     routeDestination: list[DestinationGInput] | UnsetValueType = (
         ListValidator(DataclassValidator(DestinationGInput)),

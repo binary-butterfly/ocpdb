@@ -14,7 +14,7 @@ from .organic_gas_refill_point_input import OrganicGasRefillPointInput
 from .petrol_refill_point_input import PetrolRefillPointInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class RefillPointGInput(ValidataclassMixin):
     """
     Only one of the properties shall be used in an instance.

@@ -14,7 +14,7 @@ from .named_area_type_enum_g_input import NamedAreaTypeEnumGInput
 from .nuts_code_type_enum_g_input import NutsCodeTypeEnumGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class NutsNamedAreaInput(ValidataclassMixin):
     areaName: MultilingualStringInput = DataclassValidator(MultilingualStringInput)
     namedAreaType: NamedAreaTypeEnumGInput | UnsetValueType = (

@@ -10,7 +10,7 @@ from validataclass.validators import EnumValidator, StringValidator
 from .street_works_type_enum import StreetWorksTypeEnum
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class StreetWorksTypeEnumGInput(ValidataclassMixin):
     value: StreetWorksTypeEnum = EnumValidator(StreetWorksTypeEnum)
     extendedValueG: str | UnsetValueType = StringValidator(), Default(UnsetValue)

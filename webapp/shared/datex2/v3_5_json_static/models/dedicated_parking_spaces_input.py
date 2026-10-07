@@ -30,7 +30,7 @@ from .user_type_enum_g_input import UserTypeEnumGInput
 from .vehicle_characteristics_input import VehicleCharacteristicsInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class DedicatedParkingSpacesInput(ValidataclassMixin):
     """
     Dedicated parking spaces directly belonging to a facility (which is usually not a parking site itself).

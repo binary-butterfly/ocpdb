@@ -11,7 +11,7 @@ from .extension_type_g_input import ExtensionTypeGInput
 from .point_coordinates_input import PointCoordinatesInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class OpenlrGeoCoordinateInput(ValidataclassMixin):
     """
     A geo-coordinate pair is a position in a map defined by its longitude and latitude coordinate values.

@@ -13,7 +13,7 @@ from .traffic_status_value_input import TrafficStatusValueInput
 from .traffic_trend_type_enum_g_input import TrafficTrendTypeEnumGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class TrafficStatusInput(ValidataclassMixin):
     trafficTrendType: TrafficTrendTypeEnumGInput | UnsetValueType = (
         DataclassValidator(TrafficTrendTypeEnumGInput),

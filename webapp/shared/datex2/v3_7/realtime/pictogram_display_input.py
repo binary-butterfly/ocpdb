@@ -17,7 +17,7 @@ from webapp.shared.datex2.v3_7.shared.supplementary_information_display_g_input 
 from .pictogram_g_input import PictogramGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class PictogramDisplayInput(ValidataclassMixin):
     isBlank: bool | UnsetValueType = BooleanValidator(), Default(UnsetValue)
     legallyBinding: bool | UnsetValueType = BooleanValidator(), Default(UnsetValue)

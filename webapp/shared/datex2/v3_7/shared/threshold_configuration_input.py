@@ -11,7 +11,7 @@ from .extension_type_g_input import ExtensionTypeGInput
 from .status_configuration_input import StatusConfigurationInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class ThresholdConfigurationInput(ValidataclassMixin):
     lastMaximumOccupancy: int | UnsetValueType = IntegerValidator(min_value=0), Default(UnsetValue)
     statusConfiguration: list[StatusConfigurationInput] = ListValidator(DataclassValidator(StatusConfigurationInput))

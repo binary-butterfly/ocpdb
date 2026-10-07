@@ -11,7 +11,7 @@ from .extension_type_g_input import ExtensionTypeGInput
 from .temperature_value_input import TemperatureValueInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class TemperatureBelowOrAboveRoadSurfaceInput(ValidataclassMixin):
     heightBelowOrAboveRoadSurface: float = FloatValidator(allow_integers=True)
     temperatureBelowOrAboveRoadSurface: TemperatureValueInput = DataclassValidator(TemperatureValueInput)

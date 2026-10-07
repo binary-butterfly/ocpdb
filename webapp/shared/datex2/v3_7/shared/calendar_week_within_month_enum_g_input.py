@@ -10,7 +10,7 @@ from validataclass.validators import EnumValidator, StringValidator
 from .calendar_week_within_month_enum import CalendarWeekWithinMonthEnum
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class CalendarWeekWithinMonthEnumGInput(ValidataclassMixin):
     value: CalendarWeekWithinMonthEnum = EnumValidator(CalendarWeekWithinMonthEnum)
     extendedValueG: str | UnsetValueType = StringValidator(), Default(UnsetValue)

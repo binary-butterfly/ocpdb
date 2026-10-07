@@ -12,7 +12,7 @@ from .extension_type_g_input import ExtensionTypeGInput
 from .regulation_enum_g_input import RegulationEnumGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class PermitsAndProhibitionsInput(ValidataclassMixin):
     activity: ActivityEnumGInput = DataclassValidator(ActivityEnumGInput)
     regulation: RegulationEnumGInput = DataclassValidator(RegulationEnumGInput)

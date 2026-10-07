@@ -10,7 +10,7 @@ from validataclass.validators import EnumValidator, StringValidator
 from .delay_band_enum import DelayBandEnum
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class DelayBandEnumGInput(ValidataclassMixin):
     value: DelayBandEnum = EnumValidator(DelayBandEnum)
     extendedValueG: str | UnsetValueType = StringValidator(), Default(UnsetValue)

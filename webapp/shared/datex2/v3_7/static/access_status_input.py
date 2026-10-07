@@ -39,7 +39,7 @@ from .rates_g_input import RatesGInput
 from .supplemental_facility_status_input import SupplementalFacilityStatusInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class AccessStatusInput(ValidataclassMixin):
     reference: FacilityObjectVersionedReferenceGInput = DataclassValidator(FacilityObjectVersionedReferenceGInput)
     lastUpdated: datetime | UnsetValueType = DateTimeValidator(), Default(UnsetValue)

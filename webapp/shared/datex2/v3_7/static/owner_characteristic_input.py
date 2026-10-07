@@ -13,7 +13,7 @@ from webapp.shared.datex2.v3_7.shared.owner_type_enum_g_input import OwnerTypeEn
 from .location_reference_g_input import LocationReferenceGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class OwnerCharacteristicInput(ValidataclassMixin):
     ownerType: OwnerTypeEnumGInput = DataclassValidator(OwnerTypeEnumGInput)
     locationOfResidency: LocationReferenceGInput | UnsetValueType = (

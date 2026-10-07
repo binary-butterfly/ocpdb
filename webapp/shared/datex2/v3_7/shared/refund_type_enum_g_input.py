@@ -10,7 +10,7 @@ from validataclass.validators import EnumValidator, StringValidator
 from .refund_type_enum import RefundTypeEnum
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class RefundTypeEnumGInput(ValidataclassMixin):
     value: RefundTypeEnum = EnumValidator(RefundTypeEnum)
     extendedValueG: str | UnsetValueType = StringValidator(), Default(UnsetValue)

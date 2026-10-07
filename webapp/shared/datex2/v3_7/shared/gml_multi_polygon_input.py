@@ -12,7 +12,7 @@ from .gml_polygon_input import GmlPolygonInput
 from .multilingual_string_input import MultilingualStringInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class GmlMultiPolygonInput(ValidataclassMixin):
     gmlAreaName: MultilingualStringInput | UnsetValueType = (
         DataclassValidator(MultilingualStringInput),

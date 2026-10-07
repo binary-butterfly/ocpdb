@@ -18,7 +18,7 @@ from webapp.shared.datex2.v3_7.shared.situation_reference_input import Situation
 from .situation_record_g_input import SituationRecordGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class SituationInput(ValidataclassMixin):
     idG: str = StringValidator()
     overallSeverity: SeverityEnumGInput | UnsetValueType = DataclassValidator(SeverityEnumGInput), Default(UnsetValue)

@@ -11,7 +11,7 @@ from .extension_type_g_input import ExtensionTypeGInput
 from .openlr_functional_road_class_enum_g_input import OpenlrFunctionalRoadClassEnumGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class OpenlrPathAttributesInput(ValidataclassMixin):
     """
     Properties of the path from the associated location reference point to the next location reference point, which are specified to assist correct identification of the point in an external map data source.

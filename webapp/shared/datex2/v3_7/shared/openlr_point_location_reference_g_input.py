@@ -12,7 +12,7 @@ from .openlr_poi_with_access_point_input import OpenlrPoiWithAccessPointInput
 from .openlr_point_along_line_input import OpenlrPointAlongLineInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class OpenlrPointLocationReferenceGInput(ValidataclassMixin):
     """
     Only one of the properties shall be used in an instance.

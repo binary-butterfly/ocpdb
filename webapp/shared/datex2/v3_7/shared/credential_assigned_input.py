@@ -12,7 +12,7 @@ from .extension_type_g_input import ExtensionTypeGInput
 from .organisation_versioned_reference_g_input import OrganisationVersionedReferenceGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class CredentialAssignedInput(ValidataclassMixin):
     type: CredentialTypeEnumGInput = DataclassValidator(CredentialTypeEnumGInput)
     otherType: str | UnsetValueType = StringValidator(), Default(UnsetValue)

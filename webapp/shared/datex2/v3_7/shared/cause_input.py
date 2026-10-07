@@ -14,7 +14,7 @@ from .multilingual_string_input import MultilingualStringInput
 from .situation_record_reference_input import SituationRecordReferenceInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class CauseInput(ValidataclassMixin):
     causeDescription: MultilingualStringInput | UnsetValueType = (
         DataclassValidator(MultilingualStringInput),

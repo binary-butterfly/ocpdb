@@ -14,7 +14,7 @@ from .undefined_organisation_input import UndefinedOrganisationInput
 from .unknown_organisation_input import UnknownOrganisationInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class OrganisationGInput(ValidataclassMixin):
     """
     Only one of the properties shall be used in an instance.

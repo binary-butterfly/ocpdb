@@ -12,7 +12,7 @@ from .legal_basis_input import LegalBasisInput
 from .standing_or_parking_condition_type_enum_g_input import StandingOrParkingConditionTypeEnumGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class StandingOrParkingConditionInput(ValidataclassMixin):
     negate: bool | UnsetValueType = BooleanValidator(), Default(UnsetValue)
     active: bool | UnsetValueType = BooleanValidator(), Default(UnsetValue)

@@ -14,7 +14,7 @@ from .tpeg_junction_point_descriptor_input import TpegJunctionPointDescriptorInp
 from .tpeg_other_point_descriptor_input import TpegOtherPointDescriptorInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class TpegJunctionInput(ValidataclassMixin):
     pointCoordinates: PointCoordinatesInput = DataclassValidator(PointCoordinatesInput)
     name: TpegJunctionPointDescriptorInput | UnsetValueType = (

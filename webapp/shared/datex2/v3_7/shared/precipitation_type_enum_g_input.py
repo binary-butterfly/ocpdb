@@ -10,7 +10,7 @@ from validataclass.validators import EnumValidator, StringValidator
 from .precipitation_type_enum import PrecipitationTypeEnum
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class PrecipitationTypeEnumGInput(ValidataclassMixin):
     value: PrecipitationTypeEnum = EnumValidator(PrecipitationTypeEnum)
     extendedValueG: str | UnsetValueType = StringValidator(), Default(UnsetValue)

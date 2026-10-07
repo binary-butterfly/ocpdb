@@ -11,7 +11,7 @@ from .extension_type_g_input import ExtensionTypeGInput
 from .junction_information_input import JunctionInformationInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class AccessJunctionInput(ValidataclassMixin):
     distance: int | UnsetValueType = IntegerValidator(min_value=0), Default(UnsetValue)
     junctionInformation: JunctionInformationInput = DataclassValidator(JunctionInformationInput)

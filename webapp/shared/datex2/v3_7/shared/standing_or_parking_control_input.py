@@ -11,7 +11,7 @@ from .extension_type_g_input import ExtensionTypeGInput
 from .standing_or_parking_control_type_enum_g_input import StandingOrParkingControlTypeEnumGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class StandingOrParkingControlInput(ValidataclassMixin):
     standingOrParkingControlType: StandingOrParkingControlTypeEnumGInput = DataclassValidator(
         StandingOrParkingControlTypeEnumGInput

@@ -12,7 +12,7 @@ from .overall_period_input import OverallPeriodInput
 from .payment_input import PaymentInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class FreeOfChargeInput(ValidataclassMixin):
     applicableCurrency: list[str] | UnsetValueType = ListValidator(StringValidator()), Default(UnsetValue)
     payment: PaymentInput | UnsetValueType = DataclassValidator(PaymentInput), Default(UnsetValue)

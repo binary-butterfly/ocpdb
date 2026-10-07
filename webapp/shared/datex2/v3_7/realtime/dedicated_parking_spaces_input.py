@@ -33,7 +33,7 @@ from .rates_g_input import RatesGInput
 from .vehicle_characteristics_input import VehicleCharacteristicsInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class DedicatedParkingSpacesInput(ValidataclassMixin):
     idG: str = StringValidator()
     versionG: str = StringValidator()

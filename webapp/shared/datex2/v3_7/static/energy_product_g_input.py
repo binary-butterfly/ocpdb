@@ -11,7 +11,7 @@ from .electric_energy_input import ElectricEnergyInput
 from .energy_product_input import EnergyProductInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class EnergyProductGInput(ValidataclassMixin):
     """
     Only one of the properties shall be used in an instance.

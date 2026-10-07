@@ -23,7 +23,7 @@ from .public_transport_vehicle_type_g_input import PublicTransportVehicleTypeGIn
 from .validity_input import ValidityInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class PtScheduleInput(ValidataclassMixin):
     idG: str = StringValidator()
     versionG: str = StringValidator()

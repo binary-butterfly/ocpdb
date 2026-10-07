@@ -11,7 +11,7 @@ from .cause_type_enum import CauseTypeEnum
 from .cause_type_enum_extension_type_g import CauseTypeEnumExtensionTypeG
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class CauseTypeEnumGInput(ValidataclassMixin):
     value: CauseTypeEnum = EnumValidator(CauseTypeEnum)
     extendedValueG: CauseTypeEnumExtensionTypeG | UnsetValueType = (

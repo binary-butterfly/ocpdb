@@ -10,7 +10,7 @@ from validataclass.validators import EnumValidator, StringValidator
 from .organic_gas_type_enum import OrganicGasTypeEnum
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class OrganicGasTypeEnumGInput(ValidataclassMixin):
     value: OrganicGasTypeEnum = EnumValidator(OrganicGasTypeEnum)
     extendedValueG: str | UnsetValueType = StringValidator(), Default(UnsetValue)

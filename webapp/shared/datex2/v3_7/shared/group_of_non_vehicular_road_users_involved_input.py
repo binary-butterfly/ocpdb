@@ -12,7 +12,7 @@ from .injury_status_type_enum_g_input import InjuryStatusTypeEnumGInput
 from .non_vehicular_road_users_input import NonVehicularRoadUsersInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class GroupOfNonVehicularRoadUsersInvolvedInput(ValidataclassMixin):
     numberOfNonVehicularRoadUsers: int | UnsetValueType = IntegerValidator(min_value=0), Default(UnsetValue)
     injuryStatusType: InjuryStatusTypeEnumGInput | UnsetValueType = (

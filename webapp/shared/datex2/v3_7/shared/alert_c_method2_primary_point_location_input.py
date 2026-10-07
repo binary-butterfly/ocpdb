@@ -11,7 +11,7 @@ from .alert_c_location_input import AlertCLocationInput
 from .extension_type_g_input import ExtensionTypeGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class AlertCMethod2PrimaryPointLocationInput(ValidataclassMixin):
     alertCLocation: AlertCLocationInput = DataclassValidator(AlertCLocationInput)
     locAlertCMethod2PrimaryPointLocationExtensionG: ExtensionTypeGInput | UnsetValueType = (

@@ -12,7 +12,7 @@ from .condition_g_input import ConditionGInput
 from .extension_type_g_input import ExtensionTypeGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class ActivationConditionsInput(ValidataclassMixin):
     automaticallyApproved: bool | UnsetValueType = BooleanValidator(), Default(UnsetValue)
     automaticallyImplemented: bool | UnsetValueType = BooleanValidator(), Default(UnsetValue)

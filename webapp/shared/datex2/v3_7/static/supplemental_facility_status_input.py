@@ -22,7 +22,7 @@ from webapp.shared.datex2.v3_7.shared.operation_status_enum_g_input import Opera
 from .rates_g_input import RatesGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class SupplementalFacilityStatusInput(ValidataclassMixin):
     reference: FacilityObjectVersionedReferenceGInput = DataclassValidator(FacilityObjectVersionedReferenceGInput)
     lastUpdated: datetime | UnsetValueType = DateTimeValidator(), Default(UnsetValue)

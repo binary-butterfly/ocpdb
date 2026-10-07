@@ -12,7 +12,7 @@ from .alert_c_method4_primary_point_location_input import AlertCMethod4PrimaryPo
 from .extension_type_g_input import ExtensionTypeGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class AlertCMethod4PointInput(ValidataclassMixin):
     alertCLocationCountryCode: str = StringValidator()
     alertCLocationTableNumber: str = StringValidator()

@@ -37,7 +37,7 @@ from .weather_related_road_conditions_input import WeatherRelatedRoadConditionsI
 from .winter_driving_management_input import WinterDrivingManagementInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class SituationRecordGInput(ValidataclassMixin):
     """
     Only one of the properties shall be used in an instance.

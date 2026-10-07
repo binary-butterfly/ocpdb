@@ -10,7 +10,7 @@ from validataclass.validators import EnumValidator, StringValidator
 from .steep_hill_direction_type_enum import SteepHillDirectionTypeEnum
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class SteepHillDirectionTypeEnumGInput(ValidataclassMixin):
     value: SteepHillDirectionTypeEnum = EnumValidator(SteepHillDirectionTypeEnum)
     extendedValueG: str | UnsetValueType = StringValidator(), Default(UnsetValue)

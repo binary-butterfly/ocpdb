@@ -16,7 +16,7 @@ from .parking_security_enum_g_input import ParkingSecurityEnumGInput
 from .parking_supervision_enum_g_input import ParkingSupervisionEnumGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class SafetyStandardClassificationInput(ValidataclassMixin):
     securityFeature: ParkingSecurityEnumGInput | UnsetValueType = (
         DataclassValidator(ParkingSecurityEnumGInput),

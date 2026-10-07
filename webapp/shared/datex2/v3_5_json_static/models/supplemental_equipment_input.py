@@ -33,7 +33,7 @@ from .user_type_enum_g_input import UserTypeEnumGInput
 from .vehicle_characteristics_input import VehicleCharacteristicsInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class SupplementalEquipmentInput(ValidataclassMixin):
     """
     One type of  supplemental equipment, which is available on some site, for example on a rest area.

@@ -10,7 +10,7 @@ from validataclass.validators import EnumValidator, StringValidator
 from .tpeg_loc01_simple_point_location_subtype_enum import TpegLoc01SimplePointLocationSubtypeEnum
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class TpegLoc01SimplePointLocationSubtypeEnumGInput(ValidataclassMixin):
     value: TpegLoc01SimplePointLocationSubtypeEnum = EnumValidator(TpegLoc01SimplePointLocationSubtypeEnum)
     extendedValueG: str | UnsetValueType = StringValidator(), Default(UnsetValue)

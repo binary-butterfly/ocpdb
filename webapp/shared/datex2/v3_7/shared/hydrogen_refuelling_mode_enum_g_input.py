@@ -10,7 +10,7 @@ from validataclass.validators import EnumValidator, StringValidator
 from .hydrogen_refuelling_mode_enum import HydrogenRefuellingModeEnum
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class HydrogenRefuellingModeEnumGInput(ValidataclassMixin):
     value: HydrogenRefuellingModeEnum = EnumValidator(HydrogenRefuellingModeEnum)
     extendedValueG: str | UnsetValueType = StringValidator(), Default(UnsetValue)

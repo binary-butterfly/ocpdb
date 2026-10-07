@@ -10,7 +10,7 @@ from validataclass.validators import EnumValidator, StringValidator
 from .parking_structural_characteristics_enum import ParkingStructuralCharacteristicsEnum
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class ParkingStructuralCharacteristicsEnumGInput(ValidataclassMixin):
     value: ParkingStructuralCharacteristicsEnum = EnumValidator(ParkingStructuralCharacteristicsEnum)
     extendedValueG: str | UnsetValueType = StringValidator(), Default(UnsetValue)

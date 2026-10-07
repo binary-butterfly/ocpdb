@@ -10,7 +10,7 @@ from validataclass.validators import EnumValidator, StringValidator
 from .colour_enum import ColourEnum
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class ColourEnumGInput(ValidataclassMixin):
     value: ColourEnum = EnumValidator(ColourEnum)
     extendedValueG: str | UnsetValueType = StringValidator(), Default(UnsetValue)

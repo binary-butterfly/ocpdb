@@ -10,7 +10,7 @@ from validataclass.validators import DataclassValidator, StringValidator
 from .energy_infrastructure_status_publication_input import EnergyInfrastructureStatusPublicationInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class PayloadPublicationGInput(ValidataclassMixin):
     """
     Only one of the properties shall be used in an instance.

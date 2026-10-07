@@ -10,7 +10,7 @@ from validataclass.validators import EnumValidator, StringValidator
 from .travel_time_type_enum import TravelTimeTypeEnum
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class TravelTimeTypeEnumGInput(ValidataclassMixin):
     value: TravelTimeTypeEnum = EnumValidator(TravelTimeTypeEnum)
     extendedValueG: str | UnsetValueType = StringValidator(), Default(UnsetValue)

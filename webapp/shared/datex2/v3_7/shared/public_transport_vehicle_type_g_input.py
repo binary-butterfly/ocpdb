@@ -10,7 +10,7 @@ from validataclass.validators import EnumValidator, StringValidator
 from .public_transport_vehicle_type import PublicTransportVehicleType
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class PublicTransportVehicleTypeGInput(ValidataclassMixin):
     value: PublicTransportVehicleType = EnumValidator(PublicTransportVehicleType)
     extendedValueG: str | UnsetValueType = StringValidator(), Default(UnsetValue)

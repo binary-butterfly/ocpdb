@@ -10,7 +10,7 @@ from validataclass.validators import DataclassValidator, StringValidator
 from .extension_type_g_input import ExtensionTypeGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class RoadInformationInput(ValidataclassMixin):
     roadDestination: str | UnsetValueType = StringValidator(), Default(UnsetValue)
     roadName: str | UnsetValueType = StringValidator(), Default(UnsetValue)

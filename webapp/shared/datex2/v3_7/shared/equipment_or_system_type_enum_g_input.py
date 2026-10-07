@@ -11,7 +11,7 @@ from .equipment_or_system_type_enum import EquipmentOrSystemTypeEnum
 from .equipment_or_system_type_enum_extension_type_g import EquipmentOrSystemTypeEnumExtensionTypeG
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class EquipmentOrSystemTypeEnumGInput(ValidataclassMixin):
     value: EquipmentOrSystemTypeEnum = EnumValidator(EquipmentOrSystemTypeEnum)
     extendedValueG: EquipmentOrSystemTypeEnumExtensionTypeG | UnsetValueType = (

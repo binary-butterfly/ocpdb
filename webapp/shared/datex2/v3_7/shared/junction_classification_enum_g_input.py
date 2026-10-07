@@ -10,7 +10,7 @@ from validataclass.validators import EnumValidator, StringValidator
 from .junction_classification_enum import JunctionClassificationEnum
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class JunctionClassificationEnumGInput(ValidataclassMixin):
     value: JunctionClassificationEnum = EnumValidator(JunctionClassificationEnum)
     extendedValueG: str | UnsetValueType = StringValidator(), Default(UnsetValue)

@@ -10,7 +10,7 @@ from validataclass.validators import EnumValidator, StringValidator
 from .carriageway_enum import CarriagewayEnum
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class CarriagewayEnumGInput(ValidataclassMixin):
     value: CarriagewayEnum = EnumValidator(CarriagewayEnum)
     extendedValueG: str | UnsetValueType = StringValidator(), Default(UnsetValue)

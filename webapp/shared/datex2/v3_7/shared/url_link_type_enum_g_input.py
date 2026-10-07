@@ -10,7 +10,7 @@ from validataclass.validators import EnumValidator, StringValidator
 from .url_link_type_enum import UrlLinkTypeEnum
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class UrlLinkTypeEnumGInput(ValidataclassMixin):
     value: UrlLinkTypeEnum = EnumValidator(UrlLinkTypeEnum)
     extendedValueG: str | UnsetValueType = StringValidator(), Default(UnsetValue)

@@ -12,7 +12,7 @@ from .measurement_or_calculation_time_input import MeasurementOrCalculationTimeI
 from .visibility_input import VisibilityInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class VisibilityInformationInput(ValidataclassMixin):
     measurementOrCalculationTime: MeasurementOrCalculationTimeInput | UnsetValueType = (
         DataclassValidator(MeasurementOrCalculationTimeInput),

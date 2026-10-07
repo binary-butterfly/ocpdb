@@ -11,7 +11,7 @@ from .extension_type_g_input import ExtensionTypeGInput
 from .traffic_ahead_type_enum_g_input import TrafficAheadTypeEnumGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class TrafficAheadInput(ValidataclassMixin):
     trafficAheadType: TrafficAheadTypeEnumGInput = DataclassValidator(TrafficAheadTypeEnumGInput)
     troTypeOfRegulationExtensionG: ExtensionTypeGInput | UnsetValueType = (

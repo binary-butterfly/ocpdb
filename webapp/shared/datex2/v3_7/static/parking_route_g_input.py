@@ -12,7 +12,7 @@ from webapp.shared.datex2.v3_7.shared.parking_route_by_reference_input import Pa
 from .parking_route_details_input import ParkingRouteDetailsInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class ParkingRouteGInput(ValidataclassMixin):
     """
     Only one of the properties shall be used in an instance.

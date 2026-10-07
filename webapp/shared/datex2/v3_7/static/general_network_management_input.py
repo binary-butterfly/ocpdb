@@ -43,7 +43,7 @@ from .network_management_extension_type_g_input import NetworkManagementExtensio
 from .vehicle_characteristics_input import VehicleCharacteristicsInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class GeneralNetworkManagementInput(ValidataclassMixin):
     idG: str = StringValidator()
     versionG: str = StringValidator()

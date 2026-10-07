@@ -12,7 +12,7 @@ from .international_identifier_input import InternationalIdentifierInput
 from .situation_record_versioned_reference_g_input import SituationRecordVersionedReferenceGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class SituationRecordReferenceInput(ValidataclassMixin):
     externalPublicationIdentifier: str | UnsetValueType = StringValidator(), Default(UnsetValue)
     objectReference: SituationRecordVersionedReferenceGInput = DataclassValidator(

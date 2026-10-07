@@ -14,7 +14,7 @@ from .facility_object_versioned_reference_g_input import FacilityObjectVersioned
 from .supply_view_type_enum_g_input import SupplyViewTypeEnumGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class SupplyInput(ValidataclassMixin):
     quantity: int = IntegerValidator()
     viewType: SupplyViewTypeEnumGInput = DataclassValidator(SupplyViewTypeEnumGInput)

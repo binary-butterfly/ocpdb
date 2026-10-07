@@ -15,7 +15,7 @@ from .predefined_condition_versioned_reference_g_input import PredefinedConditio
 from .validity_input import ValidityInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class PredefinedConditionActivationInput(ValidataclassMixin):
     idG: str = StringValidator()
     versionG: str = StringValidator()

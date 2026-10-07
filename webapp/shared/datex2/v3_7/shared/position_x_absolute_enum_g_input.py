@@ -10,7 +10,7 @@ from validataclass.validators import EnumValidator, StringValidator
 from .position_x_absolute_enum import PositionXAbsoluteEnum
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class PositionXAbsoluteEnumGInput(ValidataclassMixin):
     value: PositionXAbsoluteEnum = EnumValidator(PositionXAbsoluteEnum)
     extendedValueG: str | UnsetValueType = StringValidator(), Default(UnsetValue)

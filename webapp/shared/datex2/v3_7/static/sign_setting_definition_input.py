@@ -18,7 +18,7 @@ from .vehicle_characteristics_input import VehicleCharacteristicsInput
 from .vms_controller_status_input import VmsControllerStatusInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class SignSettingDefinitionInput(ValidataclassMixin):
     complianceOption: ComplianceOptionEnumGInput = DataclassValidator(ComplianceOptionEnumGInput)
     applicableForTrafficDirection: list[DirectionEnumGInput] | UnsetValueType = (

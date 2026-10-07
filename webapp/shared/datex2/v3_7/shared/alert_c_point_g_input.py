@@ -11,7 +11,7 @@ from .alert_c_method2_point_input import AlertCMethod2PointInput
 from .alert_c_method4_point_input import AlertCMethod4PointInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class AlertCPointGInput(ValidataclassMixin):
     """
     Only one of the properties shall be used in an instance.

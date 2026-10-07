@@ -12,7 +12,7 @@ from .openlr_form_of_way_enum_g_input import OpenlrFormOfWayEnumGInput
 from .openlr_functional_road_class_enum_g_input import OpenlrFunctionalRoadClassEnumGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class OpenlrLineAttributesInput(ValidataclassMixin):
     openlrFunctionalRoadClass: OpenlrFunctionalRoadClassEnumGInput = DataclassValidator(
         OpenlrFunctionalRoadClassEnumGInput

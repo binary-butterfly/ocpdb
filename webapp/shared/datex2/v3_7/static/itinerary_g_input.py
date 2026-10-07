@@ -11,7 +11,7 @@ from .itinerary_by_indexed_locations_input import ItineraryByIndexedLocationsInp
 from .itinerary_by_reference_input import ItineraryByReferenceInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class ItineraryGInput(ValidataclassMixin):
     """
     Only one of the properties shall be used in an instance.

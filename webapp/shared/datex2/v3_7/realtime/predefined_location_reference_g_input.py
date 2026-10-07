@@ -12,7 +12,7 @@ from .predefined_location_group_input import PredefinedLocationGroupInput
 from .predefined_location_input import PredefinedLocationInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class PredefinedLocationReferenceGInput(ValidataclassMixin):
     """
     Only one of the properties shall be used in an instance.

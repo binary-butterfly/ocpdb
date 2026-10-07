@@ -17,7 +17,7 @@ from webapp.shared.datex2.v3_7.shared.multilingual_string_input import Multiling
 from .operator_action_definition_g_input import OperatorActionDefinitionGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class ActionDefinitionInput(ValidataclassMixin):
     idG: str = StringValidator()
     versionG: str = StringValidator()

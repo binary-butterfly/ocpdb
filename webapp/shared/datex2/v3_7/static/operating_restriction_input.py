@@ -15,7 +15,7 @@ from webapp.shared.datex2.v3_7.shared.overall_period_input import OverallPeriodI
 from .related_location_g_input import RelatedLocationGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class OperatingRestrictionInput(ValidataclassMixin):
     operatingPatternIndex: int = IntegerValidator()
     context: MultilingualStringInput | UnsetValueType = DataclassValidator(MultilingualStringInput), Default(UnsetValue)

@@ -15,7 +15,7 @@ from .structure_grade_enum_g_input import StructureGradeEnumGInput
 from .structure_type_enum_g_input import StructureTypeEnumGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class CharacteristicsInput(ValidataclassMixin):
     activationMode: list[SessionActivationModeEnumGInput] | UnsetValueType = (
         ListValidator(DataclassValidator(SessionActivationModeEnumGInput)),

@@ -12,7 +12,7 @@ from .named_area_input import NamedAreaInput
 from .nuts_named_area_input import NutsNamedAreaInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class NamedAreaGInput(ValidataclassMixin):
     """
     Only one of the properties shall be used in an instance.

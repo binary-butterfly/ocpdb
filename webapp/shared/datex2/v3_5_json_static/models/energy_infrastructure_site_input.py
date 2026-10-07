@@ -30,7 +30,7 @@ from .user_type_enum_g_input import UserTypeEnumGInput
 from .vehicle_characteristics_input import VehicleCharacteristicsInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class EnergyInfrastructureSiteInput(ValidataclassMixin):
     """
     A site where vehicles can be supplied with energy, including all buildings, stations, parking spaces and other associated services.

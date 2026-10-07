@@ -12,7 +12,7 @@ from .parking_route_details_versioned_reference_g_input import ParkingRouteDetai
 from .rgb_colour_input import RgbColourInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class ParkingRouteByReferenceInput(ValidataclassMixin):
     parkingRouteReference: ParkingRouteDetailsVersionedReferenceGInput = DataclassValidator(
         ParkingRouteDetailsVersionedReferenceGInput

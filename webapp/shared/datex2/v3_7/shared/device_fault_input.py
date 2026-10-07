@@ -19,7 +19,7 @@ from .fault_urgency_enum_g_input import FaultUrgencyEnumGInput
 from .multilingual_string_input import MultilingualStringInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class DeviceFaultInput(ValidataclassMixin):
     idG: str = StringValidator()
     faultIdentifier: str | UnsetValueType = StringValidator(), Default(UnsetValue)

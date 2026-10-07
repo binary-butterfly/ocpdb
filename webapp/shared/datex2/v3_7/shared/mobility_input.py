@@ -11,7 +11,7 @@ from .extension_type_g_input import ExtensionTypeGInput
 from .mobility_type_enum_g_input import MobilityTypeEnumGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class MobilityInput(ValidataclassMixin):
     mobilityType: MobilityTypeEnumGInput = DataclassValidator(MobilityTypeEnumGInput)
     speed: float | UnsetValueType = FloatValidator(allow_integers=True), Default(UnsetValue)

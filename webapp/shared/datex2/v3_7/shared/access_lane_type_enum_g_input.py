@@ -10,7 +10,7 @@ from validataclass.validators import EnumValidator, StringValidator
 from .access_lane_type_enum import AccessLaneTypeEnum
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class AccessLaneTypeEnumGInput(ValidataclassMixin):
     value: AccessLaneTypeEnum = EnumValidator(AccessLaneTypeEnum)
     extendedValueG: str | UnsetValueType = StringValidator(), Default(UnsetValue)

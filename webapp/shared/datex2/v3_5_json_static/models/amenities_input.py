@@ -10,7 +10,7 @@ from validataclass.validators import BooleanValidator, DataclassValidator
 from .extension_type_g_input import ExtensionTypeGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class AmenitiesInput(ValidataclassMixin):
     """
     Amenities such as the facility (or a facility in the surrounding) being roofed or illuminated.

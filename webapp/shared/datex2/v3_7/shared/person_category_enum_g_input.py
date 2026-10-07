@@ -10,7 +10,7 @@ from validataclass.validators import EnumValidator, StringValidator
 from .person_category_enum import PersonCategoryEnum
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class PersonCategoryEnumGInput(ValidataclassMixin):
     value: PersonCategoryEnum = EnumValidator(PersonCategoryEnum)
     extendedValueG: str | UnsetValueType = StringValidator(), Default(UnsetValue)

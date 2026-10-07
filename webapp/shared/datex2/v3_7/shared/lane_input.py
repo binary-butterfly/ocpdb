@@ -11,7 +11,7 @@ from .extension_type_g_input import ExtensionTypeGInput
 from .lane_enum_g_input import LaneEnumGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class LaneInput(ValidataclassMixin):
     laneNumber: int | UnsetValueType = IntegerValidator(), Default(UnsetValue)
     laneUsage: LaneEnumGInput | UnsetValueType = DataclassValidator(LaneEnumGInput), Default(UnsetValue)

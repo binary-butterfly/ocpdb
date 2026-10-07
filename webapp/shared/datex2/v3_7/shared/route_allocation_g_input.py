@@ -12,7 +12,7 @@ from .detailed_allocation_input import DetailedAllocationInput
 from .route_allocation_input import RouteAllocationInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class RouteAllocationGInput(ValidataclassMixin):
     """
     Only one of the properties shall be used in an instance.

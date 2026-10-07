@@ -13,7 +13,7 @@ from .named_area_extension_type_g_input import NamedAreaExtensionTypeGInput
 from .named_area_type_enum_g_input import NamedAreaTypeEnumGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class NamedAreaInput(ValidataclassMixin):
     areaName: MultilingualStringInput = DataclassValidator(MultilingualStringInput)
     namedAreaType: NamedAreaTypeEnumGInput | UnsetValueType = (

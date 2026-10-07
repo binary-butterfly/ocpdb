@@ -13,7 +13,7 @@ from .extension_type_g_input import ExtensionTypeGInput
 from .rerouting_advice_type_enum_g_input import ReroutingAdviceTypeEnumGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class BasicAllocationInput(ValidataclassMixin):
     routeProportion: float | UnsetValueType = FloatValidator(allow_integers=True), Default(UnsetValue)
     reroutingAdvice: list[ReroutingAdviceTypeEnumGInput] | UnsetValueType = (

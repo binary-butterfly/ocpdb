@@ -10,7 +10,7 @@ from validataclass.validators import EnumValidator, StringValidator
 from .linear_direction_enum import LinearDirectionEnum
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class LinearDirectionEnumGInput(ValidataclassMixin):
     value: LinearDirectionEnum = EnumValidator(LinearDirectionEnum)
     extendedValueG: str | UnsetValueType = StringValidator(), Default(UnsetValue)

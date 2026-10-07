@@ -17,7 +17,7 @@ from .measure_g_input import MeasureGInput
 from .scenario_input import ScenarioInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class TmplanTableInput(ValidataclassMixin):
     idG: str = StringValidator()
     versionG: str = StringValidator()

@@ -12,7 +12,7 @@ from .openlr_last_location_reference_point_input import OpenlrLastLocationRefere
 from .openlr_location_reference_point_input import OpenlrLocationReferencePointInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class OpenlrClosedLineLocationReferenceInput(ValidataclassMixin):
     openlrLocationReferencePoint: list[OpenlrLocationReferencePointInput] = ListValidator(
         DataclassValidator(OpenlrLocationReferencePointInput)

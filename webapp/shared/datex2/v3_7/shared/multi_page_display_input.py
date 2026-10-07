@@ -14,7 +14,7 @@ from .multi_page_display_page_number_display_area_settings_g_input import (
 from .multilingual_string_input import MultilingualStringInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class MultiPageDisplayInput(ValidataclassMixin):
     isBlank: bool | UnsetValueType = BooleanValidator(), Default(UnsetValue)
     legallyBinding: bool | UnsetValueType = BooleanValidator(), Default(UnsetValue)

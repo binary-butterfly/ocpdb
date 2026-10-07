@@ -10,7 +10,7 @@ from validataclass.validators import DataclassValidator, IntegerValidator
 from .extension_type_g_input import ExtensionTypeGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class TimeBasedApplicabilityInput(ValidataclassMixin):
     """
     Price is only valid within the given charging time boundaries in minutes.

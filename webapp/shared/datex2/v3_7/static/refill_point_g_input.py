@@ -13,7 +13,7 @@ from .electric_charging_point_input import ElectricChargingPointInput
 from .petrol_refill_point_input import PetrolRefillPointInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class RefillPointGInput(ValidataclassMixin):
     """
     Only one of the properties shall be used in an instance.

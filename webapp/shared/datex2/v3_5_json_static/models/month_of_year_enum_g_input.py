@@ -10,7 +10,7 @@ from validataclass.validators import EnumValidator, StringValidator
 from .month_of_year_enum import MonthOfYearEnum
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class MonthOfYearEnumGInput(ValidataclassMixin):
     value: MonthOfYearEnum = EnumValidator(MonthOfYearEnum)
     extendedValueG: str | UnsetValueType = StringValidator(), Default(UnsetValue)

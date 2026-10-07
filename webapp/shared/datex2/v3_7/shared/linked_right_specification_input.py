@@ -12,7 +12,7 @@ from .extension_type_g_input import ExtensionTypeGInput
 from .right_specification_versioned_reference_g_input import RightSpecificationVersionedReferenceGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class LinkedRightSpecificationInput(ValidataclassMixin):
     qualifyingRightSpec: RightSpecificationVersionedReferenceGInput | UnsetValueType = (
         DataclassValidator(RightSpecificationVersionedReferenceGInput),

@@ -15,7 +15,7 @@ from webapp.shared.datex2.v3_7.shared.location_reference_extension_type_g_input 
 from .location_g_input import LocationGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class LocationGroupByListInput(ValidataclassMixin):
     locationContainedInGroup: list[LocationGInput] = ListValidator(DataclassValidator(LocationGInput))
     locLocationReferenceExtensionG: LocationReferenceExtensionTypeGInput | UnsetValueType = (

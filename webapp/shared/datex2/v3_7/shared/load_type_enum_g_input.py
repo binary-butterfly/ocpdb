@@ -11,7 +11,7 @@ from .load_type_enum import LoadTypeEnum
 from .load_type_enum_extension_type_g import LoadTypeEnumExtensionTypeG
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class LoadTypeEnumGInput(ValidataclassMixin):
     value: LoadTypeEnum = EnumValidator(LoadTypeEnum)
     extendedValueG: LoadTypeEnumExtensionTypeG | UnsetValueType = (

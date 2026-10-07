@@ -11,7 +11,7 @@ from .extension_type_g_input import ExtensionTypeGInput
 from .openlr_geo_coordinate_input import OpenlrGeoCoordinateInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class OpenlrCircleLocationReferenceInput(ValidataclassMixin):
     openlrRadius: int = IntegerValidator(min_value=0)
     openlrGeoCoordinate: OpenlrGeoCoordinateInput = DataclassValidator(OpenlrGeoCoordinateInput)

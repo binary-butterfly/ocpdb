@@ -12,7 +12,7 @@ from .extension_type_g_input import ExtensionTypeGInput
 from .multilingual_string_input import MultilingualStringInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class AddressLineInput(ValidataclassMixin):
     """
     A class defining information concerning one line of a postal address.

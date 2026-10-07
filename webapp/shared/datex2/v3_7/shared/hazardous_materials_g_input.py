@@ -11,7 +11,7 @@ from .dangerous_goods_extended_input import DangerousGoodsExtendedInput
 from .hazardous_materials_input import HazardousMaterialsInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class HazardousMaterialsGInput(ValidataclassMixin):
     """
     Only one of the properties shall be used in an instance.
