@@ -8,6 +8,7 @@ from datetime import datetime
 from validataclass.dataclasses import Default, ValidataclassMixin, validataclass
 from validataclass.helpers import UnsetValue, UnsetValueType
 from validataclass.validators import (
+    AnythingValidator,
     BooleanValidator,
     DataclassValidator,
     DateTimeValidator,
@@ -65,6 +66,12 @@ class AnOrganisationInput(ValidataclassMixin):
     )
     externalIdentifier: list[ExternalIdentifierInput] | UnsetValueType = (
         ListValidator(DataclassValidator(ExternalIdentifierInput)),
+        Default(UnsetValue),
+    )
+    # Manually added: generator drops this field because OrganisationG references AnOrganisation (circular import).
+    # Validated loosely as it's not used in the mapper.
+    subOrganisation: list[dict] | UnsetValueType = (
+        ListValidator(AnythingValidator(allowed_types=[dict])),
         Default(UnsetValue),
     )
     afacOrganisationExtensionG: ExtensionTypeGInput | UnsetValueType = (
