@@ -13,7 +13,7 @@ from .extension_type_g_input import ExtensionTypeGInput
 from .strategy_definition_versioned_reference_g_input import StrategyDefinitionVersionedReferenceGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class StrategyByReferenceInput(ValidataclassMixin):
     versionTime: datetime = DateTimeValidator()
     strategyReference: StrategyDefinitionVersionedReferenceGInput = DataclassValidator(

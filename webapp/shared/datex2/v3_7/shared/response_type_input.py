@@ -12,7 +12,7 @@ from .response_effect_type_enum_g_input import ResponseEffectTypeEnumGInput
 from .response_stage_enum_g_input import ResponseStageEnumGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class ResponseTypeInput(ValidataclassMixin):
     effect: ResponseEffectTypeEnumGInput = DataclassValidator(ResponseEffectTypeEnumGInput)
     stage: ResponseStageEnumGInput | UnsetValueType = DataclassValidator(ResponseStageEnumGInput), Default(UnsetValue)

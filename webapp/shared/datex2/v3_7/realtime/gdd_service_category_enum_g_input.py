@@ -10,7 +10,7 @@ from validataclass.validators import EnumValidator, StringValidator
 from .gdd_service_category_enum import GddServiceCategoryEnum
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class GddServiceCategoryEnumGInput(ValidataclassMixin):
     value: GddServiceCategoryEnum = EnumValidator(GddServiceCategoryEnum)
     extendedValueG: str | UnsetValueType = StringValidator(), Default(UnsetValue)

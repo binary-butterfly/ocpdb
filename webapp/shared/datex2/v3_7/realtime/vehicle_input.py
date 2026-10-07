@@ -17,7 +17,7 @@ from webapp.shared.datex2.v3_7.shared.vehicle_status_enum_g_input import Vehicle
 from .vehicle_characteristics_input import VehicleCharacteristicsInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class VehicleInput(ValidataclassMixin):
     anonymizedVehicleReference: str | UnsetValueType = StringValidator(), Default(UnsetValue)
     vehicleColour: MultilingualStringInput | UnsetValueType = (

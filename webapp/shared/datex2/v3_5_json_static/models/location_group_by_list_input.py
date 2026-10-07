@@ -11,7 +11,7 @@ from .extension_type_g_input import ExtensionTypeGInput
 from .location_g_input import LocationGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class LocationGroupByListInput(ValidataclassMixin):
     """
     A group of (i.e. more than one) physically separate locations which have no specific order and where each location is explicitly listed.

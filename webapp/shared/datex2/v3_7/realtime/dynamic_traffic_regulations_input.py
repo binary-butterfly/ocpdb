@@ -12,7 +12,7 @@ from webapp.shared.datex2.v3_7.shared.extension_type_g_input import ExtensionTyp
 from .dynamic_traffic_regulation_g_input import DynamicTrafficRegulationGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class DynamicTrafficRegulationsInput(ValidataclassMixin):
     dynamicTrafficRegulation: list[DynamicTrafficRegulationGInput] = ListValidator(
         DataclassValidator(DynamicTrafficRegulationGInput)

@@ -10,7 +10,7 @@ from validataclass.validators import EnumValidator, StringValidator
 from .controlled_zone_type_enum import ControlledZoneTypeEnum
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class ControlledZoneTypeEnumGInput(ValidataclassMixin):
     value: ControlledZoneTypeEnum = EnumValidator(ControlledZoneTypeEnum)
     extendedValueG: str | UnsetValueType = StringValidator(), Default(UnsetValue)

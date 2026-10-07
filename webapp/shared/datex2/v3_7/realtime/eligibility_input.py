@@ -15,7 +15,7 @@ from webapp.shared.datex2.v3_7.shared.right_specification_input import RightSpec
 from .qualification_input import QualificationInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class EligibilityInput(ValidataclassMixin):
     name: MultilingualStringInput | UnsetValueType = DataclassValidator(MultilingualStringInput), Default(UnsetValue)
     noFeeToUse: bool | UnsetValueType = BooleanValidator(), Default(UnsetValue)

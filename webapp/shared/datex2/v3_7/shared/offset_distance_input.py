@@ -10,7 +10,7 @@ from validataclass.validators import DataclassValidator, IntegerValidator
 from .extension_type_g_input import ExtensionTypeGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class OffsetDistanceInput(ValidataclassMixin):
     offsetDistance: int = IntegerValidator(min_value=0)
     locOffsetDistanceExtensionG: ExtensionTypeGInput | UnsetValueType = (

@@ -14,7 +14,7 @@ from .location_group_g_input import LocationGroupGInput
 from .predefined_location_input import PredefinedLocationInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class PredefinedLocationGroupInput(ValidataclassMixin):
     idG: str = StringValidator()
     versionG: str = StringValidator()

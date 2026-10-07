@@ -12,7 +12,7 @@ from .measure_definition_versioned_reference_g_input import MeasureDefinitionVer
 from .predefined_action_input import PredefinedActionInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class PredefinedMeasureSelectedInput(ValidataclassMixin):
     predefinedMeasureReference: MeasureDefinitionVersionedReferenceGInput = DataclassValidator(
         MeasureDefinitionVersionedReferenceGInput

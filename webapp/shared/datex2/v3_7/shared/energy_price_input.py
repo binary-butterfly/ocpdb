@@ -15,7 +15,7 @@ from .price_type_enum_g_input import PriceTypeEnumGInput
 from .time_based_applicability_input import TimeBasedApplicabilityInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class EnergyPriceInput(ValidataclassMixin):
     priceGroupIndex: int = IntegerValidator(min_value=0)
     priceType: PriceTypeEnumGInput = DataclassValidator(PriceTypeEnumGInput)

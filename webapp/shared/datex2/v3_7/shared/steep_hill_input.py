@@ -11,7 +11,7 @@ from .extension_type_g_input import ExtensionTypeGInput
 from .steep_hill_direction_type_enum_g_input import SteepHillDirectionTypeEnumGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class SteepHillInput(ValidataclassMixin):
     roadGradientValue: float = FloatValidator(allow_integers=True)
     steepHillDirectionType: SteepHillDirectionTypeEnumGInput = DataclassValidator(SteepHillDirectionTypeEnumGInput)

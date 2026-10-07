@@ -10,7 +10,7 @@ from validataclass.validators import EnumValidator, StringValidator
 from .comparison_operator_enum import ComparisonOperatorEnum
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class ComparisonOperatorEnumGInput(ValidataclassMixin):
     value: ComparisonOperatorEnum = EnumValidator(ComparisonOperatorEnum)
     extendedValueG: str | UnsetValueType = StringValidator(), Default(UnsetValue)

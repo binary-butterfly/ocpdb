@@ -12,7 +12,7 @@ from .extension_type_g_input import ExtensionTypeGInput
 from .position_confidence_coded_error_enum_g_input import PositionConfidenceCodedErrorEnumGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class AltitudeConfidenceInput(ValidataclassMixin):
     """
     Evaluation of the altitude confidence assessed according to ETSI ISO 102894-2

@@ -11,7 +11,7 @@ from .condition_operator_g_input import ConditionOperatorGInput
 from .extension_type_g_input import ExtensionTypeGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class ConditionSetInput(ValidataclassMixin):
     negate: bool | UnsetValueType = BooleanValidator(), Default(UnsetValue)
     operator: ConditionOperatorGInput = DataclassValidator(ConditionOperatorGInput)

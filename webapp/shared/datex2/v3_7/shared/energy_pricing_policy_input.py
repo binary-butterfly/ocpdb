@@ -12,7 +12,7 @@ from .multilingual_string_input import MultilingualStringInput
 from .pricing_policy_enum_g_input import PricingPolicyEnumGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class EnergyPricingPolicyInput(ValidataclassMixin):
     pricingPolicy: list[PricingPolicyEnumGInput] | UnsetValueType = (
         ListValidator(DataclassValidator(PricingPolicyEnumGInput)),

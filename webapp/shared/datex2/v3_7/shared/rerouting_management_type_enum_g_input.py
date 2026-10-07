@@ -10,7 +10,7 @@ from validataclass.validators import EnumValidator, StringValidator
 from .rerouting_management_type_enum import ReroutingManagementTypeEnum
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class ReroutingManagementTypeEnumGInput(ValidataclassMixin):
     value: ReroutingManagementTypeEnum = EnumValidator(ReroutingManagementTypeEnum)
     extendedValueG: str | UnsetValueType = StringValidator(), Default(UnsetValue)

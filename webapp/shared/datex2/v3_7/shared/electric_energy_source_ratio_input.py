@@ -12,7 +12,7 @@ from .extension_type_g_input import ExtensionTypeGInput
 from .percentage_value_input import PercentageValueInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class ElectricEnergySourceRatioInput(ValidataclassMixin):
     energySource: ElectricEnergySourceTypeEnumGInput = DataclassValidator(ElectricEnergySourceTypeEnumGInput)
     otherEnergySource: str | UnsetValueType = StringValidator(), Default(UnsetValue)

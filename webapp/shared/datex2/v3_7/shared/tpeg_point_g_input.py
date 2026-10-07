@@ -11,7 +11,7 @@ from .tpeg_junction_input import TpegJunctionInput
 from .tpeg_non_junction_point_input import TpegNonJunctionPointInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class TpegPointGInput(ValidataclassMixin):
     """
     Only one of the properties shall be used in an instance.

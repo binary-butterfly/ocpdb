@@ -10,7 +10,7 @@ from validataclass.validators import DataclassValidator, FloatValidator, Integer
 from .extension_type_g_input import ExtensionTypeGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class AxleWeightInput(ValidataclassMixin):
     axlePositionIdentifier: int = IntegerValidator(min_value=0)
     axleWeight: float | UnsetValueType = FloatValidator(allow_integers=True), Default(UnsetValue)

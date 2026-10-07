@@ -14,7 +14,7 @@ from .means_of_payment_enum_g_input import MeansOfPaymentEnumGInput
 from .payment_timing_enum_g_input import PaymentTimingEnumGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class PaymentMethodInput(ValidataclassMixin):
     paymentMeans: list[MeansOfPaymentEnumGInput] | UnsetValueType = (
         ListValidator(DataclassValidator(MeansOfPaymentEnumGInput)),

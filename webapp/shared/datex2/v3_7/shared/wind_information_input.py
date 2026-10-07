@@ -12,7 +12,7 @@ from .measurement_or_calculation_time_input import MeasurementOrCalculationTimeI
 from .wind_input import WindInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class WindInformationInput(ValidataclassMixin):
     measurementOrCalculationTime: MeasurementOrCalculationTimeInput | UnsetValueType = (
         DataclassValidator(MeasurementOrCalculationTimeInput),

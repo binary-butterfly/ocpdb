@@ -10,7 +10,7 @@ from validataclass.validators import EnumValidator, StringValidator
 from .covered_enum import CoveredEnum
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class CoveredEnumGInput(ValidataclassMixin):
     value: CoveredEnum = EnumValidator(CoveredEnum)
     extendedValueG: str | UnsetValueType = StringValidator(), Default(UnsetValue)

@@ -13,7 +13,7 @@ from .facility_type_enum_g_input import FacilityTypeEnumGInput
 from .multilingual_string_input import MultilingualStringInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class AssociatedFacilityInput(ValidataclassMixin):
     type: FacilityTypeEnumGInput = DataclassValidator(FacilityTypeEnumGInput)
     facilityReference: FacilityObjectVersionedReferenceGInput | UnsetValueType = (

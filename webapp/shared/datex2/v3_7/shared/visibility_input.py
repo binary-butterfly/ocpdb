@@ -11,7 +11,7 @@ from .extension_type_g_input import ExtensionTypeGInput
 from .integer_metre_distance_value_input import IntegerMetreDistanceValueInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class VisibilityInput(ValidataclassMixin):
     minimumVisibilityDistance: IntegerMetreDistanceValueInput = DataclassValidator(IntegerMetreDistanceValueInput)
     comVisibilityExtensionG: ExtensionTypeGInput | UnsetValueType = (

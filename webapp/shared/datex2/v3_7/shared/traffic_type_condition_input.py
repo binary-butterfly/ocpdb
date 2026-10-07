@@ -12,7 +12,7 @@ from .legal_basis_input import LegalBasisInput
 from .traffic_type_enum_g_input import TrafficTypeEnumGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class TrafficTypeConditionInput(ValidataclassMixin):
     negate: bool | UnsetValueType = BooleanValidator(), Default(UnsetValue)
     trafficType: list[TrafficTypeEnumGInput] | UnsetValueType = (

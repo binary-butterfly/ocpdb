@@ -10,7 +10,7 @@ from validataclass.validators import DataclassValidator, FloatValidator, StringV
 from .extension_type_g_input import ExtensionTypeGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class AmountInCurrencyInput(ValidataclassMixin):
     currencyValue: float = FloatValidator(allow_integers=True)
     currencyType: str = StringValidator()

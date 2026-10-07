@@ -12,7 +12,7 @@ from .multilingual_string_input import MultilingualStringInput
 from .url_link_type_enum_g_input import UrlLinkTypeEnumGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class UrlLinkInput(ValidataclassMixin):
     """
     Details of a Uniform Resource Locator (URL) address pointing to a resource available on the Internet from where further relevant information may be obtained.

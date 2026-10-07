@@ -10,7 +10,7 @@ from validataclass.validators import EnumValidator, StringValidator
 from .operator_action_status_enum import OperatorActionStatusEnum
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class OperatorActionStatusEnumGInput(ValidataclassMixin):
     value: OperatorActionStatusEnum = EnumValidator(OperatorActionStatusEnum)
     extendedValueG: str | UnsetValueType = StringValidator(), Default(UnsetValue)

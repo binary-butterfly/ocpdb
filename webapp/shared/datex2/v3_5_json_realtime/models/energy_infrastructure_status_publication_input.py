@@ -16,7 +16,7 @@ from .header_information_input import HeaderInformationInput
 from .international_identifier_input import InternationalIdentifierInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class EnergyInfrastructureStatusPublicationInput(ValidataclassMixin):
     """
     Dynamic information on the status of energy supplying sites.

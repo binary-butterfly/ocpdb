@@ -30,7 +30,7 @@ from webapp.shared.datex2.v3_7.shared.referenceable_organisation_versioned_refer
 from .eligibility_input import EligibilityInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class RateTableInput(ValidataclassMixin):
     idG: str = StringValidator()
     versionG: str = StringValidator()

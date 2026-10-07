@@ -12,7 +12,7 @@ from .extension_type_g_input import ExtensionTypeGInput
 from .offset_distance_input import OffsetDistanceInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class AlertCMethod4PrimaryPointLocationInput(ValidataclassMixin):
     alertCLocation: AlertCLocationInput = DataclassValidator(AlertCLocationInput)
     offsetDistance: OffsetDistanceInput = DataclassValidator(OffsetDistanceInput)

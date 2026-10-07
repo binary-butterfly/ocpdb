@@ -10,7 +10,7 @@ from validataclass.validators import EnumValidator, StringValidator
 from .vehicle_to_grid_communication_type_enum import VehicleToGridCommunicationTypeEnum
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class VehicleToGridCommunicationTypeEnumGInput(ValidataclassMixin):
     value: VehicleToGridCommunicationTypeEnum = EnumValidator(VehicleToGridCommunicationTypeEnum)
     extendedValueG: str | UnsetValueType = StringValidator(), Default(UnsetValue)

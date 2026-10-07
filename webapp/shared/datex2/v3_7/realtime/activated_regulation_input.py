@@ -13,7 +13,7 @@ from webapp.shared.datex2.v3_7.shared.multilingual_string_input import Multiling
 from .traffic_regulation_g_input import TrafficRegulationGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class ActivatedRegulationInput(ValidataclassMixin):
     actor: MultilingualStringInput = DataclassValidator(MultilingualStringInput)
     issuingAuthority: MultilingualStringInput = DataclassValidator(MultilingualStringInput)

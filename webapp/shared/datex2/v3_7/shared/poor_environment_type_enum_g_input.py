@@ -10,7 +10,7 @@ from validataclass.validators import EnumValidator, StringValidator
 from .poor_environment_type_enum import PoorEnvironmentTypeEnum
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class PoorEnvironmentTypeEnumGInput(ValidataclassMixin):
     value: PoorEnvironmentTypeEnum = EnumValidator(PoorEnvironmentTypeEnum)
     extendedValueG: str | UnsetValueType = StringValidator(), Default(UnsetValue)

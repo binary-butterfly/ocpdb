@@ -10,7 +10,7 @@ from validataclass.validators import EnumValidator, StringValidator
 from .address_line_type_enum import AddressLineTypeEnum
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class AddressLineTypeEnumGInput(ValidataclassMixin):
     value: AddressLineTypeEnum = EnumValidator(AddressLineTypeEnum)
     extendedValueG: str | UnsetValueType = StringValidator(), Default(UnsetValue)

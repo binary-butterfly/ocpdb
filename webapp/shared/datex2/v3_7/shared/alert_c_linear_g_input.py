@@ -12,7 +12,7 @@ from .alert_c_method2_linear_input import AlertCMethod2LinearInput
 from .alert_c_method4_linear_input import AlertCMethod4LinearInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class AlertCLinearGInput(ValidataclassMixin):
     """
     Only one of the properties shall be used in an instance.

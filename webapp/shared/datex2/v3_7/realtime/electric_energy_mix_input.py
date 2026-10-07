@@ -21,7 +21,7 @@ from .organisation_g_input import OrganisationGInput
 from .rates_g_input import RatesGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class ElectricEnergyMixInput(ValidataclassMixin):
     energyMixIndex: int = IntegerValidator()
     energyProductName: MultilingualStringInput | UnsetValueType = (

@@ -12,7 +12,7 @@ from .parking_route_details_versioned_reference_g_input import ParkingRouteDetai
 from .travel_time_data_input import TravelTimeDataInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class ParkingRouteStatusInput(ValidataclassMixin):
     parkingRouteReference: ParkingRouteDetailsVersionedReferenceGInput = DataclassValidator(
         ParkingRouteDetailsVersionedReferenceGInput

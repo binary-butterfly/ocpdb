@@ -12,7 +12,7 @@ from .overall_period_input import OverallPeriodInput
 from .validity_status_enum_g_input import ValidityStatusEnumGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class ValidityInput(ValidataclassMixin):
     validityStatus: ValidityStatusEnumGInput = DataclassValidator(ValidityStatusEnumGInput)
     overrunning: bool | UnsetValueType = BooleanValidator(), Default(UnsetValue)

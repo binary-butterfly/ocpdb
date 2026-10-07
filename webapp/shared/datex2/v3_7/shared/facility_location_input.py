@@ -10,7 +10,7 @@ from validataclass.validators import DataclassValidator, StringValidator
 from .address_input import AddressInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class FacilityLocationInput(ValidataclassMixin):
     timeZone: str | UnsetValueType = StringValidator(), Default(UnsetValue)
     address: AddressInput | UnsetValueType = DataclassValidator(AddressInput), Default(UnsetValue)

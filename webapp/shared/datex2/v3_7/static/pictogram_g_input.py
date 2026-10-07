@@ -11,7 +11,7 @@ from .composite_pictogram_input import CompositePictogramInput
 from .regular_pictogram_input import RegularPictogramInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class PictogramGInput(ValidataclassMixin):
     """
     Only one of the properties shall be used in an instance.

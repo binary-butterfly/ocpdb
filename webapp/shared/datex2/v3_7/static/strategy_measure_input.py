@@ -13,7 +13,7 @@ from webapp.shared.datex2.v3_7.shared.extension_type_g_input import ExtensionTyp
 from .measure_g_input import MeasureGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class StrategyMeasureInput(ValidataclassMixin):
     processingIndex: int | UnsetValueType = IntegerValidator(), Default(UnsetValue)
     essentialForStrategy: bool | UnsetValueType = BooleanValidator(), Default(UnsetValue)

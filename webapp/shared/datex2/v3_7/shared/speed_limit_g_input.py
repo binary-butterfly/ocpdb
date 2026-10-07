@@ -13,7 +13,7 @@ from .max_speed_limit_input import MaxSpeedLimitInput
 from .walking_speed_input import WalkingSpeedInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class SpeedLimitGInput(ValidataclassMixin):
     """
     Only one of the properties shall be used in an instance.

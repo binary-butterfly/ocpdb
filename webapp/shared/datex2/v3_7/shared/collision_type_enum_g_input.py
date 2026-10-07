@@ -10,7 +10,7 @@ from validataclass.validators import EnumValidator, StringValidator
 from .collision_type_enum import CollisionTypeEnum
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class CollisionTypeEnumGInput(ValidataclassMixin):
     value: CollisionTypeEnum = EnumValidator(CollisionTypeEnum)
     extendedValueG: str | UnsetValueType = StringValidator(), Default(UnsetValue)

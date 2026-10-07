@@ -11,7 +11,7 @@ from .supplementary_pictogram_input import SupplementaryPictogramInput
 from .supplementary_text_input import SupplementaryTextInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class SupplementaryInformationDisplayGInput(ValidataclassMixin):
     """
     Only one of the properties shall be used in an instance.

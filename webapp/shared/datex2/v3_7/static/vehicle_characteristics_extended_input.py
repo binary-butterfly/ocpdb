@@ -23,7 +23,7 @@ from webapp.shared.datex2.v3_7.shared.vehicle_registration_characteristics_input
 from .owner_characteristic_input import OwnerCharacteristicInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class VehicleCharacteristicsExtendedInput(ValidataclassMixin):
     engineType: EngineTypeEnumGInput | UnsetValueType = DataclassValidator(EngineTypeEnumGInput), Default(UnsetValue)
     ageCharacteristic: list[AgeCharacteristicInput] | UnsetValueType = (

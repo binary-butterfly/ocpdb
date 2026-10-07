@@ -11,7 +11,7 @@ from .extension_type_g_input import ExtensionTypeGInput
 from .subject_type_of_works_enum_g_input import SubjectTypeOfWorksEnumGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class SubjectsInput(ValidataclassMixin):
     subjectTypeOfWorks: SubjectTypeOfWorksEnumGInput = DataclassValidator(SubjectTypeOfWorksEnumGInput)
     numberOfSubjects: int | UnsetValueType = IntegerValidator(min_value=0), Default(UnsetValue)

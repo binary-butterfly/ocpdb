@@ -10,7 +10,7 @@ from validataclass.validators import EnumValidator, StringValidator
 from .openlr_functional_road_class_enum import OpenlrFunctionalRoadClassEnum
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class OpenlrFunctionalRoadClassEnumGInput(ValidataclassMixin):
     value: OpenlrFunctionalRoadClassEnum = EnumValidator(OpenlrFunctionalRoadClassEnum)
     extendedValueG: str | UnsetValueType = StringValidator(), Default(UnsetValue)

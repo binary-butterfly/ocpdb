@@ -11,7 +11,7 @@ from .comment_type_enum import CommentTypeEnum
 from .comment_type_enum_extension_type_g import CommentTypeEnumExtensionTypeG
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class CommentTypeEnumGInput(ValidataclassMixin):
     value: CommentTypeEnum = EnumValidator(CommentTypeEnum)
     extendedValueG: CommentTypeEnumExtensionTypeG | UnsetValueType = (

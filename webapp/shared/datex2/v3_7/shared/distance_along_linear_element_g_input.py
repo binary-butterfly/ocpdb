@@ -12,7 +12,7 @@ from .distance_from_linear_element_start_input import DistanceFromLinearElementS
 from .percentage_distance_along_linear_element_input import PercentageDistanceAlongLinearElementInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class DistanceAlongLinearElementGInput(ValidataclassMixin):
     """
     Only one of the properties shall be used in an instance.

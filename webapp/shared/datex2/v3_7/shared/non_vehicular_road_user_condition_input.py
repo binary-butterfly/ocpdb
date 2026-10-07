@@ -12,7 +12,7 @@ from .legal_basis_input import LegalBasisInput
 from .non_vehicular_road_user_type_enum_g_input import NonVehicularRoadUserTypeEnumGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class NonVehicularRoadUserConditionInput(ValidataclassMixin):
     negate: bool | UnsetValueType = BooleanValidator(), Default(UnsetValue)
     active: bool | UnsetValueType = BooleanValidator(), Default(UnsetValue)

@@ -23,7 +23,7 @@ from webapp.shared.datex2.v3_7.shared.multilingual_string_input import Multiling
 from .predefined_location_reference_g_input import PredefinedLocationReferenceGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class PredefinedLocationsPublicationInput(ValidataclassMixin):
     lang: str = RegexValidator(pattern=r'^[a-z]{2}$')
     feedDescription: MultilingualStringInput | UnsetValueType = (

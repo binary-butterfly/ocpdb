@@ -11,7 +11,7 @@ from .extension_type_g_input import ExtensionTypeGInput
 from .overall_period_input import OverallPeriodInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class UnknownOrganisationInput(ValidataclassMixin):
     """
     The organisation for the specified association end (within the specified validity if applicable) is unknown.

@@ -10,7 +10,7 @@ from validataclass.validators import EnumValidator, StringValidator
 from .road_operator_service_disruption_type_enum import RoadOperatorServiceDisruptionTypeEnum
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class RoadOperatorServiceDisruptionTypeEnumGInput(ValidataclassMixin):
     value: RoadOperatorServiceDisruptionTypeEnum = EnumValidator(RoadOperatorServiceDisruptionTypeEnum)
     extendedValueG: str | UnsetValueType = StringValidator(), Default(UnsetValue)

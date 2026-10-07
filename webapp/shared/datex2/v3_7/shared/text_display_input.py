@@ -12,7 +12,7 @@ from .multilingual_string_input import MultilingualStringInput
 from .text_display_line_index_text_line_g_input import textDisplayLineIndexTextLineGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class TextDisplayInput(ValidataclassMixin):
     isBlank: bool | UnsetValueType = BooleanValidator(), Default(UnsetValue)
     legallyBinding: bool | UnsetValueType = BooleanValidator(), Default(UnsetValue)

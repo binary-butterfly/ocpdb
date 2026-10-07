@@ -11,7 +11,7 @@ from .comparison_operator_enum_g_input import ComparisonOperatorEnumGInput
 from .extension_type_g_input import ExtensionTypeGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class HeaviestAxleWeightCharacteristicInput(ValidataclassMixin):
     comparisonOperator: ComparisonOperatorEnumGInput = DataclassValidator(ComparisonOperatorEnumGInput)
     heaviestAxleWeight: float = FloatValidator(allow_integers=True)

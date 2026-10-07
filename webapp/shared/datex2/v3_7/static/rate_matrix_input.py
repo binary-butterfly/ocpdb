@@ -16,7 +16,7 @@ from webapp.shared.datex2.v3_7.shared.multilingual_string_input import Multiling
 from .rate_table_input import RateTableInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class RateMatrixInput(ValidataclassMixin):
     idG: str = StringValidator()
     versionG: str = StringValidator()

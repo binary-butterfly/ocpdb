@@ -10,7 +10,7 @@ from validataclass.validators import EnumValidator, StringValidator
 from .priority_rule_type_enum import PriorityRuleTypeEnum
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class PriorityRuleTypeEnumGInput(ValidataclassMixin):
     value: PriorityRuleTypeEnum = EnumValidator(PriorityRuleTypeEnum)
     extendedValueG: str | UnsetValueType = StringValidator(), Default(UnsetValue)

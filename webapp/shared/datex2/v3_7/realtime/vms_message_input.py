@@ -31,7 +31,7 @@ from .vms_message_display_area_index_display_area_settings_g_input import (
 )
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class VmsMessageInput(ValidataclassMixin):
     associatedTrafficManagementPlan: str | UnsetValueType = StringValidator(), Default(UnsetValue)
     messageSetBy: MultilingualStringInput | UnsetValueType = (

@@ -10,7 +10,7 @@ from validataclass.validators import EnumValidator, StringValidator
 from .octane_type_enum import OctaneTypeEnum
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class OctaneTypeEnumGInput(ValidataclassMixin):
     value: OctaneTypeEnum = EnumValidator(OctaneTypeEnum)
     extendedValueG: str | UnsetValueType = StringValidator(), Default(UnsetValue)

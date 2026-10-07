@@ -10,7 +10,7 @@ from validataclass.validators import EnumValidator, StringValidator
 from .pricing_policy_enum import PricingPolicyEnum
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class PricingPolicyEnumGInput(ValidataclassMixin):
     value: PricingPolicyEnum = EnumValidator(PricingPolicyEnum)
     extendedValueG: str | UnsetValueType = StringValidator(), Default(UnsetValue)

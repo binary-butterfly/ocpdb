@@ -14,7 +14,7 @@ from .facility_object_reference_g_input import FacilityObjectReferenceGInput
 from .occupancy_level_input import OccupancyLevelInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class DemandSpaceTypeInput(ValidataclassMixin):
     spaceId: list[FacilityObjectReferenceGInput] | UnsetValueType = (
         ListValidator(DataclassValidator(FacilityObjectReferenceGInput)),

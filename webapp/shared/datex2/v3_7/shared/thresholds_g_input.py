@@ -12,7 +12,7 @@ from .occupied_spaces_thresholds_input import OccupiedSpacesThresholdsInput
 from .vehicles_on_site_thresholds_input import VehiclesOnSiteThresholdsInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class ThresholdsGInput(ValidataclassMixin):
     """
     Only one of the properties shall be used in an instance.

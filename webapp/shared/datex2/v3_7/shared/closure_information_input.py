@@ -12,7 +12,7 @@ from validataclass.validators import BooleanValidator, DataclassValidator, DateT
 from .extension_type_g_input import ExtensionTypeGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class ClosureInformationInput(ValidataclassMixin):
     permananentlyClosed: bool | UnsetValueType = BooleanValidator(), Default(UnsetValue)
     temporarilyClosed: bool | UnsetValueType = BooleanValidator(), Default(UnsetValue)

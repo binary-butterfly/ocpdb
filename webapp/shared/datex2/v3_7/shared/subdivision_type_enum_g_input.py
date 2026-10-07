@@ -10,7 +10,7 @@ from validataclass.validators import EnumValidator, StringValidator
 from .subdivision_type_enum import SubdivisionTypeEnum
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class SubdivisionTypeEnumGInput(ValidataclassMixin):
     value: SubdivisionTypeEnum = EnumValidator(SubdivisionTypeEnum)
     extendedValueG: str | UnsetValueType = StringValidator(), Default(UnsetValue)

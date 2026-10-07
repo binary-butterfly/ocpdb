@@ -11,7 +11,7 @@ from .extension_type_g_input import ExtensionTypeGInput
 from .non_vehicular_road_user_type_enum_g_input import NonVehicularRoadUserTypeEnumGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class NonVehicularRoadUsersInput(ValidataclassMixin):
     nonVehicularRoadUser: list[NonVehicularRoadUserTypeEnumGInput] = ListValidator(
         DataclassValidator(NonVehicularRoadUserTypeEnumGInput)

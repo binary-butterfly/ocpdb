@@ -15,7 +15,7 @@ from .rate_matrix_versioned_reference_g_input import RateMatrixVersionedReferenc
 from .rate_table_versioned_reference_g_input import RateTableVersionedReferenceGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class RatesByReferenceInput(ValidataclassMixin):
     applicableCurrency: list[str] | UnsetValueType = ListValidator(StringValidator()), Default(UnsetValue)
     rateTableReference: RateTableVersionedReferenceGInput = DataclassValidator(RateTableVersionedReferenceGInput)

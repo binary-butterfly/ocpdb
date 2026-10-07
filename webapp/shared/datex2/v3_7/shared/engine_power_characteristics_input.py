@@ -12,7 +12,7 @@ from .extension_type_g_input import ExtensionTypeGInput
 from .power_unit_of_measure_enum_g_input import PowerUnitOfMeasureEnumGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class EnginePowerCharacteristicsInput(ValidataclassMixin):
     comparisonOperator: ComparisonOperatorEnumGInput = DataclassValidator(ComparisonOperatorEnumGInput)
     enginePower: float = FloatValidator(allow_integers=True)

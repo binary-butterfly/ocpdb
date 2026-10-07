@@ -10,7 +10,7 @@ from validataclass.validators import EnumValidator, StringValidator
 from .height_type_enum import HeightTypeEnum
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class HeightTypeEnumGInput(ValidataclassMixin):
     value: HeightTypeEnum = EnumValidator(HeightTypeEnum)
     extendedValueG: str | UnsetValueType = StringValidator(), Default(UnsetValue)

@@ -15,7 +15,7 @@ from .multilingual_string_input import MultilingualStringInput
 from .operational_device_state_enum_g_input import OperationalDeviceStateEnumGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class OperationalStateInput(ValidataclassMixin):
     operationalDeviceState: OperationalDeviceStateEnumGInput = DataclassValidator(OperationalDeviceStateEnumGInput)
     stateDescription: list[MultilingualStringInput] | UnsetValueType = (

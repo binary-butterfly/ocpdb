@@ -11,7 +11,7 @@ from .vehicle_usage_enum import VehicleUsageEnum
 from .vehicle_usage_enum_extension_type_g import VehicleUsageEnumExtensionTypeG
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class VehicleUsageEnumGInput(ValidataclassMixin):
     value: VehicleUsageEnum = EnumValidator(VehicleUsageEnum)
     extendedValueG: VehicleUsageEnumExtensionTypeG | UnsetValueType = (

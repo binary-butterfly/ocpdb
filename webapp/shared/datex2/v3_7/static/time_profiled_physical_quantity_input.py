@@ -17,7 +17,7 @@ from .basic_data_g_input import BasicDataGInput
 from .location_reference_g_input import LocationReferenceGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class TimeProfiledPhysicalQuantityInput(ValidataclassMixin):
     forecast: bool | UnsetValueType = BooleanValidator(), Default(UnsetValue)
     measurementEquipmentTypeUsed: MultilingualStringInput | UnsetValueType = (

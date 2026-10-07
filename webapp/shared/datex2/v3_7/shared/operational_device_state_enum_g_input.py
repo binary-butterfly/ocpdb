@@ -10,7 +10,7 @@ from validataclass.validators import EnumValidator, StringValidator
 from .operational_device_state_enum import OperationalDeviceStateEnum
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class OperationalDeviceStateEnumGInput(ValidataclassMixin):
     value: OperationalDeviceStateEnum = EnumValidator(OperationalDeviceStateEnum)
     extendedValueG: str | UnsetValueType = StringValidator(), Default(UnsetValue)

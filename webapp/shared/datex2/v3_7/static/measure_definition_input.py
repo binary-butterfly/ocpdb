@@ -18,7 +18,7 @@ from webapp.shared.datex2.v3_7.shared.response_type_input import ResponseTypeInp
 from .action_g_input import ActionGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class MeasureDefinitionInput(ValidataclassMixin):
     idG: str = StringValidator()
     versionG: str = StringValidator()

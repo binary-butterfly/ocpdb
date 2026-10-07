@@ -7,6 +7,6 @@ from validataclass.dataclasses import ValidataclassMixin, validataclass
 from validataclass.validators import StringValidator
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class NamedAreaExtendedInput(ValidataclassMixin):
     namedAreaCode: str = StringValidator(max_length=8)

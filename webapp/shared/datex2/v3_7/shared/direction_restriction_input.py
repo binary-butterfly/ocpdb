@@ -11,7 +11,7 @@ from .direction_restriction_type_enum_g_input import DirectionRestrictionTypeEnu
 from .extension_type_g_input import ExtensionTypeGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class DirectionRestrictionInput(ValidataclassMixin):
     directionToBeFollowed: DirectionRestrictionTypeEnumGInput = DataclassValidator(DirectionRestrictionTypeEnumGInput)
     respectBicycle: bool | UnsetValueType = BooleanValidator(), Default(UnsetValue)

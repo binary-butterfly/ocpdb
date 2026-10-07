@@ -14,7 +14,7 @@ from .vms_controller_fault_input import VmsControllerFaultInput
 from .vms_fault_input import VmsFaultInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class FaultGInput(ValidataclassMixin):
     """
     Only one of the properties shall be used in an instance.

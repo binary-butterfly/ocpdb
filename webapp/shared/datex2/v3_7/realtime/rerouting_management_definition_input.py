@@ -21,7 +21,7 @@ from .route_description_input import RouteDescriptionInput
 from .vehicle_characteristics_input import VehicleCharacteristicsInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class ReroutingManagementDefinitionInput(ValidataclassMixin):
     complianceOption: ComplianceOptionEnumGInput = DataclassValidator(ComplianceOptionEnumGInput)
     applicableForTrafficDirection: list[DirectionEnumGInput] | UnsetValueType = (

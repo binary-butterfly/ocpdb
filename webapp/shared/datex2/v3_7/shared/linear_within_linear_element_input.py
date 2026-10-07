@@ -16,7 +16,7 @@ from .linear_element_g_input import LinearElementGInput
 from .multilingual_string_input import MultilingualStringInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class LinearWithinLinearElementInput(ValidataclassMixin):
     administrativeAreaOfLinearSection: MultilingualStringInput | UnsetValueType = (
         DataclassValidator(MultilingualStringInput),

@@ -11,7 +11,7 @@ from .single_physical_quantity_input import SinglePhysicalQuantityInput
 from .time_profiled_physical_quantity_input import TimeProfiledPhysicalQuantityInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class PhysicalQuantityGInput(ValidataclassMixin):
     """
     Only one of the properties shall be used in an instance.

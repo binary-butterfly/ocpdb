@@ -11,7 +11,7 @@ from .extension_type_g_input import ExtensionTypeGInput
 from .user_type_enum_g_input import UserTypeEnumGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class UserQualificationInput(ValidataclassMixin):
     userGroup: UserTypeEnumGInput = DataclassValidator(UserTypeEnumGInput)
     afacUserQualificationExtensionG: ExtensionTypeGInput | UnsetValueType = (

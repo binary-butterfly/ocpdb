@@ -11,7 +11,7 @@ from .lane_enum import LaneEnum
 from .lane_enum_extension_type_g import LaneEnumExtensionTypeG
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class LaneEnumGInput(ValidataclassMixin):
     value: LaneEnum = EnumValidator(LaneEnum)
     extendedValueG: LaneEnumExtensionTypeG | UnsetValueType = EnumValidator(LaneEnumExtensionTypeG), Default(UnsetValue)

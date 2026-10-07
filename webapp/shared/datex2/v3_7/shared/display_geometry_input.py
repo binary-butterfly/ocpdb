@@ -10,7 +10,7 @@ from validataclass.validators import DataclassValidator, FloatValidator, Integer
 from .extension_type_g_input import ExtensionTypeGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class DisplayGeometryInput(ValidataclassMixin):
     pixelsAcross: int | UnsetValueType = IntegerValidator(min_value=0), Default(UnsetValue)
     pixelsDown: int | UnsetValueType = IntegerValidator(min_value=0), Default(UnsetValue)

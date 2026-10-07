@@ -25,7 +25,7 @@ from .rates_g_input import RatesGInput
 from .traffic_regulation_order_g_input import TrafficRegulationOrderGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class ControlledZoneInput(ValidataclassMixin):
     idG: str = StringValidator()
     versionG: str = StringValidator()

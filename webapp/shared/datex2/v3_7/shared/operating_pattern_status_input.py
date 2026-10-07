@@ -12,7 +12,7 @@ from .operation_status_enum_g_input import OperationStatusEnumGInput
 from .public_transport_schedule_input import PublicTransportScheduleInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class OperatingPatternStatusInput(ValidataclassMixin):
     operatingPatternIndex: int = IntegerValidator()
     operationStatus: OperationStatusEnumGInput = DataclassValidator(OperationStatusEnumGInput)

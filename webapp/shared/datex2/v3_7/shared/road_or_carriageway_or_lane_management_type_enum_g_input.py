@@ -13,7 +13,7 @@ from .road_or_carriageway_or_lane_management_type_enum_extension_type_g import (
 )
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class RoadOrCarriagewayOrLaneManagementTypeEnumGInput(ValidataclassMixin):
     value: RoadOrCarriagewayOrLaneManagementTypeEnum = EnumValidator(RoadOrCarriagewayOrLaneManagementTypeEnum)
     extendedValueG: RoadOrCarriagewayOrLaneManagementTypeEnumExtensionTypeG | UnsetValueType = (

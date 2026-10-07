@@ -11,7 +11,7 @@ from .an_organisation_input import AnOrganisationInput
 from .referenceable_organisation_input import ReferenceableOrganisationInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class AnOrganisationGInput(ValidataclassMixin):
     """
     Only one of the properties shall be used in an instance.

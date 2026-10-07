@@ -10,7 +10,7 @@ from validataclass.validators import EnumValidator, StringValidator
 from .relative_traffic_flow_enum import RelativeTrafficFlowEnum
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class RelativeTrafficFlowEnumGInput(ValidataclassMixin):
     value: RelativeTrafficFlowEnum = EnumValidator(RelativeTrafficFlowEnum)
     extendedValueG: str | UnsetValueType = StringValidator(), Default(UnsetValue)

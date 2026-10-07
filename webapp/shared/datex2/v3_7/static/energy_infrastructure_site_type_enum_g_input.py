@@ -10,7 +10,7 @@ from validataclass.validators import EnumValidator, StringValidator
 from .energy_infrastructure_site_type_enum import EnergyInfrastructureSiteTypeEnum
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class EnergyInfrastructureSiteTypeEnumGInput(ValidataclassMixin):
     value: EnergyInfrastructureSiteTypeEnum = EnumValidator(EnergyInfrastructureSiteTypeEnum)
     extendedValueG: str | UnsetValueType = StringValidator(), Default(UnsetValue)

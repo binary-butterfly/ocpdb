@@ -12,7 +12,7 @@ from .supplemental_equipment_input import SupplementalEquipmentInput
 from .supplemental_service_facility_input import SupplementalServiceFacilityInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class SupplementalFacilityGInput(ValidataclassMixin):
     """
     Only one of the properties shall be used in an instance.

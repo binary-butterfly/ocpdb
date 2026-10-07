@@ -39,7 +39,7 @@ from .location_reference_g_input import LocationReferenceGInput
 from .vehicle_input import VehicleInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class AccidentInput(ValidataclassMixin):
     idG: str = StringValidator()
     versionG: str = StringValidator()

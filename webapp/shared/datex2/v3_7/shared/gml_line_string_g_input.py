@@ -11,7 +11,7 @@ from .gml_line_string_input import GmlLineStringInput
 from .gml_linear_ring_input import GmlLinearRingInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class GmlLineStringGInput(ValidataclassMixin):
     """
     Only one of the properties shall be used in an instance.

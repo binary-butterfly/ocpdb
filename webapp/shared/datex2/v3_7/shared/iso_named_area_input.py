@@ -14,7 +14,7 @@ from .named_area_type_enum_g_input import NamedAreaTypeEnumGInput
 from .subdivision_type_enum_g_input import SubdivisionTypeEnumGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class IsoNamedAreaInput(ValidataclassMixin):
     areaName: MultilingualStringInput = DataclassValidator(MultilingualStringInput)
     namedAreaType: NamedAreaTypeEnumGInput | UnsetValueType = (

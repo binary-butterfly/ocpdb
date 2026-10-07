@@ -12,7 +12,7 @@ from .extension_type_g_input import ExtensionTypeGInput
 from .month_of_year_enum_g_input import MonthOfYearEnumGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class DayWeekMonthInput(ValidataclassMixin):
     """
     Specification of periods defined by the intersection of days or instances of them, calendar weeks and months.

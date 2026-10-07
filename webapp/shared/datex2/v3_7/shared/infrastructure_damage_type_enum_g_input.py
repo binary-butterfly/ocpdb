@@ -11,7 +11,7 @@ from .infrastructure_damage_type_enum import InfrastructureDamageTypeEnum
 from .infrastructure_damage_type_enum_extension_type_g import InfrastructureDamageTypeEnumExtensionTypeG
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class InfrastructureDamageTypeEnumGInput(ValidataclassMixin):
     value: InfrastructureDamageTypeEnum = EnumValidator(InfrastructureDamageTypeEnum)
     extendedValueG: InfrastructureDamageTypeEnumExtensionTypeG | UnsetValueType = (

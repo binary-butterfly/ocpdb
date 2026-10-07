@@ -11,7 +11,7 @@ from .extension_type_g_input import ExtensionTypeGInput
 from .unit_of_speed_enum_g_input import UnitOfSpeedEnumGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class CompulsoryMinSpeedInput(ValidataclassMixin):
     numericalValue: int = IntegerValidator(min_value=0)
     unitOfMeasure: UnitOfSpeedEnumGInput = DataclassValidator(UnitOfSpeedEnumGInput)

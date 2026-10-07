@@ -14,7 +14,7 @@ from .precipitation_intensity_value_input import PrecipitationIntensityValueInpu
 from .precipitation_type_enum_g_input import PrecipitationTypeEnumGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class PrecipitationDetailInput(ValidataclassMixin):
     precipitationType: PrecipitationTypeEnumGInput | UnsetValueType = (
         DataclassValidator(PrecipitationTypeEnumGInput),

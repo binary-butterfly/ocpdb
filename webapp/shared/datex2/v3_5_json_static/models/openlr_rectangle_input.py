@@ -11,7 +11,7 @@ from .extension_type_g_input import ExtensionTypeGInput
 from .point_coordinates_input import PointCoordinatesInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class OpenlrRectangleInput(ValidataclassMixin):
     """
     Area delimited by a rectangle defined by the geodetic co-ordinates of the two ends of its diagonal from south-west to north-east (the rectangle having two sides that are parallel to lines of latitude)

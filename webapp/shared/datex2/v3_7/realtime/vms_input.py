@@ -19,7 +19,7 @@ from .location_g_input import LocationGInput
 from .managed_logical_location_input import ManagedLogicalLocationInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class VmsInput(ValidataclassMixin):
     lanternsPresent: bool | UnsetValueType = BooleanValidator(), Default(UnsetValue)
     description: MultilingualStringInput | UnsetValueType = (

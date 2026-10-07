@@ -10,7 +10,7 @@ from validataclass.validators import EnumValidator, StringValidator
 from .eu_bodywork_supplementary_digit import EuBodyworkSupplementaryDigit
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class EuBodyworkSupplementaryDigitGInput(ValidataclassMixin):
     value: EuBodyworkSupplementaryDigit = EnumValidator(EuBodyworkSupplementaryDigit)
     extendedValueG: str | UnsetValueType = StringValidator(), Default(UnsetValue)

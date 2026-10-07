@@ -13,7 +13,7 @@ from .general_instruction_to_road_users_type_enum_extension_type_g import (
 )
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class GeneralInstructionToRoadUsersTypeEnumGInput(ValidataclassMixin):
     value: GeneralInstructionToRoadUsersTypeEnum = EnumValidator(GeneralInstructionToRoadUsersTypeEnum)
     extendedValueG: GeneralInstructionToRoadUsersTypeEnumExtensionTypeG | UnsetValueType = (

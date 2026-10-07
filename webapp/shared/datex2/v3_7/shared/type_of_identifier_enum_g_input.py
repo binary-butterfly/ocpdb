@@ -11,7 +11,7 @@ from .type_of_identifier_enum import TypeOfIdentifierEnum
 from .type_of_identifier_enum_extension_type_g import TypeOfIdentifierEnumExtensionTypeG
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class TypeOfIdentifierEnumGInput(ValidataclassMixin):
     value: TypeOfIdentifierEnum = EnumValidator(TypeOfIdentifierEnum)
     extendedValueG: TypeOfIdentifierEnumExtensionTypeG | UnsetValueType = (

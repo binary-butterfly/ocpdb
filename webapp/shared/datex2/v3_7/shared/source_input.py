@@ -12,7 +12,7 @@ from .multilingual_string_input import MultilingualStringInput
 from .source_type_enum_g_input import SourceTypeEnumGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class SourceInput(ValidataclassMixin):
     sourceCountry: str | UnsetValueType = StringValidator(max_length=2), Default(UnsetValue)
     sourceIdentification: str | UnsetValueType = StringValidator(), Default(UnsetValue)

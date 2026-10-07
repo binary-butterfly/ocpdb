@@ -10,7 +10,7 @@ from validataclass.validators import DataclassValidator, FloatValidator, Integer
 from .extension_type_g_input import ExtensionTypeGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class DimensionInput(ValidataclassMixin):
     length: float | UnsetValueType = FloatValidator(allow_integers=True), Default(UnsetValue)
     width: float | UnsetValueType = FloatValidator(allow_integers=True), Default(UnsetValue)

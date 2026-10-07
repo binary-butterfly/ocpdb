@@ -13,7 +13,7 @@ from .measure_definition_versioned_reference_g_input import MeasureDefinitionVer
 from .strategy_definition_versioned_reference_g_input import StrategyDefinitionVersionedReferenceGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class TmplanImplementingActionInput(ValidataclassMixin):
     nonPredefinedActionIdReference: str | UnsetValueType = StringValidator(), Default(UnsetValue)
     predefinedActionReference: ActionDefinitionVersionedReferenceGInput | UnsetValueType = (

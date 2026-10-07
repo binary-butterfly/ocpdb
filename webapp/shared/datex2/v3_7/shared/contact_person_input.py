@@ -11,7 +11,7 @@ from .extension_type_g_input import ExtensionTypeGInput
 from .multilingual_string_input import MultilingualStringInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class ContactPersonInput(ValidataclassMixin):
     language: list[str] | UnsetValueType = ListValidator(RegexValidator(pattern=r'^[a-z]{2}$')), Default(UnsetValue)
     telephoneNumber: str | UnsetValueType = StringValidator(), Default(UnsetValue)

@@ -11,7 +11,7 @@ from .traffic_type_enum import TrafficTypeEnum
 from .traffic_type_enum_extension_type_g import TrafficTypeEnumExtensionTypeG
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class TrafficTypeEnumGInput(ValidataclassMixin):
     value: TrafficTypeEnum = EnumValidator(TrafficTypeEnum)
     extendedValueG: TrafficTypeEnumExtensionTypeG | UnsetValueType = (

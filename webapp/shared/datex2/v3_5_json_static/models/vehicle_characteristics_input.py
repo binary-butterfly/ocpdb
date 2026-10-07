@@ -22,7 +22,7 @@ from .vehicle_usage_enum_g_input import VehicleUsageEnumGInput
 from .width_characteristic_input import WidthCharacteristicInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class VehicleCharacteristicsInput(ValidataclassMixin):
     """
     The characteristics of a vehicle, e.g. lorry of gross weight greater than 30 tonnes.

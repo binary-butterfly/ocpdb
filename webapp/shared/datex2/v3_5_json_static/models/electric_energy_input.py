@@ -20,7 +20,7 @@ from .multilingual_string_input import MultilingualStringInput
 from .organisation_g_input import OrganisationGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class ElectricEnergyInput(ValidataclassMixin):
     """
     A specific offer of energy, optional described with its electrical mix and its rates.

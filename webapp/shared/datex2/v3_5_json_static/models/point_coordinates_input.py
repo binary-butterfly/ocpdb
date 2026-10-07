@@ -13,7 +13,7 @@ from .position_accuracy_input import PositionAccuracyInput
 from .position_confidence_ellipse_input import PositionConfidenceEllipseInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class PointCoordinatesInput(ValidataclassMixin):
     """
     A pair of planar coordinates defining the geodetic position of a single point using the European Terrestrial Reference System 1989 (ETRS89).

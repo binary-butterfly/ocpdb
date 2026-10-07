@@ -14,7 +14,7 @@ from webapp.shared.datex2.v3_7.shared.right_specification_input import RightSpec
 from .eligibility_input import EligibilityInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class RateEligibilityInput(ValidataclassMixin):
     priority: int | UnsetValueType = IntegerValidator(), Default(UnsetValue)
     combinable: bool | UnsetValueType = BooleanValidator(), Default(UnsetValue)

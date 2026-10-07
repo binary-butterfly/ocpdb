@@ -11,7 +11,7 @@ from .public_holiday_input import PublicHolidayInput
 from .special_day_input import SpecialDayInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class SpecialDayGInput(ValidataclassMixin):
     """
     Only one of the properties shall be used in an instance.

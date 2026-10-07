@@ -10,7 +10,7 @@ from validataclass.validators import EnumValidator, StringValidator
 from .reason_for_regulation_enum import ReasonForRegulationEnum
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class ReasonForRegulationEnumGInput(ValidataclassMixin):
     value: ReasonForRegulationEnum = EnumValidator(ReasonForRegulationEnum)
     extendedValueG: str | UnsetValueType = StringValidator(), Default(UnsetValue)

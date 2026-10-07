@@ -22,7 +22,7 @@ from .rate_line_usage_conditions_type_enum_g_input import RateLineUsageCondition
 from .surcharge_input import SurchargeInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class RateLineInput(ValidataclassMixin):
     sequence: int = IntegerValidator()
     rateLineType: RateLineTypeEnumGInput = DataclassValidator(RateLineTypeEnumGInput)

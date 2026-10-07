@@ -10,7 +10,7 @@ from validataclass.validators import EnumValidator, StringValidator
 from .maintenance_vehicle_actions_enum import MaintenanceVehicleActionsEnum
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class MaintenanceVehicleActionsEnumGInput(ValidataclassMixin):
     value: MaintenanceVehicleActionsEnum = EnumValidator(MaintenanceVehicleActionsEnum)
     extendedValueG: str | UnsetValueType = StringValidator(), Default(UnsetValue)

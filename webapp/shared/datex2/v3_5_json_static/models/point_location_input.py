@@ -16,7 +16,7 @@ from .point_coordinates_input import PointCoordinatesInput
 from .supplementary_positional_description_input import SupplementaryPositionalDescriptionInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class PointLocationInput(ValidataclassMixin):
     """
     Location representing a single geospatial point.

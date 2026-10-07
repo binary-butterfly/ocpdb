@@ -12,7 +12,7 @@ from validataclass.validators import BooleanValidator, DataclassValidator, DateT
 from .extension_type_g_input import ExtensionTypeGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class ClosureInformationInput(ValidataclassMixin):
     """
     Information about temporary or permanent closure.

@@ -10,7 +10,7 @@ from validataclass.validators import DataclassValidator, IntegerValidator, Strin
 from .extension_type_g_input import ExtensionTypeGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class GmlLinearRingInput(ValidataclassMixin):
     """
     Closed line string not self-intersecting (i.e. having as last point the first point)

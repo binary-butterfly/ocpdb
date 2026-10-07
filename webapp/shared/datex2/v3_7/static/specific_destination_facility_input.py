@@ -33,7 +33,7 @@ from .supplemental_facility_g_input import SupplementalFacilityGInput
 from .vehicle_characteristics_input import VehicleCharacteristicsInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class SpecificDestinationFacilityInput(ValidataclassMixin):
     idG: str = StringValidator()
     versionG: str = StringValidator()

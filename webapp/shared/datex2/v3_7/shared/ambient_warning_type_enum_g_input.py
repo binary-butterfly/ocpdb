@@ -10,7 +10,7 @@ from validataclass.validators import EnumValidator, StringValidator
 from .ambient_warning_type_enum import AmbientWarningTypeEnum
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class AmbientWarningTypeEnumGInput(ValidataclassMixin):
     value: AmbientWarningTypeEnum = EnumValidator(AmbientWarningTypeEnum)
     extendedValueG: str | UnsetValueType = StringValidator(), Default(UnsetValue)

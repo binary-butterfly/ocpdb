@@ -11,7 +11,7 @@ from .access_restriction_type_enum_g_input import AccessRestrictionTypeEnumGInpu
 from .extension_type_g_input import ExtensionTypeGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class AccessRestrictionInput(ValidataclassMixin):
     accessRestrictionType: AccessRestrictionTypeEnumGInput = DataclassValidator(AccessRestrictionTypeEnumGInput)
     troTypeOfRegulationExtensionG: ExtensionTypeGInput | UnsetValueType = (

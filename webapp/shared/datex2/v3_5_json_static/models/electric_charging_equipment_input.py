@@ -33,7 +33,7 @@ from .user_type_enum_g_input import UserTypeEnumGInput
 from .vehicle_characteristics_input import VehicleCharacteristicsInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class ElectricChargingEquipmentInput(ValidataclassMixin):
     """
     A specialisation to the SupplementalFacility class adding an ElectricChargingPoint.

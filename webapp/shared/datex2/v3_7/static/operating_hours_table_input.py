@@ -15,7 +15,7 @@ from webapp.shared.datex2.v3_7.shared.multilingual_string_input import Multiling
 from webapp.shared.datex2.v3_7.shared.operating_hours_specification_input import OperatingHoursSpecificationInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class OperatingHoursTableInput(ValidataclassMixin):
     idG: str = StringValidator()
     versionG: str = StringValidator()

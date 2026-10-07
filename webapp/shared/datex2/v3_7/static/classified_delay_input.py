@@ -13,7 +13,7 @@ from webapp.shared.datex2.v3_7.shared.extension_type_g_input import ExtensionTyp
 from .vehicle_characteristics_input import VehicleCharacteristicsInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class ClassifiedDelayInput(ValidataclassMixin):
     delays: DelaysInput = DataclassValidator(DelaysInput)
     vehicleCharacteristics: VehicleCharacteristicsInput = DataclassValidator(VehicleCharacteristicsInput)

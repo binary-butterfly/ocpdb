@@ -12,7 +12,7 @@ from .extension_type_g_input import ExtensionTypeGInput
 from .unit_of_measure_enum_g_input import UnitOfMeasureEnumGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class DisplayedNumericalInformationInput(ValidataclassMixin):
     numericalInformationType: DisplayedNumericalInformationTypeEnumGInput = DataclassValidator(
         DisplayedNumericalInformationTypeEnumGInput

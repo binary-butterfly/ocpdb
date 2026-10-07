@@ -24,7 +24,7 @@ from webapp.shared.datex2.v3_7.shared.supplementary_positional_description_input
 from webapp.shared.datex2.v3_7.shared.tpeg_point_location_g_input import TpegPointLocationGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class PointLocationInput(ValidataclassMixin):
     externalReferencing: list[ExternalReferencingInput] | UnsetValueType = (
         ListValidator(DataclassValidator(ExternalReferencingInput)),

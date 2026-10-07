@@ -14,7 +14,7 @@ from .point_coordinates_input import PointCoordinatesInput
 from .predefined_location_versioned_reference_g_input import PredefinedLocationVersionedReferenceGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class LocationByReferenceInput(ValidataclassMixin):
     """
     A location defined by reference to a predefined location.

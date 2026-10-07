@@ -14,7 +14,7 @@ from .public_event_type_enum_g_input import PublicEventTypeEnumGInput
 from .special_day_type_enum_g_input import SpecialDayTypeEnumGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class PublicHolidayInput(ValidataclassMixin):
     """
     Specification of a specific public holiday in case specialDayType is set to 'publicHoliday'.

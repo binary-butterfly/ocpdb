@@ -38,7 +38,7 @@ from .vehicle_characteristics_input import VehicleCharacteristicsInput
 from .versioned_reference_input import VersionedReferenceInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class EnergyInfrastructureStationInput(ValidataclassMixin):
     """
     A collection of associated refill points (which can be of different type). An example would be a fuel dispenser that serves different types of fuel. Often the vehicle space of the station is shared between the different refill points.

@@ -12,7 +12,7 @@ from webapp.shared.datex2.v3_7.shared.area_destination_input import AreaDestinat
 from .point_destination_input import PointDestinationInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class DestinationGInput(ValidataclassMixin):
     """
     Only one of the properties shall be used in an instance.

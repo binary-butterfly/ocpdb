@@ -19,7 +19,7 @@ from .operational_state_input import OperationalStateInput
 from .versioned_reference_input import VersionedReferenceInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class StatusInput(ValidataclassMixin):
     health: DeviceHealthEnumGInput = DataclassValidator(DeviceHealthEnumGInput)
     statusDescription: list[MultilingualStringInput] | UnsetValueType = (

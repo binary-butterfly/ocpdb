@@ -11,7 +11,7 @@ from .extension_type_g_input import ExtensionTypeGInput
 from .predefined_location_group_versioned_reference_g_input import PredefinedLocationGroupVersionedReferenceGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class LocationGroupByReferenceInput(ValidataclassMixin):
     """
     A group of (i.e. more than one) physically separate locations which have no specific order that are defined by reference to a predefined non ordered location group.

@@ -16,7 +16,7 @@ from .gdd_structure_input import GddStructureInput
 from .regular_pictogram_input import RegularPictogramInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class CompositePictogramInput(ValidataclassMixin):
     customPictogramCode: str | UnsetValueType = StringValidator(), Default(UnsetValue)
     additionalDescription: MultilingualStringInput | UnsetValueType = (

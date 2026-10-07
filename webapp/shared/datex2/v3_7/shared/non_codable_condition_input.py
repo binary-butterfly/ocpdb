@@ -13,7 +13,7 @@ from .legal_basis_input import LegalBasisInput
 from .multilingual_string_input import MultilingualStringInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class NonCodableConditionInput(ValidataclassMixin):
     negate: bool | UnsetValueType = BooleanValidator(), Default(UnsetValue)
     active: bool | UnsetValueType = BooleanValidator(), Default(UnsetValue)

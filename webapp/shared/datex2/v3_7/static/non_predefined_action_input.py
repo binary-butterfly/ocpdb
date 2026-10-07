@@ -17,7 +17,7 @@ from webapp.shared.datex2.v3_7.shared.situation_record_versioned_reference_g_inp
 from .operator_action_definition_g_input import OperatorActionDefinitionGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class NonPredefinedActionInput(ValidataclassMixin):
     nonPredefinedActionDescription: MultilingualStringInput = DataclassValidator(MultilingualStringInput)
     nonPredefinedActionId: str | UnsetValueType = StringValidator(), Default(UnsetValue)

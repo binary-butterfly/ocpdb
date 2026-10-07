@@ -10,7 +10,7 @@ from validataclass.validators import EnumValidator, StringValidator
 from .response_effect_type_enum import ResponseEffectTypeEnum
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class ResponseEffectTypeEnumGInput(ValidataclassMixin):
     value: ResponseEffectTypeEnum = EnumValidator(ResponseEffectTypeEnum)
     extendedValueG: str | UnsetValueType = StringValidator(), Default(UnsetValue)

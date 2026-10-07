@@ -10,7 +10,7 @@ from validataclass.validators import EnumValidator, StringValidator
 from .winter_equipment_management_type_enum import WinterEquipmentManagementTypeEnum
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class WinterEquipmentManagementTypeEnumGInput(ValidataclassMixin):
     value: WinterEquipmentManagementTypeEnum = EnumValidator(WinterEquipmentManagementTypeEnum)
     extendedValueG: str | UnsetValueType = StringValidator(), Default(UnsetValue)

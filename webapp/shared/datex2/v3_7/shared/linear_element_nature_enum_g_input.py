@@ -10,7 +10,7 @@ from validataclass.validators import EnumValidator, StringValidator
 from .linear_element_nature_enum import LinearElementNatureEnum
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class LinearElementNatureEnumGInput(ValidataclassMixin):
     value: LinearElementNatureEnum = EnumValidator(LinearElementNatureEnum)
     extendedValueG: str | UnsetValueType = StringValidator(), Default(UnsetValue)

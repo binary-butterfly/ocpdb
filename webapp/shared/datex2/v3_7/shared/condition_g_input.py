@@ -11,7 +11,7 @@ from .condition_set_input import ConditionSetInput
 from .trigger_condition_input import TriggerConditionInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class ConditionGInput(ValidataclassMixin):
     """
     Only one of the properties shall be used in an instance.

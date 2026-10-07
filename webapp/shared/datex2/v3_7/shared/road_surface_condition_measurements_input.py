@@ -17,7 +17,7 @@ from .temperature_below_or_above_road_surface_input import TemperatureBelowOrAbo
 from .temperature_value_input import TemperatureValueInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class RoadSurfaceConditionMeasurementsInput(ValidataclassMixin):
     temperatureBelowOrAboveRoadSurface: list[TemperatureBelowOrAboveRoadSurfaceInput] | UnsetValueType = (
         ListValidator(DataclassValidator(TemperatureBelowOrAboveRoadSurfaceInput)),

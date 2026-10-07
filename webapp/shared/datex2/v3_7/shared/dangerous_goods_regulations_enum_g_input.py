@@ -10,7 +10,7 @@ from validataclass.validators import EnumValidator, StringValidator
 from .dangerous_goods_regulations_enum import DangerousGoodsRegulationsEnum
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class DangerousGoodsRegulationsEnumGInput(ValidataclassMixin):
     value: DangerousGoodsRegulationsEnum = EnumValidator(DangerousGoodsRegulationsEnum)
     extendedValueG: str | UnsetValueType = StringValidator(), Default(UnsetValue)

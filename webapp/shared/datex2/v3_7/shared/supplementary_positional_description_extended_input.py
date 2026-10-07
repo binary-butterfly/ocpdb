@@ -10,7 +10,7 @@ from validataclass.validators import DataclassValidator
 from .house_number_side_enum_g_input import HouseNumberSideEnumGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class SupplementaryPositionalDescriptionExtendedInput(ValidataclassMixin):
     houseNumberSide: HouseNumberSideEnumGInput | UnsetValueType = (
         DataclassValidator(HouseNumberSideEnumGInput),

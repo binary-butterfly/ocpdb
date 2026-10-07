@@ -25,7 +25,7 @@ from webapp.shared.datex2.v3_7.shared.width_characteristic_input import WidthCha
 from .vehicle_characteristics_extension_type_g_input import VehicleCharacteristicsExtensionTypeGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class VehicleCharacteristicsInput(ValidataclassMixin):
     fuelType: list[FuelTypeEnumGInput] | UnsetValueType = (
         ListValidator(DataclassValidator(FuelTypeEnumGInput)),

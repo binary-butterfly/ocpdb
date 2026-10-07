@@ -29,7 +29,7 @@ from webapp.shared.datex2.v3_7.shared.parking_structural_characteristics_enum_g_
 from .assignment_input import AssignmentInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class AdditionalCharacteristicsInput(ValidataclassMixin):
     floor: str | UnsetValueType = StringValidator(), Default(UnsetValue)
     weightLimit: float | UnsetValueType = FloatValidator(allow_integers=True), Default(UnsetValue)

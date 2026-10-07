@@ -23,7 +23,7 @@ from webapp.shared.datex2.v3_7.shared.tmplan_operation_status_enum_g_input impor
 from .non_predefined_action_input import NonPredefinedActionInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class NonPredefinedTmplanOperationInput(ValidataclassMixin):
     idG: str = StringValidator()
     versionG: str = StringValidator()

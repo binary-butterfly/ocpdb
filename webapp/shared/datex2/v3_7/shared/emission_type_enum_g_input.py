@@ -10,7 +10,7 @@ from validataclass.validators import EnumValidator, StringValidator
 from .emission_type_enum import EmissionTypeEnum
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class EmissionTypeEnumGInput(ValidataclassMixin):
     value: EmissionTypeEnum = EnumValidator(EmissionTypeEnum)
     extendedValueG: str | UnsetValueType = StringValidator(), Default(UnsetValue)

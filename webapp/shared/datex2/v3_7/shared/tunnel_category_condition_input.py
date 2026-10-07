@@ -12,7 +12,7 @@ from .extension_type_g_input import ExtensionTypeGInput
 from .legal_basis_input import LegalBasisInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class TunnelCategoryConditionInput(ValidataclassMixin):
     negate: bool | UnsetValueType = BooleanValidator(), Default(UnsetValue)
     active: bool | UnsetValueType = BooleanValidator(), Default(UnsetValue)

@@ -10,7 +10,7 @@ from validataclass.validators import EnumValidator, StringValidator
 from .eu_bodywork_code_enum import EuBodyworkCodeEnum
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class EuBodyworkCodeEnumGInput(ValidataclassMixin):
     value: EuBodyworkCodeEnum = EnumValidator(EuBodyworkCodeEnum)
     extendedValueG: str | UnsetValueType = StringValidator(), Default(UnsetValue)

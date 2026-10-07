@@ -15,7 +15,7 @@ from webapp.shared.datex2.v3_7.shared.operating_hours_g_input import OperatingHo
 from .location_reference_g_input import LocationReferenceGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class OrganisationUnitInput(ValidataclassMixin):
     name: MultilingualStringInput | UnsetValueType = DataclassValidator(MultilingualStringInput), Default(UnsetValue)
     function: list[MultilingualStringInput] | UnsetValueType = (

@@ -12,7 +12,7 @@ from .extension_type_g_input import ExtensionTypeGInput
 from .power_source_enum_g_input import PowerSourceEnumGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class DevicePowerInput(ValidataclassMixin):
     health: DeviceHealthEnumGInput = DataclassValidator(DeviceHealthEnumGInput)
     sourceType: PowerSourceEnumGInput = DataclassValidator(PowerSourceEnumGInput)

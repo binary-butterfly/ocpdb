@@ -11,7 +11,7 @@ from .extension_type_g_input import ExtensionTypeGInput
 from .road_warning_type_enum_g_input import RoadWarningTypeEnumGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class RoadWarningInput(ValidataclassMixin):
     roadWarningType: RoadWarningTypeEnumGInput = DataclassValidator(RoadWarningTypeEnumGInput)
     troTypeOfRegulationExtensionG: ExtensionTypeGInput | UnsetValueType = (

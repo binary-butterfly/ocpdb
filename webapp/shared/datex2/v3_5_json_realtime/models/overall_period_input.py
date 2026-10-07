@@ -13,7 +13,7 @@ from .extension_type_g_input import ExtensionTypeGInput
 from .period_input import PeriodInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class OverallPeriodInput(ValidataclassMixin):
     """
     A continuous or discontinuous period of validity defined by overall bounding start and end times and the possible intersection of valid periods (potentially recurring) with the complement of exception periods (also potentially recurring).

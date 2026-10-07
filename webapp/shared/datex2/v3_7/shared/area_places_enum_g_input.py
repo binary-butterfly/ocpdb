@@ -10,7 +10,7 @@ from validataclass.validators import EnumValidator, StringValidator
 from .area_places_enum import AreaPlacesEnum
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class AreaPlacesEnumGInput(ValidataclassMixin):
     value: AreaPlacesEnum = EnumValidator(AreaPlacesEnum)
     extendedValueG: str | UnsetValueType = StringValidator(), Default(UnsetValue)

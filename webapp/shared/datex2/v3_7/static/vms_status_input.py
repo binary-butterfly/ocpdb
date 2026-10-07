@@ -25,7 +25,7 @@ from .managed_logical_location_input import ManagedLogicalLocationInput
 from .vms_status_message_index_vms_message_g_input import vmsStatusMessageIndexVmsMessageGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class VmsStatusInput(ValidataclassMixin):
     flashingLightsOn: bool | UnsetValueType = BooleanValidator(), Default(UnsetValue)
     remainingPowerCapacity: float | UnsetValueType = FloatValidator(allow_integers=True), Default(UnsetValue)

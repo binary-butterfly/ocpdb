@@ -15,7 +15,7 @@ from webapp.shared.datex2.v3_7.shared.multilingual_string_input import Multiling
 from .location_reference_g_input import LocationReferenceGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class AccessConditionInput(ValidataclassMixin):
     negate: bool | UnsetValueType = BooleanValidator(), Default(UnsetValue)
     active: bool | UnsetValueType = BooleanValidator(), Default(UnsetValue)

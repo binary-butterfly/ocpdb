@@ -13,7 +13,7 @@ from .linear_element_by_points_input import LinearElementByPointsInput
 from .linear_element_input import LinearElementInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class LinearElementGInput(ValidataclassMixin):
     """
     Only one of the properties shall be used in an instance.

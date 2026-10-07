@@ -10,7 +10,7 @@ from validataclass.validators import EnumValidator, StringValidator
 from .openlr_orientation_enum import OpenlrOrientationEnum
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class OpenlrOrientationEnumGInput(ValidataclassMixin):
     value: OpenlrOrientationEnum = EnumValidator(OpenlrOrientationEnum)
     extendedValueG: str | UnsetValueType = StringValidator(), Default(UnsetValue)

@@ -10,7 +10,7 @@ from validataclass.validators import EnumValidator, StringValidator
 from .applicable_days_within_month_enum import ApplicableDaysWithinMonthEnum
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class ApplicableDaysWithinMonthEnumGInput(ValidataclassMixin):
     value: ApplicableDaysWithinMonthEnum = EnumValidator(ApplicableDaysWithinMonthEnum)
     extendedValueG: str | UnsetValueType = StringValidator(), Default(UnsetValue)

@@ -12,7 +12,7 @@ from .multilingual_string_input import MultilingualStringInput
 from .road_type_enum_g_input import RoadTypeEnumGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class RoadInformationEnhancedInput(ValidataclassMixin):
     roadDestination: str | UnsetValueType = StringValidator(), Default(UnsetValue)
     roadName: str | UnsetValueType = StringValidator(), Default(UnsetValue)

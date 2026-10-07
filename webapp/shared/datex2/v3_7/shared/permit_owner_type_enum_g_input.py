@@ -10,7 +10,7 @@ from validataclass.validators import EnumValidator, StringValidator
 from .permit_owner_type_enum import PermitOwnerTypeEnum
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class PermitOwnerTypeEnumGInput(ValidataclassMixin):
     value: PermitOwnerTypeEnum = EnumValidator(PermitOwnerTypeEnum)
     extendedValueG: str | UnsetValueType = StringValidator(), Default(UnsetValue)

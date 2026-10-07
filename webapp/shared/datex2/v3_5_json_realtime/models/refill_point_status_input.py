@@ -29,7 +29,7 @@ from .refill_point_status_enum_g_input import RefillPointStatusEnumGInput
 from .supplemental_facility_status_input import SupplementalFacilityStatusInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class RefillPointStatusInput(ValidataclassMixin):
     """
     Dynamic information on the status of the refill point.

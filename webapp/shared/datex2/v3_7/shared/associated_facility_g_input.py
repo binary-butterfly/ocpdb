@@ -11,7 +11,7 @@ from .associated_facility_input import AssociatedFacilityInput
 from .associated_parking_input import AssociatedParkingInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class AssociatedFacilityGInput(ValidataclassMixin):
     """
     Only one of the properties shall be used in an instance.

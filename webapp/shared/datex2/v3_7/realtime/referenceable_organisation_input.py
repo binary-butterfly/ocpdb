@@ -24,7 +24,7 @@ from webapp.shared.datex2.v3_7.shared.overall_period_input import OverallPeriodI
 from .organisation_unit_input import OrganisationUnitInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class ReferenceableOrganisationInput(ValidataclassMixin):
     idG: str = StringValidator()
     versionG: str = StringValidator()

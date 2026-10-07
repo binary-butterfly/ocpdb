@@ -10,7 +10,7 @@ from validataclass.validators import EnumValidator, StringValidator
 from .accessibility_enum import AccessibilityEnum
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class AccessibilityEnumGInput(ValidataclassMixin):
     value: AccessibilityEnum = EnumValidator(AccessibilityEnum)
     extendedValueG: str | UnsetValueType = StringValidator(), Default(UnsetValue)

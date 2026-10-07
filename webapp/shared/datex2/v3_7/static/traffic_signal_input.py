@@ -13,7 +13,7 @@ from webapp.shared.datex2.v3_7.shared.reference_input import ReferenceInput
 from .point_location_g_input import PointLocationGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class TrafficSignalInput(ValidataclassMixin):
     index: int = IntegerValidator()
     externalId: str | UnsetValueType = StringValidator(), Default(UnsetValue)

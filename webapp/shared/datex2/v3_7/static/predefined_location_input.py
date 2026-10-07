@@ -13,7 +13,7 @@ from webapp.shared.datex2.v3_7.shared.multilingual_string_input import Multiling
 from .location_g_input import LocationGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class PredefinedLocationInput(ValidataclassMixin):
     idG: str = StringValidator()
     versionG: str = StringValidator()

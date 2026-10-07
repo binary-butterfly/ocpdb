@@ -26,7 +26,7 @@ from webapp.shared.datex2.v3_7.shared.parking_table_versioned_reference_g_input 
 from .parking_status_information_g_input import ParkingStatusInformationGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class ParkingStatusPublicationInput(ValidataclassMixin):
     lang: str = RegexValidator(pattern=r'^[a-z]{2}$')
     feedDescription: MultilingualStringInput | UnsetValueType = (

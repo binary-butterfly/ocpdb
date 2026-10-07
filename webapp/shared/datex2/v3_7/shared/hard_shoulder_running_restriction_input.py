@@ -10,7 +10,7 @@ from validataclass.validators import BooleanValidator, DataclassValidator
 from .extension_type_g_input import ExtensionTypeGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class HardShoulderRunningRestrictionInput(ValidataclassMixin):
     clearHardShoulder: bool | UnsetValueType = BooleanValidator(), Default(UnsetValue)
     hardShoulderRunningActive: bool | UnsetValueType = BooleanValidator(), Default(UnsetValue)

@@ -25,7 +25,7 @@ from .predefined_condition_publication_versioned_reference_g_input import (
 )
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class DynamicActivationStatusPublicationInput(ValidataclassMixin):
     idG: str = StringValidator()
     lang: str = RegexValidator(pattern=r'^[a-z]{2}$')

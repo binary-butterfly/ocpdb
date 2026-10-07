@@ -12,7 +12,7 @@ from .multilingual_string_input import MultilingualStringInput
 from .point_coordinates_input import PointCoordinatesInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class ControlledZoneSummaryInput(ValidataclassMixin):
     cityName: MultilingualStringInput | UnsetValueType = (
         DataclassValidator(MultilingualStringInput),

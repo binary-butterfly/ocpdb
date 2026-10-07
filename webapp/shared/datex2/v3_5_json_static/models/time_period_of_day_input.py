@@ -14,7 +14,7 @@ from webapp.common.validation import OffsetAwareTimeValidator
 from .extension_type_g_input import ExtensionTypeGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class TimePeriodOfDayInput(ValidataclassMixin):
     """
     Specification of a continuous period of time within a 24 hour period.

@@ -13,7 +13,7 @@ from webapp.shared.datex2.v3_7.shared.international_identifier_input import Inte
 from .vms_controller_input import VmsControllerInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class VmsControllerTableInput(ValidataclassMixin):
     idG: str = StringValidator()
     versionG: str = StringValidator()

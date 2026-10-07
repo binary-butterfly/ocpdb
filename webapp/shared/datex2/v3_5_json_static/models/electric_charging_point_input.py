@@ -40,7 +40,7 @@ from .vehicle_characteristics_input import VehicleCharacteristicsInput
 from .vehicle_to_grid_communication_type_enum_g_input import VehicleToGridCommunicationTypeEnumGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class ElectricChargingPointInput(ValidataclassMixin):
     """
     Technical infrastructure at a specific location that facilitates electric charging of one vehicle at a time

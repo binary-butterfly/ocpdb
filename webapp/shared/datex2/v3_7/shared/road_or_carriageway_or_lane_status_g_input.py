@@ -10,7 +10,7 @@ from validataclass.validators import EnumValidator, StringValidator
 from .road_or_carriageway_or_lane_status import RoadOrCarriagewayOrLaneStatus
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class RoadOrCarriagewayOrLaneStatusGInput(ValidataclassMixin):
     value: RoadOrCarriagewayOrLaneStatus = EnumValidator(RoadOrCarriagewayOrLaneStatus)
     extendedValueG: str | UnsetValueType = StringValidator(), Default(UnsetValue)

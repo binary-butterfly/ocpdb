@@ -11,7 +11,7 @@ from .extension_type_g_input import ExtensionTypeGInput
 from .openlr_rectangle_input import OpenlrRectangleInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class OpenlrGridLocationReferenceInput(ValidataclassMixin):
     """
     Area defined using an OpenLR™ method consisting in defining it by a tessellation of rectangles

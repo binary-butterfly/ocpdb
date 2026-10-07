@@ -13,7 +13,7 @@ from .instance_of_day_enum_g_input import InstanceOfDayEnumGInput
 from .month_of_year_enum_g_input import MonthOfYearEnumGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class InstanceOfDayWithinMonthInput(ValidataclassMixin):
     """
     Specification of periods defined by the instance of a specific weekday within a month (e.g. 3rd Tuesday in May)

@@ -12,7 +12,7 @@ from .overall_period_input import OverallPeriodInput
 from .refill_point_status_enum_g_input import RefillPointStatusEnumGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class PlannedRefillPointStatusInput(ValidataclassMixin):
     status: RefillPointStatusEnumGInput = DataclassValidator(RefillPointStatusEnumGInput)
     overallPeriod: OverallPeriodInput = DataclassValidator(OverallPeriodInput)

@@ -12,7 +12,7 @@ from webapp.shared.datex2.v3_7.shared.extension_type_g_input import ExtensionTyp
 from .activated_regulation_input import ActivatedRegulationInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class TrafficRegulationsByAuthorisedActorsInput(ValidataclassMixin):
     activatedRegulation: list[ActivatedRegulationInput] = ListValidator(DataclassValidator(ActivatedRegulationInput))
     troTrafficRegulationsByAuthorisedActorsExtensionG: ExtensionTypeGInput | UnsetValueType = (

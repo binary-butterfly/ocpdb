@@ -10,7 +10,7 @@ from validataclass.validators import EnumValidator, StringValidator
 from .credential_type_enum import CredentialTypeEnum
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class CredentialTypeEnumGInput(ValidataclassMixin):
     value: CredentialTypeEnum = EnumValidator(CredentialTypeEnum)
     extendedValueG: str | UnsetValueType = StringValidator(), Default(UnsetValue)

@@ -16,7 +16,7 @@ from .openlr_side_of_road_enum_g_input import OpenlrSideOfRoadEnumGInput
 from .point_coordinates_input import PointCoordinatesInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class OpenlrPoiWithAccessPointInput(ValidataclassMixin):
     """
     A point of interest (POI) along a line with access is a point location which is defined by a linear reference path, an offset value (defining the access point) from the starting node of this path and a coordinate pair that defines the POI itself.

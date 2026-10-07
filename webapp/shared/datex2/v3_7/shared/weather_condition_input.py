@@ -12,7 +12,7 @@ from .legal_basis_input import LegalBasisInput
 from .weather_related_road_condition_type_enum_g_input import WeatherRelatedRoadConditionTypeEnumGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class WeatherConditionInput(ValidataclassMixin):
     negate: bool | UnsetValueType = BooleanValidator(), Default(UnsetValue)
     active: bool | UnsetValueType = BooleanValidator(), Default(UnsetValue)

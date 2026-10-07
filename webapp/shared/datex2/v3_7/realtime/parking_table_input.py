@@ -16,7 +16,7 @@ from webapp.shared.datex2.v3_7.shared.multilingual_string_input import Multiling
 from .hierarchy_element_general_g_input import HierarchyElementGeneralGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class ParkingTableInput(ValidataclassMixin):
     idG: str = StringValidator()
     versionG: str = StringValidator()

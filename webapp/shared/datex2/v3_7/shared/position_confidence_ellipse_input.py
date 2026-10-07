@@ -11,7 +11,7 @@ from .extension_type_g_input import ExtensionTypeGInput
 from .position_confidence_coded_error_enum_g_input import PositionConfidenceCodedErrorEnumGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class PositionConfidenceEllipseInput(ValidataclassMixin):
     semiMajorAxisLength: float | UnsetValueType = FloatValidator(allow_integers=True), Default(UnsetValue)
     semiMajorAxisLengthCodedError: PositionConfidenceCodedErrorEnumGInput | UnsetValueType = (

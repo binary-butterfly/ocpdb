@@ -16,7 +16,7 @@ from webapp.shared.datex2.v3_7.shared.measurement_site_versioned_reference_g_inp
 from .site_measurements_index_physical_quantity_g_input import siteMeasurementsIndexPhysicalQuantityGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class SiteMeasurementsInput(ValidataclassMixin):
     measurementSiteReference: MeasurementSiteVersionedReferenceGInput = DataclassValidator(
         MeasurementSiteVersionedReferenceGInput

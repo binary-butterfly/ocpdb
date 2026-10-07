@@ -10,7 +10,7 @@ from validataclass.validators import DataclassValidator
 from webapp.shared.datex2.v3_7.shared.extension_type_g_input import ExtensionTypeGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class PointDestinationInput(ValidataclassMixin):
     locDestinationExtensionG: ExtensionTypeGInput | UnsetValueType = (
         DataclassValidator(ExtensionTypeGInput),

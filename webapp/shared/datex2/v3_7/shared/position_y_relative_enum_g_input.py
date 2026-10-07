@@ -10,7 +10,7 @@ from validataclass.validators import EnumValidator, StringValidator
 from .position_y_relative_enum import PositionYRelativeEnum
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class PositionYRelativeEnumGInput(ValidataclassMixin):
     value: PositionYRelativeEnum = EnumValidator(PositionYRelativeEnum)
     extendedValueG: str | UnsetValueType = StringValidator(), Default(UnsetValue)

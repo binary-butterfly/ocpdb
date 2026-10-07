@@ -33,7 +33,7 @@ from .user_type_enum_g_input import UserTypeEnumGInput
 from .vehicle_characteristics_input import VehicleCharacteristicsInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class SupplementalServiceFacilityInput(ValidataclassMixin):
     """
     One type of supplemental service facility. You can specify the number of this service facility type (e.g. 5 restaurants) as well as the number of subitems (e.g. 200 restaurant places).

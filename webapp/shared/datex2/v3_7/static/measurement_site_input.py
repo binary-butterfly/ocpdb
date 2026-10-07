@@ -25,7 +25,7 @@ from .measurement_site_index_measurement_specific_characteristics_g_input import
 )
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class MeasurementSiteInput(ValidataclassMixin):
     idG: str = StringValidator()
     versionG: str = StringValidator()

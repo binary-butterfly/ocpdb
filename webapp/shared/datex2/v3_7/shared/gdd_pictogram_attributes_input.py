@@ -10,7 +10,7 @@ from validataclass.validators import DataclassValidator, RegexValidator
 from .extension_type_g_input import ExtensionTypeGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class GddPictogramAttributesInput(ValidataclassMixin):
     attributes: str = RegexValidator(pattern=r'^[A-Za-z0-9+/]+={0,2}$')
     vmsGddPictogramAttributesExtensionG: ExtensionTypeGInput | UnsetValueType = (

@@ -10,7 +10,7 @@ from validataclass.validators import EnumValidator, StringValidator
 from .named_area_type_enum import NamedAreaTypeEnum
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class NamedAreaTypeEnumGInput(ValidataclassMixin):
     value: NamedAreaTypeEnum = EnumValidator(NamedAreaTypeEnum)
     extendedValueG: str | UnsetValueType = StringValidator(), Default(UnsetValue)

@@ -24,7 +24,7 @@ from .device_g_input import DeviceGInput
 from .device_table_input import DeviceTableInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class DevicePublicationInput(ValidataclassMixin):
     lang: str = RegexValidator(pattern=r'^[a-z]{2}$')
     feedDescription: MultilingualStringInput | UnsetValueType = (

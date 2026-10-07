@@ -12,7 +12,7 @@ from .emission_type_enum_g_input import EmissionTypeEnumGInput
 from .extension_type_g_input import ExtensionTypeGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class NumericalEmissionValuesInput(ValidataclassMixin):
     emissionType: EmissionTypeEnumGInput | UnsetValueType = (
         DataclassValidator(EmissionTypeEnumGInput),

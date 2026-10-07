@@ -12,7 +12,7 @@ from webapp.shared.datex2.v3_7.shared.extension_type_g_input import ExtensionTyp
 from .energy_infrastructure_site_input import EnergyInfrastructureSiteInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class EnergyInfrastructureTableInput(ValidataclassMixin):
     idG: str = StringValidator()
     versionG: str = StringValidator()

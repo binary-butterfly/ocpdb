@@ -11,7 +11,7 @@ from .contact_information_input import ContactInformationInput
 from .contact_person_input import ContactPersonInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class ContactInformationGInput(ValidataclassMixin):
     """
     Only one of the properties shall be used in an instance.

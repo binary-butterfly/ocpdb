@@ -13,7 +13,7 @@ from .multilingual_string_input import MultilingualStringInput
 from .supplemental_pictogram_enum_g_input import SupplementalPictogramEnumGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class SupplementaryPictogramInput(ValidataclassMixin):
     isBlank: bool | UnsetValueType = BooleanValidator(), Default(UnsetValue)
     legallyBinding: bool | UnsetValueType = BooleanValidator(), Default(UnsetValue)

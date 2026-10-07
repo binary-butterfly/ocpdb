@@ -12,7 +12,7 @@ from .openlr_line_attributes_input import OpenlrLineAttributesInput
 from .point_coordinates_input import PointCoordinatesInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class OpenlrLastLocationReferencePointInput(ValidataclassMixin):
     openlrCoordinates: PointCoordinatesInput = DataclassValidator(PointCoordinatesInput)
     openlrLineAttributes: OpenlrLineAttributesInput = DataclassValidator(OpenlrLineAttributesInput)

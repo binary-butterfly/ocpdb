@@ -17,7 +17,7 @@ from .location_reference_g_input import LocationReferenceGInput
 from .vehicle_characteristics_input import VehicleCharacteristicsInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class TrafficSignalSettingDefinitionInput(ValidataclassMixin):
     complianceOption: ComplianceOptionEnumGInput = DataclassValidator(ComplianceOptionEnumGInput)
     applicableForTrafficDirection: list[DirectionEnumGInput] | UnsetValueType = (

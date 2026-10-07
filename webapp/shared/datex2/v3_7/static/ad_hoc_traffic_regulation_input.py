@@ -15,7 +15,7 @@ from webapp.shared.datex2.v3_7.shared.traffic_regulation_installer_type_enum_g_i
 from .traffic_regulation_g_input import TrafficRegulationGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class AdHocTrafficRegulationInput(ValidataclassMixin):
     installer: TrafficRegulationInstallerTypeEnumGInput = DataclassValidator(TrafficRegulationInstallerTypeEnumGInput)
     trafficRegulation: list[TrafficRegulationGInput] = ListValidator(DataclassValidator(TrafficRegulationGInput))

@@ -16,7 +16,7 @@ from webapp.shared.datex2.v3_7.shared.pictogram_enum_g_input import PictogramEnu
 from .gdd_structure_input import GddStructureInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class RegularPictogramInput(ValidataclassMixin):
     customPictogramCode: str | UnsetValueType = StringValidator(), Default(UnsetValue)
     additionalDescription: MultilingualStringInput | UnsetValueType = (

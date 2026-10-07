@@ -13,7 +13,7 @@ from .extension_type_g_input import ExtensionTypeGInput
 from .period_input import PeriodInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class OverallPeriodInput(ValidataclassMixin):
     overallStartTime: datetime = DateTimeValidator()
     overallEndTime: datetime | UnsetValueType = DateTimeValidator(), Default(UnsetValue)

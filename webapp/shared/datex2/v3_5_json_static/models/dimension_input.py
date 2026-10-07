@@ -10,7 +10,7 @@ from validataclass.validators import DataclassValidator, FloatValidator, Integer
 from .extension_type_g_input import ExtensionTypeGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class DimensionInput(ValidataclassMixin):
     """
     A component that provides dimension information. Especially for multi-storey buildings, the usable area might be larger than the product from its length and width.

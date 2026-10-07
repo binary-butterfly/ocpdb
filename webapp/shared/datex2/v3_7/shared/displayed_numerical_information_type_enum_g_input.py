@@ -10,7 +10,7 @@ from validataclass.validators import EnumValidator, StringValidator
 from .displayed_numerical_information_type_enum import DisplayedNumericalInformationTypeEnum
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class DisplayedNumericalInformationTypeEnumGInput(ValidataclassMixin):
     value: DisplayedNumericalInformationTypeEnum = EnumValidator(DisplayedNumericalInformationTypeEnum)
     extendedValueG: str | UnsetValueType = StringValidator(), Default(UnsetValue)

@@ -11,7 +11,7 @@ from .address_input import AddressInput
 from .nuts_area_input import NutsAreaInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class FacilityLocationInput(ValidataclassMixin):
     """
     A location for which a time zone and an address can be specified

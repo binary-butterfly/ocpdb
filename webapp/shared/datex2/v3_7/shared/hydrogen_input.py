@@ -11,7 +11,7 @@ from .extension_type_g_input import ExtensionTypeGInput
 from .hydrogen_refuelling_mode_enum_g_input import HydrogenRefuellingModeEnumGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class HydrogenInput(ValidataclassMixin):
     refuellingMode: list[HydrogenRefuellingModeEnumGInput] = ListValidator(
         DataclassValidator(HydrogenRefuellingModeEnumGInput)

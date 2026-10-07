@@ -12,7 +12,7 @@ from .measurement_or_calculation_time_input import MeasurementOrCalculationTimeI
 from .pressure_input import PressureInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class PressureInformationInput(ValidataclassMixin):
     measurementOrCalculationTime: MeasurementOrCalculationTimeInput | UnsetValueType = (
         DataclassValidator(MeasurementOrCalculationTimeInput),

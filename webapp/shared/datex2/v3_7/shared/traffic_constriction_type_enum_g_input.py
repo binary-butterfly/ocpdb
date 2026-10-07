@@ -10,7 +10,7 @@ from validataclass.validators import EnumValidator, StringValidator
 from .traffic_constriction_type_enum import TrafficConstrictionTypeEnum
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class TrafficConstrictionTypeEnumGInput(ValidataclassMixin):
     value: TrafficConstrictionTypeEnum = EnumValidator(TrafficConstrictionTypeEnum)
     extendedValueG: str | UnsetValueType = StringValidator(), Default(UnsetValue)

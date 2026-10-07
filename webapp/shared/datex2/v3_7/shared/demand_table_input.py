@@ -14,7 +14,7 @@ from .demand_type_input import DemandTypeInput
 from .extension_type_g_input import ExtensionTypeGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class DemandTableInput(ValidataclassMixin):
     frequency: str | UnsetValueType = StringValidator(), Default(UnsetValue)
     timestamp: datetime = DateTimeValidator()

@@ -14,7 +14,7 @@ from .openlr_polygon_location_reference_input import OpenlrPolygonLocationRefere
 from .openlr_rectangle_location_reference_input import OpenlrRectangleLocationReferenceInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class OpenlrAreaLocationReferenceGInput(ValidataclassMixin):
     """
     Only one of the properties shall be used in an instance.

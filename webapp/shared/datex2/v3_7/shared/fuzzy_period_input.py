@@ -11,7 +11,7 @@ from .extension_type_g_input import ExtensionTypeGInput
 from .fuzzy_time_enum_g_input import FuzzyTimeEnumGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class FuzzyPeriodInput(ValidataclassMixin):
     beginOrDuration: FuzzyTimeEnumGInput | UnsetValueType = DataclassValidator(FuzzyTimeEnumGInput), Default(UnsetValue)
     endOrDuration: FuzzyTimeEnumGInput | UnsetValueType = DataclassValidator(FuzzyTimeEnumGInput), Default(UnsetValue)

@@ -18,7 +18,7 @@ from .operating_hours_g_input import OperatingHoursGInput
 from .operation_status_enum_g_input import OperationStatusEnumGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class SupplementalFacilityStatusInput(ValidataclassMixin):
     """
     Information on current status and availability of supplemental facilities (for example number of free electric charging stations).

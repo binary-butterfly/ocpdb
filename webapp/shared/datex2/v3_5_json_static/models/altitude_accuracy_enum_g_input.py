@@ -10,7 +10,7 @@ from validataclass.validators import EnumValidator, StringValidator
 from .altitude_accuracy_enum import AltitudeAccuracyEnum
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class AltitudeAccuracyEnumGInput(ValidataclassMixin):
     value: AltitudeAccuracyEnum = EnumValidator(AltitudeAccuracyEnum)
     extendedValueG: str | UnsetValueType = StringValidator(), Default(UnsetValue)

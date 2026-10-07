@@ -14,7 +14,7 @@ from .multilingual_string_input import MultilingualStringInput
 from .referent_input import ReferentInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class LinearElementByPointsInput(ValidataclassMixin):
     roadName: MultilingualStringInput | UnsetValueType = (
         DataclassValidator(MultilingualStringInput),

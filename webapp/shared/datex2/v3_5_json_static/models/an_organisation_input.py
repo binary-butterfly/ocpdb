@@ -23,7 +23,7 @@ from .organisation_unit_input import OrganisationUnitInput
 from .overall_period_input import OverallPeriodInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class AnOrganisationInput(ValidataclassMixin):
     """
     An organisation. It can be specialised to be referenceable.

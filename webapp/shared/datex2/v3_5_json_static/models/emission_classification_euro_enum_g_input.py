@@ -11,7 +11,7 @@ from .emission_classification_euro_enum import EmissionClassificationEuroEnum
 from .emission_classification_euro_enum_extension_type_g import EmissionClassificationEuroEnumExtensionTypeG
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class EmissionClassificationEuroEnumGInput(ValidataclassMixin):
     value: EmissionClassificationEuroEnum = EnumValidator(EmissionClassificationEuroEnum)
     extendedValueG: EmissionClassificationEuroEnumExtensionTypeG | UnsetValueType = (

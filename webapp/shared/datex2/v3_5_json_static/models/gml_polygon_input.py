@@ -11,7 +11,7 @@ from .extension_type_g_input import ExtensionTypeGInput
 from .gml_linear_ring_input import GmlLinearRingInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class GmlPolygonInput(ValidataclassMixin):
     """
     Planar surface defined by 1 exterior boundary and 0 or more interior boundaries

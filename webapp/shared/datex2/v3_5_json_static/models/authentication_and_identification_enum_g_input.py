@@ -10,7 +10,7 @@ from validataclass.validators import EnumValidator, StringValidator
 from .authentication_and_identification_enum import AuthenticationAndIdentificationEnum
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class AuthenticationAndIdentificationEnumGInput(ValidataclassMixin):
     value: AuthenticationAndIdentificationEnum = EnumValidator(AuthenticationAndIdentificationEnum)
     extendedValueG: str | UnsetValueType = StringValidator(), Default(UnsetValue)

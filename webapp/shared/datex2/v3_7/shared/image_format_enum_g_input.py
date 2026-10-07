@@ -10,7 +10,7 @@ from validataclass.validators import EnumValidator, StringValidator
 from .image_format_enum import ImageFormatEnum
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class ImageFormatEnumGInput(ValidataclassMixin):
     value: ImageFormatEnum = EnumValidator(ImageFormatEnum)
     extendedValueG: str | UnsetValueType = StringValidator(), Default(UnsetValue)

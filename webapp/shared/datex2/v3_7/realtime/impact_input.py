@@ -12,7 +12,7 @@ from webapp.shared.datex2.v3_7.shared.delays_input import DelaysInput
 from .impact_extension_type_g_input import ImpactExtensionTypeGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class ImpactInput(ValidataclassMixin):
     capacityRemaining: float | UnsetValueType = FloatValidator(allow_integers=True), Default(UnsetValue)
     numberOfLanesRestricted: int | UnsetValueType = IntegerValidator(min_value=0), Default(UnsetValue)

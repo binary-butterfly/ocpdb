@@ -27,7 +27,7 @@ from .service_type_input import ServiceTypeInput
 from .supplemental_facility_status_input import SupplementalFacilityStatusInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class EnergyInfrastructureSiteStatusInput(ValidataclassMixin):
     """
     Dynamic information on the status of the energy supplying site

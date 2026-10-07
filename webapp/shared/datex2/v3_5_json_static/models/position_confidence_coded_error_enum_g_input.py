@@ -10,7 +10,7 @@ from validataclass.validators import EnumValidator, StringValidator
 from .position_confidence_coded_error_enum import PositionConfidenceCodedErrorEnum
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class PositionConfidenceCodedErrorEnumGInput(ValidataclassMixin):
     value: PositionConfidenceCodedErrorEnum = EnumValidator(PositionConfidenceCodedErrorEnum)
     extendedValueG: str | UnsetValueType = StringValidator(), Default(UnsetValue)

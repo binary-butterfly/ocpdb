@@ -15,7 +15,7 @@ from webapp.shared.datex2.v3_7.shared.speed_value_input import SpeedValueInput
 from .vehicle_characteristics_input import VehicleCharacteristicsInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class TrafficSpeedInput(ValidataclassMixin):
     measurementOrCalculationTime: MeasurementOrCalculationTimeInput | UnsetValueType = (
         DataclassValidator(MeasurementOrCalculationTimeInput),

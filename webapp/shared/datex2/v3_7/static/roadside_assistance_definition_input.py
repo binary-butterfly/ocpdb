@@ -13,7 +13,7 @@ from webapp.shared.datex2.v3_7.shared.roadside_assistance_type_enum_g_input impo
 from .location_reference_g_input import LocationReferenceGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class RoadsideAssistanceDefinitionInput(ValidataclassMixin):
     roadsideAssistanceType: RoadsideAssistanceTypeEnumGInput = DataclassValidator(RoadsideAssistanceTypeEnumGInput)
     targetLocation: list[LocationReferenceGInput] | UnsetValueType = (

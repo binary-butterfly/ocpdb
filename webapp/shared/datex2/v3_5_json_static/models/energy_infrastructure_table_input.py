@@ -11,7 +11,7 @@ from .energy_infrastructure_site_input import EnergyInfrastructureSiteInput
 from .extension_type_g_input import ExtensionTypeGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class EnergyInfrastructureTableInput(ValidataclassMixin):
     """
     A table of sites where vehicles can be supplied with energy.

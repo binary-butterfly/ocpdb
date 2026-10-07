@@ -14,7 +14,7 @@ from webapp.shared.datex2.v3_7.shared.vehicle_flow_value_input import VehicleFlo
 from .vehicle_characteristics_input import VehicleCharacteristicsInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class VehicleRateInput(ValidataclassMixin):
     fillRate: VehicleFlowValueInput | UnsetValueType = DataclassValidator(VehicleFlowValueInput), Default(UnsetValue)
     exitRate: VehicleFlowValueInput | UnsetValueType = DataclassValidator(VehicleFlowValueInput), Default(UnsetValue)

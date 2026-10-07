@@ -15,7 +15,7 @@ from webapp.shared.datex2.v3_7.shared.traffic_density_value_input import Traffic
 from .vehicle_characteristics_input import VehicleCharacteristicsInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class TrafficConcentrationInput(ValidataclassMixin):
     measurementOrCalculationTime: MeasurementOrCalculationTimeInput | UnsetValueType = (
         DataclassValidator(MeasurementOrCalculationTimeInput),

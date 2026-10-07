@@ -12,7 +12,7 @@ from webapp.shared.datex2.v3_7.shared.extension_type_g_input import ExtensionTyp
 from .vms_controller_vms_index_vms_g_input import vmsControllerVmsIndexVmsGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class VmsControllerInput(ValidataclassMixin):
     idG: str = StringValidator()
     versionG: str = StringValidator()

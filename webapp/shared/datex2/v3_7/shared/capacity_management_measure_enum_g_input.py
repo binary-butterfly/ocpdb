@@ -10,7 +10,7 @@ from validataclass.validators import EnumValidator, StringValidator
 from .capacity_management_measure_enum import CapacityManagementMeasureEnum
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class CapacityManagementMeasureEnumGInput(ValidataclassMixin):
     value: CapacityManagementMeasureEnum = EnumValidator(CapacityManagementMeasureEnum)
     extendedValueG: str | UnsetValueType = StringValidator(), Default(UnsetValue)

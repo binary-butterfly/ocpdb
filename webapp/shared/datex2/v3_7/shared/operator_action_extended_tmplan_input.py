@@ -10,7 +10,7 @@ from validataclass.validators import DataclassValidator
 from .tmplan_implementing_action_input import TmplanImplementingActionInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class OperatorActionExtendedTmplanInput(ValidataclassMixin):
     tmplanImplementingAction: TmplanImplementingActionInput | UnsetValueType = (
         DataclassValidator(TmplanImplementingActionInput),

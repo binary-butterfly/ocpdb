@@ -10,7 +10,7 @@ from validataclass.validators import EnumValidator, StringValidator
 from .parking_route_orientation_enum import ParkingRouteOrientationEnum
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class ParkingRouteOrientationEnumGInput(ValidataclassMixin):
     value: ParkingRouteOrientationEnum = EnumValidator(ParkingRouteOrientationEnum)
     extendedValueG: str | UnsetValueType = StringValidator(), Default(UnsetValue)

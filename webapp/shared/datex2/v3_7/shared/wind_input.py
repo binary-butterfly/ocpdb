@@ -13,7 +13,7 @@ from .extension_type_g_input import ExtensionTypeGInput
 from .wind_speed_value_input import WindSpeedValueInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class WindInput(ValidataclassMixin):
     windMeasurementHeight: int | UnsetValueType = IntegerValidator(min_value=0), Default(UnsetValue)
     windSpeed: WindSpeedValueInput | UnsetValueType = DataclassValidator(WindSpeedValueInput), Default(UnsetValue)

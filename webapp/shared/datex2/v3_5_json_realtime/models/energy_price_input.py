@@ -15,7 +15,7 @@ from .price_type_enum_g_input import PriceTypeEnumGInput
 from .time_based_applicability_input import TimeBasedApplicabilityInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class EnergyPriceInput(ValidataclassMixin):
     """
     Price definition for energy refueling. All prices belonging to one rate are applied within their applicability ("AND"). They are NOT different alternatives ("OR").

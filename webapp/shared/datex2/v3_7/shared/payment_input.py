@@ -14,7 +14,7 @@ from .payment_brands_enum_g_input import PaymentBrandsEnumGInput
 from .payment_mode_enum_g_input import PaymentModeEnumGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class PaymentInput(ValidataclassMixin):
     paymentMode: list[PaymentModeEnumGInput] | UnsetValueType = (
         ListValidator(DataclassValidator(PaymentModeEnumGInput)),

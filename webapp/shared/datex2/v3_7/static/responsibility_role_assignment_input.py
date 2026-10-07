@@ -13,7 +13,7 @@ from webapp.shared.datex2.v3_7.shared.extension_type_g_input import ExtensionTyp
 from .organisation_g_input import OrganisationGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class ResponsibilityRoleAssignmentInput(ValidataclassMixin):
     type: ContactTypeEnumGInput = DataclassValidator(ContactTypeEnumGInput)
     organisation: list[OrganisationGInput] = ListValidator(DataclassValidator(OrganisationGInput))

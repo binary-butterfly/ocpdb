@@ -10,7 +10,7 @@ from validataclass.validators import EnumValidator, StringValidator
 from .access_equipment_enum import AccessEquipmentEnum
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class AccessEquipmentEnumGInput(ValidataclassMixin):
     value: AccessEquipmentEnum = EnumValidator(AccessEquipmentEnum)
     extendedValueG: str | UnsetValueType = StringValidator(), Default(UnsetValue)

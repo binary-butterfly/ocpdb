@@ -18,7 +18,7 @@ from .rate_matrix_input import RateMatrixInput
 from .rate_table_input import RateTableInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class RatesGInput(ValidataclassMixin):
     """
     Only one of the properties shall be used in an instance.

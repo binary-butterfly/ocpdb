@@ -12,7 +12,7 @@ from .legal_basis_input import LegalBasisInput
 from .validity_input import ValidityInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class ValidityConditionInput(ValidataclassMixin):
     negate: bool | UnsetValueType = BooleanValidator(), Default(UnsetValue)
     legalBasis: LegalBasisInput | UnsetValueType = DataclassValidator(LegalBasisInput), Default(UnsetValue)

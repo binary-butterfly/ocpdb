@@ -15,7 +15,7 @@ from .operating_hours_specification_versioned_reference_g_input import (
 from .operating_hours_table_versioned_reference_g_input import OperatingHoursTableVersionedReferenceGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class OperatingHoursByReferenceInput(ValidataclassMixin):
     """
     Operating hours information that is addressed via a reference.

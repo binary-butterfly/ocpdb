@@ -18,7 +18,7 @@ from webapp.shared.datex2.v3_7.shared.predefined_itinerary_versioned_reference_g
 from .destination_g_input import DestinationGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class ItineraryByReferenceInput(ValidataclassMixin):
     predefinedItineraryReference: PredefinedItineraryVersionedReferenceGInput = DataclassValidator(
         PredefinedItineraryVersionedReferenceGInput

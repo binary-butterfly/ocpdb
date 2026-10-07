@@ -14,7 +14,7 @@ from .itinerary_g_input import ItineraryGInput
 from .predefined_location_input import PredefinedLocationInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class PredefinedItineraryInput(ValidataclassMixin):
     idG: str = StringValidator()
     versionG: str = StringValidator()

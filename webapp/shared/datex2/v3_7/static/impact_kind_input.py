@@ -12,7 +12,7 @@ from webapp.shared.datex2.v3_7.shared.extension_type_g_input import ExtensionTyp
 from .impact_input import ImpactInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class ImpactKindInput(ValidataclassMixin):
     capacityReduced: bool | UnsetValueType = BooleanValidator(), Default(UnsetValue)
     impactDetail: ImpactInput | UnsetValueType = DataclassValidator(ImpactInput), Default(UnsetValue)

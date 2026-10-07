@@ -15,7 +15,7 @@ from .time_meaning_enum_g_input import TimeMeaningEnumGInput
 from .time_precision_enum_g_input import TimePrecisionEnumGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class MeasurementOrCalculationTimeInput(ValidataclassMixin):
     timeMeaning: TimeMeaningEnumGInput | UnsetValueType = DataclassValidator(TimeMeaningEnumGInput), Default(UnsetValue)
     timePrecision: TimePrecisionEnumGInput | UnsetValueType = (

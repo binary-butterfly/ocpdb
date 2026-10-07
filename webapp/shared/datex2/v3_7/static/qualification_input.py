@@ -18,7 +18,7 @@ from webapp.shared.datex2.v3_7.shared.user_qualification_input import UserQualif
 from .vehicle_characteristics_input import VehicleCharacteristicsInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class QualificationInput(ValidataclassMixin):
     withReservation: bool | UnsetValueType = BooleanValidator(), Default(UnsetValue)
     propulsionEnergyType: list[EnergySourceEnumGInput] | UnsetValueType = (

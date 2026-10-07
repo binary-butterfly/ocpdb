@@ -11,7 +11,7 @@ from .extension_type_g_input import ExtensionTypeGInput
 from .parking_occupancy_enum_g_input import ParkingOccupancyEnumGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class OccupancyLevelInput(ValidataclassMixin):
     occupanyIndicator: ParkingOccupancyEnumGInput = DataclassValidator(ParkingOccupancyEnumGInput)
     prkOccupancyLevelExtensionG: ExtensionTypeGInput | UnsetValueType = (

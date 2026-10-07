@@ -15,7 +15,7 @@ from .non_negative_integer_comparison_input import NonNegativeIntegerComparisonI
 from .time_drivers_licence_held_input import TimeDriversLicenceHeldInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class DriverConditionInput(ValidataclassMixin):
     negate: bool | UnsetValueType = BooleanValidator(), Default(UnsetValue)
     active: bool | UnsetValueType = BooleanValidator(), Default(UnsetValue)

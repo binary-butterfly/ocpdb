@@ -23,7 +23,7 @@ from webapp.shared.datex2.v3_7.shared.multilingual_string_input import Multiling
 from .measurement_site_table_input import MeasurementSiteTableInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class MeasurementSiteTablePublicationInput(ValidataclassMixin):
     lang: str = RegexValidator(pattern=r'^[a-z]{2}$')
     feedDescription: MultilingualStringInput | UnsetValueType = (

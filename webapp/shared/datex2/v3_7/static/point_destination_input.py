@@ -12,7 +12,7 @@ from webapp.shared.datex2.v3_7.shared.extension_type_g_input import ExtensionTyp
 from .point_location_g_input import PointLocationGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class PointDestinationInput(ValidataclassMixin):
     pointLocation: PointLocationGInput = DataclassValidator(PointLocationGInput)
     locDestinationExtensionG: ExtensionTypeGInput | UnsetValueType = (

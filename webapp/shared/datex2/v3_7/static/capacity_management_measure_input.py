@@ -18,7 +18,7 @@ from .location_reference_g_input import LocationReferenceGInput
 from .traffic_signal_input import TrafficSignalInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class CapacityManagementMeasureInput(ValidataclassMixin):
     measure: CapacityManagementMeasureEnumGInput = DataclassValidator(CapacityManagementMeasureEnumGInput)
     action: list[CapacityManagementActionEnumGInput] | UnsetValueType = (

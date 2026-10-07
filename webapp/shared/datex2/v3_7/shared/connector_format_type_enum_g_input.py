@@ -10,7 +10,7 @@ from validataclass.validators import EnumValidator, StringValidator
 from .connector_format_type_enum import ConnectorFormatTypeEnum
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class ConnectorFormatTypeEnumGInput(ValidataclassMixin):
     value: ConnectorFormatTypeEnum = EnumValidator(ConnectorFormatTypeEnum)
     extendedValueG: str | UnsetValueType = StringValidator(), Default(UnsetValue)

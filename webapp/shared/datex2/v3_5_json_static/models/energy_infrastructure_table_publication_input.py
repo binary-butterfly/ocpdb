@@ -15,7 +15,7 @@ from .header_information_input import HeaderInformationInput
 from .international_identifier_input import InternationalIdentifierInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class EnergyInfrastructureTablePublicationInput(ValidataclassMixin):
     """
     A publication of static information on the infrastructure for vehicle energy supply.

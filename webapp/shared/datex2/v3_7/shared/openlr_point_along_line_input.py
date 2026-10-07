@@ -15,7 +15,7 @@ from .openlr_orientation_enum_g_input import OpenlrOrientationEnumGInput
 from .openlr_side_of_road_enum_g_input import OpenlrSideOfRoadEnumGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class OpenlrPointAlongLineInput(ValidataclassMixin):
     openlrSideOfRoad: OpenlrSideOfRoadEnumGInput = DataclassValidator(OpenlrSideOfRoadEnumGInput)
     openlrOrientation: OpenlrOrientationEnumGInput = DataclassValidator(OpenlrOrientationEnumGInput)

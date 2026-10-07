@@ -10,7 +10,7 @@ from validataclass.validators import EnumValidator, StringValidator
 from .standing_or_parking_condition_type_enum import StandingOrParkingConditionTypeEnum
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class StandingOrParkingConditionTypeEnumGInput(ValidataclassMixin):
     value: StandingOrParkingConditionTypeEnum = EnumValidator(StandingOrParkingConditionTypeEnum)
     extendedValueG: str | UnsetValueType = StringValidator(), Default(UnsetValue)

@@ -12,7 +12,7 @@ from .overall_period_input import OverallPeriodInput
 from .service_type_enum_g_input import ServiceTypeEnumGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class ServiceTypeInput(ValidataclassMixin):
     """
     A specification of service types for the fuelling/charging and payment process

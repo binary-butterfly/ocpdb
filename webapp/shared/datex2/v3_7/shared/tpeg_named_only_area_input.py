@@ -13,7 +13,7 @@ from .tpeg_height_input import TpegHeightInput
 from .tpeg_loc01_area_location_subtype_enum_g_input import TpegLoc01AreaLocationSubtypeEnumGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class TpegNamedOnlyAreaInput(ValidataclassMixin):
     tpegAreaLocationType: TpegLoc01AreaLocationSubtypeEnumGInput = DataclassValidator(
         TpegLoc01AreaLocationSubtypeEnumGInput

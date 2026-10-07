@@ -11,7 +11,7 @@ from .fuel_type_enum import FuelTypeEnum
 from .fuel_type_enum_extension_type_g import FuelTypeEnumExtensionTypeG
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class FuelTypeEnumGInput(ValidataclassMixin):
     value: FuelTypeEnum = EnumValidator(FuelTypeEnum)
     extendedValueG: FuelTypeEnumExtensionTypeG | UnsetValueType = (

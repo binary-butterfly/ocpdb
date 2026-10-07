@@ -37,7 +37,7 @@ from .weather_related_road_condition_type_enum_g_input import WeatherRelatedRoad
 from .winter_equipment_management_type_enum_g_input import WinterEquipmentManagementTypeEnumGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class DetailedCauseTypeInput(ValidataclassMixin):
     abnormalTrafficType: AbnormalTrafficTypeEnumGInput | UnsetValueType = (
         DataclassValidator(AbnormalTrafficTypeEnumGInput),

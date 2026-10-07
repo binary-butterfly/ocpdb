@@ -11,7 +11,7 @@ from .amount_in_currency_input import AmountInCurrencyInput
 from .extension_type_g_input import ExtensionTypeGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class RateDiscountInput(ValidataclassMixin):
     discountRate: float | UnsetValueType = FloatValidator(allow_integers=True), Default(UnsetValue)
     fixedValue: AmountInCurrencyInput | UnsetValueType = DataclassValidator(AmountInCurrencyInput), Default(UnsetValue)

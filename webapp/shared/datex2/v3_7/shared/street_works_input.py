@@ -9,6 +9,6 @@ from validataclass.validators import DataclassValidator
 from .street_works_type_enum_g_input import StreetWorksTypeEnumGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class StreetWorksInput(ValidataclassMixin):
     streetWorksType: StreetWorksTypeEnumGInput = DataclassValidator(StreetWorksTypeEnumGInput)

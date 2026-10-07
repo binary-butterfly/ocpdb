@@ -16,7 +16,7 @@ from .vehicle_characteristics_input import VehicleCharacteristicsInput
 from .vehicle_input import VehicleInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class IndividualVehicleDataValuesInput(ValidataclassMixin):
     arrivalTime: datetime | UnsetValueType = DateTimeValidator(), Default(UnsetValue)
     distanceGap: float | UnsetValueType = FloatValidator(allow_integers=True), Default(UnsetValue)

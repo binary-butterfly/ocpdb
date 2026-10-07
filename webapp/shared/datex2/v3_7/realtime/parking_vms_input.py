@@ -15,7 +15,7 @@ from webapp.shared.datex2.v3_7.shared.vms_controller_versioned_reference_g_input
 from .organisation_g_input import OrganisationGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class ParkingVmsInput(ValidataclassMixin):
     vmsUsedToManageParking: VmsControllerVersionedReferenceGInput = DataclassValidator(
         VmsControllerVersionedReferenceGInput

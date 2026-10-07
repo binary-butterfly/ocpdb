@@ -10,7 +10,7 @@ from validataclass.validators import EnumValidator, StringValidator
 from .construction_work_type_enum import ConstructionWorkTypeEnum
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class ConstructionWorkTypeEnumGInput(ValidataclassMixin):
     value: ConstructionWorkTypeEnum = EnumValidator(ConstructionWorkTypeEnum)
     extendedValueG: str | UnsetValueType = StringValidator(), Default(UnsetValue)

@@ -12,7 +12,7 @@ from .extension_type_g_input import ExtensionTypeGInput
 from .situation_record_versioned_reference_g_input import SituationRecordVersionedReferenceGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class PredefinedActionInput(ValidataclassMixin):
     actionImplementingSituationRecord: SituationRecordVersionedReferenceGInput | UnsetValueType = (
         DataclassValidator(SituationRecordVersionedReferenceGInput),

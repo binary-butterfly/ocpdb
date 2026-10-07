@@ -14,7 +14,7 @@ from .location_g_input import LocationGInput
 from .route_description_input import RouteDescriptionInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class ReroutingManagementEnhancedInput(ValidataclassMixin):
     name: MultilingualStringInput | UnsetValueType = DataclassValidator(MultilingualStringInput), Default(UnsetValue)
     type: ReroutingTypeEnumGInput | UnsetValueType = DataclassValidator(ReroutingTypeEnumGInput), Default(UnsetValue)

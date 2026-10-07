@@ -11,7 +11,7 @@ from .extension_type_g_input import ExtensionTypeGInput
 from .multilingual_string_input import MultilingualStringInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class RgbColourInput(ValidataclassMixin):
     red: int = IntegerValidator(min_value=0)
     green: int = IntegerValidator(min_value=0)

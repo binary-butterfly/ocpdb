@@ -12,7 +12,7 @@ from .extension_type_g_input import ExtensionTypeGInput
 from .international_identifier_input import InternationalIdentifierInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class GeneralDeviceTableReferenceInput(ValidataclassMixin):
     externalPublicationIdentifier: str | UnsetValueType = StringValidator(), Default(UnsetValue)
     deviceTableReference: DeviceTableVersionedReferenceGInput = DataclassValidator(DeviceTableVersionedReferenceGInput)

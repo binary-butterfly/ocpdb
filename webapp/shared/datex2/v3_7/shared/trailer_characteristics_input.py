@@ -11,7 +11,7 @@ from .extension_type_g_input import ExtensionTypeGInput
 from .gross_trailer_weight_characteristics_input import GrossTrailerWeightCharacteristicsInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class TrailerCharacteristicsInput(ValidataclassMixin):
     grossTrailerWeightCharacteristics: list[GrossTrailerWeightCharacteristicsInput] | UnsetValueType = (
         ListValidator(DataclassValidator(GrossTrailerWeightCharacteristicsInput)),

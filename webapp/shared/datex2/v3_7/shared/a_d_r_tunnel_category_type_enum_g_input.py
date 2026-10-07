@@ -10,7 +10,7 @@ from validataclass.validators import EnumValidator, StringValidator
 from .a_d_r_tunnel_category_type_enum import ADRTunnelCategoryTypeEnum
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class ADRTunnelCategoryTypeEnumGInput(ValidataclassMixin):
     value: ADRTunnelCategoryTypeEnum = EnumValidator(ADRTunnelCategoryTypeEnum)
     extendedValueG: str | UnsetValueType = StringValidator(), Default(UnsetValue)

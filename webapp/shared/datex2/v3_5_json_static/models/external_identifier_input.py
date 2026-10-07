@@ -11,7 +11,7 @@ from .extension_type_g_input import ExtensionTypeGInput
 from .type_of_identifier_enum_g_input import TypeOfIdentifierEnumGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class ExternalIdentifierInput(ValidataclassMixin):
     """
     An external (maybe national) identifier, optional with its specific type.

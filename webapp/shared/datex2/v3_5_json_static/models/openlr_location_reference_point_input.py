@@ -13,7 +13,7 @@ from .openlr_path_attributes_input import OpenlrPathAttributesInput
 from .point_coordinates_input import PointCoordinatesInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class OpenlrLocationReferencePointInput(ValidataclassMixin):
     """
     The basis of a location reference is a sequence of location reference points (LRPs).

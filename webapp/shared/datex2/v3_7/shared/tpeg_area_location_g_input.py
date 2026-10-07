@@ -11,7 +11,7 @@ from .tpeg_geometric_area_input import TpegGeometricAreaInput
 from .tpeg_named_only_area_input import TpegNamedOnlyAreaInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class TpegAreaLocationGInput(ValidataclassMixin):
     """
     Only one of the properties shall be used in an instance.

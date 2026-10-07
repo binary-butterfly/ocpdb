@@ -12,7 +12,7 @@ from .extension_type_g_input import ExtensionTypeGInput
 from .information_status_enum_g_input import InformationStatusEnumGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class HeaderInformationInput(ValidataclassMixin):
     """
     Management information relating to the data contained within a publication.

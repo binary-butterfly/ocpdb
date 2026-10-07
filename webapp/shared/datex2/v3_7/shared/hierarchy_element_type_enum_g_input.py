@@ -10,7 +10,7 @@ from validataclass.validators import EnumValidator, StringValidator
 from .hierarchy_element_type_enum import HierarchyElementTypeEnum
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class HierarchyElementTypeEnumGInput(ValidataclassMixin):
     value: HierarchyElementTypeEnum = EnumValidator(HierarchyElementTypeEnum)
     extendedValueG: str | UnsetValueType = StringValidator(), Default(UnsetValue)

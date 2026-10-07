@@ -10,7 +10,7 @@ from validataclass.validators import DataclassValidator, ListValidator
 from .classified_delay_input import ClassifiedDelayInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class ImpactExtendedUrbanInput(ValidataclassMixin):
     classifiedDelay: list[ClassifiedDelayInput] | UnsetValueType = (
         ListValidator(DataclassValidator(ClassifiedDelayInput)),

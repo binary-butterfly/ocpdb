@@ -16,7 +16,7 @@ from .multilingual_string_input import MultilingualStringInput
 from .vms_fault_enum_g_input import VmsFaultEnumGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class VmsFaultInput(ValidataclassMixin):
     faultIdentifier: str | UnsetValueType = StringValidator(), Default(UnsetValue)
     faultDescription: MultilingualStringInput | UnsetValueType = (

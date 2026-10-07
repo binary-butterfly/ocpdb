@@ -13,7 +13,7 @@ from .multilingual_string_input import MultilingualStringInput
 from .traffic_status_enum_g_input import TrafficStatusEnumGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class TrafficStatusValueInput(ValidataclassMixin):
     dataError: bool | UnsetValueType = BooleanValidator(), Default(UnsetValue)
     reasonForDataError: MultilingualStringInput | UnsetValueType = (

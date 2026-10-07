@@ -10,7 +10,7 @@ from validataclass.validators import EnumValidator, StringValidator
 from .pictogram_enum import PictogramEnum
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class PictogramEnumGInput(ValidataclassMixin):
     value: PictogramEnum = EnumValidator(PictogramEnum)
     extendedValueG: str | UnsetValueType = StringValidator(), Default(UnsetValue)

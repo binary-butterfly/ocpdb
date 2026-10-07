@@ -18,7 +18,7 @@ from .extension_type_g_input import ExtensionTypeGInput
 from .information_type_enum_g_input import InformationTypeEnumGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class TextLineInput(ValidataclassMixin):
     textLine: str = StringValidator()
     lineLanguage: str | UnsetValueType = RegexValidator(pattern=r'^[a-z]{2}$'), Default(UnsetValue)

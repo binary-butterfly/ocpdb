@@ -6,7 +6,7 @@ Use of this source code is governed by an MIT-style license that can be found in
 from validataclass.dataclasses import ValidataclassMixin, validataclass
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class NamedAreaGInput(ValidataclassMixin):
     """
     Only one of the properties shall be used in an instance.

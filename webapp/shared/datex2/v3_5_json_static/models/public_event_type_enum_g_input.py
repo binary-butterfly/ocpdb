@@ -10,7 +10,7 @@ from validataclass.validators import EnumValidator, StringValidator
 from .public_event_type_enum import PublicEventTypeEnum
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class PublicEventTypeEnumGInput(ValidataclassMixin):
     value: PublicEventTypeEnum = EnumValidator(PublicEventTypeEnum)
     extendedValueG: str | UnsetValueType = StringValidator(), Default(UnsetValue)

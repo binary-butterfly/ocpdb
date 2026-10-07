@@ -23,7 +23,7 @@ from webapp.shared.datex2.v3_7.shared.supplementary_positional_description_input
 from .destination_g_input import DestinationGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class LinearLocationInput(ValidataclassMixin):
     externalReferencing: list[ExternalReferencingInput] | UnsetValueType = (
         ListValidator(DataclassValidator(ExternalReferencingInput)),

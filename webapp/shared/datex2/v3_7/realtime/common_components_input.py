@@ -21,7 +21,7 @@ from .parking_route_g_input import ParkingRouteGInput
 from .parking_vms_input import ParkingVmsInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class CommonComponentsInput(ValidataclassMixin):
     rgbColour: list[RgbColourInput] | UnsetValueType = (
         ListValidator(DataclassValidator(RgbColourInput)),

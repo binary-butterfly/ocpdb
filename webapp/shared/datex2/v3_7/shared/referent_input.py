@@ -13,7 +13,7 @@ from .point_coordinates_input import PointCoordinatesInput
 from .referent_type_enum_g_input import ReferentTypeEnumGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class ReferentInput(ValidataclassMixin):
     referentIdentifier: str = StringValidator()
     referentName: str | UnsetValueType = StringValidator(), Default(UnsetValue)

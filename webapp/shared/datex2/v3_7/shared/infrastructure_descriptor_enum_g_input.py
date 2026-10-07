@@ -11,7 +11,7 @@ from .infrastructure_descriptor_enum import InfrastructureDescriptorEnum
 from .infrastructure_descriptor_enum_extension_type_g import InfrastructureDescriptorEnumExtensionTypeG
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class InfrastructureDescriptorEnumGInput(ValidataclassMixin):
     value: InfrastructureDescriptorEnum = EnumValidator(InfrastructureDescriptorEnum)
     extendedValueG: InfrastructureDescriptorEnumExtensionTypeG | UnsetValueType = (

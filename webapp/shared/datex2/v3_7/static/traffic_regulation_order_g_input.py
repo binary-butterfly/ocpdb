@@ -11,7 +11,7 @@ from .temporary_traffic_regulation_order_input import TemporaryTrafficRegulation
 from .traffic_regulation_order_input import TrafficRegulationOrderInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class TrafficRegulationOrderGInput(ValidataclassMixin):
     """
     Only one of the properties shall be used in an instance.

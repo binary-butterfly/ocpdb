@@ -27,7 +27,7 @@ from webapp.shared.datex2.v3_7.shared.tpeg_point_location_g_input import TpegPoi
 from .destination_g_input import DestinationGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class PointLocationForParkingInput(ValidataclassMixin):
     externalReferencing: list[ExternalReferencingInput] | UnsetValueType = (
         ListValidator(DataclassValidator(ExternalReferencingInput)),

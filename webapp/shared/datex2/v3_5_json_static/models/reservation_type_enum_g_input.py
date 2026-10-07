@@ -10,7 +10,7 @@ from validataclass.validators import EnumValidator, StringValidator
 from .reservation_type_enum import ReservationTypeEnum
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class ReservationTypeEnumGInput(ValidataclassMixin):
     value: ReservationTypeEnum = EnumValidator(ReservationTypeEnum)
     extendedValueG: str | UnsetValueType = StringValidator(), Default(UnsetValue)

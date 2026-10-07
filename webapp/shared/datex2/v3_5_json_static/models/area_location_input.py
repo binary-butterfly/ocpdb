@@ -17,7 +17,7 @@ from .openlr_area_location_reference_g_input import OpenlrAreaLocationReferenceG
 from .point_coordinates_input import PointCoordinatesInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class AreaLocationInput(ValidataclassMixin):
     """
     Location representing a geographic or geometric defined area which may be qualified by height information to provide additional geospatial discrimination (e.g. for snow in an area but only above a certain altitude).

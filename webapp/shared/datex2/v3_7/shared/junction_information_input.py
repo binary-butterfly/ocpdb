@@ -13,7 +13,7 @@ from .multilingual_string_input import MultilingualStringInput
 from .road_information_g_input import RoadInformationGInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class JunctionInformationInput(ValidataclassMixin):
     junctionClassification: JunctionClassificationEnumGInput | UnsetValueType = (
         DataclassValidator(JunctionClassificationEnumGInput),

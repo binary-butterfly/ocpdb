@@ -10,7 +10,7 @@ from validataclass.validators import EnumValidator, StringValidator
 from .involvement_roles_enum import InvolvementRolesEnum
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class InvolvementRolesEnumGInput(ValidataclassMixin):
     value: InvolvementRolesEnum = EnumValidator(InvolvementRolesEnum)
     extendedValueG: str | UnsetValueType = StringValidator(), Default(UnsetValue)

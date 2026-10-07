@@ -11,7 +11,7 @@ from .address_input import AddressInput
 from .nuts_area_input import NutsAreaInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class AfirFacilityLocationInput(ValidataclassMixin):
     timeZone: str | UnsetValueType = StringValidator(), Default(UnsetValue)
     address: AddressInput | UnsetValueType = DataclassValidator(AddressInput), Default(UnsetValue)

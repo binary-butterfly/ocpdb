@@ -10,7 +10,7 @@ from validataclass.validators import EnumValidator, StringValidator
 from .refill_point_status_enum import RefillPointStatusEnum
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class RefillPointStatusEnumGInput(ValidataclassMixin):
     value: RefillPointStatusEnum = EnumValidator(RefillPointStatusEnum)
     extendedValueG: str | UnsetValueType = StringValidator(), Default(UnsetValue)

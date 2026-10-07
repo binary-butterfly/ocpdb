@@ -11,7 +11,7 @@ from .extension_type_g_input import ExtensionTypeGInput
 from .openlr_rectangle_input import OpenlrRectangleInput
 
 
-@validataclass
+@validataclass(reject_unknown_fields=True)
 class OpenlrRectangleLocationReferenceInput(ValidataclassMixin):
     """
     The openLR method of area definition by providing a rectangular shape defined by two geo-coordinate pairs
