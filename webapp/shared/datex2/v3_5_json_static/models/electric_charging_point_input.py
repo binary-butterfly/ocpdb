@@ -8,6 +8,7 @@ from datetime import datetime
 from validataclass.dataclasses import Default, ValidataclassMixin, validataclass
 from validataclass.helpers import UnsetValue, UnsetValueType
 from validataclass.validators import (
+    AnythingValidator,
     DataclassValidator,
     DateTimeValidator,
     FloatValidator,
@@ -132,6 +133,12 @@ class ElectricChargingPointInput(ValidataclassMixin):
     )
     dimension: DimensionInput | UnsetValueType = DataclassValidator(DimensionInput), Default(UnsetValue)
     amenities: AmenitiesInput | UnsetValueType = DataclassValidator(AmenitiesInput), Default(UnsetValue)
+    # Manually added: generator drops this field because SupplementalFacilityG references ElectricChargingPoint via
+    # ElectricChargingEquipment (circular import). Validated loosely as it's not used in the mapper.
+    supplementalFacility: list[dict] | UnsetValueType = (
+        ListValidator(AnythingValidator(allowed_types=[dict])),
+        Default(UnsetValue),
+    )
     dedicatedParkingSpaces: list[DedicatedParkingSpacesInput] | UnsetValueType = (
         ListValidator(DataclassValidator(DedicatedParkingSpacesInput)),
         Default(UnsetValue),
