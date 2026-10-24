@@ -52,7 +52,7 @@ services:
     command: ["python3", "run_celery_heartbeat_dev.py"]
 
   postgre:
-    image: postgis/postgis:15-3.5-alpine
+    image: postgis/postgis:15-3.6-alpine
     environment:
       - POSTGRES_USER=ocpdb
       - POSTGRES_PASSWORD=development
@@ -83,7 +83,7 @@ services:
     command: ["/scripts/import-regionalschluessel.sh"]
 
   rabbitmq:
-    image: rabbitmq:4.3
+    image: rabbitmq:4.4
     user: rabbitmq
     environment:
       # Disable spammy logging
