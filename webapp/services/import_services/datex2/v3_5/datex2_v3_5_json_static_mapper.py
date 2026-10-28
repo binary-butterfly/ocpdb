@@ -228,7 +228,7 @@ class Datex2V35JSONStaticMapper:
         if location_reference.locPointLocation and location_reference.locPointLocation.locLocationExtensionG:
             return location_reference.locPointLocation.locLocationExtensionG.FacilityLocation
 
-        if location_reference.locAreaLocation.locLocationExtensionG:
+        if location_reference.locAreaLocation and location_reference.locAreaLocation.locLocationExtensionG:
             return location_reference.locAreaLocation.locLocationExtensionG.FacilityLocation
 
         return None
