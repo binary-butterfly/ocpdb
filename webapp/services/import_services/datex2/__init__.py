@@ -26,6 +26,7 @@ from .v3_5 import (
     EnioDatex2ImportService,
     ERoundDatex2ImportService,
     GridAndCoDatex2ImportService,
+    InergiaDatex2ImportService,
     LadebusinessDatex2ImportService,
     LichtblickDatex2ImportService,
     MidorionDatex2ImportService,
