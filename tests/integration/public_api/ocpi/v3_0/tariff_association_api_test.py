@@ -130,7 +130,9 @@ def test_get_ocpi_30_tariff_associations_loads_just_evse_ids(
     db: SQLAlchemy,
     public_test_client: OpenApiFlaskClient,
 ) -> None:
-    """Tariff associations render just the ids of their EVSEs, so the EVSEs are not loaded completely."""
+    """
+    Tariff associations render just the ids of their EVSEs, so the EVSEs are not loaded completely.
+    """
     tariff = get_tariff_1()
     db.session.add(tariff)
     db.session.flush()

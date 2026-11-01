@@ -166,6 +166,14 @@ line-length = 120
     # Don't require __init__.py files
     "INP",
 ]
+"dev/*" = [
+    # Don't require __init__.py files
+    "INP",
+    # Allow print in helper scripts
+    "T201",
+    # Token URLs are no passwords
+    "S105",
+]
 
 [tool.ruff.lint.flake8-quotes]
 inline-quotes = "single"

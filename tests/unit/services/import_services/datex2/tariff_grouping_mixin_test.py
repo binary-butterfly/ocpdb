@@ -40,7 +40,9 @@ SOURCE_UID = 'datex2_test'
 
 
 class TariffGroupingService(TariffGroupingMixin):
-    """Minimal host for the mixin: it only needs a source_info to name the source in its log line."""
+    """
+    Minimal host for the mixin: it only needs a source_info to name the source in its log line.
+    """
 
     source_info = SourceInfo(
         uid=SOURCE_UID,
@@ -118,7 +120,9 @@ def _build_location_update(*tariff_updates: TariffUpdate) -> LocationUpdate:
 def _build_location_update_from_associations(
     *tariff_association_updates_per_evse: list[TariffAssociationUpdate],
 ) -> LocationUpdate:
-    """Wrap each list of tariff associations into its own EVSE."""
+    """
+    Wrap each list of tariff associations into its own EVSE.
+    """
     evse_updates: list[EvseUpdate] = []
     for index, tariff_association_updates in enumerate(tariff_association_updates_per_evse):
         evse_updates.append(
@@ -147,7 +151,9 @@ def _build_location_update_from_associations(
 
 
 def _grouped_tariff_association_updates(*location_updates: LocationUpdate) -> list[TariffAssociationUpdate]:
-    """The tariff associations which survived the grouping, in the order the EVSEs hold them."""
+    """
+    The tariff associations which survived the grouping, in the order the EVSEs hold them.
+    """
     return [
         tariff_association_update
         for location_update in location_updates
@@ -158,7 +164,9 @@ def _grouped_tariff_association_updates(*location_updates: LocationUpdate) -> li
 
 
 def _grouped_tariff_updates(*location_updates: LocationUpdate) -> list[TariffUpdate]:
-    """The tariffs which survived the grouping, in the order their associations appear."""
+    """
+    The tariffs which survived the grouping, in the order their associations appear.
+    """
     return [
         tariff_association_update.tariff
         for tariff_association_update in _grouped_tariff_association_updates(*location_updates)
@@ -166,7 +174,9 @@ def _grouped_tariff_updates(*location_updates: LocationUpdate) -> list[TariffUpd
 
 
 def test_group_identical_tariffs_collapses_identical_fees() -> None:
-    """Tariffs with identical fees collapse into one tariff, no matter which uid they started with."""
+    """
+    Tariffs with identical fees collapse into one tariff, no matter which uid they started with.
+    """
     tariff_updates = [_build_tariff_update(uid='first'), _build_tariff_update(uid='second')]
     location_update = _build_location_update(*tariff_updates)
 
@@ -220,7 +230,9 @@ def test_group_identical_tariffs_keeps_differing_audiences_apart() -> None:
 
 
 def test_group_identical_tariffs_uses_newest_last_updated() -> None:
-    """A group is stamped with the newest last_updated of its members."""
+    """
+    A group is stamped with the newest last_updated of its members.
+    """
     oldest = datetime(2026, 1, 1, 10, 0, tzinfo=timezone.utc)
     newest = datetime(2026, 5, 17, 8, 30, tzinfo=timezone.utc)
     middle = datetime(2026, 3, 2, 12, 0, tzinfo=timezone.utc)
@@ -246,7 +258,9 @@ def test_group_identical_tariffs_uses_newest_last_updated() -> None:
 
 
 def test_group_identical_tariffs_uses_oldest_start_date_time() -> None:
-    """The grouped association starts when the first EVSE of its group started to charge these fees."""
+    """
+    The grouped association starts when the first EVSE of its group started to charge these fees.
+    """
     oldest = datetime(2026, 1, 1, 10, 0, tzinfo=timezone.utc)
     newest = datetime(2026, 5, 17, 8, 30, tzinfo=timezone.utc)
     location_update = _build_location_update_from_associations(
@@ -279,7 +293,9 @@ def test_group_identical_tariffs_keeps_timestamps_none_without_timestamps() -> N
 
 
 def test_group_identical_tariffs_keeps_differing_fees_apart() -> None:
-    """Any difference in the fees keeps the tariffs, and with them their associations, separate."""
+    """
+    Any difference in the fees keeps the tariffs, and with them their associations, separate.
+    """
     reference = _build_tariff_update(uid='reference')
     tariff_updates = [
         reference,
@@ -302,7 +318,9 @@ def test_group_identical_tariffs_keeps_differing_fees_apart() -> None:
 
 
 def test_group_identical_tariffs_groups_across_locations() -> None:
-    """Grouping spans the whole import, not just a single location."""
+    """
+    Grouping spans the whole import, not just a single location.
+    """
     first_location_update = _build_location_update(_build_tariff_update(uid='first'))
     second_location_update = _build_location_update(_build_tariff_update(uid='second'))
 

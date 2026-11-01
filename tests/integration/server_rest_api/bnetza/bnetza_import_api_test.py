@@ -29,14 +29,18 @@ from webapp.dependencies import dependencies
 
 @pytest.fixture
 def stub_celery_delay():
-    """Stub out CeleryHelper.delay so the bnetza import task is not actually enqueued."""
+    """
+    Stub out CeleryHelper.delay so the bnetza import task is not actually enqueued.
+    """
     with patch.object(dependencies.get_celery_helper(), 'delay') as mock_delay:
         yield mock_delay
 
 
 @pytest.fixture
 def isolated_bnetza_dir(tmp_path: Path):
-    """Redirect BNETZA_IMPORT_DIR to a per-test temp directory to avoid polluting `data/`."""
+    """
+    Redirect BNETZA_IMPORT_DIR to a per-test temp directory to avoid polluting `data/`.
+    """
     config = dependencies.get_config_helper().get_config()
     original = config.get('BNETZA_IMPORT_DIR')
     config['BNETZA_IMPORT_DIR'] = str(tmp_path)

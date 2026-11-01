@@ -362,3 +362,38 @@ def test_enbw_datex2_realtime_loops_until_last_modified_stabilizes(
     assert source.realtime_data_updated_at.replace(tzinfo=timezone.utc) == datetime(
         2026, 4, 19, 12, 0, 0, tzinfo=timezone.utc
     )
+
+
+def test_enbw_datex2_realtime_not_modified_ends_pull(
+    db: SQLAlchemy,
+    requests_mock: Mocker,
+) -> None:
+    """
+    Mobilithek answers with 304 Not Modified once there is no newer data. This ends the pull loop: the statuses
+    received so far have to be saved and the source stays ACTIVE.
+    """
+    _mock_static(requests_mock)
+    requests_mock.get(
+        REALTIME_SUBSCRIPTION_URL,
+        [
+            {
+                'status_code': 200,
+                'text': _load_test_data('datex2_enbw_realtime_reduced.json'),
+                'headers': {'Content-Type': 'application/json', 'Last-Modified': 'Sat, 19 Apr 2026 10:00:00 GMT'},
+            },
+            {'status_code': 304, 'text': ''},
+        ],
+    )
+
+    enbw_service: EnBWDatex2ImportService = dependencies.get_import_services().importer_by_uid['datex2_enbw']
+    enbw_service.fetch_static_data()
+    enbw_service.fetch_realtime_data()
+
+    db.session.expire_all()
+
+    source = enbw_service.get_source()
+    assert source.realtime_status == SourceStatus.ACTIVE
+    assert source.realtime_data_updated_at.replace(tzinfo=timezone.utc) == parsedate_to_datetime(
+        'Sat, 19 Apr 2026 10:00:00 GMT',
+    )
+    assert db.session.query(Evse).filter(Evse.uid == 'DE*EBW*E914082*2').first().status == EvseStatus.AVAILABLE

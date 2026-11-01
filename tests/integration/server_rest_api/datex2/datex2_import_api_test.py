@@ -60,7 +60,9 @@ def _import_static_data(requests_mock: Mocker) -> None:
 
 
 def _fetch_realtime_data_updated_at(db: SQLAlchemy) -> datetime | None:
-    """Return the source's ``realtime_data_updated_at`` as an aware UTC datetime."""
+    """
+    Return the source's ``realtime_data_updated_at`` as an aware UTC datetime.
+    """
     db.session.expire_all()
     source = db.session.query(Source).filter(Source.uid == SOURCE_UID).first()
     if source is None or source.realtime_data_updated_at is None:
@@ -74,7 +76,9 @@ def _fetch_realtime_data_updated_at(db: SQLAlchemy) -> datetime | None:
 
 @pytest.fixture
 def isolated_datex2_dir(tmp_path: Path):
-    """Redirect DATEX2_IMPORT_DIR to a per-test temp directory."""
+    """
+    Redirect DATEX2_IMPORT_DIR to a per-test temp directory.
+    """
     config = dependencies.get_config_helper().get_config()
     original = config.get('DATEX2_IMPORT_DIR')
     config['DATEX2_IMPORT_DIR'] = str(tmp_path)
@@ -100,7 +104,9 @@ def eager_celery_helper():
 
 @pytest.fixture
 def stubbed_celery_delay():
-    """Replace ``CeleryHelper.delay`` with a no-op mock for tests that don't need the task to run."""
+    """
+    Replace ``CeleryHelper.delay`` with a no-op mock for tests that don't need the task to run.
+    """
     with patch.object(dependencies.get_celery_helper(), 'delay') as mock_delay:
         yield mock_delay
 
@@ -430,7 +436,9 @@ class Datex2RealtimeImportApiV35Test:
         isolated_datex2_dir: Path,
         stubbed_celery_delay,
     ) -> None:
-        """A synchronously applied deltaPush must update ``realtime_data_updated_at`` as well."""
+        """
+        A synchronously applied deltaPush must update ``realtime_data_updated_at`` as well.
+        """
         _import_static_data(requests_mock)
 
         realtime_data = _load_test_data('datex2_enbw_realtime_reduced.json')

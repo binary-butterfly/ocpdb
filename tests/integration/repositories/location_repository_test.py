@@ -26,7 +26,9 @@ from webapp.repositories import ObjectNotFoundException
 
 
 def test_fetch_location_by_uid_respects_source(db: SQLAlchemy) -> None:
-    """Different sources can use the same location uid, so the source has to be part of the lookup."""
+    """
+    Different sources can use the same location uid, so the source has to be part of the lookup.
+    """
     db.session.add_all([
         get_location_1(source=SOURCE_UID_1, name='Location of source 1'),
         get_location_1(source=SOURCE_UID_2, name='Location of source 2'),

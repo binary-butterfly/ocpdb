@@ -1,0 +1,201 @@
+{
+  "messageContainer": {
+    "exchangeInformation": {
+      "dynamicInformation": {
+        "exchangeStatus": {
+          "value": "online"
+        },
+        "messageGenerationTimestamp": "2026-10-28T20:00:00+00:00"
+      },
+      "exchangeContext": {
+        "codedExchangeProtocol": {
+          "value": "snapshotPush"
+        },
+        "exchangeSpecificationVersion": "3.7",
+        "supplierOrCisRequester": {
+          "name": "GLS Mobility GmbH"
+        }
+      }
+    },
+    "payload": [
+      {
+        "aegiEnergyInfrastructureStatusPublication": {
+          "energyInfrastructureSiteStatus": [
+            {
+              "energyInfrastructureStationStatus": [
+                {
+                  "lastUpdated": "2026-10-28T20:00:00+00:00",
+                  "reference": {
+                    "idG": "1",
+                    "targetClass": "FacilityObject",
+                    "versionG": "1"
+                  },
+                  "refillPointStatus": [
+                    {
+                      "aegiElectricChargingPointStatus": {
+                        "lastUpdated": "2026-10-28T20:00:00+00:00",
+                        "reference": {
+                          "idG": "1",
+                          "targetClass": "FacilityObject",
+                          "versionG": "1"
+                        },
+                        "status": {
+                          "value": "available"
+                        }
+                      }
+                    },
+                    {
+                      "aegiElectricChargingPointStatus": {
+                        "lastUpdated": "2026-10-28T20:00:00+00:00",
+                        "reference": {
+                          "idG": "2",
+                          "targetClass": "FacilityObject",
+                          "versionG": "1"
+                        },
+                        "status": {
+                          "value": "charging"
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "lastUpdated": "2026-10-28T20:00:00+00:00",
+                  "reference": {
+                    "idG": "2",
+                    "targetClass": "FacilityObject",
+                    "versionG": "1"
+                  },
+                  "refillPointStatus": [
+                    {
+                      "aegiElectricChargingPointStatus": {
+                        "lastUpdated": "2026-10-28T20:00:00+00:00",
+                        "reference": {
+                          "idG": "3",
+                          "targetClass": "FacilityObject",
+                          "versionG": "1"
+                        },
+                        "status": {
+                          "value": "charging"
+                        }
+                      }
+                    },
+                    {
+                      "aegiElectricChargingPointStatus": {
+                        "lastUpdated": "2026-10-28T20:00:00+00:00",
+                        "reference": {
+                          "idG": "4",
+                          "targetClass": "FacilityObject",
+                          "versionG": "1"
+                        },
+                        "status": {
+                          "value": "available"
+                        }
+                      }
+                    }
+                  ]
+                }
+              ],
+              "lastUpdated": "2026-10-28T20:00:00+00:00",
+              "reference": {
+                "idG": "1",
+                "targetClass": "FacilityObject",
+                "versionG": "1"
+              }
+            },
+            {
+              "energyInfrastructureStationStatus": [
+                {
+                  "lastUpdated": "2026-10-28T20:00:00+00:00",
+                  "reference": {
+                    "idG": "3",
+                    "targetClass": "FacilityObject",
+                    "versionG": "1"
+                  },
+                  "refillPointStatus": [
+                    {
+                      "aegiElectricChargingPointStatus": {
+                        "lastUpdated": "2026-10-28T20:00:00+00:00",
+                        "reference": {
+                          "idG": "5",
+                          "targetClass": "FacilityObject",
+                          "versionG": "1"
+                        },
+                        "status": {
+                          "value": "available"
+                        }
+                      }
+                    },
+                    {
+                      "aegiElectricChargingPointStatus": {
+                        "lastUpdated": "2026-10-28T20:00:00+00:00",
+                        "reference": {
+                          "idG": "6",
+                          "targetClass": "FacilityObject",
+                          "versionG": "1"
+                        },
+                        "status": {
+                          "value": "charging"
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "lastUpdated": "2026-10-28T20:00:00+00:00",
+                  "reference": {
+                    "idG": "4",
+                    "targetClass": "FacilityObject",
+                    "versionG": "1"
+                  },
+                  "refillPointStatus": [
+                    {
+                      "aegiElectricChargingPointStatus": {
+                        "lastUpdated": "2026-10-28T20:00:00+00:00",
+                        "reference": {
+                          "idG": "7",
+                          "targetClass": "FacilityObject",
+                          "versionG": "1"
+                        },
+                        "status": {
+                          "value": "charging"
+                        }
+                      }
+                    },
+                    {
+                      "aegiElectricChargingPointStatus": {
+                        "lastUpdated": "2026-10-28T20:00:00+00:00",
+                        "reference": {
+                          "idG": "8",
+                          "targetClass": "FacilityObject",
+                          "versionG": "1"
+                        },
+                        "status": {
+                          "value": "available"
+                        }
+                      }
+                    }
+                  ]
+                }
+              ],
+              "lastUpdated": "2026-10-28T20:00:00+00:00",
+              "reference": {
+                "idG": "2",
+                "targetClass": "FacilityObject",
+                "versionG": "1"
+              }
+            }
+          ],
+          "lang": "de",
+          "publicationCreator": {
+            "country": "DE",
+            "nationalIdentifier": "DE-GLS"
+          },
+          "publicationTime": "2026-10-28T20:00:00+00:00"
+        },
+        "modelBaseVersionG": "3",
+        "versionG": "1"
+      }
+    ]
+  }
+}

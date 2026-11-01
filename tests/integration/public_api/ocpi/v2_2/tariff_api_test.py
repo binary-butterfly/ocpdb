@@ -145,7 +145,9 @@ def test_get_ocpi_22_tariff_merges_tariff_data(
     db: SQLAlchemy,
     public_test_client: OpenApiFlaskClient,
 ) -> None:
-    """Two associations pointing to the same tariff produce two OCPI 2.2 tariffs with same pricing but different types."""
+    """
+    Two associations pointing to the same tariff produce two OCPI 2.2 tariffs with same pricing but different types.
+    """
     tariff = get_tariff_1()
     tariff.elements = [
         TariffElement(
@@ -178,7 +180,9 @@ def test_get_ocpi_22_tariffs_does_not_load_evses_and_connectors(
     db: SQLAlchemy,
     public_test_client: OpenApiFlaskClient,
 ) -> None:
-    """OCPI 2.2 tariffs do not render the EVSEs and connectors of a tariff association, so they are not loaded."""
+    """
+    OCPI 2.2 tariffs do not render the EVSEs and connectors of a tariff association, so they are not loaded.
+    """
     tariff = get_tariff_1()
     db.session.add(tariff)
     db.session.flush()

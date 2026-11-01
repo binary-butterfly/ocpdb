@@ -498,7 +498,9 @@ def test_save_location_updates_replaces_per_evse_associations_with_a_shared_one(
 
 
 def _create_location_update_with_two_evses(*, tariff_association_uids: list[str]) -> LocationUpdate:
-    """One location with two EVSEs, each pointing at the tariff association of the given uid."""
+    """
+    One location with two EVSEs, each pointing at the tariff association of the given uid.
+    """
     tariff_update = TariffUpdate(
         uid='tariff1',
         source='test_source_uid',
@@ -631,7 +633,9 @@ def _create_location_update_with_tariff(
 
 
 def test_save_location_updates_deletes_tariffs_with_new_uid(db, testing_import_service: BaseImportService):
-    """A tariff which the source does not send anymore is deleted instead of staying behind unreferenced."""
+    """
+    A tariff which the source does not send anymore is deleted instead of staying behind unreferenced.
+    """
     testing_import_service.save_location_updates([_create_location_update_with_tariff(tariff_uid='tariff1')])
     testing_import_service.save_location_updates([_create_location_update_with_tariff(tariff_uid='tariff2')])
 
@@ -647,7 +651,9 @@ def test_save_location_updates_deletes_tariff_associations_of_kept_tariff(
     db,
     testing_import_service: BaseImportService,
 ):
-    """The tariff survives its renamed association, but the old association does not."""
+    """
+    The tariff survives its renamed association, but the old association does not.
+    """
     testing_import_service.save_location_updates([_create_location_update_with_tariff(tariff_association_uid='ta1')])
     testing_import_service.save_location_updates([_create_location_update_with_tariff(tariff_association_uid='ta2')])
 
@@ -656,7 +662,9 @@ def test_save_location_updates_deletes_tariff_associations_of_kept_tariff(
 
 
 def test_save_location_updates_deletes_tariffs_of_deleted_locations(db, testing_import_service: BaseImportService):
-    """Tariffs do not belong to a location, so a vanished location has to take its tariffs with it."""
+    """
+    Tariffs do not belong to a location, so a vanished location has to take its tariffs with it.
+    """
     testing_import_service.save_location_updates([
         _create_location_update_with_tariff(location_uid='loc1', tariff_association_uid='ta1', tariff_uid='tariff1'),
         _create_location_update_with_tariff(location_uid='loc2', tariff_association_uid='ta2', tariff_uid='tariff2'),
@@ -674,7 +682,9 @@ def test_save_location_updates_deletes_tariffs_of_deleted_locations(db, testing_
 
 
 def test_save_location_updates_keeps_tariffs_of_other_sources(db, testing_import_service: BaseImportService):
-    """The cleanup is limited to the source which is imported."""
+    """
+    The cleanup is limited to the source which is imported.
+    """
     other_source_tariff = Tariff(
         uid='tariff1',
         source='other_source_uid',

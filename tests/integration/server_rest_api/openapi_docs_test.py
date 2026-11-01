@@ -56,7 +56,9 @@ def test_server_openapi_json_renders(test_client: OpenApiFlaskClient) -> None:
 
 
 def test_server_openapi_html_renders(test_client: OpenApiFlaskClient) -> None:
-    """The Stoplight-Elements HTML wrapper page must load without errors."""
+    """
+    The Stoplight-Elements HTML wrapper page must load without errors.
+    """
     response = test_client.get('/documentation/server.html')
 
     assert response.status_code == HTTPStatus.OK

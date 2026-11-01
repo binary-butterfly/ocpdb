@@ -36,7 +36,9 @@ def test_connector_outputs_tariff_uids_of_its_evse(
     db: SQLAlchemy,
     public_test_client: OpenApiFlaskClient,
 ) -> None:
-    """Sources publish tariffs per EVSE, so the connectors of an EVSE output its tariff uids."""
+    """
+    Sources publish tariffs per EVSE, so the connectors of an EVSE output its tariff uids.
+    """
     tariff = get_tariff_1()
     db.session.add(tariff)
     db.session.flush()
@@ -56,7 +58,9 @@ def test_connector_outputs_all_tariff_uids_of_its_evse(
     db: SQLAlchemy,
     public_test_client: OpenApiFlaskClient,
 ) -> None:
-    """An EVSE offered under several tariffs passes all of their uids to its connectors."""
+    """
+    An EVSE offered under several tariffs passes all of their uids to its connectors.
+    """
     first_tariff = get_tariff_1()
     second_tariff = get_tariff_2()
     db.session.add_all([first_tariff, second_tariff])
@@ -106,7 +110,9 @@ def test_connector_tariff_uids_take_precedence_over_the_evse_ones(
     db: SQLAlchemy,
     public_test_client: OpenApiFlaskClient,
 ) -> None:
-    """A connector carrying its own tariffs does not inherit the ones of its EVSE."""
+    """
+    A connector carrying its own tariffs does not inherit the ones of its EVSE.
+    """
     evse_tariff = get_tariff_1()
     connector_tariff = get_tariff_2()
     db.session.add_all([evse_tariff, connector_tariff])
@@ -128,7 +134,9 @@ def test_connector_without_tariffs_omits_tariff_ids(
     db: SQLAlchemy,
     public_test_client: OpenApiFlaskClient,
 ) -> None:
-    """tariff_ids is optional in OCPI, so a connector without any tariff leaves it out."""
+    """
+    tariff_ids is optional in OCPI, so a connector without any tariff leaves it out.
+    """
     db.session.add(get_location_1(evses=[get_full_evse_1()], operator=get_business_1()))
     db.session.commit()
 
@@ -142,7 +150,9 @@ def test_evse_endpoint_outputs_connector_tariff_uids(
     db: SQLAlchemy,
     public_test_client: OpenApiFlaskClient,
 ) -> None:
-    """The connectors nested into an EVSE response carry the tariff uids too."""
+    """
+    The connectors nested into an EVSE response carry the tariff uids too.
+    """
     tariff = get_tariff_1()
     db.session.add(tariff)
     db.session.flush()

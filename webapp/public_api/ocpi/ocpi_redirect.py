@@ -20,8 +20,10 @@ from collections.abc import Callable, Iterable
 
 
 class OcpiPathRewriteMiddleware:
-    """WSGI middleware that rewrites /api/ocpi/ paths to /api/public/ocpi/ so the existing
-    OCPI endpoints are transparently available under both prefixes."""
+    """
+    WSGI middleware that rewrites /api/ocpi/ paths to /api/public/ocpi/ so the existing
+    OCPI endpoints are transparently available under both prefixes.
+    """
 
     def __init__(self, app: Callable):
         self.app = app
