@@ -79,7 +79,13 @@ python dev/mobilithek_helper/list_charging_offers.py   # all charging data offer
 python dev/mobilithek_helper/list_subscriptions.py     # all subscriptions of the account
 python dev/mobilithek_helper/subscribe.py <data offer id> [<data offer id> ...]
 python dev/mobilithek_helper/unsubscribe.py <subscription id> [<subscription id> ...]
+python dev/mobilithek_helper/send_reminder.py [--dry-run] --to <email> <data offer id> [<data offer id> ...]
 ```
+
+`send_reminder.py` sends a German plain text email to the contact person of a provider, asking to approve pending
+subscriptions. The Mobilithek does not expose contact addresses of other organisations, so the recipient has to be given
+explicitly. It reads `SMTP_HOST`, `SMTP_PORT` (465 uses SSL, otherwise STARTTLS), `SMTP_USER`, `SMTP_PASSWORD` and
+`SMTP_FROM` from `.env`.
 
 `validate_datex2.py` validates the data of a subscription against the DATEX II v3.5 and v3.7 import services without
 touching the database. It shows which base class fits, why an import fails and how many realtime EVSE statuses match
