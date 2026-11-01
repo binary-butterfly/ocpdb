@@ -26,6 +26,8 @@ class GiroEDatex2ImportService(BaseDatex2V37ImportService):
         name='Giro-e Datex II',
         public_url='https://mobilithek.info/offers/980559859451379712',
         source_url='https://mobilithek.info/offers/980559859451379712',
-        attribution_license='CC-0',
+        attribution_contributor='GLS Mobility GmbH',
+        attribution_license='cc-by/4.0',
+        attribution_url='http://dcat-ap.de/def/licenses/cc-by/4.0',
         has_realtime_data=True,
     )

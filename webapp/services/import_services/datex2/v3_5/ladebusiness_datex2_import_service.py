@@ -26,6 +26,7 @@ class LadebusinessDatex2ImportService(BaseDatex2V35ImportService):
         name='Ladebusiness Datex II',
         public_url='https://mobilithek.info/offers/903241622921695232',
         source_url='https://mobilithek.info/offers/903241622921695232',
-        attribution_license='CC-0',
+        attribution_license='cc-zero',
+        attribution_url='http://dcat-ap.de/def/licenses/cc-zero',
         has_realtime_data=True,
     )

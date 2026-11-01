@@ -27,6 +27,7 @@ class VirtaDatex2ImportService(BaseDatex2V35ImportService):
         public_url='https://mobilithek.info/offers/1042468553977937920',
         source_url='https://mobilithek.info/offers/1042468553977937920',
         attribution_contributor='Virta International GmbH',
-        attribution_license='CC-0',
+        attribution_license='cc-zero',
+        attribution_url='http://dcat-ap.de/def/licenses/cc-zero',
         has_realtime_data=True,
     )

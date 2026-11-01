@@ -26,6 +26,7 @@ class TeslaDatex2ImportService(BaseDatex2V35ImportService):
         name='Tesla Datex II',
         public_url='https://mobilithek.info/offers/953828817873125376',
         source_url='https://mobilithek.info/offers/953828817873125376',
-        attribution_license='CC-0',
+        attribution_license='cc-zero',
+        attribution_url='http://dcat-ap.de/def/licenses/cc-zero',
         has_realtime_data=True,
     )

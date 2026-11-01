@@ -27,6 +27,7 @@ class UlmDatex2ImportService(BaseDatex2V35ImportService):
         public_url='https://mobilithek.info/offers/854410608351543296',
         source_url='https://mobilithek.info/offers/854410608351543296',
         attribution_contributor='Smartlab Innovationsgesellschaft mbH',
-        attribution_license='CC-0',
+        attribution_license='cc-zero',
+        attribution_url='http://dcat-ap.de/def/licenses/cc-zero',
         has_realtime_data=True,
     )

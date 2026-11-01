@@ -26,6 +26,5 @@ class MontaDatex2ImportService(BaseDatex2V35ImportService):
         name='Monta Datex II',
         public_url='https://mobilithek.info/offers/963836072152719360',
         source_url='https://mobilithek.info/offers/963836072152719360',
-        attribution_license='CC-0',
         has_realtime_data=True,
     )

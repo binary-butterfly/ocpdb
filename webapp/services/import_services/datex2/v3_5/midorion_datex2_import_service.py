@@ -26,6 +26,5 @@ class MidorionDatex2ImportService(BaseDatex2V35ImportService):
         name='Midorion Datex II',
         public_url='https://mobilithek.info/offers/979435003058024448',
         source_url='https://mobilithek.info/offers/979435003058024448',
-        attribution_license='CC-0',
         has_realtime_data=True,
     )

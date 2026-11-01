@@ -48,8 +48,12 @@ class SourceInfo:
     attribution_url: str | None = None
     attribution_contributor: str | None = None
 
+    # Attribution fields are always passed on, even if None, so that removing an attribution in code also
+    # removes it from already existing sources.
+    _nullable_keys = ('attribution_license', 'attribution_url', 'attribution_contributor')
+
     def to_dict(self) -> dict:
-        return {key: value for key, value in asdict(self).items() if value is not None}
+        return {key: value for key, value in asdict(self).items() if value is not None or key in self._nullable_keys}
 
 
 @dataclass(kw_only=True)

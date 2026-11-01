@@ -26,6 +26,7 @@ class ERoundDatex2ImportService(BaseDatex2V35ImportService):
         name='eRound Datex II',
         public_url='https://mobilithek.info/offers/961625658278940672',
         source_url='https://mobilithek.info/offers/961625658278940672',
-        attribution_license='CC-0',
+        attribution_license='cc-zero',
+        attribution_url='http://dcat-ap.de/def/licenses/cc-zero',
         has_realtime_data=True,
     )

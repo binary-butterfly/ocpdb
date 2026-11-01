@@ -26,6 +26,7 @@ class AmpecoDatex2ImportService(BaseDatex2V35ImportService):
         name='Ampeco Datex II',
         public_url='https://mobilithek.info/offers/972837891969273856',
         source_url='https://mobilithek.info/offers/972837891969273856',
-        attribution_license='CC-0',
+        attribution_license='cc-zero',
+        attribution_url='http://dcat-ap.de/def/licenses/cc-zero',
         has_realtime_data=True,
     )
