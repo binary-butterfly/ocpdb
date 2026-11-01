@@ -69,7 +69,9 @@ class OcpiLocationBlueprint(BaseBlueprint):
 
 
 class OcpiLegacyLocationBlueprint(BaseBlueprint):
-    """Backward compatibility: /api/ocpi/2.2/location"""
+    """
+    Backward compatibility: /api/ocpi/2.2/location
+    """
 
     location_handler: LocationHandler
 

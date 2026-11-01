@@ -41,7 +41,9 @@ def _mixed_shape_validator() -> DictValidator:
 
 
 class MultiDictValidatorTest:
-    """Tests for MultiDictValidator and MultiDictValidationError."""
+    """
+    Tests for MultiDictValidator and MultiDictValidationError.
+    """
 
     @staticmethod
     def test_requires_at_least_one_validator():

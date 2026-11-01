@@ -34,8 +34,12 @@ from webapp.services.import_services.base_import_service import BaseImportServic
 from webapp.services.import_services.datex2.tariff_grouping_mixin import TariffGroupingMixin
 from webapp.services.import_services.exceptions import ImportException
 from webapp.services.import_services.models import EvseRealtimeUpdate, LocationUpdate
+from webapp.shared.datex2.models import MessageContainerWrapperV37RealtimeInput
 from webapp.shared.datex2.v3_7.realtime.d_a_t_e_x_i_i3_d2_payload_input import (
     DATEXII3D2PayloadInput as DATEXII3D2RealtimePayloadInput,
+)
+from webapp.shared.datex2.v3_7.realtime.payload_publication_g_input import (
+    PayloadPublicationGInput as PayloadPublicationGRealtimeInput,
 )
 from webapp.shared.datex2.v3_7.static.d_a_t_e_x_i_i3_d2_payload_input import (
     DATEXII3D2PayloadInput as DATEXII3D2StaticPayloadInput,
@@ -56,6 +60,7 @@ class RealtimeResult:
 class BaseDatex2V37ImportService(BaseImportService, TariffGroupingMixin, ABC):
     v3_7_json_static_datex_validator = DataclassValidator(DATEXII3D2StaticPayloadInput)
     v3_7_json_realtime_datex_validator = DataclassValidator(DATEXII3D2RealtimePayloadInput)
+    v3_7_json_realtime_message_container_validator = DataclassValidator(MessageContainerWrapperV37RealtimeInput)
     v3_7_json_static_datex_mapper = Datex2V37JSONStaticMapper()
 
     def fetch_static_data(self):
@@ -151,6 +156,10 @@ class BaseDatex2V37ImportService(BaseImportService, TariffGroupingMixin, ABC):
             try:
                 data, last_modified = self.request_data(subscription_id, if_modified_since)
             except RemoteException as e:
+                # Mobilithek answers with 304 Not Modified if there is no newer data
+                if e.http_status == 304:
+                    last_modified = if_modified_since
+                    break
                 logger.error(
                     f'Datex2 realtime request failed: {e.to_dict()}. Text: {e.data}',
                     extra={'attributes': {'type': LogMessageType.IMPORT_SOURCE}},
@@ -201,45 +210,61 @@ class BaseDatex2V37ImportService(BaseImportService, TariffGroupingMixin, ABC):
             extra={'attributes': {'type': LogMessageType.IMPORT_LOCATION}},
         )
 
-    def add_realtime_data(self, data: dict, result: RealtimeResult) -> DATEXII3D2RealtimePayloadInput:
+    @classmethod
+    def get_realtime_payloads(cls, data: dict) -> list[PayloadPublicationGRealtimeInput]:
+        """
+        Realtime data is either a MessageContainer document, as in the Mobilithek AFIR profile, or a D2Payload document.
+
+        Raises ValidationError if the data matches neither of them.
+        """
+        if 'messageContainer' in data:
+            message_container_input: MessageContainerWrapperV37RealtimeInput = (
+                cls.v3_7_json_realtime_message_container_validator.validate(data)
+            )
+            return message_container_input.messageContainer.payload
+
+        datex_input: DATEXII3D2RealtimePayloadInput = cls.v3_7_json_realtime_datex_validator.validate(data)
+        if datex_input.payload is UnsetValue:
+            return []
+        return [datex_input.payload]
+
+    def add_realtime_data(self, data: dict, result: RealtimeResult) -> None:
         try:
-            datex_input: DATEXII3D2RealtimePayloadInput = self.v3_7_json_realtime_datex_validator.validate(data)
+            payloads = self.get_realtime_payloads(data)
         except ValidationError as e:
             raise ImportException(
-                message=f'missing payload in {self.source_info.uid} realtime data',
+                message=f'invalid messageContainer or payload in {self.source_info.uid} realtime data',
             ) from e
 
-        if datex_input.payload is UnsetValue:
+        if not payloads and 'messageContainer' not in data:
             raise ImportException(
                 message=f'missing payload in {self.source_info.uid} realtime data',
             )
 
-        payload = datex_input.payload
-        if (
-            payload.aegiEnergyInfrastructureStatusPublication is UnsetValue
-            or payload.aegiEnergyInfrastructureStatusPublication.energyInfrastructureSiteStatus is UnsetValue
-        ):
-            raise ImportException(
-                message=f'missing aegiEnergyInfrastructureStatusPublication in {self.source_info.uid} realtime data',
-            )
+        for payload in payloads:
+            if (
+                payload.aegiEnergyInfrastructureStatusPublication is UnsetValue
+                or payload.aegiEnergyInfrastructureStatusPublication.energyInfrastructureSiteStatus is UnsetValue
+            ):
+                raise ImportException(
+                    message=f'missing aegiEnergyInfrastructureStatusPublication in {self.source_info.uid} realtime data',
+                )
 
-        for site_status in payload.aegiEnergyInfrastructureStatusPublication.energyInfrastructureSiteStatus:
-            if site_status.energyInfrastructureStationStatus is UnsetValue:
-                continue
-            for station_status in site_status.energyInfrastructureStationStatus:
-                if station_status.refillPointStatus is UnsetValue:
+            for site_status in payload.aegiEnergyInfrastructureStatusPublication.energyInfrastructureSiteStatus:
+                if site_status.energyInfrastructureStationStatus is UnsetValue:
                     continue
-                for refill_point_status_g in station_status.refillPointStatus:
-                    evse_update = self.v3_7_json_static_datex_mapper.map_energy_infrastructure_station_status(
-                        refill_point_status_g,
-                    )
-                    if evse_update is None:
-                        result.realtime_error_count += 1
+                for station_status in site_status.energyInfrastructureStationStatus:
+                    if station_status.refillPointStatus is UnsetValue:
                         continue
-                    result.evse_updates_by_evse[evse_update.evse_id] = evse_update
-                    result.realtime_success_count += 1
-
-        return datex_input
+                    for refill_point_status_g in station_status.refillPointStatus:
+                        evse_update = self.v3_7_json_static_datex_mapper.map_energy_infrastructure_station_status(
+                            refill_point_status_g,
+                        )
+                        if evse_update is None:
+                            result.realtime_error_count += 1
+                            continue
+                        result.evse_updates_by_evse[evse_update.evse_id] = evse_update
+                        result.realtime_success_count += 1
 
     def request_data(
         self,

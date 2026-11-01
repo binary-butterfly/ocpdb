@@ -49,17 +49,23 @@ class CapabilityBitsTest:
 
     @staticmethod
     def test_bit_values_are_unchanged():
-        """Every capability must keep the bit value it was stored with."""
+        """
+        Every capability must keep the bit value it was stored with.
+        """
         assert {item.name: bit for bit, item in CAPABILITY_BITS} == EXPECTED_BITS
 
     @staticmethod
     def test_every_capability_has_a_bit():
-        """A capability missing from the table would silently never be stored or returned."""
+        """
+        A capability missing from the table would silently never be stored or returned.
+        """
         assert {item for _bit, item in CAPABILITY_BITS} == set(Capability)
 
     @staticmethod
     def test_bits_are_unique_and_single():
-        """Each entry must be a distinct power of two, otherwise capabilities alias each other."""
+        """
+        Each entry must be a distinct power of two, otherwise capabilities alias each other.
+        """
         bits = [bit for bit, _item in CAPABILITY_BITS]
 
         assert len(set(bits)) == len(bits)
@@ -69,12 +75,16 @@ class CapabilityBitsTest:
 
     @staticmethod
     def test_bit_by_member_matches_the_table():
-        """The lookup used by the setter must agree with the table used by the getter."""
+        """
+        The lookup used by the setter must agree with the table used by the getter.
+        """
         assert CAPABILITY_BIT_BY_MEMBER == {item: bit for bit, item in CAPABILITY_BITS}
 
     @staticmethod
     def test_table_is_ordered_by_bit_value():
-        """The getter returns capabilities in table order, which callers expect to be ascending by bit."""
+        """
+        The getter returns capabilities in table order, which callers expect to be ascending by bit.
+        """
         bits = [bit for bit, _item in CAPABILITY_BITS]
 
         assert bits == sorted(bits)

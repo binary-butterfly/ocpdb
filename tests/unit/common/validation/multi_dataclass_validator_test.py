@@ -45,7 +45,9 @@ class _MixedShape(ValidataclassMixin):
 
 
 class MultiValidataclassValidatorTest:
-    """Tests for MultiValidataclassValidator and MultiValidataclassValidationError."""
+    """
+    Tests for MultiValidataclassValidator and MultiValidataclassValidationError.
+    """
 
     @staticmethod
     def test_requires_at_least_one_dataclass():

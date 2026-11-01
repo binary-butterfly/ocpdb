@@ -21,7 +21,6 @@ from enum import Enum
 
 from validataclass.dataclasses import Default, ValidataclassMixin, validataclass
 from validataclass.validators import (
-    AnythingValidator,
     DataclassValidator,
     DateTimeValidator,
     EnumValidator,
@@ -110,7 +109,7 @@ class DynamicInformationInput(ValidataclassMixin):
     exchangeStatus: ExchangeStatusEnumGInput = DataclassValidator(ExchangeStatusEnumGInput)
     messageGenerationTimestamp: datetime = DateTimeValidator()
     exDynamicInformationExtensionG: ExtensionTypeGInput | None = (
-        Noneable(AnythingValidator(allowed_types=[ExtensionTypeGInput])),
+        Noneable(DataclassValidator(ExtensionTypeGInput)),
         Default(None),
     )
 
@@ -159,6 +158,33 @@ class MessageContainerWrapperInput(ValidataclassMixin):
         Noneable(DataclassValidator(MessageContainerInput)),
         Default(None),
     )
+    exchangeInformation: ExchangeInformationInput | None = (
+        Noneable(DataclassValidator(ExchangeInformationInput)),
+        Default(None),
+    )
+
+
+@validataclass(reject_unknown_fields=True)
+class MessageContainerV37RealtimeInput(ValidataclassMixin):
+    payload: list[PayloadPublicationGV37RealtimeInput] = (
+        ListValidator(DataclassValidator(PayloadPublicationGV37RealtimeInput)),
+        Default([]),
+    )
+    exchangeInformation: ExchangeInformationInput = DataclassValidator(ExchangeInformationInput)
+    conMessageContainerExtensionG: ExtensionTypeGInput | None = (
+        Noneable(DataclassValidator(ExtensionTypeGInput)),
+        Default(None),
+    )
+
+
+@validataclass(reject_unknown_fields=True)
+class MessageContainerWrapperV37RealtimeInput(ValidataclassMixin):
+    """
+    DATEX II v3.7 realtime data as MessageContainer document, as used in the Mobilithek AFIR profile. Unlike
+    MessageContainerWrapperInput, unknown fields are rejected, so payloads outside the messageContainer are invalid.
+    """
+
+    messageContainer: MessageContainerV37RealtimeInput = DataclassValidator(MessageContainerV37RealtimeInput)
     exchangeInformation: ExchangeInformationInput | None = (
         Noneable(DataclassValidator(ExchangeInformationInput)),
         Default(None),

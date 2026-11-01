@@ -60,7 +60,9 @@ def _giroe_connector_uid(connector_id: int) -> str:
 
 
 def _valid_location_payload(location_id: int, *, public: bool = True) -> dict:
-    """Build a minimal-but-complete giroe Location payload accepted by LocationInput."""
+    """
+    Build a minimal-but-complete giroe Location payload accepted by LocationInput.
+    """
     now = datetime.now(timezone.utc).isoformat()
     return {
         'id': location_id,

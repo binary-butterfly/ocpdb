@@ -24,8 +24,8 @@ class VolkswagenDatex2ImportService(BaseDatex2V35ImportService):
     source_info = SourceInfo(
         uid='datex2_volkswagen',
         name='Volkswagen Charging Group Datex II',
-        public_url='https://mobilithek.info/offers/976221024898781184',
-        source_url='https://mobilithek.info/offers/976221024898781184',
+        public_url='https://mobilithek.info/offers/983008874583728128',
+        source_url='https://mobilithek.info/offers/983008874583728128',
         attribution_contributor='Volkswagen Charging Group',
         attribution_license='CC-0',
         has_realtime_data=True,

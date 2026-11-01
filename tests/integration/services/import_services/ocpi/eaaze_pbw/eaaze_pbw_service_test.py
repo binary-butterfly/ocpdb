@@ -34,7 +34,9 @@ EMPTY_OCPI_RESPONSE = {
 
 
 def test_eaaze_pbw_sends_x_request_id(db: SQLAlchemy, requests_mock: Mocker) -> None:
-    """Every request to eaaze_pbw must carry an X-Request-ID header containing a random uuid4."""
+    """
+    Every request to eaaze_pbw must carry an X-Request-ID header containing a random uuid4.
+    """
     eaaze_pbw_service: EaazePbwImportService = dependencies.get_import_services().importer_by_uid['eaaze_pbw']
 
     requests_mock.get(SOURCE_URL, status_code=200, json=EMPTY_OCPI_RESPONSE)
@@ -50,7 +52,9 @@ def test_eaaze_pbw_sends_x_request_id(db: SQLAlchemy, requests_mock: Mocker) -> 
 
 
 def test_eaaze_pbw_x_request_id_is_unique_per_request(db: SQLAlchemy, requests_mock: Mocker) -> None:
-    """The X-Request-ID must be regenerated for each request, not reused."""
+    """
+    The X-Request-ID must be regenerated for each request, not reused.
+    """
     eaaze_pbw_service: EaazePbwImportService = dependencies.get_import_services().importer_by_uid['eaaze_pbw']
 
     requests_mock.get(SOURCE_URL, status_code=200, json=EMPTY_OCPI_RESPONSE)

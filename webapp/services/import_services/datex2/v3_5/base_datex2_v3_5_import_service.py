@@ -156,6 +156,10 @@ class BaseDatex2V35ImportService(BaseImportService, TariffGroupingMixin, ABC):
             try:
                 data, last_modified = self.request_data(subscription_id, if_modified_since)
             except RemoteException as e:
+                # Mobilithek answers with 304 Not Modified if there is no newer data
+                if e.http_status == 304:
+                    last_modified = if_modified_since
+                    break
                 logger.error(
                     f'Datex2 realtime request failed: {e.to_dict()}. Text: {e.data}',
                     extra={'attributes': {'type': LogMessageType.IMPORT_SOURCE}},
@@ -172,7 +176,7 @@ class BaseDatex2V35ImportService(BaseImportService, TariffGroupingMixin, ABC):
                 return
 
             try:
-                message_container = self.validate_realtime_data(data)
+                message_container = self.validate_realtime_data(self.wrap_realtime_payload(data))
                 self.add_realtime_data(message_container, result)
             except ImportException as e:
                 logger.error(
@@ -261,7 +265,9 @@ class BaseDatex2V35ImportService(BaseImportService, TariffGroupingMixin, ABC):
 
     @staticmethod
     def get_publication_time(message_container: MessageContainerWrapperInput) -> datetime | None:
-        """Return the payload's ``publicationTime``, or ``None`` if the payload does not carry one."""
+        """
+        Return the payload's ``publicationTime``, or ``None`` if the payload does not carry one.
+        """
         if not message_container.messageContainer.payload:
             return None
 
@@ -303,6 +309,32 @@ class BaseDatex2V35ImportService(BaseImportService, TariffGroupingMixin, ABC):
             extra={'attributes': {'type': LogMessageType.IMPORT_LOCATION}},
         )
 
+    @staticmethod
+    def wrap_realtime_payload(data: dict) -> dict:
+        """
+        Realtime data can also be a plain D2Payload document instead of a MessageContainer. As the import works with
+        MessageContainers, the payload gets wrapped in one with a generic snapshotPull exchange information.
+        """
+        if set(data.keys()) != {'payload'} or not isinstance(data['payload'], dict):
+            return data
+
+        return {
+            'messageContainer': {
+                'payload': [data['payload']],
+                'exchangeInformation': {
+                    'exchangeContext': {
+                        'codedExchangeProtocol': {'value': ProtocolTypeEnum.SNAPSHOT_PULL.value},
+                        'exchangeSpecificationVersion': '3.5',
+                        'supplierOrCisRequester': {},
+                    },
+                    'dynamicInformation': {
+                        'exchangeStatus': {'value': 'online'},
+                        'messageGenerationTimestamp': datetime.now(tz=timezone.utc).isoformat(),
+                    },
+                },
+            },
+        }
+
     def validate_realtime_data(self, data: dict) -> MessageContainerWrapperInput:
         """
         Validate the raw DATEX II v3.5 realtime envelope and return the parsed message container.
@@ -339,7 +371,9 @@ class BaseDatex2V35ImportService(BaseImportService, TariffGroupingMixin, ABC):
 
     @staticmethod
     def count_station_statuses(message_container: MessageContainerWrapperInput) -> int:
-        """Return the number of ``energyInfrastructureStationStatus`` entries carried by the payload."""
+        """
+        Return the number of ``energyInfrastructureStationStatus`` entries carried by the payload.
+        """
         payload = message_container.messageContainer.payload[0]
         publication = payload.aegiEnergyInfrastructureStatusPublication
         if publication is UnsetValue or publication.energyInfrastructureSiteStatus is UnsetValue:
