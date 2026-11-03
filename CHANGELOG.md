@@ -20,6 +20,7 @@ Released 2026-11-03
 
 * [Remove Datex2 Erft](https://github.com/binary-butterfly/ocpdb/pull/285)
 * [Dependency updates](https://github.com/binary-butterfly/ocpdb/pull/291)
+* [Clarify licences](https://github.com/binary-butterfly/ocpdb/pull/295)
 
 # 2.16.4
 
