@@ -27,6 +27,5 @@ class GridAndCoDatex2ImportService(BaseDatex2V35ImportService):
         public_url='https://mobilithek.info/offers/984104561811357696',
         source_url='https://mobilithek.info/offers/984104561811357696',
         attribution_contributor='Grid&Co',
-        attribution_license='CC-0',
         has_realtime_data=True,
     )

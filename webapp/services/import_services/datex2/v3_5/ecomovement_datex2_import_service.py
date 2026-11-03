@@ -26,6 +26,8 @@ class EcoMovementDatex2ImportService(BaseDatex2V35ImportService):
         name='EcoMovement Datex II',
         public_url='https://mobilithek.info/offers/954064102947180544',
         source_url='https://mobilithek.info/offers/954064102947180544',
-        attribution_license='CC-0',
+        attribution_contributor='Eco-Movement',
+        attribution_license='cc-by/4.0',
+        attribution_url='http://dcat-ap.de/def/licenses/cc-by/4.0',
         has_realtime_data=True,
     )

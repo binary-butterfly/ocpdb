@@ -26,6 +26,7 @@ class PumpDatex2ImportService(BaseDatex2V35ImportService):
         name='Pump Datex II',
         public_url='https://mobilithek.info/offers/969322788846231552',
         source_url='https://mobilithek.info/offers/969322788846231552',
-        attribution_license='CC-0',
+        attribution_license='cc-zero',
+        attribution_url='http://dcat-ap.de/def/licenses/cc-zero',
         has_realtime_data=True,
     )

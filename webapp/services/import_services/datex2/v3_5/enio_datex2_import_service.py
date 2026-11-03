@@ -26,6 +26,7 @@ class EnioDatex2ImportService(BaseDatex2V35ImportService):
         name='Enio Datex II',
         public_url='https://mobilithek.info/offers/963766220171735040',
         source_url='https://mobilithek.info/offers/963766220171735040',
-        attribution_license='CC-0',
+        attribution_license='cc-zero',
+        attribution_url='http://dcat-ap.de/def/licenses/cc-zero',
         has_realtime_data=True,
     )

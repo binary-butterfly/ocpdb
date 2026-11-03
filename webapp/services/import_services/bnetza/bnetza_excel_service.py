@@ -88,8 +88,8 @@ class BnetzaExcelImportService(BaseImportService):
         '/start.html',
         source_url='https://www.bundesnetzagentur.de/DE/Fachthemen/ElektrizitaetundGas/E-Mobilitaet/DL'
         '/Ladesaeuleninfrastruktur.xlsx',
-        attribution_license='CC BY 4.0',
-        attribution_url='https://creativecommons.org/licenses/by/4.0/deed.de',
+        attribution_license='cc-by/4.0',
+        attribution_url='http://dcat-ap.de/def/licenses/cc-by/4.0',
         has_realtime_data=False,
     )
 

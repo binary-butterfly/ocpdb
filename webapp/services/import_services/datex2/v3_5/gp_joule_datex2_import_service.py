@@ -27,6 +27,7 @@ class GpJouleDatex2ImportService(BaseDatex2V35ImportService):
         public_url='https://mobilithek.info/offers/997111469996658688',
         source_url='https://mobilithek.info/offers/997111469996658688',
         attribution_contributor='GP JOULE Connect GmbH',
-        attribution_license='CC-0',
+        attribution_license='cc-zero',
+        attribution_url='http://dcat-ap.de/def/licenses/cc-zero',
         has_realtime_data=True,
     )

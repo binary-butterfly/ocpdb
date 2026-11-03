@@ -26,6 +26,5 @@ class EluMobilityDatex2ImportService(BaseDatex2V35ImportService):
         name='Elu Mobility Datex II',
         public_url='https://mobilithek.info/offers/936298491949047808',
         source_url='https://mobilithek.info/offers/936298491949047808',
-        attribution_license='CC-0',
         has_realtime_data=True,
     )

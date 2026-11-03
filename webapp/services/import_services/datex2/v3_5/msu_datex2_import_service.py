@@ -27,6 +27,5 @@ class MsuDatex2ImportService(BaseDatex2V35ImportService):
         public_url='https://mobilithek.info/offers/970305056590979072',
         source_url='https://mobilithek.info/offers/970305056590979072',
         attribution_contributor='msu',
-        attribution_license='CC-0',
         has_realtime_data=True,
     )

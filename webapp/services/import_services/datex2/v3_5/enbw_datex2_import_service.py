@@ -27,6 +27,7 @@ class EnBWDatex2ImportService(BaseDatex2V35ImportService):
         public_url='https://mobilithek.info/offers/907574882292453376',
         source_url='https://mobilithek.info/offers/907574882292453376',
         attribution_contributor='EnBW AG',
-        attribution_license='CC BY 4.0',
+        attribution_license='cc-by/4.0',
+        attribution_url='http://dcat-ap.de/def/licenses/cc-by/4.0',
         has_realtime_data=True,
     )

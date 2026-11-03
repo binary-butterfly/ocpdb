@@ -45,8 +45,8 @@ class BnetzaApiImportService(BaseImportService):
         public_url='https://www.bundesnetzagentur.de/DE/Fachthemen/ElektrizitaetundGas/E-Mobilitaet'
         '/Ladesaeulenkarte/start.html',
         source_url='https://ladesaeulenregister.bnetza.de/els/service/public/v1/chargepoints',
-        attribution_license='CC BY 4.0',
-        attribution_url='https://creativecommons.org/licenses/by/4.0/deed.de',
+        attribution_license='cc-by/4.0',
+        attribution_url='http://dcat-ap.de/def/licenses/cc-by/4.0',
         has_realtime_data=False,
     )
 

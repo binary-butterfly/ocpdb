@@ -27,6 +27,7 @@ class EvPriceDatex2ImportService(BaseDatex2V35ImportService):
         public_url='https://mobilithek.info/offers/989311807176560640',
         source_url='https://mobilithek.info/offers/989311807176560640',
         attribution_contributor='EW Pricing GmbH',
-        attribution_license='CC-0',
+        attribution_license='cc-zero',
+        attribution_url='http://dcat-ap.de/def/licenses/cc-zero',
         has_realtime_data=True,
     )
