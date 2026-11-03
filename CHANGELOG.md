@@ -1,5 +1,26 @@
 # Changelog
 
+# 2.17.0
+
+Released 2026-11-03
+
+## Features
+
+* [Datex2: Inergia](https://github.com/binary-butterfly/ocpdb/pull/292)
+* [New Datex2 data sources](https://github.com/binary-butterfly/ocpdb/pull/294)
+* [Mobilithek helper](https://github.com/binary-butterfly/ocpdb/pull/293)
+
+## Fixes
+
+* [Strict additional field validation](https://github.com/binary-butterfly/ocpdb/pull/283)
+* [Filter even more characters](https://github.com/binary-butterfly/ocpdb/pull/284)
+* [Allow organization loops](https://github.com/binary-butterfly/ocpdb/pull/286)
+
+## Maintenance
+
+* [Remove Datex2 Erft](https://github.com/binary-butterfly/ocpdb/pull/285)
+* [Dependency updates](https://github.com/binary-butterfly/ocpdb/pull/291)
+
 # 2.16.4
 
 Released 2026-10-06
