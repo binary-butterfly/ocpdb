@@ -168,7 +168,7 @@ Incremental updates only ever return objects that **still exist**. They cannot t
 ```text
 every M hours (e.g. once per night):
     snapshot_started_at = now()
-    fetch all pages of /locations?sorted_by=id&limit=1000
+    fetch all pages of /locations?sorted_by=id&limit=10000
     replace the local dataset with the snapshot:
         upsert every returned location
         delete every local location whose id was not part of the snapshot
@@ -185,6 +185,9 @@ Important details:
 - **Scope deletions to the filter.** If the snapshot is restricted (e.g. by `source_uids` or a bounding box), only
   delete local locations that fall into the same scope.
 - **Prefer a low-traffic time** for large snapshots, as they transfer the complete dataset.
+- **Expect full datasets without pagination in near future**, as we are developing in the direction of full,
+  cached snapshots.
+
 
 ### Choosing the interval
 
